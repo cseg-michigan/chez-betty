@@ -1,0 +1,24 @@
+{
+  "name": "chez-betty",
+  "version": "0.1.0",
+  "homepage": "https://github.com/um-cseg/chez-betty",
+  "authors": [
+    "Brad Campbell <bradjc5@gmail.com>"
+  ],
+  "description": "Food store",
+  "keywords": [
+    "food"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Keypress": "~2.0.2",
+    "jquery": "~2.1.1"
+  }
+}

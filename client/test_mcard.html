@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <title>Test MCard</title>
+    <style>
+      p {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Presses!</h1>
+    <script>
+      $(document).keypress(function (e) {
+        $("body").append("<p>" + String.fromCharCode(e.which) +" pressed</p>");
+      });
+    </script>
+  </body>
+</html>
