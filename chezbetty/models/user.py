@@ -1,4 +1,5 @@
-from model import *
+from .model import *
+from .transaction import Account
 
 class LDAPUserNotFoundException(Exception):
     pass
@@ -20,7 +21,7 @@ class LDAPLookup(object):
         pass
 
 
-class User(Base):
+class User(Account):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, nullable=False)

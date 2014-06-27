@@ -3,34 +3,18 @@ from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
 
-from .models import (
-    DBSession,
-    MyModel,
-    )
-
+from .models import *
 
 @view_config(route_name='home', renderer='templates/home.jinja2')
 def my_view(request):
-    #try:
-    #    one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-    #except DBAPIError:
-    #    return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'one': "fuck", 'project': 'chezbetty', 'name':'fuck'}
 
+# /user/<swipe>/umid/uniqname>/json
+@view_config(route_name="user_json", renderer="json")
+def user_json(request):
+    return {"id":1, "uniqname":"zakir", "umid":"95951361", "balance":10.00}
 
-conn_err_msg = """\
-Pyramid is having a problem using your SQL database.  The problem
-might be caused by one of the following things:
-
-1.  You may need to run the "initialize_chezbetty_db" script
-    to initialize your database tables.  Check your virtual
-    environment's "bin" directory for this script and try to run it.
-
-2.  Your database server may not be running.  Check that the
-    database server referred to by the "sqlalchemy.url" setting in
-    your "development.ini" file is running.
-
-After you fix the problem, please restart the Pyramid application to
-try it again.
-"""
+# /item/<barcode>/json
+def lookup_item(route_name="item_json", renderer="json")
+    return {"id":1, "price": 10.00, "name": "a goddamn granola bar", "in_stock": 10, "in_storage": 30}
 
