@@ -16,18 +16,18 @@ def main(global_config, **settings):
 
     config.add_route('index', '/')
 
-    config.add_route('about', '/about.html')
+    config.add_route('about', '/about')
 
-    config.add_route('items', '/items.html')
+    config.add_route('items', '/items')
     config.add_route('item', '/item/{barcode}')
 
-    config.add_route('users', '/users.html')
+    config.add_route('users', '/users')
     config.add_route('user', '/user/{umid}')
 
-    config.add_route('purchase', '/purchase.html')
+    config.add_route('purchase', '/purchase')
     config.add_route('purchase_new', '/purchase/{umid}')
 
-    config.add_route('deposit', '/deposit.html')
+    config.add_route('deposit', '/deposit')
     config.add_route('deposit_new', '/deposit/new')
 
     # Old testing / startup stubs
