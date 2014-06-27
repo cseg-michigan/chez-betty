@@ -12,3 +12,21 @@ $("#purchase_table tbody").on('click', '.btn-remove-item', function () {
 	// Re-calculate the total
 	calculate_total();
 });
+
+$("#btn-submit-purchase").click(function () {
+	purchase = {};
+	item_count = 0;
+	$(".purchase-item").each(function (index) {
+		id = $(this).attr("id");
+		quantity = parseInt($(this).children(".item-quantity").text());
+		barcode = id.split('-')[2];
+		purchase[barcode] = quantity;
+		item_count++;
+	});
+	if (item_count == 0) {
+		alert_error("You must purchase at least one item.");
+	} else {
+		console.log(purchase);
+		console.log(purchase.length);
+	}
+});

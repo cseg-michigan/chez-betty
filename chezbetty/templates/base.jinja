@@ -21,8 +21,12 @@
 
 	<div id="wrap">
 
-        {% set active_page = active_page|default('index') -%}
+    {% set active_page = active_page|default('index') -%}
 		{#{% include 'navbar.html' %}#}
+
+		<div id="alerts" class="container">
+			{% block alerts %}{% endblock %}
+		</div>
 
 		{% block top %}{% endblock %}
 
