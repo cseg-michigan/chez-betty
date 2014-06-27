@@ -1,7 +1,5 @@
 from .models import *
 
-
-
 def deposit(user, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
@@ -12,17 +10,16 @@ def deposit(user, amount):
 
 def purchase(user, items):
     assert(hasattr(user, "id"))
+    assert(len(items) > 0)
     t = Purchase(user)
     DBSession.add(p)
     amount = 0.0
     for item, quantity in items.items():
-        st = SubTransaction(p, item, quantity)
-        t.amount += st.amount
+        item.in_stock -= quantity
+        st = SubTransaction(t, item, quantity)
+        DBSession.add(st)
+    t.update_amount(amount)
     return t
-
-
-
-
 
 def reconcile_items(items):
     for item, quantity in items.items():

@@ -26,6 +26,13 @@ class Transaction(Base):
         self.from_account_id = from_account.id
         self.amount = amount
 
+    def update_amount(self, amount):
+        self.to_account -= self.amount
+        self.from_account += self.amount
+        self.amount = amount
+        self.to_account += self.amount
+        self.from_account -= self.amount
+
 
 class Deposit(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'deposit'}
@@ -39,10 +46,6 @@ class Purchase(Transaction):
     def __init__(self, user):
         Transaction.__init__(self, user, chezbetty, 0.0)
         
-    def update_transaction_amount(self, amount):
-        self.amount = amount
-        self.to_account += amount
-        self.from_account -= amount
 
 
 class Reconcile(Transaction):
@@ -55,13 +58,17 @@ class SubTransaction(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=False)
+    transaction = relationship(Transaction, backref="subtransactions")
    
-    count = Column(Integer, nullable=False) 
+    quantity = Column(Integer, nullable=False) 
     item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
+    item = relationship(Item, backref="subtransactions")
     amount = Column(Float, nullable=False)
     
     def __init__(self, transaction, item, quantity):
-        pass
+        self.item_id = item.id
+        self.quantity = quantity
+        self.amount = quantity * amount
 
 
 def purchase(user_id, items={}):
