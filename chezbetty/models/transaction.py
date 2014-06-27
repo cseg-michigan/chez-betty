@@ -52,7 +52,6 @@ class Reconcile(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'reconcile'}
 
 
-
 class SubTransaction(Base):
     __tablename__ = "subtransactions"
 

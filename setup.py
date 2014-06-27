@@ -17,6 +17,7 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
+    'python-ldap'
     ]
 
 setup(name='chezbetty',
