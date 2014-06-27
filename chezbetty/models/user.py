@@ -38,7 +38,7 @@ class User(Account):
         pass
 
     @classmethod
-    def from_umid(cls, uniqname):
+    def from_umid(cls, umid):
         pass
 
     @classmethod

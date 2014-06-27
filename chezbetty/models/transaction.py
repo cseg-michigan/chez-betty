@@ -9,6 +9,10 @@ class Account(Base):
     name = Column(String(255), nullable=False)
 
 
+# special accounts
+chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
+lost      = DBSession.query(Account).filter(Account.name == "lost").one()
+
 class Transaction(Base):
     __tablename__ = 'transactions'
 
@@ -21,8 +25,10 @@ class Transaction(Base):
         assert(amount > 0.0)
         return amount
 
-    to_account = Column(Integer, ForeignKey("accounts.id"), nullable=False)
-    from_account = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    to_account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    from_account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    
+    to_account = relation(Account, )
 
     type = Column(Enum("purchase",), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
@@ -31,7 +37,9 @@ class Transaction(Base):
 
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
-    pass
+    def __init__(self, user):
+        from_account = user
+        to_account = chezbetty
 
 
 class Inventory(Transaction):
@@ -53,14 +61,9 @@ class SubTransaction(Base):
     count = Column(Integer, nullable=False) 
     item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
     amount = Column(Float, nullable=False)
-
-
-# special accounts
-chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
-storage   = DBSession.query(Account).filter(Account.name == "storage").one()
-lost      = DBSession.query(Account).filter(Account.name == "lost").one()
-bank      = DBSession.query(Account).filter(Account.name == "chezbetty").one()
-desposit  = DBSession.query(Account).filter(Account.name == "chezbetty").one()
+    
+    def __init__(self, transaction, item, quantity):
+        pass
 
 
 def purchase(user_id, items={}):
