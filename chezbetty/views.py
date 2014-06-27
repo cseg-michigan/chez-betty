@@ -5,6 +5,10 @@ from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError
 
 from .models import *
+from .models.model import *
+from .models.user import User
+from .models.item import Item
+
 from .datalayer import *
 
 @view_config(route_name='index', renderer='templates/index.jinja2')
