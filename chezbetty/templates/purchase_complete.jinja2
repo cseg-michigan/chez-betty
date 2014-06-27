@@ -18,24 +18,44 @@
 
 {% block content %}
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Customer</h3>
+<div class="row">
+  <div class="col-md-6">
+  
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Customer</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-2">Name</div>
+          <div class="col-md-10">{{ user.name }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">uniqname</div>
+          <div class="col-md-10">{{ user.uniqname }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">Account Balance</div>
+          <div class="col-md-10">{{ user.balance }}</div>
+        </div>
+        <div id="user-umid" class="hidden">{{ user.umid }}</div>
+      </div>
+    </div>
+
   </div>
-  <div class="panel-body">
-    <div class="row">
-      <div class="col-md-2">Name</div>
-      <div class="col-md-10">{{ user.name }}</div>
+  <div class="col-md-6">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Account Links</h3>
+      </div>
+      <div class="panel-body">
+        <a class="btn btn-default" href="/user">Account</a>
+        <a class="btn btn-default" href="/deposit">Deposit</a>
+        <a class="btn btn-default" href="/">Logout</a>
+      </div>
     </div>
-    <div class="row">
-      <div class="col-md-2">uniqname</div>
-      <div class="col-md-10">{{ user.uniqname }}</div>
-    </div>
-    <div class="row">
-      <div class="col-md-2">Account Balance</div>
-      <div class="col-md-10">{{ user.balance }}</div>
-    </div>
-    <div id="user-umid" class="hidden">{{ user.umid }}</div>
+
   </div>
 </div>
 
