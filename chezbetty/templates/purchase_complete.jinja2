@@ -1,14 +1,19 @@
-{% extends "base.jinja" %}
-{% block title %}Purchase{% endblock %}
+{% extends "base.jinja2" %}
+{% block title %}Purchase Complete{% endblock %}
+
+{% block alerts %}
+<div class="alert alert-success" role="alert">Thank you! Your order is complete.</div>
+{% endblock %}
 
 
 {% block top %}
 
 <div class="container">
-  <h1>Purchase</h1>
+  <h1>Purchase Complete</h1>
 </div>
 
 {% endblock %}
+
 
 
 {% block content %}
@@ -30,9 +35,7 @@
       <div class="col-md-2">Account Balance</div>
       <div class="col-md-10">{{ user.balance }}</div>
     </div>
-    <div id="account-total-start" class="hidden">
-      {{ user.balance }}
-    </div>
+    <div id="user-umid" class="hidden">{{ user.umid }}</div>
   </div>
 </div>
 
@@ -46,7 +49,6 @@
     <table class="table table-bordered" id="purchase_table">
       <thead>
         <tr>
-          <th>&nbsp;</th>
           <th>Item</th>
           <th>Quantity</th>
           <th>Price</th>
@@ -54,40 +56,18 @@
       </thead>
 
       <tbody>
-        <!--<tr id="purchase-empty">
-          <td colspan="4">
-            Order Empty
-          </td>
-        </tr>-->
-
-
-        <tr id="purchase-item-038000358210" class="purchase-item">
-  <td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>
-  <td class="item-title">aa</td>
-  <td class="item-quantity">6</td>
-  <td class="item-price">$4.00</td>
-  <td class="hidden item-price-single">4.00</td>
-</tr>
+        {{ order.rows }}
       </tbody>
 
       <tfoot>
         <tr>
-          <td colspan="3"><b>Total</b></td>
-          <td id="purchase-total">0.00</td>
+          <td colspan="2"><b>Total</b></td>
+          <td id="purchase-total">{{ order.total }}</td>
         </tr>
       </tfoot>
     </table>
-
-    <div class="btn-group btn-group-large">
-      <button type="button" id="btn-submit-purchase" class="btn btn-success">Submit Purchase</button>
-    </div>
 
   </div>
 </div>
 
 {% endblock %}
-
-{% block onload %}
-<script src="/js/chezbetty-item.js"></script>
-{% endblock %}
-

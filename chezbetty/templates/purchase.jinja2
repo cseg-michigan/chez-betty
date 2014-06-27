@@ -1,0 +1,103 @@
+{% extends "base.jinja2" %}
+{% block title %}Purchase{% endblock %}
+
+
+{% block top %}
+
+<div class="container">
+  <h1>Purchase</h1>
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-6">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Customer</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-2">Name</div>
+          <div class="col-md-10">{{ user.name }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">uniqname</div>
+          <div class="col-md-10">{{ user.uniqname }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">Account Balance</div>
+          <div class="col-md-10">{{ user.balance }}</div>
+        </div>
+        <div id="account-total-start" class="hidden">
+          {{ user.balance }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-6">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Account Links</h3>
+      </div>
+      <div class="panel-body">
+        <a class="btn btn-default" href="/user">Account</a>
+        <a class="btn btn-default" href="/deposit">Deposit</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Order</h3>
+  </div>
+  <div class="panel-body">
+
+    <table class="table table-bordered" id="purchase_table">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr id="purchase-empty">
+          <td colspan="4">
+            Order Empty
+          </td>
+        </tr>
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="3"><b>Total</b></td>
+          <td id="purchase-total">0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="btn-group btn-group-large">
+      <button type="button" id="btn-submit-purchase" class="btn btn-success">Submit Purchase</button>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block onload %}
+<script src="/js/chezbetty-item.js"></script>
+{% endblock %}
+
