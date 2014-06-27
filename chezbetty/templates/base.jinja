@@ -1,0 +1,37 @@
+{% set relative = relative|default('') -%}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+	{% block head %}
+	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="/css/chezbetty.css" />
+
+	<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+	<script src="/js/chezbetty.js"></script>
+
+	<title>{% block title %}{% endblock %} | Chez Betty</title>
+	{% endblock %}
+</head>
+<body>
+
+	<div id="wrap">
+
+        {% set active_page = active_page|default('index') -%}
+		{#{% include 'navbar.html' %}#}
+
+		{% block top %}{% endblock %}
+
+		<div id="content" class="container">
+			{% block content %}{% endblock %}
+		</div>
+
+		{% block footer %}{% endblock %}
+	</div>
+
+	<script src="/js/chezbetty-onload.js"></script>
+</body>
