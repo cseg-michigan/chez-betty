@@ -1,0 +1,6 @@
+chezbetty/__pycache__/*
+chezbetty.egg-info/*
+chezbetty/scripts/__pycache__/*
+*.pyc
+*.pyo
+
