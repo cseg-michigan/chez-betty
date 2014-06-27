@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-md-6">
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Customer</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-4">Name</div>
+          <div class="col-md-8">{{ user.name }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">uniqname</div>
+          <div class="col-md-8">{{ user.uniqname }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">Account Balance</div>
+          <div class="col-md-8">{{ user.balance }}</div>
+        </div>
+        <div id="account-total-start" class="hidden">
+          {{ user.balance }}
+        </div>
+        <div id="user-umid" class="hidden">{{ user.umid }}</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-6">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Account Links</h3>
+      </div>
+      <div class="panel-body">
+        <a class="btn btn-default" href="/user/{{ user.umid }}">Account</a>
+        <a class="btn btn-default" href="/deposit/{{ user.umid }}">Deposit</a>
+        <a class="btn btn-default" href="/">Logout</a>
+      </div>
+    </div>
+
+  </div>
+</div>
