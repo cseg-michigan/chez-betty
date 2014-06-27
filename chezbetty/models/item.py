@@ -10,5 +10,3 @@ class Item(Base):
     
     enabled = Column(Boolean, default=True, nullable=False)
     in_stock = Column(Integer, nullable=False, default=0)
-
-

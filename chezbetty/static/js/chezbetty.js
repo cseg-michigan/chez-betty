@@ -28,7 +28,7 @@ function add_item (item_id) {
 
 		} else {
 			// Add a new item
-			$("#purchase_table tbody").append(data.item_html);
+			$("#purchase_table tbody").append(data.item_row_html);
 		}
 
 		calculate_total();

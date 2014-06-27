@@ -1,4 +1,4 @@
-from .model import *
+from .models import *
 
 
 
@@ -18,7 +18,6 @@ def purchase(user, items):
     for item, quantity in items.items():
         st = SubTransaction(p, item, quantity)
         t.amount += st.amount
-    user.balance -= -
     return t
 
 
@@ -27,7 +26,7 @@ def purchase(user, items):
 
 def reconcile_items(items):
     for item, quantity in items.items():
-
+        pass
 
 def reconcile_cash(amount):
     pass
