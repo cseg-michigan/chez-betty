@@ -3,41 +3,41 @@
 <html lang="en">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
-	{% block head %}
-	<link rel="stylesheet" href="/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="/css/chezbetty.css" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+  {% block head %}
+  <link rel="stylesheet" href="{{'chezbetty:static/css/bootstrap.min.css'|static_url}}" />
+  <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty.css'|static_url}}" />
 
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/bootstrap.min.js"></script>
+  <script src="{{'chezbetty:static/js/jquery.min.js'|static_url}}"></script>
+  <script src="{{'chezbetty:static/js/bootstrap.min.js'|static_url}}"></script>
 
-	<script src="/js/chezbetty.js"></script>
+  <script src="{{'chezbetty:static/js/chezbetty.js'|static_url}}"></script>
 
-	<title>{% block title %}{% endblock %} | Chez Betty</title>
-	{% endblock %}
+  <title>{% block title %}{% endblock %} | Chez Betty</title>
+  {% endblock %}
 </head>
 <body>
 
-	<div id="wrap">
+  <div id="wrap">
 
     {% set active_page = active_page|default('index') -%}
-		{#{% include 'navbar.html' %}#}
+    {#{% include 'navbar.html' %}#}
 
-		<div id="alerts" class="container">
-			{% block alerts %}{% endblock %}
-		</div>
+    <div id="alerts" class="container">
+      {% block alerts %}{% endblock %}
+    </div>
 
-		{% block top %}{% endblock %}
+    {% block top %}{% endblock %}
 
-		<div id="content" class="container">
-			{% block content %}{% endblock %}
-		</div>
+    <div id="content" class="container">
+      {% block content %}{% endblock %}
+    </div>
 
-		{% block footer %}{% endblock %}
-	</div>
+    {% block footer %}{% endblock %}
+  </div>
 
-	<script src="/js/chezbetty-onload.js"></script>
-	{% block onload %}
-	{% endblock %}
+  <script src="/js/chezbetty-onload.js"></script>
+  {% block onload %}
+  {% endblock %}
 </body>
