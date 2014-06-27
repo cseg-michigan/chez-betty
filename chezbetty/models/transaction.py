@@ -27,27 +27,26 @@ class Transaction(Base):
         self.amount = amount
 
 
-class Purchase(Transaction):
-    __mapper_args__ = {'polymorphic_identity': 'purchase'}
-    def __init__(self, user):
-        Transaction.__init__(self, user, chezbetty, 0.0)
-
-
-class Inventory(Transaction):
-    __mapper_args__ = {'polymorphic_identity': 'inventory'}
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-
-
-class Reconcile(Transaction):
-    __mapper_args__ = {'polymorphic_identity': 'reconcile'}
-
-
 class Deposit(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'deposit'}
 
     def __init__(self, amount):
         Transaction.__init__(self, None, user, amount)
 
+
+class Purchase(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'purchase'}
+    def __init__(self, user):
+        Transaction.__init__(self, user, chezbetty, 0.0)
+        
+    def update_transaction_amount(self, amount):
+        self.amount = amount
+        self.to_account += amount
+        self.from_account -= amount
+
+
+class Reconcile(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'reconcile'}
 
 
 
