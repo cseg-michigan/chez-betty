@@ -16,6 +16,7 @@ $("#purchase_table tbody").on('click', '.btn-remove-item', function () {
 $("#btn-submit-purchase").click(function () {
 	console.log("submitting purchase");
 	$(this).blur();
+	alert_clear();
 
 
 	purchase = {};

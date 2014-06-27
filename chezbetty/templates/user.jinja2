@@ -1,11 +1,11 @@
 {% extends "base.jinja2" %}
-{% block title %}Purchase{% endblock %}
+{% block title %}User Information{% endblock %}
 
 
 {% block top %}
 
 <div class="container">
-  <h1>Purchase</h1>
+  <h1>{{ user.name }}</h1>
 </div>
 
 {% endblock %}
@@ -44,10 +44,10 @@
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Account Links</h3>
+        <h3 class="panel-title">Links</h3>
       </div>
       <div class="panel-body">
-        <a class="btn btn-default" href="/user">Account</a>
+        <a class="btn btn-default" href="/purchase/{{ user.umid }}">Purchase</a>
         <a class="btn btn-default" href="/deposit">Deposit</a>
         <a class="btn btn-default" href="/">Logout</a>
       </div>
@@ -59,46 +59,16 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Order</h3>
+    <h3 class="panel-title">Transaction History</h3>
   </div>
   <div class="panel-body">
 
-    <table class="table table-bordered" id="purchase_table">
-      <thead>
-        <tr>
-          <th>&nbsp;</th>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr id="purchase-empty">
-          <td colspan="4">
-            Order Empty
-          </td>
-        </tr>
-      </tbody>
-
-      <tfoot>
-        <tr>
-          <td colspan="3"><b>Total</b></td>
-          <td id="purchase-total">0.00</td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <div class="btn-group btn-group-large">
-      <button type="button" id="btn-submit-purchase" class="btn btn-success">Submit Purchase</button>
-    </div>
+    <ul id="transaction-history" class="list-group">
+      {{ transaction_history }}
+    </ul>
 
   </div>
 </div>
 
-{% endblock %}
-
-{% block onload %}
-<script src="/js/chezbetty-item.js"></script>
 {% endblock %}
 
