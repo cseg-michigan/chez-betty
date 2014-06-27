@@ -12,14 +12,3 @@ $("#purchase_table tbody").on('click', '.btn-remove-item', function () {
 	// Re-calculate the total
 	calculate_total();
 });
-
-barcode = "";
-$(document).keypress(function (e) {
-	if (e.which == 13) {
-		// Got new scan!
-		console.log("barcode: " + barcode);
-		add_item(barcode);
-		barcode = "";
-	}
-	barcode += String.fromCharCode(e.which);
-});
