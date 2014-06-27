@@ -11,12 +11,9 @@ from pyramid.paster import (
 
 from pyramid.scripts.common import parse_vars
 
-from ..models import (
-    DBSession,
-    MyModel,
-    Base,
-    )
-
+from ..models.model import *
+from ..models.user import User
+from ..models.item import Item
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -36,5 +33,17 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        model = MyModel(name='one', value=1)
-        DBSession.add(model)
+        item = Item(
+            "Nutrigrain Raspberry",
+            "038000358210",
+            14.37,
+            1,
+            True
+        )
+        DBSession.add(item)
+        user = User(
+            "zakir"
+            "95951361",
+            "Zakir Durumeric"
+        )
+        DBSession.add(user)
