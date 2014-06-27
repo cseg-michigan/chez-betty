@@ -10,3 +10,10 @@ class Item(Base):
     
     enabled = Column(Boolean, default=True, nullable=False)
     in_stock = Column(Integer, nullable=False, default=0)
+    
+    def __init__(self, name, barcode, price, in_stock, enabled):
+        self.name = name
+        self.barcode = barcode
+        self.price = price
+        self.in_stock = in_stock
+        self.enabled = enabled
