@@ -13,13 +13,13 @@ class LDAPLookup(object):
     SERVER = "ldap.umich.edu"
     USERNAME = "cn=CSEG-McDirApp001,ou=Applications,o=services"
     BASE_DN = "ou=People,dc=umich,dc=edu"
-    PASSWORD = ""
+    PASSWORD = "asdf"
     ATTRIBUTES = ["uid", "entityid", "displayName"]
         
     def __init__(self):
-        s = ldap3.Server(SERVER, port=636, use_ssl=True, get_info=ldap3.GET_ALL_INFO)
+        s = ldap3.Server(self.SERVER, port=636, use_ssl=True, get_info=ldap3.GET_ALL_INFO)
         self.__conn = ldap3.Connection(s, auto_bind=True, 
-                user=USERNAME, password=PASSWORD,
+                user=self.USERNAME, password=self.PASSWORD,
                 client_strategy=ldap3.STRATEGY_SYNC,
                 authentication=ldap3.AUTH_SIMPLE
         )
@@ -50,7 +50,7 @@ class User(Account):
     __tablename__ = 'users'
     __mapper_args__ = {'polymorphic_identity': 'user'}
 
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
     uniqname = Column(String(8), nullable=False, unique=True)
     umid = Column(String(8), nullable=False, unique=True)
     
@@ -58,12 +58,13 @@ class User(Account):
     role = Column(Enum("user", "manager", "administrator", name="user_type"),
             nullable=False, default="user")
 
-    __ldap = LDAPLookup()
+    #__ldap = LDAPLookup()
 
     def __init__(self, uniqname, umid, name):
         self.uniqname = uniqname
         self.umid = umid
         self.name = name
+        self.balance = 0.0
 
     @classmethod
     def from_uniqname(cls, uniqname):

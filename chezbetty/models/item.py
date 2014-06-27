@@ -1,4 +1,4 @@
-from model import *
+from .model import *
 
 class Item(Base):
     __tablename__ = 'items'

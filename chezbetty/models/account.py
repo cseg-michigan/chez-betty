@@ -24,6 +24,3 @@ def __make_account(name):
     DBSession.add(t)
     return t
 
-# special accounts
-chezbetty = __make_account("chezbetty")
-lost      = __make_account("lost")
