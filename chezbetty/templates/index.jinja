@@ -14,20 +14,22 @@
 
 {% block content %}
 
-<div class="btn-group btn-group-large">
-  <a class="btn btn-default" href="/purchase.html">Purchase</a>
+<div class="panel panel-default">
+  <div class="panel-body">
+    Swipe your M-Card to login.
+  </div>
 </div>
 
 <div class="btn-group btn-group-large">
-  <button type="button" class="btn btn-default">Deposit</button>
+  <a class="btn btn-default" href="/items">Items</a>
 </div>
 
 <div class="btn-group btn-group-large">
-  <button type="button" class="btn btn-default">Account</button>
+  <a class="btn btn-default" href="/about">About</a>
 </div>
 
-<div class="btn-group btn-group-large">
-  <button type="button" class="btn btn-default">About</button>
-</div>
+{% endblock %}
 
+{% block onload %}
+<script src="/js/chezbetty-mcard.js"></script>
 {% endblock %}
