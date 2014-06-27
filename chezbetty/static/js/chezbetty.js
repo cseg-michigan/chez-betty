@@ -47,3 +47,9 @@ function calculate_total () {
 	$("#purchase-total").text(format_price(total));
 }
 
+
+function alert_error (error_str) {
+	$("#alerts").empty();
+	$("#alerts").html('<div class="alert alert-danger" role="alert">' + error_str + '</div>');
+}
+
