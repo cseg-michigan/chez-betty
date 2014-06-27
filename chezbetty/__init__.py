@@ -14,6 +14,8 @@ def main(global_config, **settings):
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
 
+    config.add_route('index', '/')
+
     config.add_route('about', '/about.html')
 
     config.add_route('items', '/items.html')
@@ -29,7 +31,6 @@ def main(global_config, **settings):
     config.add_route('deposit_new', '/deposit/new')
 
     # Old testing / startup stubs
-    config.add_route('home', '/')
     config.add_route('user_json', '/user/{uid}/json')
     config.add_route('item_json', '/item/{iid}/json')
 

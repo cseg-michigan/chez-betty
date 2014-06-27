@@ -15,6 +15,8 @@ $("#purchase_table tbody").on('click', '.btn-remove-item', function () {
 
 $("#btn-submit-purchase").click(function () {
 	purchase = {};
+	purchase["umid"] = $("#user-umid").text();
+
 	item_count = 0;
 	$(".purchase-item").each(function (index) {
 		id = $(this).attr("id");
@@ -23,10 +25,14 @@ $("#btn-submit-purchase").click(function () {
 		purchase[barcode] = quantity;
 		item_count++;
 	});
+
 	if (item_count == 0) {
 		alert_error("You must purchase at least one item.");
 	} else {
 		console.log(purchase);
-		console.log(purchase.length);
+
+		$.post("/purchase/new", purchase, function (data) {
+			console.log(data);
+		});
 	}
 });

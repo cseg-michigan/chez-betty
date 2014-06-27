@@ -7,21 +7,25 @@ from sqlalchemy.exc import DBAPIError
 from .models import *
 from .datalayer import *
 
-@view_config(route_name='about', renderer='templates/about.jinja2')
+@view_config(route_name='index', renderer='templates/index.jinja')
+def index(request):
+    return {}
+
+@view_config(route_name='about', renderer='templates/about.jinja')
 def about(request):
     return {}
 
-@view_config(route_name='purchase', renderer='templates/purchase.jinja2')
+@view_config(route_name='purchase', renderer='templates/purchase.jinja')
 def purchase(request):
     return {}
 
-@view_config(route_name='purchase_new', request_method='POST', renderer='templates/purchase_complete.jinja2')
+@view_config(route_name='purchase_new', request_method='POST', renderer='templates/purchase_complete.jinja')
 def purchase_new(request):
     user = User.from_umid(request.matchdict['umid'])
     transaction = datalayer.purchase(user, request.POST.items())
     return {'transaction': transaction}
 
-@view_config(route_name='items', renderer='templates/items.jinja2')
+@view_config(route_name='items', renderer='templates/items.jinja')
 def items(request):
     items = DBSession.query(Item).all()
     return {'items': items}
@@ -29,26 +33,27 @@ def items(request):
 @view_config(route_name='item', renderer='json')
 def item(request):
     item = Item.from_barcode(request.matchdict['barcode'])
-    item_html = render('templates/item.jinja2', {'item': item})
-    return {'item_html' : item_html}
+    item_html = render('templates/item_row.jinja', {'item': item})
+    return {'item_row_html' : item_row_html}
 
-@view_config(route_name='users', renderer='templates/users.jinja2')
+@view_config(route_name='users', renderer='templates/users.jinja')
 def users(request):
     users = DBSession.query(User).all()
     return {'users': users}
 
-@view_config(route_name='user', renderer='templates/user.jinja2')
+@view_config(route_name='user', renderer='templates/user.jinja')
 def user(request):
     user = User.from_umid(request.matchdict['umid'])
     return {'user': user}
 
-@view_config(route_name='deposit', renderer='templates/deposit.jinja2')
+@view_config(route_name='deposit', renderer='templates/deposit.jinja')
 def deposit(request):
     return {}
 
-@view_config(route_name='deposit_new', request_method='POST', renderer='templates/deposit_new.jinja2')
+@view_config(route_name='deposit_new', request_method='POST', renderer='templates/deposit_new.jinja')
 def deposit_new(request):
     user = User.from_umid(request.POST['umid'])
     amount = float(request.POST['amount'])
     transaction = datalayer.deposit(user, amount)
     return {'transaction': transaction}
+
