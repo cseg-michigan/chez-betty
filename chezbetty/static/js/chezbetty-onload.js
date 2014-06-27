@@ -17,17 +17,17 @@ $("#btn-add-item").click(function () {
 	items = [{"name": "Coke",
 	        "price": 1.33,
 	        "id": 2739821,
-	        "item_html": '<tr id="purchase-item-2739821" class="purchase-item"><td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>  <td class="item-index"></td>  <td class="item-title">Coke</td>  <td class="item-quantity">1</td>  <td class="item-price">$1.33</td>  <td class="hidden item-price-single">1.33</td></tr>'},
+	        "item_html": '<tr id="purchase-item-2739821" class="purchase-item"><td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>   <td class="item-title">Coke</td>  <td class="item-quantity">1</td>  <td class="item-price">$1.33</td>  <td class="hidden item-price-single">1.33</td></tr>'},
 
            {"name": "Coffee",
 	        "price": 5.43,
 	        "id": 88,
-	        "item_html": '<tr id="purchase-item-88" class="purchase-item">  <td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>  <td class="item-index"></td>  <td class="item-title">Coffee</td>  <td class="item-quantity">1</td>  <td class="item-price">$5.43</td>  <td class="hidden item-price-single">5.43</td></tr>'},
+	        "item_html": '<tr id="purchase-item-88" class="purchase-item">  <td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>  <td class="item-title">Coffee</td>  <td class="item-quantity">1</td>  <td class="item-price">$5.43</td>  <td class="hidden item-price-single">5.43</td></tr>'},
 
            {"name": "Peach",
 	        "price": 0.74,
 	        "id": 1234,
-	        "item_html": '<tr id="purchase-item-1234" class="purchase-item">  <td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>  <td class="item-index"></td>  <td class="item-title">Peach</td>  <td class="item-quantity">1</td>  <td class="item-price">$0.74</td>  <td class="hidden item-price-single">0.74</td></tr>'}];
+	        "item_html": '<tr id="purchase-item-1234" class="purchase-item">  <td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>   <td class="item-title">Peach</td>  <td class="item-quantity">1</td>  <td class="item-price">$0.74</td>  <td class="hidden item-price-single">0.74</td></tr>'}];
 	
 	item = items[Math.floor((Math.random()*items.length))];
 
