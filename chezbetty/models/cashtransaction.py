@@ -13,7 +13,7 @@ class CashAccount(Base):
 
 
 def __make_cash_account(name):
-    t = DBSession.query(Account).filter(Account.name == "cashbox").first()
+    t = DBSession.query(CashAccount).filter(CashAccount.name == name).first()
     if t:
         return t
     t = CashAccount(name)

@@ -11,6 +11,19 @@ class Account(Base):
 
     __mapper_args__ = {'polymorphic_on':type}
 
+
+class PlaceholderAccount(Account):
+    __mapper_args__ = {'polymorphic_identity': 'deposit'}
+
+
+def __make_account(name):
+    t = DBSession.query(Account).filter(Account.name == name).first()
+    if t:
+        return t
+    t = Account(name)
+    DBSession.add(t)
+    return t
+
 # special accounts
-chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
-lost      = DBSession.query(Account).filter(Account.name == "lost").one()
+chezbetty = __make_account("chezbetty")
+lost      = __make_account("lost")

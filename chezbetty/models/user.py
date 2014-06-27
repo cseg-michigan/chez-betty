@@ -23,6 +23,7 @@ class LDAPLookup(object):
 
 class User(Account):
     __tablename__ = 'users'
+    __mapper_args__ = {'polymorphic_identity': 'user'}
 
     id = Column(Integer, primary_key=True, nullable=False)
     uniqname = Column(String(8), nullable=False, unique=True)
