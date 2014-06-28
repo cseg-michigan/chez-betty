@@ -17,7 +17,7 @@ class Transaction(Base):
         backref="transactions_to"
     )
     
-    from_account = relationship(Acount, 
+    from_account = relationship(Account, 
         foreign_keys=[from_account_id,],
         backref="transactions_from"
     )
