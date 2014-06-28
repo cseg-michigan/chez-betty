@@ -12,21 +12,13 @@ class CashAccount(Base):
         self.balance = 0.0
 
 
-def __make_cash_account(name):
+def make_cash_account(name):
     t = DBSession.query(CashAccount).filter(CashAccount.name == name).first()
     if t:
         return t
     t = CashAccount(name)
     DBSession.add(t)
     return t
-
-# cash accounts
-c_cashbox = __make_cash_account("cashbox")
-c_chezbetty = __make_cash_account("chezbetty")
-c_store = __make_cash_account("store")
-c_lost = __make_cash_account("lost")
-
-
 
 class CashTransaction(Base):
     __tablename__ = 'cash_transactions'
@@ -49,13 +41,16 @@ class CashTransaction(Base):
         backref="transactions_from"
     )
     
-    def __init__(self, from_account, to_account, amount, transaction):
+    def __init__(self, from_account, to_account, amount, transaction, user):
         self.from_account_id = from_account.id if from_account else None
         self.to_account_id = to_account.id if to_account else None
         self.amount = amount
         self.transaction_id = transaction.id if transaction else None
-        to_acct.balance += amount
-        from_acct.balance -= amount
+        self.user_id = user.id if user else None
+        if to_acct:
+            to_acct.balance += amount
+        if from_acct:
+            from_acct.balance -= amount
            
     def __str__(self):
         return "<CashTransaction (%i: %s -> %s: $%f)>" % (
@@ -67,4 +62,6 @@ class CashTransaction(Base):
                 
 class CashDeposit(CashTransaction):
     def __init__(self, amount, transaction):
-        return CashTransaction.__init__(None, c_cashbox, amount, transaction)
+        c_cashbox = make_cash_account("cashbox")
+        CashTransaction.__init__(None, c_cashbox, amount, transaction)
+        

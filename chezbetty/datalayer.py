@@ -8,6 +8,7 @@ def deposit(user, amount):
     c = CashDeposit(amount, t)
     DBSession.add(c)
 
+
 def purchase(user, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
@@ -21,6 +22,7 @@ def purchase(user, items):
     t.update_amount(amount)
     return t
 
+
 def reconcile_items(items, admin):
     t = Reconciliation(admin)
     total_amount_missing = 0.0
@@ -33,6 +35,26 @@ def reconcile_items(items, admin):
     t.update_amount(total_amount_missing)
         
 
-def reconcile_cash(amount):
-    pass
+def reconcile_cash(amount, admin):
+    cash = DBSession.query(make_cash_account("cashbox"))
+    expected_amount = cash.balance
+    amount_missing = expected_amount - amount
+    
+    t = CashTransaction(
+        from_account = make_cash_account("cashbox"),
+        to_account = make_cash_account("chezbetty"),
+        amount = amount,
+        transaction = None,
+        user = admin
+    )
+    DBSession.add(t)
+    if amount_missing != 0.0:
+        t2 = CashTransaction(
+            from_account = make_cash_account("cashbox"),
+            to_account = make_cash_account("lost"),
+            amount = amount_missing,
+            transaction = None,
+            user = admin
+        )
+    DBSession.add(t2)
     
