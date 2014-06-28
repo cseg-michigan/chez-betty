@@ -28,9 +28,9 @@
       <tbody>
       {% for item in items %}
         <tr>
-          <td>{{ item.name }}</td>
-          <td>{{ item.in_stock }}</td>
-          <td>{{ item.price }}</td>
+          <td class="item-name">{{ item.name }}</td>
+          <td class="item-stock">{{ item.in_stock }}</td>
+          <td class="item-price">{{ item.price|format_currency }}</td>
         </tr>
       {% endfor %}
       </tbody>
