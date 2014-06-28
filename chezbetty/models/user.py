@@ -58,7 +58,7 @@ class User(Account):
     role = Column(Enum("user", "manager", "administrator", name="user_type"),
             nullable=False, default="user")
 
-    #__ldap = LDAPLookup()
+    __ldap = LDAPLookup()
 
     def __init__(self, uniqname, umid, name):
         self.uniqname = uniqname
@@ -78,6 +78,6 @@ class User(Account):
     def from_umid(cls, umid):
         u = DBSession.query(cls).filter(cls.umid == umid).first()
         if not u:
-            u = cls(**cls.lookup_umid(umid))
+            u = cls(**self.__ldap.lookup_umid(umid))
             DBSession.add(u)
         return u
