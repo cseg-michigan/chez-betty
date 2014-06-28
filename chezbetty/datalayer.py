@@ -18,7 +18,7 @@ def purchase(user, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
     t = Purchase(user)
-    DBSession.add(p)
+    DBSession.add(t)
     amount = 0.0
     for item, quantity in items.items():
         item.in_stock -= quantity
