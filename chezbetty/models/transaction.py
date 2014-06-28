@@ -83,6 +83,7 @@ class SubTransaction(Base):
     amount = Column(Float, nullable=False)
     
     def __init__(self, transaction, item, quantity):
+        self.transaction_id = transaction.id
         self.item_id = item.id
         self.quantity = quantity
         self.amount = quantity * item.price
