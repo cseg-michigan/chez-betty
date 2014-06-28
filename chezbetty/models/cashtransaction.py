@@ -64,5 +64,6 @@ class CashDeposit(CashTransaction):
     def __init__(self, amount, transaction):
         c_cashbox = make_cash_account("cashbox")
         assert(c_cashbox)
+        assert(c_cashbox.id)
         CashTransaction.__init__(self, None, c_cashbox, amount, transaction, None)
         
