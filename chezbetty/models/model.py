@@ -18,6 +18,7 @@ from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
     validates,
+    relationship
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
