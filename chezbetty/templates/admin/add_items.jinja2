@@ -1,0 +1,37 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'add_items' %}
+{% block title %}Add Items{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Add Items</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form">
+
+  <div class="row item-list-header">
+    <div class="col-sm-4">Name</div>
+    <div class="col-sm-2">Barcode</div>
+    <div class="col-sm-2">In Stock</div>
+    <div class="col-sm-2">Item Price</div>
+    <div class="col-sm-2">Item Wholesale</div>
+  </div>
+
+  <div id="new-items">
+    <div class="form-group row new-item">
+      <div class="col-sm-4"><input type="text" class="form-control" id="item-name"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-price"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale"></div>
+    </div>
+  </div>
+
+  <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another Item</button>
+  <button type="submit" class="btn btn-success">Add Items</button>
+
+</form>
+
+{% endblock %}

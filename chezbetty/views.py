@@ -226,6 +226,10 @@ def admin_edit_items(request):
     items = DBSession.query(Item).all()
     return {'items': items}
 
+@view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2')
+def admin_add_items(request):
+    return {}
+
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2')
 def admin_inventory(request):
     items = DBSession.query(Item).all()
