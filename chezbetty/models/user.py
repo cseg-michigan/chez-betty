@@ -13,7 +13,7 @@ class LDAPLookup(object):
     SERVER = "ldap.umich.edu"
     USERNAME = "cn=CSEG-McDirApp001,ou=Applications,o=services"
     BASE_DN = "ou=People,dc=umich,dc=edu"
-    PASSWORD = "asdf"
+    PASSWORD = ""
     ATTRIBUTES = ["uid", "entityid", "displayName"]
         
     def __init__(self):
@@ -78,6 +78,6 @@ class User(Account):
     def from_umid(cls, umid):
         u = DBSession.query(cls).filter(cls.umid == umid).first()
         if not u:
-            u = cls(**self.__ldap.lookup_umid(umid))
+            u = cls(**cls.__ldap.lookup_umid(umid))
             DBSession.add(u)
         return u
