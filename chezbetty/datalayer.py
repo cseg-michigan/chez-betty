@@ -1,5 +1,6 @@
 from .models import *
 from .models.transaction import *
+from .models.cashtransaction import *
 
 def deposit(user, amount):
     assert(amount > 0.0)
