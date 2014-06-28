@@ -63,5 +63,5 @@ class CashTransaction(Base):
 class CashDeposit(CashTransaction):
     def __init__(self, amount, transaction):
         c_cashbox = make_cash_account("cashbox")
-        CashTransaction.__init__(None, c_cashbox, amount, transaction)
+        CashTransaction.__init__(None, c_cashbox, amount, transaction, None)
         
