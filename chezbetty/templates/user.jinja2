@@ -28,11 +28,11 @@
       
       {# Iterate all of the transactions in the user's history.
        #}
-      {% for transaction in transactions %}
+      {% for transaction in transactions|reverse %}
 
       <li class="list-group-item">
-        {{ transaction.type }} | {{ transaction.date }}
-        <button type="button" class="btn btn-default">Show</button>
+        {{ transaction.type }} | {{ transaction.timestamp }}
+        <button type="button" id="btn-trans-{{ transaction.id }}" class="btn btn-default btn-trans-showhide">Show</button>
 
         {# Choose what content to display based on the type of transaction
          # it is.
@@ -41,24 +41,32 @@
 
         {# Show a purchase transaction
          #}
-        <div id="transaction-{{ transaction.id }}" class="hidden">
+        <div id="transaction-{{ transaction.id }}" style="display:none;">
           <table class="table">
 
             <thead>
               <tr>
                 <th>Item Name</th>
                 <th>Quantity</th>
-                <th>Price</th>
+                <th>Item Price</th>
+                <th>Total Price</th>
               </tr>
             </thead>
 
             <tbody>
-              {{ transaction.items_html }}
+              {% for line_item in transaction.subtransactions %}
+              <tr class="purchase-item">
+                <td class="item-title">{{ line_item.item.name }}</td>
+                <td class="item-quantity">{{ line_item.quantity }}</td>
+                <td class="item-price">{{ line_item.item.price|format_currency }}</td>
+                <td class="item-total">{{ line_item.amount|format_currency }}</td>
+              </tr>
+              {% endfor %}
             </tbody>
 
             <tfoot>
-              <td colspan="2">Total</td>
-              <td>{{ transaction.total }}</td>
+              <td colspan="3">Total</td>
+              <td>{{ transaction.amount|format_currency }}</td>
             </tfoot>
 
           </table>
@@ -68,18 +76,10 @@
 
         {# Show a deposit transaction
          #}
-        <div id="transaction-{{ transaction.id }}" class="hidden">
-          <div class="row">
-            <div class="col-md-4">Old Balance</div>
-            <div class="col-md-4">{{ transaction.old_balance }}</div>
-          </div>
+        <div id="transaction-{{ transaction.id }}" style="display:none;">
           <div class="row">
             <div class="col-md-4">Deposit</div>
-            <div class="col-md-4">{{ transaction.deposit_amount }}</div>
-          </div>
-          <div class="row">
-            <div class="col-md-4">New Balance</div>
-            <div class="col-md-4">{{ transaction.new_balance }}</div>
+            <div class="col-md-4">{{ transaction.amount|format_currency }}</div>
           </div>
         </div>
 

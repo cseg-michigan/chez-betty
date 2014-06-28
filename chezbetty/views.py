@@ -61,8 +61,10 @@ def user(request):
         user = User.from_umid(request.matchdict['umid'])
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
-        # TODO: get transactions too
-        return {'user': user, 'user_info_block': user_info_html}
+
+        return {'user': user,
+                'user_info_block': user_info_html,
+                'transactions': user.transactions}
 
     except InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')

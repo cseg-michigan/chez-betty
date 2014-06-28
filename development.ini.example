@@ -26,7 +26,9 @@ jinja2.filters =
     route_url = pyramid_jinja2.filters:route_url_filter
     static_url = pyramid_jinja2.filters:static_url_filter
     format_currency = chezbetty.jinja2_filters:format_currency
-	
+
+auth.secret = aabbcc
+
 # By default, the toolbar only appears for clients from IP addresses
 # '127.0.0.1' and '::1'.
 # debugtoolbar.hosts = 127.0.0.1 ::1

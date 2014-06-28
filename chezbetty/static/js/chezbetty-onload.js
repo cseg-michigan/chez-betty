@@ -93,3 +93,16 @@ $("#keypad").on("click", "button", function () {
 
 	$("#keypad-total").text(format_price(output));
 });
+
+$(".btn-trans-showhide").click(function () {
+	var transaction_id = $(this).attr("id").split("-")[2];
+	var transaction = $("#transaction-"+transaction_id)
+
+	if (transaction.is(":visible")) {
+		transaction.hide();
+		$(this).text("Show");
+	} else {
+		transaction.show();
+		$(this).text("Hide");
+	}
+});
