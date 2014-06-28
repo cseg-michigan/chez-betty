@@ -7,8 +7,8 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
-    to_account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
-    from_account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    to_account_id = Column(Integer, ForeignKey("accounts.id"))
+    from_account_id = Column(Integer, ForeignKey("accounts.id"))
     amount = Column(Float, nullable=False)
     type = Column(Enum("purchase", "deposit", "reconcile", "administrative"), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
