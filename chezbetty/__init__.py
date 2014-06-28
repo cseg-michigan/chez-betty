@@ -47,9 +47,11 @@ def main(global_config, **settings):
 
     config.add_route('transaction', '/transaction/{transaction_id}')
 
-    # Old testing / startup stubs
-    config.add_route('user_json', '/user/{uid}/json')
-    config.add_route('item_json', '/item/{iid}/json')
+    # ADMIN
+    config.add_route('admin_login', '/admin')
+    config.add_route('admin_index', '/admin/index')
+    config.add_route('admin_edit_items', '/admin/edit/items')
+    config.add_route('admin_inventory', '/admin/inventory')
 
     config.scan(".views")
 

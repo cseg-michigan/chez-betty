@@ -1,0 +1,57 @@
+{% set relative = relative|default('') -%}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+  {% block head %}
+  <link rel="stylesheet" href="{{'chezbetty:static/css/bootstrap.min.css'|static_url}}" />
+  <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-admin.css'|static_url}}" />
+
+  <script src="{{'chezbetty:static/js/jquery.min.js'|static_url}}"></script>
+  <script src="{{'chezbetty:static/js/bootstrap.min.js'|static_url}}"></script>
+  <script src="{{'chezbetty:static/js/chezbetty-admin.js'|static_url}}"></script>
+
+  <title>{% block title %}{% endblock %} | Chez Betty Admin</title>
+  {% endblock %}
+</head>
+<body>
+
+{% block body %}
+
+  {% set active_page = active_page|default('index') -%}
+  {% include 'navbar.jinja2' %}
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+      {% include 'sidebar.jinja2' %}
+      </div>
+
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+        <div id="alerts" class="container">
+          {% block alerts %}
+          {% for error in request.session.pop_flash('error') %}
+          <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+          {% endfor %}
+          {% endblock %}
+        </div>
+
+        {% block top %}{% endblock %}
+
+        <div id="content" class="container">
+          {% block content %}{% endblock %}
+        </div>
+
+        {% block footer %}{% endblock %}
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+</body>

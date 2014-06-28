@@ -209,3 +209,26 @@ def deposit_new(request):
 
 
 
+###
+### Admin
+###
+
+@view_config(route_name='admin_login', renderer='templates/admin/login.jinja2')
+def admin_login(request):
+    return {}
+
+@view_config(route_name='admin_index', renderer='templates/admin/index.jinja2')
+def admin_index(request):
+    return {}
+
+@view_config(route_name='admin_edit_items', renderer='templates/admin/edit_items.jinja2')
+def admin_edit_items(request):
+    items = DBSession.query(Item).all()
+    return {'items': items}
+
+@view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2')
+def admin_inventory(request):
+    items = DBSession.query(Item).all()
+    return {'items': items}
+
+
