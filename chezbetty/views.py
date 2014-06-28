@@ -22,7 +22,8 @@ def about(request):
 @view_config(route_name='purchase', renderer='templates/purchase.jinja2')
 def purchase(request):
     user = User.from_umid(request.matchdict['umid'])
-    return {"user":user}
+    purchase_info = render('templates/purchase_info.jinja2', {'user': user})
+    return {'purchase_info_block': purchase_info}
 
 @view_config(route_name='purchase_new', request_method='POST', renderer='templates/purchase_complete.jinja2')
 def purchase_new(request):
