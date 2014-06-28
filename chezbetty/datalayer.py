@@ -19,6 +19,7 @@ def purchase(user, items):
     assert(len(items) > 0)
     t = Purchase(user)
     DBSession.add(t)
+    DBSession.flush()
     amount = 0.0
     for item, quantity in items.items():
         item.in_stock -= quantity
