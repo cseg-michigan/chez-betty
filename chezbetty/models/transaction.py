@@ -75,8 +75,3 @@ class SubTransaction(Base):
         self.item_id = item.id
         self.quantity = quantity
         self.amount = quantity * amount
-
-
-def purchase(user_id, items={}):
-    user = DBSession.query(User).filter(User.id == int(user_id)).one()
-    t = Transaction
