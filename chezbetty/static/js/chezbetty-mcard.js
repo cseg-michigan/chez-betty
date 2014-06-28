@@ -28,8 +28,6 @@ $(document).keypress(function (e) {
 			  top: '50%', // Top position relative to parent
 			  left: '50%' // Left position relative to parent
 			};
-			$("#login-panel").empty().text('');
-			$("#login-panel").css("height", "150px");
 			var spinner_location = document.getElementById('login-panel');
 			var spinner = new Spinner(opts).spin(spinner_location);
 
