@@ -47,10 +47,10 @@ class CashTransaction(Base):
         self.amount = amount
         self.transaction_id = transaction.id if transaction else None
         self.user_id = user.id if user else None
-        if to_acct:
-            to_acct.balance += amount
-        if from_acct:
-            from_acct.balance -= amount
+        if to_account:
+            to_account.balance += amount
+        if from_account:
+            to_account.balance -= amount
            
     def __str__(self):
         return "<CashTransaction (%i: %s -> %s: $%f)>" % (
