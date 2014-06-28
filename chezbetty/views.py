@@ -106,7 +106,8 @@ def transaction_deposit(request):
             item = {}
             item['name'] = subtrans.item.name
             item['quantity'] = subtrans.quantity
-            item['price'] = subtrans.item.price
+            item['price'] = subtrans.item.price / subtrans.quantity
+            item['total_price'] = subtrans.item.price
             order['items'].append(item)
         
         # TODO: get the products for all this

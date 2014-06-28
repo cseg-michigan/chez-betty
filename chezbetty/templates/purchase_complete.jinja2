@@ -32,7 +32,8 @@
         <tr>
           <th>Item</th>
           <th>Quantity</th>
-          <th>Price</th>
+          <th>Item Price</th>
+          <th>Total Price</th>
         </tr>
       </thead>
 
@@ -42,13 +43,14 @@
           <td class="item-title">{{ item.name }}</td>
           <td class="item-quantity">{{ item.quantity }}</td>
           <td class="item-price">{{ item.price|format_currency }}</td>
+          <td class="item-total">{{ item.total_price|format_currency }}</td>
         </tr>
       {% endfor %}
       </tbody>
 
       <tfoot>
         <tr>
-          <td colspan="2"><b>Total</b></td>
+          <td colspan="3"><b>Total</b></td>
           <td id="purchase-total">{{ order['total']|format_currency }}</td>
         </tr>
       </tfoot>

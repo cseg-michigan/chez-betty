@@ -56,7 +56,7 @@ function add_item_success (data) {
 		item_price = parseFloat(item_row.children(".item-price-single").text());
 
 		item_row.children(".item-quantity").text(quantity);
-		item_row.children(".item-price").text(format_price(quantity*item_price));
+		item_row.children(".item-total").text(format_price(quantity*item_price));
 
 	} else {
 		// Add a new item
@@ -128,7 +128,7 @@ function calculate_total () {
 	$("#purchase_table tbody tr:visible").each(function (index) {
 		if ($(this).attr('id') != "purchase-empty") {
 			line_total = parseFloat(
-				strip_price($(this).children('.item-price').text()));
+				strip_price($(this).children('.item-total').text()));
 			total += line_total;
 		}
 	});
