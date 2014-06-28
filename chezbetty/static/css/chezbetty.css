@@ -1,6 +1,14 @@
 
 
+.item-stock {
+	text-align: right;
+}
+
 .item-price {
+	text-align: right;
+}
+
+.item-cost {
 	text-align: right;
 }
 

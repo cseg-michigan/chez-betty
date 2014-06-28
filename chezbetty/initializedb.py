@@ -43,6 +43,7 @@ def main(argv=sys.argv):
             "Nutrigrain Raspberry",
             "038000358210",
             14.37,
+            0.47,
             1,
             True
         ))
@@ -50,6 +51,7 @@ def main(argv=sys.argv):
             "Clif Bar: Chocolate Chip",
             "722252100900",
             1.25,
+            1.17,
             5,
             True
         ))
@@ -57,6 +59,7 @@ def main(argv=sys.argv):
             "Clif Bar: Crunchy Peanut Butter",
             "722252101204",
             1.25,
+            1.14,
             5,
             True
         ))
