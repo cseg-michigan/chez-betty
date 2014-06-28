@@ -18,7 +18,6 @@ $("#btn-submit-purchase").click(function () {
 	$(this).blur();
 	alert_clear();
 
-
 	purchase = {};
 	purchase.umid = $("#user-umid").text();
 
@@ -37,7 +36,7 @@ $("#btn-submit-purchase").click(function () {
 		console.log(purchase);
 
 		$.post("/purchase/new", purchase, function (data) {
-			console.log(data);
+			window.location.replace("/transaction/" + data.transaction_id);
 		});
 	}
 });
@@ -66,6 +65,6 @@ $("#btn-submit-deposit").click(function () {
 	deposit.amount = strip_price($("#keypad-total").text());
 
 	$.post("/deposit/new", deposit, function (data) {
-		window.location.replace("/transaction/deposit/" + data.transaction_id);
+		window.location.replace("/transaction/" + data.transaction_id);
 	});
 });

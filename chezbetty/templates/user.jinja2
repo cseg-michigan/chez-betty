@@ -13,48 +13,7 @@
 
 {% block content %}
 
-<div class="row">
-  <div class="col-md-6">
-    
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Customer</h3>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-md-4">Name</div>
-          <div class="col-md-8">{{ user.name }}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">uniqname</div>
-          <div class="col-md-8">{{ user.uniqname }}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-4">Account Balance</div>
-          <div class="col-md-8">{{ user.balance }}</div>
-        </div>
-        <div id="account-total-start" class="hidden">
-          {{ user.balance }}
-        </div>
-      </div>
-    </div>
-
-  </div>
-  <div class="col-md-6">
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Links</h3>
-      </div>
-      <div class="panel-body">
-        <a class="btn btn-default" href="/purchase/{{ user.umid }}">Purchase</a>
-        <a class="btn btn-default" href="/deposit">Deposit</a>
-        <a class="btn btn-default" href="/">Logout</a>
-      </div>
-    </div>
-
-  </div>
-</div>
+{{ user_info_block|safe }}
 
 {# Display the transaction history list
  #}
@@ -127,8 +86,14 @@
         {% endif %}
 
       </li>
-      
+
       {% endfor %}
+
+      {% if transactions|length == 0 %}
+      <li class="list-group-item">
+        No transactions.
+      </li>
+      {% endif %}
 
     </ul>
 

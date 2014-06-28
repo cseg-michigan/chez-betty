@@ -34,7 +34,8 @@ def main(global_config, **settings):
 
     config.add_route('deposit_new', '/deposit/new')
     config.add_route('deposit', '/deposit/{umid}')
-    config.add_route('transaction_deposit', '/transaction/deposit/{transaction_id}')
+
+    config.add_route('transaction', '/transaction/{transaction_id}')
 
     # Old testing / startup stubs
     config.add_route('user_json', '/user/{uid}/json')
