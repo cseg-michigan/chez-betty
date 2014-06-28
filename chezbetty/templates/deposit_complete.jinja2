@@ -1,0 +1,40 @@
+{% extends "base.jinja2" %}
+{% block title %}Deposit Complete{% endblock %}
+
+
+{% block top %}
+<div class="container">
+  <h1>Deposit Complete</h1>
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+{{ user_info_block|safe }}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Deposit Result</h3>
+  </div>
+  <div class="panel-body">
+
+    <div id="transaction-{{ deposit.transaction.id }}">
+      <div class="row">
+        <div class="col-md-4">Old Balance</div>
+        <div class="col-md-4">{{ deposit.prev }}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">Deposit</div>
+        <div class="col-md-4">{{ deposit.amount }}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">New Balance</div>
+        <div class="col-md-4">{{ deposit.new }}</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

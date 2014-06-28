@@ -1,7 +1,7 @@
 
 
 // Click handler to remove an item from a purchase.
-$("#purchase_table tbody").on('click', '.btn-remove-item', function () {
+$("#purchase_table tbody").on("click", ".btn-remove-item", function () {
 	$(this).parent().parent().slideUp().remove();
 
 	// Check if the cart is empty and put the "Empty Order" row back in
@@ -20,7 +20,7 @@ $("#btn-submit-purchase").click(function () {
 
 
 	purchase = {};
-	purchase["umid"] = $("#user-umid").text();
+	purchase.umid = $("#user-umid").text();
 
 	item_count = 0;
 	$(".purchase-item").each(function (index) {
@@ -40,4 +40,32 @@ $("#btn-submit-purchase").click(function () {
 			console.log(data);
 		});
 	}
+});
+
+$("#keypad").on("click", "button", function () {
+	var input = full_strip_price($("#keypad-total").text());
+	var value = $(this).attr("id").split("-")[2];
+
+	if (value == "del") {
+		input = input.slice(0, input.length-1);
+	} else {
+		input += value;
+	}
+
+	var output = parseFloat(input) / 100.0;
+
+	$("#keypad-total").text(format_price(output));
+});
+
+$("#btn-submit-deposit").click(function () {
+	$(this).blur();
+	alert_clear();
+
+	deposit = {};
+	deposit.umid = $("#user-umid").text();
+	deposit.amount = strip_price($("#keypad-total").text());
+
+	$.post("/deposit/new", deposit, function (data) {
+		console.log(data);
+	});
 });

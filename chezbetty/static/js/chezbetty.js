@@ -5,12 +5,16 @@ function format_price (price) {
 }
 
 function strip_price (price_str) {
-	return price_str.replace(/\$/g, '');
+	return price_str.replace(/^\s+|\s+$|\$/g, '');
+}
+
+function full_strip_price (price_str) {
+	return price_str.replace(/^\s+|\s+$|\.|\$/g, '');
 }
 
 function add_item_success (data) {
 	alert_clear();
-	
+
 	// First, if this is the first item hide the empty order row
 	$("#purchase-empty").hide();
 

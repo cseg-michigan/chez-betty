@@ -33,8 +33,15 @@
         <h3 class="panel-title">Account Links</h3>
       </div>
       <div class="panel-body">
+        {% if page != "purchase" %}
+        <a class="btn btn-default" href="/purchase/{{ user.umid }}">Purchase</a>
+        {% endif %}
+        {% if page != "account" %}
         <a class="btn btn-default" href="/user/{{ user.umid }}">Account</a>
+        {% endif %}
+        {% if page != "deposit" %}
         <a class="btn btn-default" href="/deposit/{{ user.umid }}">Deposit</a>
+        {% endif %}
         <a class="btn btn-default" href="/">Logout</a>
       </div>
     </div>

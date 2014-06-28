@@ -1,0 +1,33 @@
+{% extends "base.jinja2" %}
+{% block title %}Purchase{% endblock %}
+
+
+{% block top %}
+<div class="container">
+  <h1>Deposit</h1>
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+{{ user_info_block|safe }}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Deposit</h3>
+  </div>
+  <div class="panel-body">
+
+    <div class="col-md-12">
+      {{ keypad|safe }}
+    </div>
+    
+    <div class="btn-group btn-group-large">
+      <button type="button" id="btn-submit-deposit" class="btn btn-success">Submit Deposit</button>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

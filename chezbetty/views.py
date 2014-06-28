@@ -9,7 +9,7 @@ from .models.model import *
 from .models.user import User
 from .models.item import Item
 
-from .datalayer import *
+import chezbetty.datalayer as datalayer
 
 @view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
@@ -22,7 +22,8 @@ def about(request):
 @view_config(route_name='purchase', renderer='templates/purchase.jinja2')
 def purchase(request):
     user = User.from_umid(request.matchdict['umid'])
-    purchase_info = render('templates/purchase_info.jinja2', {'user': user})
+    purchase_info = render('templates/user_info.jinja2', {'user': user,
+                                                          'page': 'purchase'})
     return {'purchase_info_block': purchase_info}
 
 @view_config(route_name='purchase_new', request_method='POST', renderer='templates/purchase_complete.jinja2')
@@ -54,12 +55,21 @@ def user(request):
 
 @view_config(route_name='deposit', renderer='templates/deposit.jinja2')
 def deposit(request):
-    return {}
+    user = User.from_umid(request.matchdict['umid'])
+    user_info_html = render('templates/user_info.jinja2', {'user': user,
+                                                           'page': 'deposit'})
+    keypad_html = render('templates/keypad.jinja2', {})
+    return {'user_info_block': user_info_html, 'keypad': keypad_html}
 
-@view_config(route_name='deposit_new', request_method='POST', renderer='templates/deposit_new.jinja2')
+@view_config(route_name='deposit_new',
+             request_method='POST',
+             renderer='templates/deposit_complete.jinja2')
 def deposit_new(request):
     user = User.from_umid(request.POST['umid'])
     amount = float(request.POST['amount'])
-    transaction = datalayer.deposit(user, amount)
-    return {'transaction': transaction}
+    deposit = datalayer.deposit(user, amount)
+
+    user_info_html = render('templates/user_info.jinja2', {'user': user,
+                                                           'page': 'deposit'})
+    return {'deposit': deposit, 'user_info_block': user_info_html}
 
