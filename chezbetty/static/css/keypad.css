@@ -1,0 +1,35 @@
+/* Keypad CSS taken from:
+ * http://stackoverflow.com/questions/23077537/create-an-html-numeric-keypad-without-table-layout */
+
+container {
+	width: 342px;
+	//border: 1px solid black;
+	display: inline-block;
+}
+
+block {
+	display: inline-block;
+	width: 100px;
+	height: 100px;
+	margin: 5px;
+	//background: red;
+	float: right;
+}
+
+block[v2] {
+	height: 210px;
+}
+
+block[h2] {
+	width: 210px;
+}
+
+.btn-keypad {
+	height: 100px;
+	width: 100px;
+}
+
+.btn-keypad-wide {
+	height: 100px;
+	width: 210px;
+}
