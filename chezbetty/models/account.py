@@ -10,6 +10,10 @@ class Account(Base):
     created_at = Column(DateTime, default=datetime.datetime.now)
 
     __mapper_args__ = {'polymorphic_on':type}
+    
+    def __init__(self, name, balance=0.0):
+        self.name = name
+        self.balance = balance
 
 
 class PlaceholderAccount(Account):
@@ -23,4 +27,3 @@ def __make_account(name):
     t = PlaceholderAccount(name)
     DBSession.add(t)
     return t
-

@@ -48,8 +48,15 @@ class Purchase(Transaction):
         
 
 
-class Reconcile(Transaction):
-    __mapper_args__ = {'polymorphic_identity': 'reconcile'}
+class Reconciliation(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'reconciliation'}
+    
+    # user that performed the reconciliation 
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    
+    def __init__(self, user):
+        Transaction.__init__(self, chezbetty, lost, 0.0)
+        self.user_id = user.id
 
 
 class SubTransaction(Base):

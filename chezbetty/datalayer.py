@@ -21,9 +21,17 @@ def purchase(user, items):
     t.update_amount(amount)
     return t
 
-def reconcile_items(items):
+def reconcile_items(items, admin):
+    t = Reconciliation(admin)
+    total_amount_missing = 0.0
     for item, quantity in items.items():
-        pass
+        if item.quantity == quantity:
+            continue
+        quantity_missing = item.quantity - quantity
+        st = SubTransaction(t, item, quantity_missing)
+        total_amount_missing += st.amount
+    t.update_amount(total_amount_missing)
+        
 
 def reconcile_cash(amount):
     pass
