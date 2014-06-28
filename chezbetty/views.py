@@ -126,7 +126,8 @@ def purchase_new(request):
         for item_id,quantity in request.POST.items():
             if item_id == 'umid':
                 continue
-            items[item_id] = quantity
+            item = DBSession.query(Item).filter(Item.id == int(item_id)).one()
+            items[item] = quantity
 
         # Commit the purchase
         purchase = datalayer.purchase(user, items)
