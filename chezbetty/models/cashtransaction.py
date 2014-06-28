@@ -18,6 +18,7 @@ def make_cash_account(name):
         return t
     t = CashAccount(name)
     DBSession.add(t)
+    DBSession.flush()
     return t
 
 class CashTransaction(Base):
