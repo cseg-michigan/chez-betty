@@ -10,7 +10,7 @@ class Transaction(Base):
     to_account_id = Column(Integer, ForeignKey("accounts.id"))
     from_account_id = Column(Integer, ForeignKey("accounts.id"))
     amount = Column(Float, nullable=False)
-    type = Column(Enum("purchase", "deposit", "reconcile", "administrative"), nullable=False)
+    type = Column(Enum("purchase", "deposit", "reconciliation", "administrative"), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
     
     to_account = relationship(Account, 
@@ -54,7 +54,7 @@ class Reconciliation(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'reconciliation'}
     
     # user that performed the reconciliation 
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     
     def __init__(self, user):
         Transaction.__init__(self, chezbetty, lost, 0.0)
