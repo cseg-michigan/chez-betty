@@ -38,11 +38,7 @@ def purchase(request):
         return {'purchase_info_block': purchase_info}
 
     except InvalidUserException as e:
-        # Something went wrong when looking up the user
-    #    alert = render('templates/alert.jinja2',
-    #        {'type': 'danger',
-    #         'text': 'Invalid M-Card swipe or user not found.'})
-    #    return render_to_response('templates/index.jinja2', {'alerts': alert})
+        request.session.flash("Invalid M-Card swipe. Please try again.", "error")
         return HTTPFound(location=request.route_url('index'))
 
 @view_config(route_name='items', renderer='templates/items.jinja2')

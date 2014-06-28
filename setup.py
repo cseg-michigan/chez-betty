@@ -13,11 +13,12 @@ requires = [
 	'pyramid_jinja2',
     'pyramid_debugtoolbar',
     'pyramid_tm',
+    'pyramid_beaker',
     'SQLAlchemy',
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'python3-ldap'
+    'python3-ldap',
     ]
 
 setup(name='chezbetty',

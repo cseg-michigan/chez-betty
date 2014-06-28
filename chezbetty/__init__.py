@@ -11,12 +11,13 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
     
-    print(config.registry.settings)
     LDAPLookup.PASSWORD = config.registry.settings["ldap.password"]
     LDAPLookup.USERNAME = config.registry.settings["ldap.username"]
     LDAPLookup.SERVER = config.registry.settings["ldap.server"]
         
     config.include('pyramid_jinja2')
+    config.include('pyramid_beaker')
+    
     config.add_static_view('static', 'static', cache_max_age=3600)
 
     config.add_route('index', '/')

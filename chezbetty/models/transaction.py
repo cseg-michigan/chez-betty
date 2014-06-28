@@ -50,6 +50,7 @@ class Deposit(Transaction):
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
     def __init__(self, user):
+        chezbetty = make_account("chezbetty")
         Transaction.__init__(self, user, chezbetty, 0.0)
         
 

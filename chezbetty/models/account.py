@@ -20,7 +20,7 @@ class PlaceholderAccount(Account):
     __mapper_args__ = {'polymorphic_identity': 'placeholder'}
 
 
-def __make_account(name):
+def make_account(name):
     t = DBSession.query(PlaceholderAccount).filter(PlaceholderAccount.name == name).first()
     if t:
         return t
