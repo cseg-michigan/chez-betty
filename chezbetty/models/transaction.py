@@ -33,11 +33,15 @@ class Transaction(Base):
             from_account.balance -= self.amount
 
     def update_amount(self, amount):
-        self.to_account -= self.amount
-        self.from_account += self.amount
+        if self.to_account:
+            self.to_account.balance -= self.amount
+        if self.from_account:
+            self.from_account.balance += self.amount
         self.amount = amount
-        self.to_account += self.amount
-        self.from_account -= self.amount
+        if self.to_account:
+            self.to_account.balance += self.amount
+        if self.from_account
+            self.from_account.balance -= self.amount
 
 
 class Deposit(Transaction):
