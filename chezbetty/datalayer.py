@@ -1,5 +1,5 @@
 from .models import *
-from .dodels.transaction import *
+from .models.transaction import *
 
 def deposit(user, amount):
     assert(amount > 0.0)
