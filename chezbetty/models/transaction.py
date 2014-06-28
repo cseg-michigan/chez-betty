@@ -47,7 +47,7 @@ class Transaction(Base):
 @property
 def __transactions(self):
     return object_session(self).query(Transaction)\
-            .Filter(or_(
+            .filter(or_(
                     Transaction.to_account_id == self.id,
                     Transaction.from_account_id == self.id)).all()
 Account.transactions = __transactions
