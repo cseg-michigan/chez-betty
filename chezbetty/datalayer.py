@@ -5,10 +5,13 @@ from .models.cashtransaction import *
 def deposit(user, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
+    prev = user.balance
     t = Deposit(user, amount)
     DBSession.add(t)
     c = CashDeposit(amount, t)
     DBSession.add(c)
+    return dict(prev=prev, new=user.balance, amount=amount,
+            transaction=t, cash_transaction=c)
 
 
 def purchase(user, items):
