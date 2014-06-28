@@ -40,7 +40,7 @@ class Transaction(Base):
         self.amount = amount
         if self.to_account:
             self.to_account.balance += self.amount
-        if self.from_account
+        if self.from_account:
             self.from_account.balance -= self.amount
 
 
