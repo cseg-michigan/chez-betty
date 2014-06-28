@@ -24,8 +24,8 @@ class Transaction(Base):
     )
 
     def __init__(self, from_account, to_account, amount):
-        self.to_account_id = to_account.id
-        self.from_account_id = from_account.id
+        self.to_account_id = to_account.id if to_account else None
+        self.from_account_id = from_account.id if from_account else None
         self.amount = amount
 
     def update_amount(self, amount):
