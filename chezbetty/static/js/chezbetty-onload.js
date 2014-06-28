@@ -66,6 +66,6 @@ $("#btn-submit-deposit").click(function () {
 	deposit.amount = strip_price($("#keypad-total").text());
 
 	$.post("/deposit/new", deposit, function (data) {
-		console.log(data);
+		window.location.replace("/transaction/deposit/" + data.transaction_id);
 	});
 });

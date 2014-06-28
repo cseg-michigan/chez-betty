@@ -8,6 +8,7 @@ from .models import *
 from .models.model import *
 from .models.user import User
 from .models.item import Item
+from .models.transaction import Transaction
 
 import chezbetty.datalayer as datalayer
 
@@ -63,13 +64,27 @@ def deposit(request):
 
 @view_config(route_name='deposit_new',
              request_method='POST',
-             renderer='templates/deposit_complete.jinja2')
+             renderer='json')
 def deposit_new(request):
     user = User.from_umid(request.POST['umid'])
     amount = float(request.POST['amount'])
     deposit = datalayer.deposit(user, amount)
 
+    # Return a JSON blob of the transaction ID so the client can redirect to
+    # the deposit success page
+    return {'transaction_id': deposit['transaction'].id}
+
+@view_config(route_name='transaction_deposit',
+             renderer='templates/deposit_complete.jinja2')
+def transaction_deposit(request):
+    transaction = DBSession.query(Transaction).filter(Transaction.id==int(request.matchdict['transaction_id'])).one()
+    user = DBSession.query(User).filter(User.id==transaction.to_account_id).one()
+
     user_info_html = render('templates/user_info.jinja2', {'user': user,
                                                            'page': 'deposit'})
+    deposit = {'transaction_id': transaction.id,
+               'prev': user.balance - transaction.amount,
+               'amount': transaction.amount,
+               'new': user.balance}
     return {'deposit': deposit, 'user_info_block': user_info_html}
 
