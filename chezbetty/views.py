@@ -95,10 +95,20 @@ def transaction_deposit(request):
 
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'purchase'})
+
+        order = {'total': transaction.amount,
+                 'items': []}
+        for subtrans in transaction.subtransactions:
+            item = {}
+            item['name'] = subtrans.item.name
+            item['quantity'] = subtrans.quantity
+            item['price'] = subtrans.item.price
+            order['items'].append(item)
         
         # TODO: get the products for all this
         return render_to_response('templates/purchase_complete.jinja2',
-            {}, request)
+            {'user_info_block': user_info_html,
+             'order': order}, request)
 
 
 

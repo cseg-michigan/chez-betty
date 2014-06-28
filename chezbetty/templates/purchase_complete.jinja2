@@ -18,7 +18,7 @@
 
 {% block content %}
 
-{{ purchase_info_block }}
+{{ user_info_block|safe }}
 
 
 <div class="panel panel-default">
@@ -37,11 +37,11 @@
       </thead>
 
       <tbody>
-      {% for item in order.items %}
+      {% for item in order['items'] %}
         <tr class="purchase-item">
-          <td class="item-title">{{ item.title }}</td>
+          <td class="item-title">{{ item.name }}</td>
           <td class="item-quantity">{{ item.quantity }}</td>
-          <td class="item-price">{{ item.price }}</td>
+          <td class="item-price">{{ item.price|format_currency }}</td>
         </tr>
       {% endfor %}
       </tbody>
@@ -49,7 +49,7 @@
       <tfoot>
         <tr>
           <td colspan="2"><b>Total</b></td>
-          <td id="purchase-total">{{ order.total }}</td>
+          <td id="purchase-total">{{ order['total']|format_currency }}</td>
         </tr>
       </tfoot>
     </table>
