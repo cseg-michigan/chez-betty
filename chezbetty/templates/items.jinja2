@@ -1,0 +1,42 @@
+{% extends "base.jinja2" %}
+{% block title %}Items{% endblock %}
+
+
+{% block top %}
+<div class="container">
+  <h1>Items at Chez Betty</h1>
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Items</h3>
+  </div>
+  <div class="panel-body">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>In Stock</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for item in items %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ item.in_stock }}</td>
+          <td>{{ item.price }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+</div>
+
+{% endblock %}
