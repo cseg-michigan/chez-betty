@@ -28,8 +28,8 @@ class CashTransaction(Base):
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
     amount = Column(Float, nullable=False)
 
-    to_account_id = Column(Integer, ForeignKey("cash_accounts.id"), nullable=False)
-    from_account_id = Column(Integer, ForeignKey("cash_accounts.id"), nullable=False)
+    to_account_id = Column(Integer, ForeignKey("cash_accounts.id"))
+    from_account_id = Column(Integer, ForeignKey("cash_accounts.id"))
     
     to_account = relationship(CashAccount, 
         foreign_keys=[to_account_id,],
@@ -63,5 +63,6 @@ class CashTransaction(Base):
 class CashDeposit(CashTransaction):
     def __init__(self, amount, transaction):
         c_cashbox = make_cash_account("cashbox")
+        assert(c_cashbox)
         CashTransaction.__init__(self, None, c_cashbox, amount, transaction, None)
         
