@@ -6,6 +6,7 @@ import ldap3
 class InvalidUserException(Exception):
     pass
 
+
 class LDAPLookup(object):
     """class that allows lookup of an individual in the UM directory
     based on Michigan ID number, uniqname, MCARD"""
@@ -58,6 +59,7 @@ class User(Account):
     id = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
     uniqname = Column(String(8), nullable=False, unique=True)
     umid = Column(String(8), nullable=False, unique=True)
+    password = Column(String(255))
     
     disabled = Column(Boolean, nullable=False, default=False)
     role = Column(Enum("user", "manager", "administrator", name="user_type"),
@@ -86,3 +88,13 @@ class User(Account):
             u = cls(**cls.__ldap.lookup_umid(umid))
             DBSession.add(u)
         return u
+
+
+def groupfinder(userid, request):
+    user = User.from_uniqname(userid)
+    if user.role == "user":
+        return ["user",]
+    elif user.role == "manager":
+        return ["user","manager"]
+    elif user.role == "administrator":
+        return ["user","manager","administrator"]

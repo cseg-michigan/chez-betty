@@ -18,8 +18,11 @@ from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
     validates,
-    relationship
+    relationship,
+    object_session,
     )
+    
+from sqlalchemy.sql.expression import or_
 
 from zope.sqlalchemy import ZopeTransactionExtension
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
