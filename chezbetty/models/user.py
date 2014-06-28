@@ -31,7 +31,7 @@ class LDAPLookup(object):
                 ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
                 attributes=self.ATTRIBUTES
         )
-        if len(self.__conn) == 0:
+        if len(self.__conn.response) == 0:
             raise InvalidUserException()
         return {
             "umid":self.__conn.response[0]["attributes"]["entityid"],
