@@ -80,21 +80,21 @@ function purchase_success (data) {
 
 // Callback when a purchase fails for some reason
 function purchase_error () {
-	alert_error("Failed to complete deposit. Perhaps try again?");
-	enable_button($("#btn-submit-deposit"));
+	alert_error("Failed to complete purchase. Perhaps try again?");
+	enable_button($("#btn-submit-purchase"));
 }
 
 // Callback when a deposit was successful
 function deposit_success (data) {
-	// On successful purchase, redirect the user to the transaction complete
+	// On successful deposit, redirect the user to the transaction complete
 	// page showing the transaction.
 	window.location.replace("/transaction/" + data.transaction_id);
 }
 
 // Callback when a deposit fails for some reason
 function deposit_error () {
-	alert_error("Failed to complete purchase. Perhaps try again?");
-	enable_button($("#btn-submit-purchase"));
+	alert_error("Failed to complete deposit. Perhaps try again?");
+	enable_button($("#btn-submit-deposit"));
 }
 
 // Function called by chezbetty-item.js when a new item was scanned and

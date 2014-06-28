@@ -2,6 +2,6 @@
   <td class="item-actions"><button type="button" class="btn btn-danger btn-remove-item">X</button></td>
   <td class="item-title">{{ item.name }}</td>
   <td class="item-quantity">1</td>
-  <td class="item-price">{{ item.price }}</td>
+  <td class="item-price">{{ item.price|format_currency }}</td>
   <td class="hidden item-price-single">{{ item.price }}</td>
 </tr>
