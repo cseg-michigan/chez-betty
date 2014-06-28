@@ -73,9 +73,16 @@ function add_item_fail () {
 
 // Callback when a purchase was successful
 function purchase_success (data) {
-	// On successful purchase, redirect the user to the transaction complete
-	// page showing the transaction.
-	window.location.replace("/transaction/" + data.transaction_id);
+	if ("error" in data) {
+		alert_error(data.error);
+		enable_button($("#btn-submit-purchase"));
+	} else if ("redirect_url" in data) {
+		window.location.replace(data.redirect_url);
+	} else {
+		// On successful purchase, redirect the user to the transaction complete
+		// page showing the transaction.
+		window.location.replace("/transaction/" + data.transaction_id);
+	}
 }
 
 // Callback when a purchase fails for some reason
@@ -84,11 +91,18 @@ function purchase_error () {
 	enable_button($("#btn-submit-purchase"));
 }
 
-// Callback when a deposit was successful
+// Callback when a deposit POST was successful
 function deposit_success (data) {
-	// On successful deposit, redirect the user to the transaction complete
-	// page showing the transaction.
-	window.location.replace("/transaction/" + data.transaction_id);
+	if ("error" in data) {
+		alert_error(data.error);
+		enable_button($("#btn-submit-deposit"));
+	} else if ("redirect_url" in data) {
+		window.location.replace(data.redirect_url);
+	} else {
+		// On successful deposit, redirect the user to the transaction complete
+		// page showing the transaction.
+		window.location.replace("/transaction/" + data.transaction_id);
+	}
 }
 
 // Callback when a deposit fails for some reason
