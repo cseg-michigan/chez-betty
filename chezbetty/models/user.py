@@ -36,7 +36,7 @@ class LDAPLookup(object):
         return {
             "umid":self.__conn.response[0]["attributes"]["entityid"],
             "uniqname":self.__conn.response[0]["attributes"]["uid"],
-            "name":self.__conn.response[0]["attributes"]["displayName"]
+            "name":self.__conn.response[0]["attributes"]["displayName"][0]
         }
 
     def lookup_umid(self, umid):
