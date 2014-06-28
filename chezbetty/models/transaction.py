@@ -1,5 +1,5 @@
 from .model import *
-from .account import Account
+from .account import Account, make_account
 from .item import Item
 
 class Transaction(Base):
