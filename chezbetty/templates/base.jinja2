@@ -24,7 +24,13 @@
     {#{% include 'navbar.html' %}#}
 
     <div id="alerts" class="container">
-      {% block alerts %}{% endblock %}
+      {% block alerts %}
+      {% for error in request.session.pop_flash('error') %}
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+      {% endfor %}
+      {% endblock %}
     </div>
 
     {% block top %}{% endblock %}

@@ -56,7 +56,7 @@ function add_item_success (data) {
 		item_price = parseFloat(item_row.children(".item-price-single").text());
 
 		item_row.children(".item-quantity").text(quantity);
-		item_row.children(".item-price").text(format_price(quantity*item_price));
+		item_row.children(".item-total").text(format_price(quantity*item_price));
 
 	} else {
 		// Add a new item
@@ -73,9 +73,16 @@ function add_item_fail () {
 
 // Callback when a purchase was successful
 function purchase_success (data) {
-	// On successful purchase, redirect the user to the transaction complete
-	// page showing the transaction.
-	window.location.replace("/transaction/" + data.transaction_id);
+	if ("error" in data) {
+		alert_error(data.error);
+		enable_button($("#btn-submit-purchase"));
+	} else if ("redirect_url" in data) {
+		window.location.replace(data.redirect_url);
+	} else {
+		// On successful purchase, redirect the user to the transaction complete
+		// page showing the transaction.
+		window.location.replace("/transaction/" + data.transaction_id);
+	}
 }
 
 // Callback when a purchase fails for some reason
@@ -84,11 +91,18 @@ function purchase_error () {
 	enable_button($("#btn-submit-purchase"));
 }
 
-// Callback when a deposit was successful
+// Callback when a deposit POST was successful
 function deposit_success (data) {
-	// On successful deposit, redirect the user to the transaction complete
-	// page showing the transaction.
-	window.location.replace("/transaction/" + data.transaction_id);
+	if ("error" in data) {
+		alert_error(data.error);
+		enable_button($("#btn-submit-deposit"));
+	} else if ("redirect_url" in data) {
+		window.location.replace(data.redirect_url);
+	} else {
+		// On successful deposit, redirect the user to the transaction complete
+		// page showing the transaction.
+		window.location.replace("/transaction/" + data.transaction_id);
+	}
 }
 
 // Callback when a deposit fails for some reason
@@ -114,7 +128,7 @@ function calculate_total () {
 	$("#purchase_table tbody tr:visible").each(function (index) {
 		if ($(this).attr('id') != "purchase-empty") {
 			line_total = parseFloat(
-				strip_price($(this).children('.item-price').text()));
+				strip_price($(this).children('.item-total').text()));
 			total += line_total;
 		}
 	});

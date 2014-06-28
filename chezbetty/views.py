@@ -5,6 +5,7 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.orm.exc import NoResultFound
 
 from .models import *
 from .models.model import *
@@ -13,6 +14,9 @@ from .models.item import Item
 from .models.transaction import Transaction
 
 import chezbetty.datalayer as datalayer
+
+class DepositException(Exception):
+    pass
 
 ###
 ### HTML Pages
@@ -102,7 +106,8 @@ def transaction_deposit(request):
             item = {}
             item['name'] = subtrans.item.name
             item['quantity'] = subtrans.quantity
-            item['price'] = subtrans.item.price
+            item['price'] = subtrans.item.price / subtrans.quantity
+            item['total_price'] = subtrans.item.price
             order['items'].append(item)
         
         # TODO: get the products for all this
@@ -144,17 +149,44 @@ def purchase_new(request):
 
         # Return the committed transaction ID
         return {'transaction_id': purchase.id}
+
     except InvalidUserException as e:
-        # TODO: show an error
-        return HTTPFound(location=request.route_url('index'))
+        request.session.flash('Invalid user error. Please try again.', "error")
+        return {'redirect_url': '/'}
+
+    except ValueError as e:
+        return {'error': 'Unable to parse Item ID or quantity'}
+
+    except NoResultFound as e:
+        # Could not find an item
+        return {'error': 'Unable to identify an item.'}
+
 
 @view_config(route_name='deposit_new', request_method='POST', renderer='json')
 def deposit_new(request):
-    user = User.from_umid(request.POST['umid'])
-    amount = float(request.POST['amount'])
-    deposit = datalayer.deposit(user, amount)
+    try:
+        user = User.from_umid(request.POST['umid'])
+        amount = float(request.POST['amount'])
 
-    # Return a JSON blob of the transaction ID so the client can redirect to
-    # the deposit success page
-    return {'transaction_id': deposit['transaction'].id}
+        if amount > 20.0:
+            raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
+
+        deposit = datalayer.deposit(user, amount)
+
+        # Return a JSON blob of the transaction ID so the client can redirect to
+        # the deposit success page
+        return {'transaction_id': deposit['transaction'].id}
+
+    except InvalidUserException as e:
+        request.session.flash('Invalid user error. Please try again.', "error")
+        return {'redirect_url': '/'}
+
+    except ValueError as e:
+        return {'error': 'Error understanding deposit amount.'}
+
+    except DepositException as e:
+        return {'error': str(e)}
+
+
+
 
