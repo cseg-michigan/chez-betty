@@ -15,6 +15,8 @@ from models.account import Account
 from models.item import Item
 from models.user import User
 from models.model import *
+from models.transaction import *
+from models.cashtransaction import *
 
 def usage(argv):    
     cmd = os.path.basename(argv[0])
