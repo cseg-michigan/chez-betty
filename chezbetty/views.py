@@ -2,12 +2,13 @@ from pyramid.renderers import render
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
 
 from .models import *
 from .models.model import *
-from .models.user import User
+from .models.user import User, InvalidUserException
 from .models.item import Item
 from .models.transaction import Transaction
 
@@ -27,10 +28,22 @@ def about(request):
 
 @view_config(route_name='purchase', renderer='templates/purchase.jinja2')
 def purchase(request):
-    user = User.from_umid(request.matchdict['umid'])
-    purchase_info = render('templates/user_info.jinja2', {'user': user,
-                                                          'page': 'purchase'})
-    return {'purchase_info_block': purchase_info}
+    try:
+        if len(request.matchdict['umid']) != 8:
+            raise InvalidUserException
+
+        user = User.from_umid(request.matchdict['umid'])
+        purchase_info = render('templates/user_info.jinja2', {'user': user,
+                                                              'page': 'purchase'})
+        return {'purchase_info_block': purchase_info}
+
+    except InvalidUserException as e:
+        # Something went wrong when looking up the user
+    #    alert = render('templates/alert.jinja2',
+    #        {'type': 'danger',
+    #         'text': 'Invalid M-Card swipe or user not found.'})
+    #    return render_to_response('templates/index.jinja2', {'alerts': alert})
+        return HTTPFound(location=request.route_url('index'))
 
 @view_config(route_name='items', renderer='templates/items.jinja2')
 def items(request):
