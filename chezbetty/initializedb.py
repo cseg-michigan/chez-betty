@@ -39,14 +39,27 @@ def main(argv=sys.argv):
     from models.user import User
     from models.item import Item
     with transaction.manager:
-        item = Item(
+        DBSession.add(Item(
             "Nutrigrain Raspberry",
             "038000358210",
             14.37,
             1,
             True
-        )
-        DBSession.add(item)
+        ))
+        DBSession.add(Item(
+            "Clif Bar: Chocolate Chip",
+            "722252100900",
+            1.25,
+            5,
+            True
+        ))
+        DBSession.add(Item(
+            "Clif Bar: Crunchy Peanut Butter",
+            "722252101204",
+            1.25,
+            5,
+            True
+        ))
         user = User(
             "zakir",
             "95951361",
