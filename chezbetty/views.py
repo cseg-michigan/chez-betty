@@ -122,9 +122,24 @@ def item(request):
 
 @view_config(route_name='purchase_new', request_method='POST', renderer='json')
 def purchase_new(request):
-    user = User.from_umid(request.POST['umid'])
-    purchase = datalayer.purchase(user, request.POST.items())
-    return {'transaction_id': purchase.id}
+    try:
+        user = User.from_umid(request.POST['umid'])
+
+        # Bundle all purchase items
+        items = {}
+        for item_id,quantity in request.POST.items():
+            if item_id == 'umid':
+                continue
+            items[item_id] = quantity
+
+        # Commit the purchase
+        purchase = datalayer.purchase(user, items)
+
+        # Return the committed transaction ID
+        return {'transaction_id': purchase.id}
+    except InvalidUserException as e:
+        # TODO: show an error
+        return HTTPFound(location=request.route_url('index'))
 
 @view_config(route_name='deposit_new', request_method='POST', renderer='json')
 def deposit_new(request):

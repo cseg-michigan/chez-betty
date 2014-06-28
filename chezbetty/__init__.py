@@ -29,7 +29,7 @@ def main(global_config, **settings):
     config.add_route('users', '/users')
     config.add_route('user', '/user/{umid}')
 
-    config.add_route('purchase_new', '/purchase')
+    config.add_route('purchase_new', '/purchase/new')
     config.add_route('purchase', '/purchase/{umid}')
 
     config.add_route('deposit_new', '/deposit/new')
