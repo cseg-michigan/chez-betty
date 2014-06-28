@@ -57,64 +57,81 @@ def users(request):
 
 @view_config(route_name='user', renderer='templates/user.jinja2')
 def user(request):
-    user = User.from_umid(request.matchdict['umid'])
-    user_info_html = render('templates/user_info.jinja2',
-        {'user': user, 'page': 'account'})
-    # TODO: get transactions too
-    return {'user': user, 'user_info_block': user_info_html}
+    try:
+        user = User.from_umid(request.matchdict['umid'])
+        user_info_html = render('templates/user_info.jinja2',
+            {'user': user, 'page': 'account'})
+        # TODO: get transactions too
+        return {'user': user, 'user_info_block': user_info_html}
+
+    except InvalidUserException as e:
+        request.session.flash('Invalid User ID.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
 
 @view_config(route_name='deposit', renderer='templates/deposit.jinja2')
 def deposit(request):
-    user = User.from_umid(request.matchdict['umid'])
-    user_info_html = render('templates/user_info.jinja2', {'user': user,
-                                                           'page': 'deposit'})
-    keypad_html = render('templates/keypad.jinja2', {})
-    return {'user_info_block': user_info_html, 'keypad': keypad_html}
+    try:
+        user = User.from_umid(request.matchdict['umid'])
+        user_info_html = render('templates/user_info.jinja2', {'user': user,
+                                                               'page': 'deposit'})
+        keypad_html = render('templates/keypad.jinja2', {})
+        return {'user_info_block': user_info_html, 'keypad': keypad_html}
+
+    except InvalidUserException as e:
+        request.session.flash('Invalid User ID.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
 
 @view_config(route_name='transaction')
 def transaction_deposit(request):
-    transaction = DBSession.query(Transaction) \
-        .filter(Transaction.id==int(request.matchdict['transaction_id'])).one()
 
-    # Choose which page to show based on the type of transaction
-    if transaction.type == 'deposit':
-        # View the deposit success page
-        user = DBSession.query(User) \
-            .filter(User.id==transaction.to_account_id).one()
+    try:
+        transaction = DBSession.query(Transaction) \
+            .filter(Transaction.id==int(request.matchdict['transaction_id'])).one()
 
-        user_info_html = render('templates/user_info.jinja2',
-            {'user': user, 'page': 'deposit'})
-        
-        deposit = {'transaction_id': transaction.id,
-                   'prev': user.balance - transaction.amount,
-                   'amount': transaction.amount,
-                   'new': user.balance}
-        return render_to_response('templates/deposit_complete.jinja2',
-            {'deposit': deposit, 'user_info_block': user_info_html}, request)
+        # Choose which page to show based on the type of transaction
+        if transaction.type == 'deposit':
+            # View the deposit success page
+            user = DBSession.query(User) \
+                .filter(User.id==transaction.to_account_id).one()
 
-    elif transaction.type == 'purchase':
-        # View the purchase success page
-        user = DBSession.query(User) \
-            .filter(User.id==transaction.from_account_id).one()
+            user_info_html = render('templates/user_info.jinja2',
+                {'user': user, 'page': 'deposit'})
+            
+            deposit = {'transaction_id': transaction.id,
+                       'prev': user.balance - transaction.amount,
+                       'amount': transaction.amount,
+                       'new': user.balance}
+            return render_to_response('templates/deposit_complete.jinja2',
+                {'deposit': deposit, 'user_info_block': user_info_html}, request)
 
-        user_info_html = render('templates/user_info.jinja2',
-            {'user': user, 'page': 'purchase'})
+        elif transaction.type == 'purchase':
+            # View the purchase success page
+            user = DBSession.query(User) \
+                .filter(User.id==transaction.from_account_id).one()
 
-        order = {'total': transaction.amount,
-                 'items': []}
-        for subtrans in transaction.subtransactions:
-            item = {}
-            item['name'] = subtrans.item.name
-            item['quantity'] = subtrans.quantity
-            item['price'] = subtrans.item.price / subtrans.quantity
-            item['total_price'] = subtrans.item.price
-            order['items'].append(item)
-        
-        # TODO: get the products for all this
-        return render_to_response('templates/purchase_complete.jinja2',
-            {'user_info_block': user_info_html,
-             'order': order}, request)
+            user_info_html = render('templates/user_info.jinja2',
+                {'user': user, 'page': 'purchase'})
 
+            order = {'total': transaction.amount,
+                     'items': []}
+            for subtrans in transaction.subtransactions:
+                item = {}
+                item['name'] = subtrans.item.name
+                item['quantity'] = subtrans.quantity
+                item['price'] = subtrans.item.price
+                item['total_price'] = subtrans.amount
+                order['items'].append(item)
+            
+            # TODO: get the products for all this
+            return render_to_response('templates/purchase_complete.jinja2',
+                {'user_info_block': user_info_html,
+                 'order': order}, request)
+
+    except NoResultFound as e:
+        # TODO: add generic failure page
+        pass
 
 
 ###
