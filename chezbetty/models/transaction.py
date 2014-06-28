@@ -27,10 +27,10 @@ class Transaction(Base):
         self.to_account_id = to_account.id if to_account else None
         self.from_account_id = from_account.id if from_account else None
         self.amount = amount
-        if self.to_account:
-            self.to_account.balance += self.amount
-        if self.from_account:
-            self.from_account.balance -= self.amount
+        if to_account:
+            to_account.balance += self.amount
+        if from_account:
+            from_account.balance -= self.amount
 
     def update_amount(self, amount):
         self.to_account -= self.amount
