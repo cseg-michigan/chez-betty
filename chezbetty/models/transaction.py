@@ -1,4 +1,5 @@
 from .model import *
+from .account import Account
 
 class Transaction(Base):
     __tablename__ = 'transactions'
