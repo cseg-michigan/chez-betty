@@ -37,7 +37,7 @@ class Transaction(Base):
 class Deposit(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'deposit'}
 
-    def __init__(self, amount):
+    def __init__(self, user, amount):
         Transaction.__init__(self, None, user, amount)
 
 
