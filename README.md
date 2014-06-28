@@ -21,7 +21,7 @@ against, do the following:
 
 3. Setup the database:
 
-        bin/initialize_chezbetty_db development.ini
+        python chezbetty/initializedb.py development.ini
 
 4. Run the webserver:
 
