@@ -1,15 +1,28 @@
-chez-betty
+Chez Betty
 ==========
 
-UMich version of Chez Bob
+UMich version of [Chez Bob](http://chezbob.ucsd.edu/).
 
 Installation
 ============
 
-Application is developed using Python Pyramid. To develop against, do the following:
+The Chez Betty application is developed using Python Pyramid. To develop
+against, do the following:
 
- 1. Setup virtualenv (e.g. `virtualenv --no-site-packages --distribute -p /usr/local/bin/python3.3 chezbetty`)
+1. Setup virtualenv with Python3:
 
- 2. Install application within virtualenv. If developing, just create a symlink to your checkout. Otherwise git export or similar.
+        cd chez-betty
+        virtualenv .
+        source bin/activate
 
- 3. run python setup.py develop to install all the dependencies of the application
+2. Install the Python3 dependencies:
+
+        python setup.py develop
+
+3. Setup the database:
+
+        bin/initialize_chezbetty_db development.ini
+
+4. Run the webserver:
+
+        bin/pserve development.ini
