@@ -1,5 +1,6 @@
 from .model import *
 from .account import Account
+from .item import Item
 
 class Transaction(Base):
     __tablename__ = 'transactions'
