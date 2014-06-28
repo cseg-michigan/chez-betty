@@ -10,21 +10,26 @@ class LDAPLookup(object):
     """class that allows lookup of an individual in the UM directory
     based on Michigan ID number, uniqname, MCARD"""
 
-    SERVER = "ldap.umich.edu"
-    USERNAME = "cn=CSEG-McDirApp001,ou=Applications,o=services"
+    SERVER = None
+    USERNAME = None
     BASE_DN = "ou=People,dc=umich,dc=edu"
-    PASSWORD = ""
+    PASSWORD = None
     ATTRIBUTES = ["uid", "entityid", "displayName"]
         
     def __init__(self):
-        s = ldap3.Server(self.SERVER, port=636, use_ssl=True, get_info=ldap3.GET_ALL_INFO)
-        self.__conn = ldap3.Connection(s, auto_bind=True, 
-                user=self.USERNAME, password=self.PASSWORD,
-                client_strategy=ldap3.STRATEGY_SYNC,
-                authentication=ldap3.AUTH_SIMPLE
-        )
+        self.__conn = None
+        
+    def __connect(self):
+        if not self.__conn:
+            s = ldap3.Server(self.SERVER, port=636, use_ssl=True, get_info=ldap3.GET_ALL_INFO)
+            self.__conn = ldap3.Connection(s, auto_bind=True, 
+                    user=self.USERNAME, password=self.PASSWORD,
+                    client_strategy=ldap3.STRATEGY_SYNC,
+                    authentication=ldap3.AUTH_SIMPLE
+            )
                 
-    def __lookup(self, k, v):        
+    def __lookup(self, k, v):
+        self.__connect()
         query = "(%s=%s)" % (k, v)
         self.__conn.search(self.BASE_DN, 
                 query,
@@ -34,8 +39,8 @@ class LDAPLookup(object):
         if len(self.__conn.response) == 0:
             raise InvalidUserException()
         return {
-            "umid":self.__conn.response[0]["attributes"]["entityid"],
-            "uniqname":self.__conn.response[0]["attributes"]["uid"],
+            "umid":self.__conn.response[0]["attributes"]["entityid"][0],
+            "uniqname":self.__conn.response[0]["attributes"]["uid"][0],
             "name":self.__conn.response[0]["attributes"]["displayName"][0]
         }
 
@@ -70,7 +75,7 @@ class User(Account):
     def from_uniqname(cls, uniqname):
         u = DBSession.query(cls).filter(cls.uniqname == uniqname).first()
         if not u:
-            u = cls(**cls.lookup_uniqname(uniqname))
+            u = cls(**cls.__ldap.lookup_uniqname(uniqname))
             DBSession.add(u)
         return u
             

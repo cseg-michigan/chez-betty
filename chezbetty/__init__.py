@@ -2,15 +2,20 @@ from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
 from .models.model import *
+from .models.user import LDAPLookup
 
 def main(global_config, **settings):
-    """ This function returns a Pyramid WSGI application."""
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
-    
+
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
     
+    print(config.registry.settings)
+    LDAPLookup.PASSWORD = config.registry.settings["ldap.password"]
+    LDAPLookup.USERNAME = config.registry.settings["ldap.username"]
+    LDAPLookup.SERVER = config.registry.settings["ldap.server"]
+        
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
 
