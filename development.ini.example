@@ -17,6 +17,10 @@ pyramid.includes =
 
 sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 
+ldap.server = ldap.domain.com
+ldap.password = abc123
+ldap.username = cn=<name>,ou=Applications,o=services
+
 jinja2.filters =
     model_url = pyramid_jinja2.filters:model_url_filter
     route_url = pyramid_jinja2.filters:route_url_filter

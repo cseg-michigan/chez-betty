@@ -19,6 +19,8 @@ against, do the following:
 
         python setup.py develop
 
+3. Update `development.ini` to set config information and passwords.
+
 3. Setup the database:
 
         python chezbetty/initializedb.py development.ini
