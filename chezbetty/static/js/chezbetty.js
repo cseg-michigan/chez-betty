@@ -1,5 +1,11 @@
+/*
+ * Chez Betty Main Javascript
+ *
+ */
 
 
+/* Functions to manipulate price strings and numbers.
+ */
 function format_price (price) {
 	return "$" + price.toFixed(2);
 }
@@ -12,6 +18,28 @@ function full_strip_price (price_str) {
 	return price_str.replace(/^\s+|\s+$|\.|\$/g, '');
 }
 
+/* Functions to display and hide alerts at the top of the page
+ */
+
+function alert_clear () {
+	$("#alerts").empty();
+}
+
+function alert_error (error_str) {
+	html = '<div class="alert alert-danger" role="alert">'+error_str+'</div>';
+	$("#alerts").empty();
+	$("#alerts").html(html);
+}
+
+function enable_button (button) {
+	button.removeAttr("disabled");
+}
+
+function disable_button (button) {
+	button.attr("disabled", "disabled");
+}
+
+// Callback when adding an item to the cart succeeds
 function add_item_success (data) {
 	alert_clear();
 
@@ -38,10 +66,39 @@ function add_item_success (data) {
 	calculate_total();
 }
 
+// Callback when adding to cart fails.
 function add_item_fail () {
 	alert_error("Could not find that item.");
 }
 
+// Callback when a purchase was successful
+function purchase_success (data) {
+	// On successful purchase, redirect the user to the transaction complete
+	// page showing the transaction.
+	window.location.replace("/transaction/" + data.transaction_id);
+}
+
+// Callback when a purchase fails for some reason
+function purchase_error () {
+	alert_error("Failed to complete deposit. Perhaps try again?");
+	enable_button($("#btn-submit-deposit"));
+}
+
+// Callback when a deposit was successful
+function deposit_success (data) {
+	// On successful purchase, redirect the user to the transaction complete
+	// page showing the transaction.
+	window.location.replace("/transaction/" + data.transaction_id);
+}
+
+// Callback when a deposit fails for some reason
+function deposit_error () {
+	alert_error("Failed to complete purchase. Perhaps try again?");
+	enable_button($("#btn-submit-purchase"));
+}
+
+// Function called by chezbetty-item.js when a new item was scanned and
+// should be added to the cart.
 function add_item (item_id) {
 	$.ajax({
 		dataType: "json",
@@ -51,24 +108,16 @@ function add_item (item_id) {
 	});
 }
 
+// Function to add up the items in a cart to display the total.
 function calculate_total () {
 	total = 0;
 	$("#purchase_table tbody tr:visible").each(function (index) {
 		if ($(this).attr('id') != "purchase-empty") {
-			line_total = parseFloat(strip_price($(this).children('.item-price').text()));
+			line_total = parseFloat(
+				strip_price($(this).children('.item-price').text()));
 			total += line_total;
 		}
 	});
 
 	$("#purchase-total").text(format_price(total));
 }
-
-function alert_clear () {
-	$("#alerts").empty();
-}
-
-function alert_error (error_str) {
-	$("#alerts").empty();
-	$("#alerts").html('<div class="alert alert-danger" role="alert">' + error_str + '</div>');
-}
-
