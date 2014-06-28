@@ -44,6 +44,15 @@ class Transaction(Base):
             self.from_account.balance -= self.amount
 
 
+@property
+def __transactions(self):
+    return object_session(self).query(Transaction)\
+            .Filter(or_(
+                    Transaction.to_account_id == self.id,
+                    Transaction.from_account_id == self.id)).all()
+Account.transactions = __transactions
+
+
 class Deposit(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'deposit'}
 

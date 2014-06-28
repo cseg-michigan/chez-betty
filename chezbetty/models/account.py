@@ -1,5 +1,4 @@
 from .model import *
-from .transaction import Transaction
 
 class Account(Base):
     __tablename__ = "accounts"
@@ -16,12 +15,6 @@ class Account(Base):
         self.name = name
         self.balance = balance
 
-    @property
-    def transactions(self):
-        return object_session(self).query(Transaction)\
-                .Filter(or_(
-                        Transaction.to_account_id == self.id,
-                        Transaction.from_account_id == self.id)).all()
 
 class PlaceholderAccount(Account):
     __mapper_args__ = {'polymorphic_identity': 'placeholder'}
