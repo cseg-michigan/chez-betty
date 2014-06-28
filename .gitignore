@@ -4,3 +4,9 @@ chezbetty/scripts/__pycache__/*
 *.pyc
 *.pyo
 development.ini
+.Python
+bin/
+chezbetty.sqlite
+chezbetty/.Python
+include/
+lib/
