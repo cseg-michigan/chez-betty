@@ -81,4 +81,4 @@ class SubTransaction(Base):
     def __init__(self, transaction, item, quantity):
         self.item_id = item.id
         self.quantity = quantity
-        self.amount = quantity * item.amount
+        self.amount = quantity * item.price
