@@ -17,3 +17,7 @@ class Item(Base):
         self.price = price
         self.in_stock = in_stock
         self.enabled = enabled
+        
+    @classmethod
+    def from_barcode(cls, barcode):
+        return DBSession.query(cls).filter(cls.barcode == barcode).one()

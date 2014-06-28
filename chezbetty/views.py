@@ -21,7 +21,8 @@ def about(request):
 
 @view_config(route_name='purchase', renderer='templates/purchase.jinja2')
 def purchase(request):
-    return {}
+    user = User.from_umid(request.matchdict['umid'])
+    return {"user":user}
 
 @view_config(route_name='purchase_new', request_method='POST', renderer='templates/purchase_complete.jinja2')
 def purchase_new(request):
@@ -38,7 +39,7 @@ def items(request):
 def item(request):
     item = Item.from_barcode(request.matchdict['barcode'])
     item_html = render('templates/item_row.jinja2', {'item': item})
-    return {'item_row_html' : item_row_html}
+    return {'id':item.id, 'item_row_html' : item_html}
 
 @view_config(route_name='users', renderer='templates/users.jinja2')
 def users(request):
