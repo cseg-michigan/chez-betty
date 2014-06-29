@@ -1,5 +1,5 @@
 
-
+/* Align dollar amounts nicely */
 .item-stock {
 	text-align: right;
 }
@@ -12,8 +12,52 @@
 	text-align: right;
 }
 
+.item-total {
+	text-align: right;
+}
+
+/* Color dollar amounts */
 .negative {
 	color: red;
+}
+<<<<<<< HEAD
+.positive {}
+
+/* Buttons */
+.btn-huge {
+	padding: 20px 30px;
+	font-size: 18pt;
+}
+
+.buttons a {
+	margin-right: 20px;
+}
+
+#front-buttons {
+	text-align: center;
+}
+
+/* Index */
+#index-main {
+	text-align: center;
+	padding-bottom: 40px;
+}
+
+/* Purchase */
+#purchase-empty {
+	text-align: center;
+}
+
+#purchase-empty td {
+	padding: 30px 0;
+}
+
+.purchase-item {
+}
+
+#purchase-total {
+	text-align: right;
+	font-weight: bold;
 }
 
 .top {

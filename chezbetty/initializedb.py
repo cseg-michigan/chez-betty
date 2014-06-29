@@ -71,6 +71,14 @@ def main(argv=sys.argv):
         user.role = "administrator"
         user.password = "test"
         DBSession.add(user)
+        user = User(
+            "bradjc",
+            "11519022",
+            "Brad Campbell"
+        )
+        user.role = "administrator"
+        user.password = "test"
+        DBSession.add(user)
 
 if __name__ == "__main__":
     main()

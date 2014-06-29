@@ -30,19 +30,19 @@
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Account Links</h3>
+        <h3 class="panel-title">Links</h3>
       </div>
-      <div class="panel-body">
+      <div class="panel-body buttons">
         {% if page != "purchase" %}
-        <a class="btn btn-default" href="/purchase/{{ user.umid }}">Purchase</a>
+        <a class="btn btn-primary btn-lg" href="/purchase/{{ user.umid }}">Purchase</a>
         {% endif %}
         {% if page != "account" %}
-        <a class="btn btn-default" href="/user/{{ user.umid }}">Account</a>
+        <a class="btn btn-primary btn-lg" href="/user/{{ user.umid }}">Account</a>
         {% endif %}
         {% if page != "deposit" %}
-        <a class="btn btn-default" href="/deposit/{{ user.umid }}">Deposit</a>
+        <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">Deposit</a>
         {% endif %}
-        <a class="btn btn-default" href="/">Logout</a>
+        <a class="btn btn-warning btn-lg" href="/">Logout</a>
       </div>
     </div>
 

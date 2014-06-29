@@ -3,7 +3,6 @@
 
 container {
 	width: 342px;
-	//border: 1px solid black;
 	display: inline-block;
 }
 
@@ -12,7 +11,6 @@ block {
 	width: 100px;
 	height: 100px;
 	margin: 5px;
-	//background: red;
 	float: right;
 }
 
