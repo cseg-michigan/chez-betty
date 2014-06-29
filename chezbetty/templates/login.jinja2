@@ -1,4 +1,4 @@
-{% extends "base.jinja2" %}
+{% extends "admin/base.jinja2" %}
 {% block title %}Chez Betty Admin Login{% endblock %}
 
 {% block body %}
@@ -47,14 +47,11 @@ body {
 </style>
 
 <div class="container">
-
-  <form class="form-signin" role="form">
+  <form class="form-signin" role="form" method="post" action="/login">
     <h2 class="form-signin-heading">Please sign in</h2>
-    <input type="email" class="form-control" placeholder="Email address" required autofocus>
-    <input type="password" class="form-control" placeholder="Password" required>
-    <label class="checkbox">
-      <input type="checkbox" value="remember-me"> Remember me
-    </label>
+<span class="label label-danger">{{ message[0] }}</span>
+    <input name="login" type="login" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
+    <input name="password" type="password" class="form-control" placeholder="password" required value = "{{ password }}">
     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
   </form>
 

@@ -308,7 +308,7 @@ def admin_inventory(request):
     items = DBSession.query(Item).all()
     return {'items': items}
 
-@view_config(route_name="login", renderer="teampltes/login.jinja2")
+@view_config(route_name="login", renderer="templates/login.jinja2")
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):
     login_url = request.resource_url(request.context, 'login')
@@ -317,7 +317,8 @@ def login(request):
         referrer = '/' # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
     message = login = password = ""
-    if 'form.submitted' in request.params:
+    print(request.params)
+    if 'login' in request.params:
         login = request.params['login']
         password = request.params['password']
         user = DBSession.query(User).filter(User.uniqname == login).first()

@@ -68,6 +68,7 @@ def main(argv=sys.argv):
             "95951361",
             "Zakir Durumeric"
         )
+        user.password = "test"
         DBSession.add(user)
 
 if __name__ == "__main__":

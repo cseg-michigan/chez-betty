@@ -1,3 +1,4 @@
+import hashlib
 import binascii
 import os
 from .model import *
@@ -97,19 +98,23 @@ class User(Account):
         return u
 
     def __make_salt(self):
-        return binascii.b2a_base64(os.urandom(32))[:-3]
+        return binascii.b2a_base64(os.urandom(32))[:-3].decode("ascii")
 
     @hybrid_property
     def password(self):
-        return self._password;
+        return self._password
 
     @password.setter
     def password(self, password):
         self._salt = self.__make_salt()
-        self._password = hashlib.sha256(self._salt + password).hexdigest()
+        salted = (self._salt + password).encode('utf-8')
+        self._password = hashlib.sha256(salted).hexdigest()
 
     def check_password(self, cand):
-        c = hashlib.sha256(self._salt + cand).hexdigest()
+        if not self._salt:
+            return False
+        salted = (self._salt + cand).encode('utf-8')
+        c = hashlib.sha256(salted).hexdigest()
         return c == self._password
 
 
