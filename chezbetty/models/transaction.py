@@ -98,7 +98,7 @@ class SubTransaction(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=False)
-    transaction = relationship(Transaction, backref="subtransactions")
+    transaction = relationship(Transaction, backref="subtransactions", cascade="all,delete-orphan")
    
     quantity = Column(Integer, nullable=False) 
     item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
