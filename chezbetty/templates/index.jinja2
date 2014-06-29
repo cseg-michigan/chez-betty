@@ -30,6 +30,12 @@
   <a class="btn btn-default" href="/about">About</a>
 </div>
 
+{% if request.has_permission("manage") %}
+<div class="btn-group btn-group-large">
+  <a class="btn btn-default" href="/admin">Administration</a>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block onload %}
