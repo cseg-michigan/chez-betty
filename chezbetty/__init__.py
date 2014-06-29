@@ -55,6 +55,7 @@ def main(global_config, **settings):
     config.add_route('admin_add_items', '/admin/add/items')
     config.add_route('admin_add_items_submit', '/admin/add/items/submit')
     config.add_route('admin_inventory', '/admin/inventory')
+    config.add_route('admin_edit_users', '/admin/edit/users')
 
     config.scan(".views")
 

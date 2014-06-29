@@ -313,3 +313,18 @@ def admin_inventory(request):
     return {'items': items}
 
 
+@view_config(route_name='admin_edit_users', renderer='templates/admin/edit_users.jinja2')
+def admin_edit_users(request):
+    users = DBSession.query(User).all()
+    for user in users:
+        if user.disabled:
+            user.enabled = False
+        else:
+            user.enabled = True
+    roles = [('user', 'User'),
+             ('serviceaccount', 'Service Account'),
+             ('manager', 'Manager'),
+             ('administrator', 'Administrator')]
+    return {'users': users, 'roles': roles}
+
+

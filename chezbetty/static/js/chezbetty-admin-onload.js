@@ -35,6 +35,41 @@ $(".edit-item-row").on("click", "button", function () {
 	}
 });
 
+$(".edit-user-row").on("click", "button", function () {
+	btn_type = $(this).attr("id").split("-")[1];
+	user_id = $(this).attr("id").split("-")[3];
+	user_row = $("#user-" + user_id);
+
+	if (btn_type == "disable") {
+
+		// Mark the user to be disabled upon submit
+		user_row.children("#user-enabled-"+user_id).val("0");
+
+		// Gray out the user to show it will be deleted
+		$("#user-" + user_id + " input:text").attr("disabled", "disabled");
+
+		// Hide the delete button
+		$(this).hide();
+
+		// Display the undo button
+		$("#btn-enable-user-" + user_id).show();
+
+	} else if (btn_type == "enable") {
+
+		// Mark the user as enabled
+		user_row.children("#user-enabled-"+user_id).val("1");
+
+		// Un-disable the boxes in the row
+		$("#user-" + user_id + " input:text").removeAttr("disabled");
+
+		// Hide the undo button
+		$(this).hide();
+
+		// Show the delete button again
+		$("#btn-disable-user-" + user_id).show();
+	}
+});
+
 // Add a new row to the add items form
 $("#btn-items-add-row").click(function () {
 
