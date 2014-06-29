@@ -78,6 +78,10 @@ class User(Account):
         self.name = name
         self.balance = 0.0
 
+    def __str__(self):
+        return "<User: id {}, uniqname {}, umid {}, name {}, balance {}>".\
+                format(self.id, self.uniqname, self.umid, self.name, self.balance)
+
     @classmethod
     def from_id(cls, id):
         u = DBSession.query(cls).filter(cls.id == id).one()

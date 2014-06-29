@@ -36,6 +36,6 @@
   </div>
 </div>
 
-<a class="btn btn-danger" href="/transaction/undo/{{ deposit['transaction_id'] }}">Oops! I made a mistake. Undo this transaction.</a>
+<a class="btn btn-danger" href="/transaction/undo/{{ deposit['umid'] }}/{{ deposit['transaction_id'] }}">Oops! I made a mistake. Undo this transaction.</a>
 
 {% endblock %}
