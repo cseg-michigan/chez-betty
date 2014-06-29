@@ -22,18 +22,19 @@
     <table class="table table-bordered" id="purchase_table">
       <thead>
         <tr>
-          <th>&nbsp;</th>
+          <th style="width: 6%">&nbsp;</th>
           <th>Item</th>
-          <th>Quantity</th>
-          <th>Item Price</th>
-          <th>Total Price</th>
+          <th style="width: 10%">Quantity</th>
+          <th style="width: 10%">Item Price</th>
+          <th style="width: 10%">Total Price</th>
         </tr>
       </thead>
 
       <tbody>
         <tr id="purchase-empty">
           <td colspan="5">
-            Order Empty
+            <h3>Order Empty</h3>
+            Scan an item to begin
           </td>
         </tr>
       </tbody>
@@ -41,13 +42,13 @@
       <tfoot>
         <tr>
           <td colspan="4"><b>Total</b></td>
-          <td id="purchase-total">0.00</td>
+          <td id="purchase-total">$0.00</td>
         </tr>
       </tfoot>
     </table>
 
     <div class="btn-group btn-group-large">
-      <button type="button" id="btn-submit-purchase" class="btn btn-success">Submit Purchase</button>
+      <button type="button" id="btn-submit-purchase" class="btn btn-success btn-lg">Submit Purchase</button>
     </div>
 
   </div>
