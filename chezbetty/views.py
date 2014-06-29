@@ -106,6 +106,7 @@ def transaction_deposit(request):
                 {'user': user, 'page': 'deposit'})
 
             deposit = {'transaction_id': transaction.id,
+                       'umid': user.umid,
                        'prev': user.balance - transaction.amount,
                        'amount': transaction.amount,
                        'new': user.balance}
