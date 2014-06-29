@@ -118,11 +118,12 @@ function update_new_balance () {
 		amount = 0.0;
 	}
 	new_balance = format_price(start + amount);
-	$("#new_balance").text(new_balance);
+	$("#new_balance").html(new_balance);
 }
 
 $("#select-user").change(function () {
 	user_id = $("#select-user option:selected").val();
+	console.log(user_id);
 
 	// Hide all current balances
 	$(".current-balance").hide();
@@ -133,7 +134,7 @@ $("#select-user").change(function () {
 	update_new_balance();
 });
 
-$("#balance-change-amount").change(function () {
+$("#balance-change-amount").on("input", function () {
 	update_new_balance();
 });
 
