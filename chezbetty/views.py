@@ -386,9 +386,22 @@ def admin_cash_reconcile(request):
 
 @view_config(route_name='admin_cash_reconcile_submit', request_method='POST')
 def admin_cash_reconcile_submit(request):
+    print(request.POST)
+    try:
+        amount = float(request.POST['amount'])
+    except ValueError:
+        request.session.flash('Error: Bad value for cash box amount', 'error')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+    expected_amount = datalayer.reconcile_cash(amount, None)
+
     request.session.flash('Cash box recorded successfully', 'success')
-    return HTTPFound(location=request.route_url('admin_cash_reconcile_success'))
+    return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
+        _query={'amount':amount, 'expected_amount':expected_amount}))
 
 @view_config(route_name='admin_cash_reconcile_success', renderer='templates/admin/cash_reconcile_complete.jinja2')
 def admin_cash_reconcile_success(request):
-    return {'cash': {'deposit': 6.5, 'expected': 7.0, 'difference': -0.5}}
+    deposit = float(request.GET['amount'])
+    expected = float(request.GET['expected_amount'])
+    difference = deposit - expected
+    return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
