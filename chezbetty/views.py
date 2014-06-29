@@ -354,6 +354,8 @@ def login(request):
         password = password
     )
 
+
+@view_config(route_name='logout')
 def logout(request):
     headers = forget(request)
     return HTTPFound(location=request.route_url('index'),
