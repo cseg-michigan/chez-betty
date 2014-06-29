@@ -223,7 +223,9 @@ def admin_index(request):
 
 @view_config(route_name='admin_edit_items', renderer='templates/admin/edit_items.jinja2')
 def admin_edit_items(request):
-    items = DBSession.query(Item).all()
+    items_active = DBSession.query(Item).filter_by(enabled=True).order_by(Item.name).all()
+    items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
+    items = items_active + items_inactive
     return {'items': items}
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2')
