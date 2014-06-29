@@ -1,0 +1,28 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'transactions' %}
+{% block title %}Transaction Leger{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Transaction Ledger</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<table class="table table-condensed table-striped">
+  <thead><tr><th>ID</th><th>Timestamp</ht><th>Type</th><th>From Account:</th><th>To Account:</th><th>Amount</th></tr></thead>
+  <tbody>
+  {% for t in transactions %}
+    <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.timestamp|pretty_date }}</td>
+        <td>{{ t.type }}</td>
+        <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
+        <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
+        <td>{{ t.amount }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

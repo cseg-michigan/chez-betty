@@ -9,7 +9,8 @@ from sqlalchemy import (
     Enum,
     DateTime,
     ForeignKey,
-    Boolean
+    Boolean,
+    desc
     )
 
 from sqlalchemy.ext.declarative import declarative_base

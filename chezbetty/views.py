@@ -453,3 +453,9 @@ def admin_cash_reconcile_success(request):
     expected = float(request.GET['expected_amount'])
     difference = deposit - expected
     return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
+
+@view_config(route_name="admin_transactions",
+        renderer="templates/admin/transactions.jinja2", permission="admin")
+def admin_transactions(request):
+    transactions = DBSession.query(Transaction).order_by(desc(Transaction.id)).all()
+    return {"transactions":transactions}
