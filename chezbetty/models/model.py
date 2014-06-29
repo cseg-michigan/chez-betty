@@ -34,7 +34,11 @@ DBSession = versioned_session(scoped_session(sessionmaker(extension=ZopeTransact
 Base = declarative_base()
 
 class RootFactory(object):
-    __acl__ = [ (Allow, Everyone, 'view'),
-                (Allow, 'group:editors', 'edit') ]
+    __acl__ = [
+        (Allow, Everyone, 'view'),
+        (Allow, 'group:editors', 'edit')
+    ]
+
     def __init__(self, request):
         pass
+

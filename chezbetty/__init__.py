@@ -11,7 +11,7 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
 
     Base.metadata.bind = engine
-    config = Configurator(settings=settings)
+    config = Configurator(settings=settings, root_factory="chezbetty.models.model.RootFactory")
     
     LDAPLookup.PASSWORD = config.registry.settings["ldap.password"]
     LDAPLookup.USERNAME = config.registry.settings["ldap.username"]
