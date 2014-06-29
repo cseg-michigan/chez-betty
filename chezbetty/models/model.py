@@ -20,6 +20,7 @@ from sqlalchemy.orm import (
     validates,
     relationship,
     object_session,
+    backref
     )
 
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method

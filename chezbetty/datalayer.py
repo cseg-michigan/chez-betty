@@ -10,10 +10,10 @@ def undo_transaction(t):
     if t.cash_transaction:
         c_to_acct = t.cash_transaction.to_account
         if c_to_acct:
-            c_to_account -= t.cash_transaction.amount
+            c_to_acct.balance -= t.cash_transaction.amount
         c_from_acct = t.cash_transaction.from_account
         if c_from_acct:
-            c_from_account += t.cash_transaction.amount
+            c_from_acct.balance += t.cash_transaction.amount
         DBSession.delete(t.cash_transaction)
 
     DBSession.delete(t)

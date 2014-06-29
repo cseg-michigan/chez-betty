@@ -27,7 +27,7 @@ class CashTransaction(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=True, unique=True)
-    transaction = relationship(Transaction, backref="cash_transaction", uselist=False)
+    transaction = relationship(Transaction, backref=backref("cash_transaction", uselist=False), uselist=False)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
     amount = Column(Float, nullable=False)
 
