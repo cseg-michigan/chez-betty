@@ -240,11 +240,22 @@ def admin_edit_items_submit(request):
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2')
 def admin_add_items(request):
-    return {}
+    try:
+        return {'items' : request.GET['error_items']}
+    except KeyError:
+        return {'items' : {'count': 1,
+                'name-0': '',
+                'barcode-0': '',
+                'stock-0': '',
+                'price-0': '',
+                'wholesale-0': '',
+                'enabled-0': '',
+                }}
 
 @view_config(route_name='admin_add_items_submit', request_method='POST')
 def admin_add_items_submit(request):
     count = 0
+    error_items = []
     for key in request.POST:
         if 'item-name-' in key:
             id = int(key.split('-')[2])
@@ -260,13 +271,31 @@ def admin_add_items_submit(request):
                 count += 1
             except:
                 if len(name):
+                    error_items.append({
+                            'name' : request.POST['item-name-{}'.format(id)],
+                            'barcode' : request.POST['item-barcode-{}'.format(id)],
+                            'stock' : request.POST['item-stock-{}'.format(id)],
+                            'price' : request.POST['item-price-{}'.format(id)],
+                            'wholesale' : request.POST['item-wholesale-{}'.format(id)],
+                            'enabled' : request.POST['item-enabled-{}'.format(id)],
+                            })
                     request.session.flash("Error adding item: {}".format(name), "error")
                 # O/w this was probably a blank row; ignore.
     if count:
         request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1], "success"))
     else:
         request.session.flash("No items added.", "error")
-    return HTTPFound(location=request.route_url('admin_edit_items'))
+    if len(error_items):
+        flat = {}
+        e_count = 0
+        for err in error_items:
+            for k,v in err.items():
+                flat['{}-{}'.format(k, e_count)] = v
+            e_count += 1
+        flat['count'] = len(error_items)
+        return HTTPFound(location=request.route_url('admin_add_items', _query={'error_items': flat}))
+    else:
+        return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2')
 def admin_inventory(request):
