@@ -16,12 +16,17 @@
 	text-align: right;
 }
 
+.right {
+	text-align: right;
+}
+
 /* Color dollar amounts */
 .negative {
 	color: red;
 }
-<<<<<<< HEAD
+
 .positive {}
+
 
 /* Buttons */
 .btn-huge {
@@ -35,6 +40,27 @@
 
 #front-buttons {
 	text-align: center;
+}
+
+/* Header */
+.header {
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 10px;
+}
+h1 {
+	color: #428bca;
+	margin-bottom: 0;
+	padding-bottom: 0;
+
+}
+
+/* Alerts */
+#alerts {
+	margin-top: 10px;
+}
+
+.alert {
+	margin-top: 15px;
 }
 
 /* Index */

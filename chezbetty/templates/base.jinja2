@@ -34,7 +34,13 @@
       {% endblock %}
     </div>
 
-    {% block top %}{% endblock %}
+    {% block top %}
+    <div class="container">
+      <div class="header">
+        <h1>{% block header %}{% endblock %}</h1>
+      </div>
+    </div>
+    {% endblock %}
 
     <div id="content" class="container">
       {% block content %}{% endblock %}
