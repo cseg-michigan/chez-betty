@@ -52,11 +52,12 @@ $("#btn-items-add-row").click(function () {
 		new_id = name_pieces.join("-");
 		$(this).attr("id", new_id);
 		$(this).attr("name", new_id);
-		// Clear the value if there is text in the first row already
-		$(this).val("");
-		// Reset the checkmark so new products are enabled by default
 		if ($(this).is(":checkbox")) {
+			// Reset the checkmark so new products are enabled by default
 			$(this).prop("checked", "checked");
+		} else {
+			// Clear the value if there is text in the first row already
+			$(this).val("");
 		}
 	});
 
