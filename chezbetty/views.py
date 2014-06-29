@@ -249,7 +249,7 @@ def admin_item_barcode_json(request):
     item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
     return {'data' : item_restock_html}
 
-@view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission="manaage")
+@view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission="manage")
 def admin_restock(request):
     return {}
 
