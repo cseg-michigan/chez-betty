@@ -247,7 +247,7 @@ def admin_index(request):
 def admin_item_barcode_json(request):
     item = Item.from_barcode(request.matchdict['barcode'])
     item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
-    return {'data' : item_restock_html}
+    return {'data' : item_restock_html, 'id' : item.id}
 
 @view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission="manage")
 def admin_restock(request):
@@ -255,6 +255,10 @@ def admin_restock(request):
 
 @view_config(route_name='admin_restock_submit', request_method='POST')
 def admin_restock_submit(request):
+    i = iter(request.POST)
+    for quantity,cost,salestax in zip(i,i,i):
+        pass
+    request.session.flash("Restock complete.", "success")
     return HTTPFound(location=request.route_url('admin_restock'))
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission="manage")
