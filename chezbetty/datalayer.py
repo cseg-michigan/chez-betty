@@ -46,7 +46,7 @@ def reconcile_items(items, admin):
     return t
 
 def reconcile_cash(amount, admin):
-    cash = DBSession.query(make_cash_account("cashbox"))
+    cash = make_cash_account("cashbox")
     expected_amount = cash.balance
     amount_missing = expected_amount - amount
 
@@ -66,6 +66,6 @@ def reconcile_cash(amount, admin):
             transaction = None,
             user = admin
         )
-    DBSession.add(t2)
+        DBSession.add(t2)
     return expected_amount
 
