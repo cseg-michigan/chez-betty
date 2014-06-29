@@ -63,7 +63,7 @@ class User(Account):
     umid = Column(String(8), unique=True)
     _password = Column("password", String(255))
     _salt = Column("salt", String(255))
-    disabled = Column(Boolean, nullable=False, default=False)
+    enabled = Column(Boolean, nullable=False, default=True)
     role = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
             nullable=False, default="user")
 

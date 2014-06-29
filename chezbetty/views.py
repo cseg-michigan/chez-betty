@@ -1,7 +1,7 @@
 from pyramid.renderers import render
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
-from pyramid.view import view_config
+from pyramid.view import view_config, forbidden_view_config
 from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.exc import DBAPIError
@@ -217,10 +217,6 @@ def deposit_new(request):
 ### Admin
 ###
 
-@view_config(route_name='admin_login', renderer='templates/admin/login.jinja2')
-def admin_login(request):
-    return {}
-
 @view_config(route_name='admin_index', renderer='templates/admin/index.jinja2')
 def admin_index(request):
     return {}
@@ -304,4 +300,34 @@ def admin_inventory(request):
     items = DBSession.query(Item).all()
     return {'items': items}
 
+@view_config(route_name="login", renderer="teampltes/login.jinja2")
+@forbidden_view_config(renderer='templates/login.jinja2')
+def login(request):
+    login_url = request.resource_url(request.context, 'login')
+    referrer = request.url
+    if referrer == login_url:
+        referrer = '/' # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+    message = login = password = ""
+    if 'form.submitted' in request.params:
+        login = request.params['login']
+        password = request.params['password']
+        user = DBSession.query(User).filter(User.uniqname == login).first()
+        if user and user.check_password(password):
+            # successful login
+            headers = remember(request, login)
+            return HTTPFound(location=came_from, headers=headers)
+        message = "Login failed. Incorrect username or password.",
 
+    return dict(
+        message = message,
+        url = request.application_url + '/login',
+        came_from = came_from,
+        login = login,
+        password = password
+    )
+
+def logout(request):
+    headers = forget(request)
+    return HTTPFound(location=request.route_url('index'),
+                     headers = headers)
