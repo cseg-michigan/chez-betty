@@ -23,14 +23,17 @@
 
 
   {% for item in items %}
-  <div id="item-{{ item.id }}" class="form-group row">
+  <div id="item-{{ item.id }}" class="form-group row edit-item-row">
     <div class="col-sm-1">{{ item.id }}</div>
     <div class="col-sm-3"><input type="text" class="form-control" id="item-name-{{ item.id }}" value="{{ item.name }}"></div>
     <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ item.id }}" value="{{ item.barcode }}"></div>
     <div class="col-sm-1"><input type="text" class="form-control" id="item-stock-{{ item.id }}" value="{{ item.in_stock }}"></div>
     <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ item.id }}" value="{{ item.price }}"></div>
     <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ item.id }}" value="{{ item.wholesale }}"></div>
-    <div class="col-sm-1"><button type="button" id="btn-delete-item-{{ item.id }}" class="btn btn-danger">X</button></div>
+    <div class="col-sm-1 item-actions">
+      <button type="button" id="btn-delete-item-{{ item.id }}" class="btn btn-danger">X</button>
+      <button type="button" id="btn-undelete-item-{{ item.id }}" class="btn btn-success" style="display:none;">+</button>
+    </div>
   </div>
   {% endfor %}
 
@@ -38,4 +41,8 @@
 
 </form>
 
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
 {% endblock %}
