@@ -55,10 +55,10 @@ def reconcile_items(items, admin):
     for item, quantity in items.items():
         if item.in_stock == quantity:
             continue
-        item.in_stock = quantity
         quantity_missing = item.in_stock - quantity
         st = SubTransaction(t, item, quantity_missing)
         total_amount_missing += st.amount
+        item.in_stock = quantity
     t.update_amount(total_amount_missing)
     return t
 

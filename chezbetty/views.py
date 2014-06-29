@@ -340,12 +340,12 @@ def admin_inventory_submit(request):
         except ValueError:
             pass
     t = datalayer.reconcile_items(items, None)
-    if t.amount > 0:
-        request.session.flash("Inventory Reconciled. Chez Betty made ${}".format(t.amount), "success")
+    if t.amount < 0:
+        request.session.flash("Inventory Reconciled. Chez Betty made ${}".format(-t.amount), "success")
     elif t.amount == 0:
         request.session.flash("Inventory Reconciled. Chez Betty was spot on.", "success")
     else:
-        request.session.flash("Inventory Reconciled. Chez Betty lost ${}".format(-t.amount), "success")
+        request.session.flash("Inventory Reconciled. Chez Betty lost ${}. :(".format(t.amount), "error")
     return HTTPFound(location=request.route_url('admin_inventory'))
 
 @view_config(route_name="login", renderer="teampltes/login.jinja2")

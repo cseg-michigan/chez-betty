@@ -27,3 +27,8 @@ class Item(Versioned, Base):
     @classmethod
     def from_barcode(cls, barcode):
         return DBSession.query(cls).filter(cls.barcode == barcode).one()
+
+    def __str__(self):
+        return "<Item (%s)>" % self.name
+
+    __repr__ = __str__
