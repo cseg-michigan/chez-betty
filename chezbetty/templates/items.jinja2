@@ -6,8 +6,9 @@
 
 {% block content %}
 
-
-<a class="btn btn-default" href="/">Home</a>
+<div class="top-button">
+  <a class="btn btn-default btn-lg" href="/">Back</a>
+</div>
 
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -18,9 +19,9 @@
       <thead>
         <tr>
           <th>Item</th>
-          <th class="item-stock">In Stock</th>
-          <th class="item-price">Price</th>
-          <th class="item-cost">Wholesale Cost</th>
+          <th class="item-stock" style="width: 15%">In Stock</th>
+          <th class="item-cost" style="width: 15%">Wholesale Cost</th>
+          <th class="item-price" style="width: 15%">Price</th>
         </tr>
       </thead>
 
@@ -29,8 +30,8 @@
         <tr>
           <td class="item-name">{{ item.name }}</td>
           <td class="item-stock">{{ item.in_stock }}</td>
-          <td class="item-price">{{ item.price|format_currency|safe }}</td>
           <td class="item-cost">{{ item.wholesale|format_currency|safe }}</td>
+          <td class="item-price">{{ item.price|format_currency|safe }}</td>
         </tr>
       {% endfor %}
       </tbody>
