@@ -51,7 +51,7 @@ def purchase(request):
 
 @view_config(route_name='items', renderer='templates/items.jinja2', permission="service")
 def items(request):
-    items = DBSession.query(Item).all()
+    items = DBSession.query(Item).order_by(Item.name).all()
     return {'items': items}
 
 @view_config(route_name='users', renderer='templates/users.jinja2', permission="manage")
@@ -327,7 +327,7 @@ def admin_add_items_submit(request):
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
 def admin_inventory(request):
-    items = DBSession.query(Item).all()
+    items = DBSession.query(Item).order_by(Item.name).all()
     return {'items': items}
 
 @view_config(route_name='admin_inventory_submit', request_method='POST', permission="manage")

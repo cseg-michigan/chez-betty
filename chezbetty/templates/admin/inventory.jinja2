@@ -12,16 +12,14 @@
 <form role="form" action="/admin/inventory/submit" method="post">
 
   <div class="row item-list-header">
-    <div class="col-sm-1">Item ID</div>
-    <div class="col-sm-7">Name</div>
+    <div class="col-sm-8">Name</div>
     <div class="col-sm-2">In Stock</div>
     <div class="col-sm-2">New Count</div>
   </div>
 
   {% for item in items %}
   <div id="item-{{ item.id }}" class="form-group row">
-    <div class="col-sm-1">{{ item.id }}</div>
-    <div class="col-sm-7">{{ item.name }}</div>
+    <div class="col-sm-8">{{ item.name }}</div>
     <div class="col-sm-2">{{ item.in_stock }}</div>
     <div class="col-sm-2"><input type="text" class="form-control" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value=""></div>
   </div>
