@@ -299,9 +299,7 @@ def admin_add_items(request):
         return {'items' : {'count': 1,
                 'name-0': '',
                 'barcode-0': '',
-                'stock-0': '',
                 'price-0': '',
-                'wholesale-0': '',
                 'enabled-0': True,
                 }}
     else:
@@ -318,9 +316,9 @@ def admin_add_items_submit(request):
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
-                stock = int(request.POST['item-stock-{}'.format(id)])
+                stock = 0
                 price = float(request.POST['item-price-{}'.format(id)])
-                wholesale = float(request.POST['item-wholesale-{}'.format(id)])
+                wholesale = 0
                 try:
                     enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
                 except KeyError:
@@ -337,9 +335,7 @@ def admin_add_items_submit(request):
                     error_items.append({
                             'name' : request.POST['item-name-{}'.format(id)],
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
-                            'stock' : request.POST['item-stock-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
-                            'wholesale' : request.POST['item-wholesale-{}'.format(id)],
                             'enabled' : enabled,
                             })
                     request.session.flash("Error adding item: {}".format(name), "error")
