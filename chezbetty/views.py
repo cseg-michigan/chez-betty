@@ -256,8 +256,40 @@ def admin_restock(request):
 @view_config(route_name='admin_restock_submit', request_method='POST')
 def admin_restock_submit(request):
     i = iter(request.POST)
+    items = {}
     for quantity,cost,salestax in zip(i,i,i):
-        pass
+        if not (quantity.split('-')[2] == cost.split('-')[2] == salestax.split('-')[2]):
+            request.session.flash('Error: Malformed POST. Misaligned IDs.', 'error')
+            DBSession.rollback()
+            return HTTPFound(location=request.route_url('admin_restock'))
+        try:
+            item = Item.from_id(int(quantity.split('-')[2]))
+        except:
+            request.session.flash('No item with id {} found. Skipped.'.format(int(quantity.split('-')[2])))
+            continue
+        try:
+            quantity = int(request.POST[quantity])
+            if '/' in cost:
+                dividend, divisor = map(float(request.POST[cost].split('/')))
+                cost = dividend / divisor
+            else:
+                cost = float(request.POST[cost])
+        except ValueError:
+            request.session.flash('Non-numeric value for {}.  Skipped.'.format(item.name))
+            continue
+        except ZeroDivisionError:
+            request.session.flash("Really? Dividing by 0? Item {} skipped.".format(item.name))
+            continue
+        salestax = request.POST[salestax] == 'on'
+        if salestax:
+            wholesale = (cost * 1.06) / quantity
+        else:
+            wholesale = cost / quantity
+
+        item.wholesale = wholesale
+        items[item] = quantity
+
+    datalayer.restock(items)
     request.session.flash("Restock complete.", "success")
     return HTTPFound(location=request.route_url('admin_restock'))
 
