@@ -248,15 +248,20 @@ def admin_add_items_submit(request):
     for key in request.POST:
         if 'item-name-' in key:
             id = int(key.split('-')[2])
-            name = request.POST['item-name-{}'.format(id)]
-            barcode = request.POST['item-barcode-{}'.format(id)]
-            stock = int(request.POST['item-stock-{}'.format(id)])
-            price = float(request.POST['item-price-{}'.format(id)])
-            wholesale = float(request.POST['item-wholesale-{}'.format(id)])
-            enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
-            item = Item(name, barcode, price, wholesale, stock, enabled)
-            DBSession.add(item)
-            count += 1
+            try:
+                name = request.POST['item-name-{}'.format(id)]
+                barcode = request.POST['item-barcode-{}'.format(id)]
+                stock = int(request.POST['item-stock-{}'.format(id)])
+                price = float(request.POST['item-price-{}'.format(id)])
+                wholesale = float(request.POST['item-wholesale-{}'.format(id)])
+                enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
+                item = Item(name, barcode, price, wholesale, stock, enabled)
+                DBSession.add(item)
+                count += 1
+            except:
+                if len(name):
+                    request.session.flash("Error adding item: {}".format(name), "error")
+                # O/w this was probably a blank row; ignore.
     if count:
         request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1], "success"))
     else:
