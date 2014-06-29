@@ -1,15 +1,6 @@
 {% extends "base.jinja2" %}
 {% block title %}User Information{% endblock %}
-
-
-{% block top %}
-
-<div class="container">
-  <h1>{{ user.name }}</h1>
-</div>
-
-{% endblock %}
-
+{% block header %}{{ user.name }}{% endblock %}
 
 {% block content %}
 

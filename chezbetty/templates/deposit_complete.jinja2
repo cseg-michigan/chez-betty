@@ -1,18 +1,12 @@
 {% extends "base.jinja2" %}
 {% block title %}Deposit Complete{% endblock %}
+{% block header %}Deposit Complete{% endblock %}
 
 {% block alerts %}
 <div class="alert alert-success" role="alert">
   Success! The deposit was added successfully.
 </div>
 {% endblock %}
-
-{% block top %}
-<div class="container">
-  <h1>Deposit Complete</h1>
-</div>
-{% endblock %}
-
 
 {% block content %}
 
@@ -27,15 +21,15 @@
     <div id="transaction-{{ deposit['transaction_id'] }}">
       <div class="row">
         <div class="col-md-4">Old Balance</div>
-        <div class="col-md-4">{{ deposit['prev']|format_currency|safe }}</div>
+        <div class="col-md-1 right">{{ deposit['prev']|format_currency|safe }}</div>
       </div>
       <div class="row">
         <div class="col-md-4">Deposit</div>
-        <div class="col-md-4">{{ deposit['amount']|format_currency|safe }}</div>
+        <div class="col-md-1 right">{{ deposit['amount']|format_currency|safe }}</div>
       </div>
       <div class="row">
         <div class="col-md-4">New Balance</div>
-        <div class="col-md-4">{{ deposit['new']|format_currency|safe }}</div>
+        <div class="col-md-1 right">{{ deposit['new']|format_currency|safe }}</div>
       </div>
     </div>
 
