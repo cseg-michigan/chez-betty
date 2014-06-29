@@ -362,4 +362,15 @@ def admin_edit_balance(request):
     users = DBSession.query(User).all()
     return {'users': users}
 
+@view_config(route_name='admin_cash_reconcile', renderer='templates/admin/cash_reconcile.jinja2')
+def admin_cash_reconcile(request):
+    return {}
 
+@view_config(route_name='admin_cash_reconcile_submit', request_method='POST')
+def admin_cash_reconcile_submit(request):
+    request.session.flash('Cash box recorded successfully', 'success')
+    return HTTPFound(location=request.route_url('admin_cash_reconcile_success'))
+
+@view_config(route_name='admin_cash_reconcile_success', renderer='templates/admin/cash_reconcile_complete.jinja2')
+def admin_cash_reconcile_success(request):
+    return {'cash': {'deposit': 6.5, 'expected': 7.0, 'difference': -0.5}}
