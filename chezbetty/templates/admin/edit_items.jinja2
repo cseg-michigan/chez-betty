@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<form role="form">
+<form role="form" action="/edit/items/submit" method="post">
 
   <div class="row item-list-header">
     <div class="col-sm-1">Item ID</div>
@@ -34,6 +34,7 @@
       <button type="button" id="btn-delete-item-{{ item.id }}" class="btn btn-danger">X</button>
       <button type="button" id="btn-undelete-item-{{ item.id }}" class="btn btn-success" style="display:none;">+</button>
     </div>
+    <input type="hidden" class="form-control" id="item-delete-{{ item.id }}" value="0">
   </div>
   {% endfor %}
 

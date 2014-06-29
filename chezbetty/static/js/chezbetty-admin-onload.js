@@ -8,7 +8,7 @@ $(".edit-item-row").on("click", "button", function () {
 	if (btn_type == "delete") {
 
 		// Mark the item to be delete upon submit
-		item_row.addClass("to-delete");
+		item_row.children("#item-delete-"+item_id).val("1");
 
 		// Gray out the item to show it will be deleted
 		item_row.children("div").each(function () {
@@ -37,7 +37,7 @@ $(".edit-item-row").on("click", "button", function () {
 	} else if (btn_type == "undelete") {
 
 		// Remove the delete mark
-		item_row.removeClass("to-delete");
+		item_row.children("#item-delete-"+item_id).val("0");
 
 		// Remove the gray overlays
 		item_row.children(".item-gray-out").remove();
