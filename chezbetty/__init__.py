@@ -54,8 +54,13 @@ def main(global_config, **settings):
     config.add_route('admin_add_items', '/admin/add/items')
     config.add_route('admin_add_items_submit', '/admin/add/items/submit')
     config.add_route('admin_inventory', '/admin/inventory')
+    config.add_route('admin_inventory_submit', '/admin/inventory/submit')
     config.add_route('admin_edit_users', '/admin/edit/users')
     config.add_route('admin_edit_users_submit', '/admin/edit/users/submit')
+    config.add_route('admin_edit_balance', '/admin/edit/balance')
+    config.add_route('admin_cash_reconcile', '/admin/cash/reconcile')
+    config.add_route('admin_cash_reconcile_submit', '/admin/cash/reconcile/submit')
+    config.add_route('admin_cash_reconcile_success', '/admin/cash/reconcile/success')
 
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')

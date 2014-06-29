@@ -245,7 +245,7 @@ def admin_add_items(request):
                 'stock-0': '',
                 'price-0': '',
                 'wholesale-0': '',
-                'enabled-0': '',
+                'enabled-0': True,
                 }}
     else:
         d = {'items' : request.GET}
@@ -288,7 +288,7 @@ def admin_add_items_submit(request):
                     request.session.flash("Error adding item: {}".format(name), "error")
                 # O/w this was probably a blank row; ignore.
     if count:
-        request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1], "success"))
+        request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1]), "success")
     else:
         request.session.flash("No items added.", "error")
     if len(error_items):
@@ -308,7 +308,25 @@ def admin_inventory(request):
     items = DBSession.query(Item).all()
     return {'items': items}
 
-@view_config(route_name="login", renderer="templates/login.jinja2")
+@view_config(route_name='admin_inventory_submit', request_method='POST')
+def admin_inventory_submit(request):
+    items = {}
+    for key in request.POST:
+        item = Item.from_id(key.split('-')[2])
+        try:
+            items[item] = int(request.POST[key])
+        except ValueError:
+            pass
+    t = datalayer.reconcile_items(items, None)
+    if t.amount > 0:
+        request.session.flash("Inventory Reconciled. Chez Betty made ${}".format(t.amount), "success")
+    elif t.amount == 0:
+        request.session.flash("Inventory Reconciled. Chez Betty was spot on.", "success")
+    else:
+        request.session.flash("Inventory Reconciled. Chez Betty lost ${}".format(-t.amount), "success")
+    return HTTPFound(location=request.route_url('admin_inventory'))
+
+@view_config(route_name="login", renderer="teampltes/login.jinja2")
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):
     login_url = request.resource_url(request.context, 'login')
@@ -358,3 +376,33 @@ def admin_edit_users_submit(request):
     request.session.flash("Users updated successfully.", "success")
     return HTTPFound(location=request.route_url('admin_edit_users'))
 
+@view_config(route_name='admin_edit_balance', renderer='templates/admin/edit_balance.jinja2')
+def admin_edit_balance(request):
+    users = DBSession.query(User).all()
+    return {'users': users}
+
+@view_config(route_name='admin_cash_reconcile', renderer='templates/admin/cash_reconcile.jinja2')
+def admin_cash_reconcile(request):
+    return {}
+
+@view_config(route_name='admin_cash_reconcile_submit', request_method='POST')
+def admin_cash_reconcile_submit(request):
+    print(request.POST)
+    try:
+        amount = float(request.POST['amount'])
+    except ValueError:
+        request.session.flash('Error: Bad value for cash box amount', 'error')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+    expected_amount = datalayer.reconcile_cash(amount, None)
+
+    request.session.flash('Cash box recorded successfully', 'success')
+    return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
+        _query={'amount':amount, 'expected_amount':expected_amount}))
+
+@view_config(route_name='admin_cash_reconcile_success', renderer='templates/admin/cash_reconcile_complete.jinja2')
+def admin_cash_reconcile_success(request):
+    deposit = float(request.GET['amount'])
+    expected = float(request.GET['expected_amount'])
+    difference = deposit - expected
+    return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}

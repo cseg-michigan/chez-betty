@@ -1,0 +1,31 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'cash_reconcile' %}
+{% block title %}Cash Box{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Cash Box</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/cash/reconcile/submit" method="post">
+
+  <div class="row">
+    <div class="col-sm-2">Cash Box Deposit</div>
+    <div class="col-sm-3">{{ cash.deposit|format_currency }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-2">Expected Deposits</div>
+    <div class="col-sm-3">{{ cash.expected|format_currency }}</div>
+  </div>
+  <div class="row">
+    <div class="col-sm-2">Difference</div>
+    <div class="col-sm-3">{{ cash.difference|format_currency }}</div>
+  </div>
+
+  <button type="submit" class="btn btn-success">Deposit</button>
+
+</form>
+
+{% endblock %}
