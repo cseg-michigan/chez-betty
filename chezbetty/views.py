@@ -245,7 +245,7 @@ def admin_add_items(request):
                 'stock-0': '',
                 'price-0': '',
                 'wholesale-0': '',
-                'enabled-0': '',
+                'enabled-0': True,
                 }}
     else:
         d = {'items' : request.GET}
@@ -288,7 +288,7 @@ def admin_add_items_submit(request):
                     request.session.flash("Error adding item: {}".format(name), "error")
                 # O/w this was probably a blank row; ignore.
     if count:
-        request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1], "success"))
+        request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1]), "success")
     else:
         request.session.flash("No items added.", "error")
     if len(error_items):
