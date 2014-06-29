@@ -9,7 +9,12 @@
 
 {% block content %}
 
-Scan items to add to stock.
+<p>Scan items to add to stock.</p>
+<p>Quantity is the number of additional individual items you are adding.</p>
+<p>Wholesale cost is the total cost of all individual items excluding any sales tax. You may use a "/" if the products are in a variety pack or similar.<p>
+<p>Check the sales tax box if sales tax was charged on those items.</p>
+<p>Please enter the total amount of sales tax at the bottom as a sanity check.</p>
+
 
 <form role="form" action="/admin/restock/submit" method="post" onsubmit="return false;">
 
