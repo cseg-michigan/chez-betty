@@ -28,14 +28,14 @@
          #}
         {% if transaction.type == "purchase" %}
 
-        Purchase totalling {{ transaction.amount|format_currency|safe }} <small>touch to show</small>
+        Purchase totalling {{ transaction.amount|format_currency|safe }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
         <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
 
         {# Show a purchase transaction
          #}
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
-          <table class="table">
+          <table class="table table-bordered">
 
             <thead>
               <tr>
@@ -75,7 +75,7 @@
 
         {% elif transaction.type == "adjustment" %}
 
-        Adjustment of {{ transaction.amount|format_currency|safe }} by {{ user.name }} <small>touch to show</small>
+        Adjustment of {{ transaction.amount|format_currency|safe }} by {{ user.name }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
         <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">

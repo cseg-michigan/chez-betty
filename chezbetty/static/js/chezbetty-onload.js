@@ -100,7 +100,9 @@ $(".btn-trans-showhide").click(function () {
 
 	if (transaction.is(":visible")) {
 		transaction.hide();
+		$("#transaction-small-"+transaction_id).text("touch to show");
 	} else {
 		transaction.show();
+		$("#transaction-small-"+transaction_id).text("touch to hide");
 	}
 });
