@@ -156,10 +156,11 @@ def transaction_undo(request):
     if user.umid != request.matchdict['umid']:
         request.session.flash("Error: Transaction does not belong to specified user", "error")
         return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
-    datalayer.undo_transaction(transaction)
-    #try:
-    #except:
-    #    request.session.flash('Error: Failed to undo transaction.', "error")
+    try:
+        datalayer.undo_transaction(transaction)
+        request.session.flash('Transaction successfully reverted.', 'success')
+    except:
+        request.session.flash('Error: Failed to undo transaction.', "error")
     return HTTPFound(location=request.route_url('user', umid=user.umid))
 
 ###
