@@ -69,6 +69,10 @@ h1 {
 	padding-bottom: 40px;
 }
 
+.top {
+    margin-top: 50px;
+}
+
 /* Purchase */
 #purchase-empty {
 	text-align: center;
@@ -86,6 +90,19 @@ h1 {
 	font-weight: bold;
 }
 
-.top {
-    margin-top: 50px;
+/* Items */
+
+.top-button {
+	margin-bottom: 15px;
+}
+
+/* User */
+
+.user-transaction-detail {
+	margin-top: 10px;
+}
+
+#transaction-history small {
+	color: #ccc;
+	padding-left: 10px;
 }

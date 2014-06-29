@@ -21,26 +21,28 @@
        #}
       {% for transaction in transactions|reverse %}
 
-      <li class="list-group-item">
-        {{ transaction.type }} | {{ transaction.timestamp }}
-        <button type="button" id="btn-trans-{{ transaction.id }}" class="btn btn-default btn-trans-showhide">Show</button>
+      <li id="btn-trans-{{ transaction.id }}" class="list-group-item btn-trans-showhide">
 
         {# Choose what content to display based on the type of transaction
          # it is.
          #}
         {% if transaction.type == "purchase" %}
 
+        Purchase totalling {{ transaction.amount|format_currency|safe }} <small>touch to show</small>
+
+        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+
         {# Show a purchase transaction
          #}
-        <div id="transaction-{{ transaction.id }}" style="display:none;">
+        <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
           <table class="table">
 
             <thead>
               <tr>
-                <th>Item Name</th>
-                <th>Quantity</th>
-                <th>Item Price</th>
-                <th>Total Price</th>
+                <th class="item-title">Item Name</th>
+                <th class="item-quantity" style="width: 15%;">Quantity</th>
+                <th class="item-price" style="width: 15%;">Item Price</th>
+                <th class="item-total" style="width: 15%;">Total Price</th>
               </tr>
             </thead>
 
@@ -56,22 +58,28 @@
             </tbody>
 
             <tfoot>
-              <td colspan="3">Total</td>
-              <td>{{ transaction.amount|format_currency|safe }}</td>
+              <td colspan="3"><b>Total</b></td>
+              <td class="item-total"><b>{{ transaction.amount|format_currency|safe }}</b></td>
             </tfoot>
 
           </table>
         </div>
 
+
         {% elif transaction.type == "deposit" %}
 
-        {# Show a deposit transaction
-         #}
-        <div id="transaction-{{ transaction.id }}" style="display:none;">
-          <div class="row">
-            <div class="col-md-4">Deposit</div>
-            <div class="col-md-4">{{ transaction.amount|format_currency|safe }}</div>
-          </div>
+        Deposit of {{ transaction.amount|format_currency|safe }}
+
+        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+
+
+        {% elif transaction.type == "adjustment" %}
+
+        Adjustment of {{ transaction.amount|format_currency|safe }} by {{ user.name }} <small>touch to show</small>
+        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+
+        <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
+          Notes: {{ transaction.notes }}
         </div>
 
         {% endif %}
