@@ -69,10 +69,11 @@ def _history_mapper(local_mapper):
         # "changed" column stores the UTC timestamp of when the
         # history row was created.
         # This column is optional and can be omitted.
-        cols.append(Column('changed_at', DateTime,
+        model_name = cls.__name__.lower()
+        cols.append(Column('%s_changed_at' % model_name, DateTime,
                             default=datetime.datetime.utcnow,
                             info=version_meta))
-        cols.append(Column('changed_by', Integer, ForeignKey("users.id"),
+        cols.append(Column('%s_changed_by' % model_name, Integer, ForeignKey("users.id"),
                             info=version_meta))
 
         if super_fks:
