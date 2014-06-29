@@ -287,6 +287,10 @@ def admin_restock_submit(request):
             wholesale = cost / quantity
 
         item.wholesale = wholesale
+
+        if item.price < item.wholesale:
+            item.price = item.wholesale * 1.15
+
         items[item] = quantity
 
     datalayer.restock(items)
