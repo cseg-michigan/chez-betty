@@ -21,14 +21,14 @@
   </div>
 
   <div id="new-items">
-    {% for item in items %}
+    {% for number in range(0, items['count']) %}
     <div id="new-item-0" class="form-group row new-item">
-      <div class="col-sm-3"><input type="text" class="form-control" id="item-name-{{ loop.index }}" name="item-name-{{ loop.index }}" value={{ item['name'] }}></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ loop.index }}" name="item-barcode-{{ loop.index }}" value={{ item['barcode'] }}></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-{{ loop.index }}" name="item-stock-{{ loop.index }}" value={{ item['in_stock'] }}></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ loop.index }}" name="item-price-{{ loop.index }}" value={{ item['price'] }}></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ loop.index }}" name="item-wholesale-{{ loop.index }}" value={{ item['wholesale'] }}></div>
-      <div class="col-sm-1"><input type="checkbox" id="item-enabled-{{ loop.index }}" name="item-enabled-{{ loop.index }}" {% if item['enabled'] %}checked="checked"{% endif %}></div>
+      <div class="col-sm-3"><input type="text" class="form-control" id="item-name-{{ number }}" name="item-name-{{ number }}" value={{ item['name-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ number }}" name="item-barcode-{{ number }}" value={{ item['barcode-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-{{ number }}" name="item-stock-{{ number }}" value={{ item['in_stock-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ number }}" name="item-price-{{ number }}" value={{ item['price-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ number }}" name="item-wholesale-{{ number }}" value={{ item['wholesale-'~number] }}></div>
+      <div class="col-sm-1"><input type="checkbox" id="item-enabled-{{ number }}" name="item-enabled-{{ number }}" {% if item['enabled-'~number] %}checked="checked"{% endif %}></div>
     </div>
     {% endfor %}
   </div>
@@ -36,7 +36,7 @@
   <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another Item</button>
   <button type="submit" class="btn btn-success">Add Items</button>
 
-  <input type="hidden" id="new-items-number" name="new-items-number" value="{{ items|length }}">
+  <input type="hidden" id="new-items-number" name="new-items-number" value="{{ items['count'] }}">
 
 </form>
 
