@@ -51,6 +51,7 @@ def main(global_config, **settings):
     config.add_route('admin_login', '/admin')
     config.add_route('admin_index', '/admin/index')
     config.add_route('admin_edit_items', '/admin/edit/items')
+    config.add_route('admin_edit_items_submit', '/admin/edit/items/submit')
     config.add_route('admin_add_items', '/admin/add/items')
     config.add_route('admin_inventory', '/admin/inventory')
 

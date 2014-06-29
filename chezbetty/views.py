@@ -15,6 +15,8 @@ from .models.transaction import Transaction
 
 import chezbetty.datalayer as datalayer
 
+from pprint import pprint
+
 class DepositException(Exception):
     pass
 
@@ -227,6 +229,14 @@ def admin_edit_items(request):
     items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
     items = items_active + items_inactive
     return {'items': items}
+
+@view_config(route_name='admin_edit_items_submit', request_method='POST')
+def admin_edit_items_submit(request):
+    for key in request.POST:
+        item = Item.from_id(int(key.split('-')[2]))
+        setattr(item, key.split('-')[1], request.POST[key])
+    request.session.flash("Items updated successfully.", "success")
+    return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2')
 def admin_add_items(request):
