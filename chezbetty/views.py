@@ -242,9 +242,7 @@ def admin_edit_items_submit(request):
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2')
 def admin_add_items(request):
-    try:
-        return {'items' : request.GET['error_items']}
-    except KeyError:
+    if len(request.GET) == 0:
         return {'items' : {'count': 1,
                 'name-0': '',
                 'barcode-0': '',
@@ -253,6 +251,9 @@ def admin_add_items(request):
                 'wholesale-0': '',
                 'enabled-0': '',
                 }}
+    else:
+        d = {'items' : request.GET}
+        return d
 
 @view_config(route_name='admin_add_items_submit', request_method='POST')
 def admin_add_items_submit(request):
@@ -267,19 +268,26 @@ def admin_add_items_submit(request):
                 stock = int(request.POST['item-stock-{}'.format(id)])
                 price = float(request.POST['item-price-{}'.format(id)])
                 wholesale = float(request.POST['item-wholesale-{}'.format(id)])
-                enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
+                try:
+                    enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
+                except KeyError:
+                    enabled = False
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
                 count += 1
             except:
                 if len(name):
+                    try:
+                        enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
+                    except KeyError:
+                        enabled = False
                     error_items.append({
                             'name' : request.POST['item-name-{}'.format(id)],
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
                             'stock' : request.POST['item-stock-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
                             'wholesale' : request.POST['item-wholesale-{}'.format(id)],
-                            'enabled' : request.POST['item-enabled-{}'.format(id)],
+                            'enabled' : enabled,
                             })
                     request.session.flash("Error adding item: {}".format(name), "error")
                 # O/w this was probably a blank row; ignore.
@@ -295,7 +303,7 @@ def admin_add_items_submit(request):
                 flat['{}-{}'.format(k, e_count)] = v
             e_count += 1
         flat['count'] = len(error_items)
-        return HTTPFound(location=request.route_url('admin_add_items', _query={'error_items': flat}))
+        return HTTPFound(location=request.route_url('admin_add_items', _query=flat))
     else:
         return HTTPFound(location=request.route_url('admin_edit_items'))
 
