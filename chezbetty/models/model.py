@@ -38,7 +38,10 @@ class RootFactory(object):
     __parent__ = None
     __acl__ = [
         (Allow, Everyone, 'view'),
-        (Allow, 'group:editors', 'edit')
+        (Allow, 'user', 'user'),
+        (Allow, 'serviceaccount', 'service'),
+        (Allow, 'manager', 'manage'),
+        (Allow, 'admin', 'admin'),
     ]
 
     def __init__(self, request):
