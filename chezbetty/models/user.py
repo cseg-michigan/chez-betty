@@ -1,3 +1,5 @@
+import binascii
+import os
 from .model import *
 from .account import Account
 
@@ -59,8 +61,8 @@ class User(Account):
     id = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
     uniqname = Column(String(8), nullable=False, unique=True)
     umid = Column(String(8), unique=True)
-    password = Column(String(255))
-    
+    _password = Column("password", String(255))
+    _salt = Column("salt", String(255))
     disabled = Column(Boolean, nullable=False, default=False)
     role = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
             nullable=False, default="user")
@@ -89,6 +91,21 @@ class User(Account):
             DBSession.add(u)
         return u
 
+    def __make_salt(self):
+        return binascii.b2a_base64(os.urandom(32))[:-3]
+
+    @hybrid_property
+    def password(self):
+        return self._password;
+
+    @password.setter
+    def password(self, password):
+        self._salt = self.__make_salt()
+        self._password = hashlib.sha256(self._salt + password).hexdigest()
+
+    def check_password(self, cand):
+        c = hashlib.sha256(self._salt + cand).hexdigest()
+        return c == self._password
 
 def groupfinder(userid, request):
     user = User.from_uniqname(userid)

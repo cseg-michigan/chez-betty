@@ -20,6 +20,7 @@ from sqlalchemy.orm import (
     validates,
     relationship,
     object_session,
+    hybrid_attribute
     )
     
 from sqlalchemy.sql.expression import or_
