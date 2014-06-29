@@ -1,6 +1,6 @@
 from .model import *
 
-class Item(Base):
+class Item(Versioned, Base):
     __tablename__ = 'items'
 
     id = Column(Integer, primary_key=True, nullable=False)

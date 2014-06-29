@@ -25,5 +25,8 @@ from sqlalchemy.orm import (
 from sqlalchemy.sql.expression import or_
 
 from zope.sqlalchemy import ZopeTransactionExtension
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+
+from .history_meta import Versioned, versioned_session
+
+DBSession = versioned_session(scoped_session(sessionmaker(extension=ZopeTransactionExtension())))
 Base = declarative_base()

@@ -1,6 +1,6 @@
 from .model import *
 
-class Account(Base):
+class Account(Versioned, Base):
     __tablename__ = "accounts"
     
     id = Column(Integer, primary_key=True, nullable=False)

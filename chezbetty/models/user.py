@@ -58,11 +58,11 @@ class User(Account):
 
     id = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
     uniqname = Column(String(8), nullable=False, unique=True)
-    umid = Column(String(8), nullable=False, unique=True)
+    umid = Column(String(8), unique=True)
     password = Column(String(255))
     
     disabled = Column(Boolean, nullable=False, default=False)
-    role = Column(Enum("user", "manager", "administrator", name="user_type"),
+    role = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
             nullable=False, default="user")
 
     __ldap = LDAPLookup()
