@@ -107,6 +107,10 @@ class User(Account):
         c = hashlib.sha256(self._salt + cand).hexdigest()
         return c == self._password
 
+
+
+
+
 def groupfinder(userid, request):
     user = User.from_uniqname(userid)
     if user.role == "user":
@@ -114,4 +118,6 @@ def groupfinder(userid, request):
     elif user.role == "manager":
         return ["user","manager"]
     elif user.role == "administrator":
-        return ["user","manager","administrator"]
+        return ["user","manager","administrator", "serviceaccount"]
+    elif user.role == "serviceaccount":
+        return ["user", "serviceaccount"]
