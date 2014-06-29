@@ -42,9 +42,10 @@ def reconcile_items(items, admin):
     t = Reconciliation(admin)
     total_amount_missing = 0.0
     for item, quantity in items.items():
-        if item.quantity == quantity:
+        if item.in_stock == quantity:
             continue
-        quantity_missing = item.quantity - quantity
+        item.in_stock = quantity
+        quantity_missing = item.in_stock - quantity
         st = SubTransaction(t, item, quantity_missing)
         total_amount_missing += st.amount
     t.update_amount(total_amount_missing)

@@ -74,6 +74,8 @@ class Reconciliation(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'reconciliation'}
         
     def __init__(self, user):
+        chezbetty = make_account("chezbetty")
+        lost = make_account("lost")
         Transaction.__init__(self, chezbetty, lost, 0.0)
         self.user_id = user.id if user else None
 
