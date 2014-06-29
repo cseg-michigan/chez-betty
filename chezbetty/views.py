@@ -242,6 +242,27 @@ def admin_edit_items_submit(request):
 def admin_add_items(request):
     return {}
 
+@view_config(route_name='admin_add_items_submit', request_method='POST')
+def admin_add_items_submit(request):
+    count = 0
+    for key in request.POST:
+        if 'item-name-' in key:
+            id = int(key.split('-')[2])
+            name = request.POST['item-name-{}'.format(id)]
+            barcode = request.POST['item-barcode-{}'.format(id)]
+            stock = int(request.POST['item-stock-{}'.format(id)])
+            price = float(request.POST['item-price-{}'.format(id)])
+            wholesale = float(request.POST['item-wholesale-{}'.format(id)])
+            enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
+            item = Item(name, barcode, price, wholesale, stock, enabled)
+            DBSession.add(item)
+            count += 1
+    if count:
+        request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1], "success"))
+    else:
+        request.session.flash("No items added.", "error")
+    return HTTPFound(location=request.route_url('admin_edit_items'))
+
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2')
 def admin_inventory(request):
     items = DBSession.query(Item).all()
