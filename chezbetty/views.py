@@ -327,4 +327,11 @@ def admin_edit_users(request):
              ('administrator', 'Administrator')]
     return {'users': users, 'roles': roles}
 
+@view_config(route_name='admin_edit_users_submit', request_method='POST')
+def admin_edit_users_submit(request):
+    for key in request.POST:
+        user = User.from_id(int(key.split('-')[2]))
+        setattr(user, key.split('-')[1], request.POST[key])
+    request.session.flash("Users updated successfully.", "success")
+    return HTTPFound(location=request.route_url('admin_edit_users'))
 

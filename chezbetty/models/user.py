@@ -76,6 +76,11 @@ class User(Account):
         self.balance = 0.0
 
     @classmethod
+    def from_id(cls, id):
+        u = DBSession.query(cls).filter(cls.id == id).one()
+        return u
+
+    @classmethod
     def from_uniqname(cls, uniqname):
         u = DBSession.query(cls).filter(cls.uniqname == uniqname).first()
         if not u:

@@ -36,7 +36,7 @@
     <div class="col-sm-2">
       <select class="form-control" id="user-role-{{ user.id }}" name="user-role-{{ user.id }}">
         {% for role in roles %}
-        <option value="{{ type }}" {% if role[0] == user.role %}selected="selected"{% endif %}>{{ role[1] }}</option>
+        <option value="{{ role[0] }}" {% if role[0] == user.role %}selected="selected"{% endif %}>{{ role[1] }}</option>
         {% endfor %}
       </select>
     </div>
