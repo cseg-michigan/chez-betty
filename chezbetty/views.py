@@ -152,6 +152,9 @@ def transaction_undo(request):
     except:
         request.session.flash("Error: Invalid user for transaction.", 'error')
         return HTTPFound(location=request.route_url('index'))
+    if user.umid != request.matchdict['umid']:
+        request.session.flash("Error: Transaction does not belong to specified user", "error")
+        return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
     try:
         datalayer.undo_transaction(transaction)
     except:

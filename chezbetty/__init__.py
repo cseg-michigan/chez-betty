@@ -46,7 +46,7 @@ def main(global_config, **settings):
     config.add_route('deposit', '/deposit/{umid}')
 
     config.add_route('transaction', '/transaction/{transaction_id}')
-    config.add_route('transaction_undo', '/transaction/undo/{transaction_id}')
+    config.add_route('transaction_undo', '/transaction/undo/{umid}/{transaction_id}')
 
     # ADMIN
     config.add_route('admin_index', '/admin')
