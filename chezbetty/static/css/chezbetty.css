@@ -20,6 +20,7 @@
 .negative {
 	color: red;
 }
+<<<<<<< HEAD
 .positive {}
 
 /* Buttons */
@@ -47,4 +48,8 @@
 #purchase-total {
 	text-align: right;
 	font-weight: bold;
+}
+
+.top {
+    margin-top: 50px;
 }

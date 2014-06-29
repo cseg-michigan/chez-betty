@@ -4,17 +4,13 @@
 
 {% block top %}
 
-<div class="container">
-  <h1>Chez Betty</h1>
-</div>
-
 {% endblock %}
 
 
 
 {% block content %}
 
-<div class="jumbotron">
+<div class="jumbotron top">
   <h1>Welcome to Chez Betty!</h1>
   <p>This is a 24/7 food store for all Graduate Students in CSE.</p>
 </div>
@@ -33,6 +29,12 @@
 <div class="btn-group btn-group-large">
   <a class="btn btn-default" href="/about">About</a>
 </div>
+
+{% if request.has_permission("manage") %}
+<div class="btn-group btn-group-large">
+  <a class="btn btn-default" href="/admin">Administration</a>
+</div>
+{% endif %}
 
 {% endblock %}
 

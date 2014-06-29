@@ -26,15 +26,15 @@ class DepositException(Exception):
 ### HTML Pages
 ###
 
-@view_config(route_name='index', renderer='templates/index.jinja2')
+@view_config(route_name='index', renderer='templates/index.jinja2', permission="user")
 def index(request):
     return {}
 
-@view_config(route_name='about', renderer='templates/about.jinja2')
+@view_config(route_name='about', renderer='templates/about.jinja2', permission="user")
 def about(request):
     return {}
 
-@view_config(route_name='purchase', renderer='templates/purchase.jinja2')
+@view_config(route_name='purchase', renderer='templates/purchase.jinja2', permission="service")
 def purchase(request):
     try:
         if len(request.matchdict['umid']) != 8:
@@ -49,17 +49,17 @@ def purchase(request):
         request.session.flash("Invalid M-Card swipe. Please try again.", "error")
         return HTTPFound(location=request.route_url('index'))
 
-@view_config(route_name='items', renderer='templates/items.jinja2')
+@view_config(route_name='items', renderer='templates/items.jinja2', permission="service")
 def items(request):
     items = DBSession.query(Item).all()
     return {'items': items}
 
-@view_config(route_name='users', renderer='templates/users.jinja2')
+@view_config(route_name='users', renderer='templates/users.jinja2', permission="manage")
 def users(request):
     users = DBSession.query(User).all()
     return {'users': users}
 
-@view_config(route_name='user', renderer='templates/user.jinja2')
+@view_config(route_name='user', renderer='templates/user.jinja2', permission="service")
 def user(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
@@ -75,7 +75,7 @@ def user(request):
         return HTTPFound(location=request.route_url('index'))
 
 
-@view_config(route_name='deposit', renderer='templates/deposit.jinja2')
+@view_config(route_name='deposit', renderer='templates/deposit.jinja2', permission="service")
 def deposit(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
@@ -89,7 +89,7 @@ def deposit(request):
         return HTTPFound(location=request.route_url('index'))
 
 
-@view_config(route_name='transaction')
+@view_config(route_name='transaction', permission="service")
 def transaction_deposit(request):
 
     try:
@@ -144,7 +144,7 @@ def transaction_deposit(request):
 ### JSON Requests
 ###
 
-@view_config(route_name='item', renderer='json')
+@view_config(route_name='item', renderer='json', permission="user")
 def item(request):
     item = Item.from_barcode(request.matchdict['barcode'])
     item_html = render('templates/item_row.jinja2', {'item': item})
@@ -154,7 +154,7 @@ def item(request):
 ### POST Handlers
 ###
 
-@view_config(route_name='purchase_new', request_method='POST', renderer='json')
+@view_config(route_name='purchase_new', request_method='POST', renderer='json', permission="service")
 def purchase_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
@@ -185,7 +185,7 @@ def purchase_new(request):
         return {'error': 'Unable to identify an item.'}
 
 
-@view_config(route_name='deposit_new', request_method='POST', renderer='json')
+@view_config(route_name='deposit_new', request_method='POST', renderer='json', permission="service")
 def deposit_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
@@ -217,18 +217,18 @@ def deposit_new(request):
 ### Admin
 ###
 
-@view_config(route_name='admin_index', renderer='templates/admin/index.jinja2')
+@view_config(route_name='admin_index', renderer='templates/admin/index.jinja2', permission="manage")
 def admin_index(request):
     return {}
 
-@view_config(route_name='admin_edit_items', renderer='templates/admin/edit_items.jinja2')
+@view_config(route_name='admin_edit_items', renderer='templates/admin/edit_items.jinja2', permission="manage")
 def admin_edit_items(request):
     items_active = DBSession.query(Item).filter_by(enabled=True).order_by(Item.name).all()
     items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
     items = items_active + items_inactive
     return {'items': items}
 
-@view_config(route_name='admin_edit_items_submit', request_method='POST')
+@view_config(route_name='admin_edit_items_submit', request_method='POST', permission="manage")
 def admin_edit_items_submit(request):
     for key in request.POST:
         item = Item.from_id(int(key.split('-')[2]))
@@ -236,7 +236,7 @@ def admin_edit_items_submit(request):
     request.session.flash("Items updated successfully.", "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
-@view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2')
+@view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission="manage")
 def admin_add_items(request):
     if len(request.GET) == 0:
         return {'items' : {'count': 1,
@@ -251,7 +251,7 @@ def admin_add_items(request):
         d = {'items' : request.GET}
         return d
 
-@view_config(route_name='admin_add_items_submit', request_method='POST')
+@view_config(route_name='admin_add_items_submit', request_method='POST', permission="manage")
 def admin_add_items_submit(request):
     count = 0
     error_items = []
@@ -303,12 +303,12 @@ def admin_add_items_submit(request):
     else:
         return HTTPFound(location=request.route_url('admin_edit_items'))
 
-@view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2')
+@view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
 def admin_inventory(request):
     items = DBSession.query(Item).all()
     return {'items': items}
 
-@view_config(route_name='admin_inventory_submit', request_method='POST')
+@view_config(route_name='admin_inventory_submit', request_method='POST', permission="manage")
 def admin_inventory_submit(request):
     items = {}
     for key in request.POST:
@@ -354,6 +354,8 @@ def login(request):
         password = password
     )
 
+
+@view_config(route_name='logout')
 def logout(request):
     headers = forget(request)
     return HTTPFound(location=request.route_url('index'),
@@ -368,7 +370,8 @@ def admin_edit_users(request):
              ('administrator', 'Administrator')]
     return {'users': users, 'roles': roles}
 
-@view_config(route_name='admin_edit_users_submit', request_method='POST')
+@view_config(route_name='admin_edit_users_submit', 
+        request_method='POST', permission="admin")
 def admin_edit_users_submit(request):
     for key in request.POST:
         user = User.from_id(int(key.split('-')[2]))
@@ -376,12 +379,14 @@ def admin_edit_users_submit(request):
     request.session.flash("Users updated successfully.", "success")
     return HTTPFound(location=request.route_url('admin_edit_users'))
 
-@view_config(route_name='admin_edit_balance', renderer='templates/admin/edit_balance.jinja2')
+@view_config(route_name='admin_edit_balance', 
+        renderer='templates/admin/edit_balance.jinja2')
 def admin_edit_balance(request):
     users = DBSession.query(User).all()
     return {'users': users}
 
-@view_config(route_name='admin_edit_balance_submit', request_method='POST')
+@view_config(route_name='admin_edit_balance_submit', request_method='POST', 
+        permission="admin")
 def admin_edit_balance_submit(request):
     try:
         user = User.from_id(int(request.POST['user']))
@@ -397,11 +402,13 @@ def admin_edit_balance_submit(request):
     request.session.flash("User account updated.", "success")
     return HTTPFound(location=request.route_url('admin_edit_balance'))
 
-@view_config(route_name='admin_cash_reconcile', renderer='templates/admin/cash_reconcile.jinja2')
+@view_config(route_name='admin_cash_reconcile', 
+        renderer='templates/admin/cash_reconcile.jinja2', permission="manage")
 def admin_cash_reconcile(request):
     return {}
 
-@view_config(route_name='admin_cash_reconcile_submit', request_method='POST')
+@view_config(route_name='admin_cash_reconcile_submit', request_method='POST', 
+        permission="manage")
 def admin_cash_reconcile_submit(request):
     print(request.POST)
     try:
@@ -416,7 +423,8 @@ def admin_cash_reconcile_submit(request):
     return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
         _query={'amount':amount, 'expected_amount':expected_amount}))
 
-@view_config(route_name='admin_cash_reconcile_success', renderer='templates/admin/cash_reconcile_complete.jinja2')
+@view_config(route_name='admin_cash_reconcile_success', 
+        renderer='templates/admin/cash_reconcile_complete.jinja2', permission="manage")
 def admin_cash_reconcile_success(request):
     deposit = float(request.GET['amount'])
     expected = float(request.GET['expected_amount'])
