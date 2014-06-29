@@ -21,20 +21,22 @@
   </div>
 
   <div id="new-items">
+    {% for item in items %}
     <div id="new-item-0" class="form-group row new-item">
-      <div class="col-sm-3"><input type="text" class="form-control" id="item-name-0" name="item-name-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-0" name="item-barcode-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-0" name="item-stock-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-0" name="item-price-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-0" name="item-wholesale-0"></div>
-      <div class="col-sm-1"><input type="checkbox" id="item-enabled-0" name="item-enabled-0" checked="checked"></div>
+      <div class="col-sm-3"><input type="text" class="form-control" id="item-name-{{ loop.index }}" name="item-name-{{ loop.index }}" value={{ item['name'] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ loop.index }}" name="item-barcode-{{ loop.index }}" value={{ item['barcode'] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-{{ loop.index }}" name="item-stock-{{ loop.index }}" value={{ item['in_stock'] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ loop.index }}" name="item-price-{{ loop.index }}" value={{ item['price'] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ loop.index }}" name="item-wholesale-{{ loop.index }}" value={{ item['wholesale'] }}></div>
+      <div class="col-sm-1"><input type="checkbox" id="item-enabled-{{ loop.index }}" name="item-enabled-{{ loop.index }}" {% if item['enabled'] %}checked="checked"{% endif %}></div>
     </div>
+    {% endfor %}
   </div>
 
   <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another Item</button>
   <button type="submit" class="btn btn-success">Add Items</button>
 
-  <input type="hidden" id="new-items-number" name="new-items-number" value="1">
+  <input type="hidden" id="new-items-number" name="new-items-number" value="{{ items|length }}">
 
 </form>
 
