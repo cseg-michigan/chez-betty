@@ -10,11 +10,10 @@ function format_price (price) {
 	p = price.toFixed(2);
 
 	if (p < 0) {
-		out = '<span class="negative">-$' + (p*-1.0) + '</span>';
+		return '<span class="negative">-$' + (p*-1.0) + '</span>';
 	} else {
-		out = '<span class="positive">$' + p + '</span>';
+		return '<span class="positive">$' + p + '</span>';
 	}
-	return out;
 }
 
 function strip_price (price_str) {
@@ -63,7 +62,7 @@ function add_item_success (data) {
 		item_price = parseFloat(item_row.children(".item-price-single").text());
 
 		item_row.children(".item-quantity").text(quantity);
-		item_row.children(".item-total").text(format_price(quantity*item_price));
+		item_row.children(".item-total").html(format_price(quantity*item_price));
 
 	} else {
 		// Add a new item
@@ -140,5 +139,5 @@ function calculate_total () {
 		}
 	});
 
-	$("#purchase-total").text(format_price(total));
+	$("#purchase-total").html(format_price(total));
 }

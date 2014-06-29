@@ -25,7 +25,7 @@
   <div class="row">
     <div class="col-sm-2">Current Balance</div>
     {% for user in users %}
-    <div class="col-sm-3 current-balance" id="current-balance-{{ user.id }}" {% if loop.index != 1 %}style="display:none;"{% endif %}>{{ users[0].balance|format_currency|safe }}</div>
+    <div class="col-sm-3 current-balance" id="current-balance-{{ user.id }}" {% if loop.index != 1 %}style="display:none;"{% endif %}>{{ user.balance|format_currency|safe }}</div>
     {% endfor %}
   </div>
 
