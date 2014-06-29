@@ -23,16 +23,26 @@
 
   {% for item in items %}
   <div id="item-{{ item.id }}" class="form-group row edit-item-row">
-    <div class="col-sm-1">{{ item.id }}</div>
-    <div class="col-sm-4"><input type="text" class="form-control" id="item-name-{{ item.id }}" value="{{ item.name }}"></div>
-    <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ item.id }}" value="{{ item.barcode }}"></div>
-    <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ item.id }}" value="{{ item.price }}"></div>
-    <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ item.id }}" value="{{ item.wholesale }}"></div>
-    <div class="col-sm-1 item-actions">
-      <button type="button" id="btn-delete-item-{{ item.id }}" class="btn btn-danger">X</button>
-      <button type="button" id="btn-undelete-item-{{ item.id }}" class="btn btn-success" style="display:none;">+</button>
+    <div class="col-sm-1">
+      {{ item.id }}
     </div>
-    <input type="hidden" class="form-control" id="item-delete-{{ item.id }}" value="0">
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="item-name-{{ item.id }}" name="item[{{ item.id }}][name]" value="{{ item.name }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
+    </div>
+    <div class="col-sm-2">
+      <input type="text" class="form-control" id="item-barcode-{{ item.id }}" name="item[{{ item.id }}][barcode]"  value="{{ item.barcode }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
+    </div>
+    <div class="col-sm-2">
+      <input type="text" class="form-control" id="item-price-{{ item.id }}" name="item[{{ item.id }}][price]"  value="{{ item.price }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
+    </div>
+    <div class="col-sm-2">
+      <input type="text" class="form-control" id="item-wholesale-{{ item.id }}" name="item[{{ item.id }}][wholesale]"  value="{{ item.wholesale }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
+    </div>
+    <div class="col-sm-1 item-actions">
+      <button type="button" id="btn-disable-item-{{ item.id }}" class="btn btn-danger" {% if item.enabled == False %}style="display:none;"{% endif %}>X</button>
+      <button type="button" id="btn-enable-item-{{ item.id }}" class="btn btn-success" {% if item.enabled == True %}style="display:none;"{% endif %}>+</button>
+    </div>
+    <input type="hidden" class="form-control" id="item-enabled-{{ item.id }}" name="item[{{ item.id }}][enabled]"  value="{{ item.enabled|int }}">
   </div>
   {% endfor %}
 

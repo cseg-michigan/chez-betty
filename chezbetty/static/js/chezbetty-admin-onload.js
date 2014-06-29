@@ -5,48 +5,33 @@ $(".edit-item-row").on("click", "button", function () {
 	item_id = $(this).attr("id").split("-")[3];
 	item_row = $("#item-" + item_id);
 
-	if (btn_type == "delete") {
+	if (btn_type == "disable") {
 
-		// Mark the item to be delete upon submit
-		item_row.children("#item-delete-"+item_id).val("1");
+		// Mark the item to be disabled upon submit
+		item_row.children("#item-enabled-"+item_id).val("0");
 
 		// Gray out the item to show it will be deleted
-		item_row.children("div").each(function () {
-			if (!$(this).hasClass("item-actions")) {
-				overlay = $('<div>', {
-					css: {
-						position: 'absolute',
-						width: $(this).outerWidth(),
-						height: $(this).outerHeight(),
-						top: $(this).position().top,
-						left: $(this).position().left,
-						backgroundColor: 'rgba(255,255,255,0.5)',
-						zIndex: 10},
-					class: "item-gray-out"
-				}).appendTo(item_row);
-			}
-		});
-
+		$("#item-" + item_id + " input:text").attr("disabled", "disabled");
 
 		// Hide the delete button
 		$(this).hide();
 
 		// Display the undo button
-		$("#btn-undelete-item-" + item_id).show();
+		$("#btn-enable-item-" + item_id).show();
 
-	} else if (btn_type == "undelete") {
+	} else if (btn_type == "enable") {
 
-		// Remove the delete mark
-		item_row.children("#item-delete-"+item_id).val("0");
+		// Mark the item as enabled
+		item_row.children("#item-enabled-"+item_id).val("1");
 
-		// Remove the gray overlays
-		item_row.children(".item-gray-out").remove();
+		// Un-disable the boxes in the row
+		$("#item-" + item_id + " input:text").removeAttr("disabled");
 
 		// Hide the undo button
 		$(this).hide();
 
 		// Show the delete button again
-		$("#btn-delete-item-" + item_id).show();
+		$("#btn-disable-item-" + item_id).show();
 	}
 });
 
