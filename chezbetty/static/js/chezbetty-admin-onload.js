@@ -49,3 +49,5 @@ $(".edit-item-row").on("click", "button", function () {
 		$("#btn-delete-item-" + item_id).show();
 	}
 });
+
+//$("#btn-items-add-row")

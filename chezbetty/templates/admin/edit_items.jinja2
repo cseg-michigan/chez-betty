@@ -13,9 +13,8 @@
 
   <div class="row item-list-header">
     <div class="col-sm-1">Item ID</div>
-    <div class="col-sm-3">Name</div>
+    <div class="col-sm-4">Name</div>
     <div class="col-sm-2">Barcode</div>
-    <div class="col-sm-1">In Stock</div>
     <div class="col-sm-2">Item Price</div>
     <div class="col-sm-2">Item Wholesale</div>
     <div class="col-sm-1">Actions</div>
@@ -25,9 +24,8 @@
   {% for item in items %}
   <div id="item-{{ item.id }}" class="form-group row edit-item-row">
     <div class="col-sm-1">{{ item.id }}</div>
-    <div class="col-sm-3"><input type="text" class="form-control" id="item-name-{{ item.id }}" value="{{ item.name }}"></div>
+    <div class="col-sm-4"><input type="text" class="form-control" id="item-name-{{ item.id }}" value="{{ item.name }}"></div>
     <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ item.id }}" value="{{ item.barcode }}"></div>
-    <div class="col-sm-1"><input type="text" class="form-control" id="item-stock-{{ item.id }}" value="{{ item.in_stock }}"></div>
     <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ item.id }}" value="{{ item.price }}"></div>
     <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ item.id }}" value="{{ item.wholesale }}"></div>
     <div class="col-sm-1 item-actions">
