@@ -18,3 +18,23 @@ function full_strip_price (price_str) {
 	return price_str.replace(/^\s+|\s+$|\.|\$/g, '');
 }
 
+// Callback when adding an item to the cart succeeds
+function add_item_success (data) {
+
+	// Make sure this item isn't already on the list
+	if (!$("#restock-item-" + data.id).length) {
+		// Add a new item
+		$("#restock-table tbody").append(data.item_restock_html);
+	}
+
+	calculate_total();
+}
+
+function add_item (barcode) {
+	$.ajax({
+		dataType: "json",
+		url: "/admin/item/"+barcode+"/json",
+		success: add_item_success,
+		error: add_item_fail
+	});
+}

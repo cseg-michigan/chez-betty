@@ -1,0 +1,51 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'restock' %}
+{% block title %}Restock{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Restock</h1>
+{% endblock %}
+
+
+{% block content %}
+
+Scan items to add to stock.
+
+<form role="form" action="/admin/restock/submit" method="post">
+
+  <table class="table table-bordered">
+
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Wholesale Cost</th>
+        <th>Sales Tax</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <td colspan="3">Sales Tax</td>
+        <td><input type="text" class="form-control" id="restock-salestax" name="salestax"></td>
+      </tr>
+      <tr>
+        <td colspan="3">Total</td>
+        <td id="restock-total">$0.00</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <button type="submit" class="btn btn-success">Restock Items</button>
+
+</form>
+
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
+<script src="{{'chezbetty:static/js/chezbetty-admin-item.js'|static_url}}"></script>
+{% endblock %}
