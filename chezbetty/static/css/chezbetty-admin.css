@@ -108,3 +108,7 @@ body {
 .negative {
   color: red;
 }
+
+.right {
+  text-align: right;
+}
