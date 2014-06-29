@@ -16,25 +16,19 @@
 </div>
 
 
-<div class="panel panel-default">
-  <div id="login-panel" class="panel-body">
-    Swipe your M-Card to login.
-  </div>
+<div id="index-main" class="col-md-12">
+        <h2>Swipe your M-Card to login</h2>
+
 </div>
 
-<div class="btn-group btn-group-large">
-  <a class="btn btn-default" href="/items">Items</a>
-</div>
+<div id="front-buttons" class="col-md-12 buttons">
+  <a class="btn btn-default btn-huge" href="/items">Item List</a>
+  <a class="btn btn-default btn-huge" href="/about">About</a>
 
-<div class="btn-group btn-group-large">
-  <a class="btn btn-default" href="/about">About</a>
+  {% if request.has_permission("manage") %}
+  <a class="btn btn-default btn-huge" href="/admin">Administration</a>
+  {% endif %}
 </div>
-
-{% if request.has_permission("manage") %}
-<div class="btn-group btn-group-large">
-  <a class="btn btn-default" href="/admin">Administration</a>
-</div>
-{% endif %}
 
 {% endblock %}
 

@@ -33,6 +33,16 @@
 	margin-right: 20px;
 }
 
+#front-buttons {
+	text-align: center;
+}
+
+/* Index */
+#index-main {
+	text-align: center;
+	padding-bottom: 40px;
+}
+
 /* Purchase */
 #purchase-empty {
 	text-align: center;
