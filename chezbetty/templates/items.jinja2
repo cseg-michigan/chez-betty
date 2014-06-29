@@ -34,8 +34,8 @@
         <tr>
           <td class="item-name">{{ item.name }}</td>
           <td class="item-stock">{{ item.in_stock }}</td>
-          <td class="item-price">{{ item.price|format_currency }}</td>
-          <td class="item-cost">{{ item.wholesale|format_currency }}</td>
+          <td class="item-price">{{ item.price|format_currency|safe }}</td>
+          <td class="item-cost">{{ item.wholesale|format_currency|safe }}</td>
         </tr>
       {% endfor %}
       </tbody>

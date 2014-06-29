@@ -7,7 +7,14 @@
 /* Functions to manipulate price strings and numbers.
  */
 function format_price (price) {
-	return "$" + price.toFixed(2);
+	p = price.toFixed(2);
+
+	if (p < 0) {
+		out = '<span class="negative">-$' + (p*-1.0) + '</span>';
+	} else {
+		out = '<span class="positive">$' + p + '</span>';
+	}
+	return out;
 }
 
 function strip_price (price_str) {

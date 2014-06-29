@@ -16,7 +16,7 @@
         </div>
         <div class="row">
           <div class="col-md-4">Account Balance</div>
-          <div class="col-md-8">{{ user.balance|format_currency }}</div>
+          <div class="col-md-8">{{ user.balance|format_currency|safe }}</div>
         </div>
         <div id="account-total-start" class="hidden">
           {{ user.balance }}

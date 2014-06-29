@@ -91,7 +91,7 @@ $("#keypad").on("click", "button", function () {
 
 	var output = parseFloat(input) / 100.0;
 
-	$("#keypad-total").text(format_price(output));
+	$("#keypad-total").html(format_price(output));
 });
 
 $(".btn-trans-showhide").click(function () {
