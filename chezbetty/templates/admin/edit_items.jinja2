@@ -12,8 +12,7 @@
 <form role="form" action="/admin/edit/items/submit" method="post">
 
   <div class="row item-list-header">
-    <div class="col-sm-1">Item ID</div>
-    <div class="col-sm-4">Name</div>
+    <div class="col-sm-5">Name</div>
     <div class="col-sm-2">Barcode</div>
     <div class="col-sm-2">Item Price</div>
     <div class="col-sm-2">Item Wholesale</div>
@@ -23,10 +22,7 @@
 
   {% for item in items %}
   <div id="item-{{ item.id }}" class="form-group row edit-item-row">
-    <div class="col-sm-1">
-      {{ item.id }}
-    </div>
-    <div class="col-sm-4">
+    <div class="col-sm-5">
       <input type="text" class="form-control" id="item-name-{{ item.id }}" name="item-name-{{ item.id }}" value="{{ item.name }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
     </div>
     <div class="col-sm-2">
