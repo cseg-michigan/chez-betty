@@ -9,29 +9,37 @@
 
 {% block content %}
 
-<form role="form">
+<form role="form" action="/admin/add/items/submit" method="post">
 
   <div class="row item-list-header">
-    <div class="col-sm-4">Name</div>
+    <div class="col-sm-3">Name</div>
     <div class="col-sm-2">Barcode</div>
     <div class="col-sm-2">In Stock</div>
     <div class="col-sm-2">Item Price</div>
     <div class="col-sm-2">Item Wholesale</div>
+    <div class="col-sm-1">Enabled</div>
   </div>
 
   <div id="new-items">
     <div id="new-item-0" class="form-group row new-item">
-      <div class="col-sm-4"><input type="text" class="form-control" id="item-name-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-0"></div>
+      <div class="col-sm-3"><input type="text" class="form-control" id="item-name-0" name="item-name-0"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-0" name="item-barcode-0"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-0" name="item-stock-0"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-0" name="item-price-0"></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-0" name="item-wholesale-0"></div>
+      <div class="col-sm-1"><input type="checkbox" id="item-enabled-0" name="item-enabled-0" checked="checked"></div>
     </div>
   </div>
 
   <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another Item</button>
   <button type="submit" class="btn btn-success">Add Items</button>
 
+  <input type="hidden" id="new-items-number" name="new-items-number" value="1">
+
 </form>
 
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
 {% endblock %}

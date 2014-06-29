@@ -33,8 +33,13 @@
 
         <div id="alerts" class="container">
           {% block alerts %}
-          {% for error in request.session.pop_flash('error') %}
+          {% for error in request.session.pop_flash("error") %}
           <div class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+          {% endfor %}
+          {% for error in request.session.pop_flash("success") %}
+          <div class="alert alert-success" role="alert">
             {{ error }}
           </div>
           {% endfor %}
