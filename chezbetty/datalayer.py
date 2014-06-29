@@ -3,8 +3,10 @@ from .models.transaction import *
 from .models.cashtransaction import *
 
 def undo_transaction(t):
-    t.to_account -= t.amount
-    t.from_account += t.amount
+    if t.to_account:
+        t.to_account.balance -= t.amount
+    if t.from_account:
+        t.from_account.balance += t.amount
     DBSession.delete(t)
 
 def deposit(user, amount):
