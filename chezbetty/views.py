@@ -308,6 +308,24 @@ def admin_inventory(request):
     items = DBSession.query(Item).all()
     return {'items': items}
 
+@view_config(route_name='admin_inventory_submit', request_method='POST')
+def admin_inventory_submit(request):
+    items = {}
+    for key in request.POST:
+        item = Item.from_id(key.split('-')[2])
+        try:
+            items[item] = int(request.POST[key])
+        except ValueError:
+            pass
+    t = datalayer.reconcile_items(items, None)
+    if t.amount > 0:
+        request.session.flash("Inventory Reconciled. Chez Betty made ${}".format(t.amount), "success")
+    elif t.amount == 0:
+        request.session.flash("Inventory Reconciled. Chez Betty was spot on.", "success")
+    else:
+        request.session.flash("Inventory Reconciled. Chez Betty lost ${}".format(-t.amount), "success")
+    return HTTPFound(location=request.route_url('admin_inventory'))
+
 @view_config(route_name="login", renderer="teampltes/login.jinja2")
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):

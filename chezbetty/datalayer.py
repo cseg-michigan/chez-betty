@@ -39,7 +39,7 @@ def reconcile_items(items, admin):
         st = SubTransaction(t, item, quantity_missing)
         total_amount_missing += st.amount
     t.update_amount(total_amount_missing)
-        
+    return t
 
 def reconcile_cash(amount, admin):
     cash = DBSession.query(make_cash_account("cashbox"))
