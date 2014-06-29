@@ -357,3 +357,9 @@ def admin_edit_users_submit(request):
     request.session.flash("Users updated successfully.", "success")
     return HTTPFound(location=request.route_url('admin_edit_users'))
 
+@view_config(route_name='admin_edit_balance', renderer='templates/admin/edit_balance.jinja2')
+def admin_edit_balance(request):
+    users = DBSession.query(User).all()
+    return {'users': users}
+
+

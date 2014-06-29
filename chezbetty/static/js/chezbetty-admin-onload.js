@@ -1,4 +1,12 @@
 
+$(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+});
 
 $(".edit-item-row").on("click", "button", function () {
 	btn_type = $(this).attr("id").split("-")[1];
@@ -102,3 +110,30 @@ $("#btn-items-add-row").click(function () {
 	// Update the number of new items to be added
 	$("#new-items-number").val(item_lines_count+1);
 });
+
+function update_new_balance () {
+	start = parseFloat(strip_price($(".current-balance:visible").text()));
+	amount = parseFloat($("#balance-change-amount").val());
+	if (isNaN(amount)) {
+		amount = 0.0;
+	}
+	new_balance = format_price(start + amount);
+	$("#new_balance").text(new_balance);
+}
+
+$("#select-user").change(function () {
+	user_id = $("#select-user option:selected").val();
+
+	// Hide all current balances
+	$(".current-balance").hide();
+
+	// Show the correct current balance for this user
+	$("#current-balance-"+user_id).show();
+
+	update_new_balance();
+});
+
+$("#balance-change-amount").change(function () {
+	update_new_balance();
+});
+

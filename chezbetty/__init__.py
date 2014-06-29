@@ -56,6 +56,7 @@ def main(global_config, **settings):
     config.add_route('admin_inventory', '/admin/inventory')
     config.add_route('admin_edit_users', '/admin/edit/users')
     config.add_route('admin_edit_users_submit', '/admin/edit/users/submit')
+    config.add_route('admin_edit_balance', '/admin/edit/balance')
 
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
