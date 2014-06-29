@@ -56,6 +56,9 @@ def main(global_config, **settings):
     config.add_route('admin_add_items_submit', '/admin/add/items/submit')
     config.add_route('admin_inventory', '/admin/inventory')
 
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
+
     config.scan(".views")
 
     return config.make_wsgi_app()
