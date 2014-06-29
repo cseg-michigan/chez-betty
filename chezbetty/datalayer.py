@@ -2,6 +2,11 @@ from .models import *
 from .models.transaction import *
 from .models.cashtransaction import *
 
+def undo_transaction(t):
+    t.to_account -= t.amount
+    t.from_account += t.amount
+    DBSession.delete(t)
+
 def deposit(user, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
