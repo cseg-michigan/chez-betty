@@ -3,6 +3,7 @@ import binascii
 import os
 from .model import *
 from .account import Account
+from .transaction import Transaction
 
 import ldap3
 
@@ -68,6 +69,7 @@ class User(Account):
     role = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
             nullable=False, default="user")
 
+    administrative_transactions = relationship(Transaction, backref="admin")
     __ldap = LDAPLookup()
 
     def __init__(self, uniqname, umid, name):
@@ -128,6 +130,6 @@ def groupfinder(userid, request):
     elif user.role == "manager":
         return ["user","manager"]
     elif user.role == "administrator":
-        return ["user","manager","administrator", "serviceaccount"]
+        return ["user","manager","admin", "serviceaccount"]
     elif user.role == "serviceaccount":
         return ["user", "serviceaccount"]

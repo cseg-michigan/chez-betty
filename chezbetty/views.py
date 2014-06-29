@@ -398,7 +398,8 @@ def admin_edit_balance_submit(request):
     except:
         request.session.flash("Invalid adjustment amount.", "error")
         return HTTPFound(location=request.route_url('admin_edit_balance'))
-    datalayer.adjust_user_balance(user, adjustment)
+    reason = request.POST["reason"]
+    datalayer.adjust_user_balance(user, adjustment, None, reason)
     request.session.flash("User account updated.", "success")
     return HTTPFound(location=request.route_url('admin_edit_balance'))
 

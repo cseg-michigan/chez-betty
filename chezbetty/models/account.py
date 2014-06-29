@@ -26,4 +26,5 @@ def make_account(name):
         return t
     t = PlaceholderAccount(name)
     DBSession.add(t)
+    DBSession.flush()
     return t

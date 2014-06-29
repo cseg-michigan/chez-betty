@@ -13,9 +13,10 @@ def deposit(user, amount):
     return dict(prev=prev, new=user.balance, amount=amount,
             transaction=t, cash_transaction=c)
 
-def adjust_user_balance(user, adjustment):
+def adjust_user_balance(user, adjustment, notes, admin=None):
     assert(hasattr(user, "id"))
-    raise NotImplementedError
+    t = Adjustment(user, adjustment, notes, admin)
+    DBSession.add(t)
 
 def purchase(user, items):
     assert(hasattr(user, "id"))
@@ -31,7 +32,6 @@ def purchase(user, items):
         amount += st.amount
     t.update_amount(amount)
     return t
-
 
 def reconcile_items(items, admin):
     t = Reconciliation(admin)

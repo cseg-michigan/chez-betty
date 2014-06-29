@@ -10,9 +10,12 @@ class Transaction(Base):
     to_account_id = Column(Integer, ForeignKey("accounts.id"))
     from_account_id = Column(Integer, ForeignKey("accounts.id"))
     amount = Column(Float, nullable=False)
-    type = Column(Enum("purchase", "deposit", "reconciliation", "administrative"), nullable=False)
+    notes = Column(Text)
+    type = Column(Enum("purchase", "deposit", "reconciliation", "adjustment"), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
-    
+    # user that performed the reconciliation 
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+   
     to_account = relationship(Account, 
         foreign_keys=[to_account_id,],
         backref="transactions_to"
@@ -67,16 +70,21 @@ class Purchase(Transaction):
         Transaction.__init__(self, user, chezbetty, 0.0)
         
 
-
 class Reconciliation(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'reconciliation'}
-    
-    # user that performed the reconciliation 
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    
+        
     def __init__(self, user):
         Transaction.__init__(self, chezbetty, lost, 0.0)
-        self.user_id = user.id
+        self.user_id = user.id if user else None
+
+class Adjustment(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'adjustment'}
+
+    def __init__(self, user, amount, admin, notes):
+        chezbetty = make_account("chezbetty")
+        Transaction.__init__(self, chezbetty, user, amount)
+        self.user_id = admin.id if admin else None
+        self.notes = notes
 
 
 class SubTransaction(Base):
