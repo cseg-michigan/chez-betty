@@ -20,14 +20,21 @@ from sqlalchemy.orm import (
     validates,
     relationship,
     object_session,
-    hybrid_attribute
     )
-    
-from sqlalchemy.sql.expression import or_
 
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from sqlalchemy.sql.expression import or_
 from zope.sqlalchemy import ZopeTransactionExtension
 
 from .history_meta import Versioned, versioned_session
 
+from pyramid.security import Allow, Everyone
+
 DBSession = versioned_session(scoped_session(sessionmaker(extension=ZopeTransactionExtension())))
 Base = declarative_base()
+
+class RootFactory(object):
+    __acl__ = [ (Allow, Everyone, 'view'),
+                (Allow, 'group:editors', 'edit') ]
+    def __init__(self, request):
+        pass
