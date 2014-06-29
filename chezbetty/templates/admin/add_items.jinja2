@@ -9,29 +9,39 @@
 
 {% block content %}
 
-<form role="form">
+<form role="form" action="/admin/add/items/submit" method="post">
 
   <div class="row item-list-header">
-    <div class="col-sm-4">Name</div>
+    <div class="col-sm-3">Name</div>
     <div class="col-sm-2">Barcode</div>
     <div class="col-sm-2">In Stock</div>
     <div class="col-sm-2">Item Price</div>
     <div class="col-sm-2">Item Wholesale</div>
+    <div class="col-sm-1">Enabled</div>
   </div>
 
   <div id="new-items">
+    {% for number in range(0, items['count']) %}
     <div id="new-item-0" class="form-group row new-item">
-      <div class="col-sm-4"><input type="text" class="form-control" id="item-name-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-0"></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-0"></div>
+      <div class="col-sm-3"><input type="text" class="form-control" id="item-name-{{ number }}" name="item-name-{{ number }}" value={{ item['name-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ number }}" name="item-barcode-{{ number }}" value={{ item['barcode-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-{{ number }}" name="item-stock-{{ number }}" value={{ item['in_stock-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ number }}" name="item-price-{{ number }}" value={{ item['price-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ number }}" name="item-wholesale-{{ number }}" value={{ item['wholesale-'~number] }}></div>
+      <div class="col-sm-1"><input type="checkbox" id="item-enabled-{{ number }}" name="item-enabled-{{ number }}" {% if item['enabled-'~number] %}checked="checked"{% endif %}></div>
     </div>
+    {% endfor %}
   </div>
 
   <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another Item</button>
   <button type="submit" class="btn btn-success">Add Items</button>
 
+  <input type="hidden" id="new-items-number" name="new-items-number" value="{{ items['count'] }}">
+
 </form>
 
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
 {% endblock %}
