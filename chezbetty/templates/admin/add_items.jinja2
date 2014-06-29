@@ -25,7 +25,7 @@
     <div id="new-item-0" class="form-group row new-item">
       <div class="col-sm-3"><input type="text" class="form-control" id="item-name-{{ number }}" name="item-name-{{ number }}" value={{ items['name-'~number] }}></div>
       <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ number }}" name="item-barcode-{{ number }}" value={{ items['barcode-'~number] }}></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-{{ number }}" name="item-stock-{{ number }}" value={{ items['in_stock-'~number] }}></div>
+      <div class="col-sm-2"><input type="text" class="form-control" id="item-stock-{{ number }}" name="item-stock-{{ number }}" value={{ items['stock-'~number] }}></div>
       <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ number }}" name="item-price-{{ number }}" value={{ items['price-'~number] }}></div>
       <div class="col-sm-2"><input type="text" class="form-control" id="item-wholesale-{{ number }}" name="item-wholesale-{{ number }}" value={{ items['wholesale-'~number] }}></div>
       <div class="col-sm-1"><input type="checkbox" id="item-enabled-{{ number }}" name="item-enabled-{{ number }}" {% if items['enabled-'~number] %}checked="checked"{% endif %}></div>
