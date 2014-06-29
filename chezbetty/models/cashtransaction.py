@@ -1,4 +1,5 @@
 from .model import *
+from .transaction import Transaction
 
 class CashAccount(Versioned, Base):
     __tablename__ = "cash_accounts"
@@ -26,6 +27,7 @@ class CashTransaction(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=True, unique=True)
+    transaction = relationship(Transaction, backref="cash_transaction")
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
     amount = Column(Float, nullable=False)
 
