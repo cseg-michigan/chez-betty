@@ -13,6 +13,10 @@ def deposit(user, amount):
     return dict(prev=prev, new=user.balance, amount=amount,
             transaction=t, cash_transaction=c)
 
+def adjust_user_balance(user, adjustment):
+    assert(hasattr(user, "id"))
+    raise NotImplementedError
+
 def purchase(user, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)

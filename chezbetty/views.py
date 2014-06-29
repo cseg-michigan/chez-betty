@@ -381,6 +381,22 @@ def admin_edit_balance(request):
     users = DBSession.query(User).all()
     return {'users': users}
 
+@view_config(route_name='admin_edit_balance_submit', request_method='POST')
+def admin_edit_balance_submit(request):
+    try:
+        user = User.from_id(int(request.POST['user']))
+    except:
+        request.session.flash("Invalid user?", "error")
+        return HTTPFound(location=request.route_url('admin_edit_balance'))
+    try:
+        adjustment = float(request.POST['amount'])
+    except:
+        request.session.flash("Invalid adjustment amount.", "error")
+        return HTTPFound(location=request.route_url('admin_edit_balance'))
+    datalayer.adjust_user_balance(user, adjustment)
+    request.session.flash("User account updated.", "success")
+    return HTTPFound(location=request.route_url('admin_edit_balance'))
+
 @view_config(route_name='admin_cash_reconcile', renderer='templates/admin/cash_reconcile.jinja2')
 def admin_cash_reconcile(request):
     return {}

@@ -58,6 +58,7 @@ def main(global_config, **settings):
     config.add_route('admin_edit_users', '/admin/edit/users')
     config.add_route('admin_edit_users_submit', '/admin/edit/users/submit')
     config.add_route('admin_edit_balance', '/admin/edit/balance')
+    config.add_route('admin_edit_balance_submit', '/admin/edit/balance/submit')
     config.add_route('admin_cash_reconcile', '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit', '/admin/cash/reconcile/submit')
     config.add_route('admin_cash_reconcile_success', '/admin/cash/reconcile/success')
