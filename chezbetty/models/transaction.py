@@ -46,6 +46,10 @@ class Transaction(Base):
         if self.from_account:
             self.from_account.balance -= self.amount
 
+    @classmethod
+    def from_id(cls, id):
+        t = DBSession.query(cls).filter(cls.id == id).one()
+        return t
 
 @property
 def __transactions(self):

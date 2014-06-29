@@ -104,7 +104,7 @@ def transaction_deposit(request):
 
             user_info_html = render('templates/user_info.jinja2',
                 {'user': user, 'page': 'deposit'})
-            
+
             deposit = {'transaction_id': transaction.id,
                        'prev': user.balance - transaction.amount,
                        'amount': transaction.amount,
@@ -129,7 +129,7 @@ def transaction_deposit(request):
                 item['price'] = subtrans.item.price
                 item['total_price'] = subtrans.amount
                 order['items'].append(item)
-            
+
             # TODO: get the products for all this
             return render_to_response('templates/purchase_complete.jinja2',
                 {'user_info_block': user_info_html,
@@ -139,6 +139,24 @@ def transaction_deposit(request):
         # TODO: add generic failure page
         pass
 
+@view_config(route_name='transaction_undo', permission="service")
+def transaction_undo(request):
+    try:
+        transaction = Transaction.from_id(request.matchdict['transaction_id'])
+    except:
+        request.session.flash('Error: Could not find transaction to undo.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+    try:
+        user = DBSession.query(User) \
+            .filter(User.id==transaction.to_account_id).one()
+    except:
+        request.session.flash("Error: Invalid user for transaction.", 'error')
+        return HTTPFound(location=request.route_url('index'))
+    try:
+        datalayer.undo_transaction(transaction)
+    except:
+        request.session.flash('Error: Failed to undo transaction.', "error")
+    return HTTPFound(location=request.route_url('user', umid=user.umid))
 
 ###
 ### JSON Requests
