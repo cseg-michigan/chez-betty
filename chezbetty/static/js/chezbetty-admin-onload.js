@@ -1,12 +1,4 @@
 
-$(document).ready(function() {
-  $(window).keydown(function(event){
-    if(event.keyCode == 13) {
-      event.preventDefault();
-      return false;
-    }
-  });
-});
 
 $(".edit-item-row").on("click", "button", function () {
 	btn_type = $(this).attr("id").split("-")[1];
@@ -136,5 +128,13 @@ $("#select-user").change(function () {
 
 $("#balance-change-amount").on("input", function () {
 	update_new_balance();
+});
+
+$("#restock-table").on("input", "input:text",  function () {
+	calculate_total();
+});
+
+$("#restock-table").on("click", "input:checkbox", function () {
+	calculate_total();
 });
 
