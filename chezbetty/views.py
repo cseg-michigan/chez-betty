@@ -337,7 +337,10 @@ def admin_add_items_submit(request):
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
-                price = float(request.POST['item-price-{}'.format(id)])
+                try:
+                    price = float(request.POST['item-price-{}'.format(id)])
+                except:
+                    price = 0
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
                 DBSession.flush()
@@ -349,7 +352,8 @@ def admin_add_items_submit(request):
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
                             })
-                    request.session.flash("Error adding item: {}".format(name), "error")
+                    request.session.flash("Error adding item: {}. Most likely a duplicate barcode.".\
+                                    format(name), "error")
                 # O/w this was probably a blank row; ignore.
     if count:
         request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1]), "success")
