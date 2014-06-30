@@ -111,6 +111,7 @@ function deposit_success (data) {
 	if ("error" in data) {
 		alert_error(data.error);
 		enable_button($("#btn-submit-deposit"));
+		$("#keypad-total").html(format_price(0.0));
 	} else if ("redirect_url" in data) {
 		window.location.replace(data.redirect_url);
 	} else {
@@ -124,6 +125,7 @@ function deposit_success (data) {
 function deposit_error () {
 	alert_error("Failed to complete deposit. Perhaps try again?");
 	enable_button($("#btn-submit-deposit"));
+	$("#keypad-total").html(format_price(0.0));
 }
 
 // Function called by chezbetty-item.js when a new item was scanned and
