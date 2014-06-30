@@ -119,10 +119,12 @@ def deposit(request):
                                                                'page': 'deposit'})
         keypad_html = render('templates/keypad.jinja2', {})
 
-        btc = Bitcoin(umid=user.umid)
-        btc_addr = btc.get_new_address()
-
-        btc_html = render('templates/btc.jinja2', {'addr': btc_addr})
+        bitcoin = Bitcoin(umid=user.umid)
+        try:
+            btc_addr = bitcoin.get_new_address()
+            btc_html = render('templates/btc.jinja2', {'addr': btc_addr})
+        except btc.BTCException as e:
+            btc_html = ""
 
         return {'user_info_block': user_info_html, 'keypad': keypad_html, 'btc' : btc_html}
 
