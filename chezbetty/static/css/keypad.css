@@ -31,3 +31,13 @@ block[h2] {
 	height: 100px;
 	width: 210px;
 }
+
+.btn-full-width {
+  width: 322px;
+  height: 100px;
+}
+
+.keypad-full-width {
+  width: 352px;
+}
+
