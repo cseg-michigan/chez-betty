@@ -130,6 +130,10 @@ $("#balance-change-amount").on("input", function () {
 	update_new_balance();
 });
 
+$("#edit-items").click(function () {
+	alert_clear();
+});
+
 $("#restock-table").on("input", "input:text",  function () {
 	calculate_total();
 });

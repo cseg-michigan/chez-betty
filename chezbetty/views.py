@@ -321,7 +321,7 @@ def admin_restock_submit(request):
         else:
             wholesale = cost / quantity
 
-        item.wholesale = wholesale
+        item.wholesale = round(wholesale, 4)
 
         if item.price < item.wholesale:
             item.price = item.wholesale * 1.15
