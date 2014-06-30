@@ -305,8 +305,10 @@ def btc_deposit(request):
 @view_config(route_name='btc_check', request_method='GET', renderer='json')
 def btc_check(request):
     res = 0
-    if DBSession.query(BTCDeposit).filter(BTCDeposit.address==request.matchdict['addr']).first() is not None:
-        res = 1
+
+    row = DBSession.query(BTCDeposit).filter(BTCDeposit.address==request.matchdict['addr']).first() 
+    if row is not None:
+        res = row.id
     return {"result" : res}
 
 
