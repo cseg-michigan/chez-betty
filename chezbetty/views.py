@@ -313,7 +313,7 @@ def admin_restock_submit(request):
 
     datalayer.restock(items)
     request.session.flash("Restock complete.", "success")
-    return HTTPFound(location=request.route_url('admin_restock'))
+    return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission="manage")
 def admin_add_items(request):
