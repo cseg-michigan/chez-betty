@@ -537,3 +537,13 @@ def admin_cash_reconcile_success(request):
 def admin_transactions(request):
     transactions = DBSession.query(Transaction).order_by(desc(Transaction.id)).all()
     return {"transactions":transactions}
+
+@view_config(route_name="admin_view_transaction",
+        renderer="templates/admin/view_transaction.jinja2", permission="admin")
+def view_transaction(request):
+    id = int(request.matchdict["id"])
+    t = DBSession.query(Transaction).filter(Transaction.id == id).first()
+    if not t:
+        request.session.flush("Invalid transaction ID supplied")
+        return HTTPFound(location=request.route_url('admin_index'))
+    return dict(t=t)
