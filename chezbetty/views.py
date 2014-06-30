@@ -383,7 +383,7 @@ def admin_edit_items(request):
 
 @view_config(route_name='admin_edit_items_submit', request_method='POST', permission="manage")
 def admin_edit_items_submit(request):
-    count = 0
+    updated = set()
     for key in request.POST:
         try:
             item = Item.from_id(int(key.split('-')[2]))
@@ -397,9 +397,10 @@ def admin_edit_items_submit(request):
             request.session.flash("Error updating {} for {}.  Skipped.".\
                     format(key.split('-')[1], item.name), 'error')
             continue
-        count += 1
-    if count:
-        request.session.flash("{} item{} updated successfully.".format(count, ['s',''][count==1]), "success")
+        updated.add(item.id)
+    if len(updated):
+        count = len(updated)
+        request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
