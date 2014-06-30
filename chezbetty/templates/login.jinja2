@@ -48,6 +48,7 @@ body {
 
 <div class="container">
   <form class="form-signin" role="form" method="post" action="/login">
+    <input type="hidden" name="came_from" value="{{ came_from }}"/>
     <h2 class="form-signin-heading">Please sign in</h2>
 <span class="label label-danger">{{ message[0] }}</span>
     <input name="login" type="login" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
