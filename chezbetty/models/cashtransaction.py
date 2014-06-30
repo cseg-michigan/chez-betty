@@ -70,7 +70,7 @@ class CashDeposit(CashTransaction):
         CashTransaction.__init__(self, None, c_cashbox, amount, transaction, None)
 
 
-class BTCDeposit(CashTransaction):
+class BTCCashDeposit(CashTransaction):
     def __init__(self, amount, transaction):
         c_chezbetty = make_cash_account("chezbetty")
         CashTransaction.__init__(self, None, c_chezbetty, amount, transaction, None)

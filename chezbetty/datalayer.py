@@ -36,7 +36,7 @@ def bitcoin_deposit(user, amount, btc_transaction):
     prev = user.balance
     t = BTCDeposit(user, amount, btc_transaaction)
     DBSession.add(t)
-    c = BTCDeposit(amount, t)
+    c = BTCCashDeposit(amount, t)
     DBSession.add(c)
     return dict(prev=prev, new=user.balance, amount=amount,
             transaction=t, cash_transaction=c)
