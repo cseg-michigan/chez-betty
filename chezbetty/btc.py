@@ -29,7 +29,7 @@ class Bitcoin(object):
         return opener.open(urllib.request.Request(url, bytes(body, "utf-8"), {'Content-Type': 'application/json'}))
 
 
-    def get_new_address(self, cb_url='http://ewust.eecs.umich.edu/bitcoin/deposit', guid='chezbetty'):
+    def get_new_address(self, cb_url='http://chezbetty.zakird.com/bitcoin/deposit', guid='chezbetty'):
         try:
             opener = self.req("https://coinbase.com/api/v1/account/generate_receive_address",
                  '{"address": {"callback_url": "%s/%s", "label": "%s"}' % (cb_url, self.umid, guid))
