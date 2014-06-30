@@ -91,9 +91,10 @@ def reconcile_items(items, admin):
     return t
 
 def reconcile_cash(amount, admin):
-    cash = make_cash_account("cashbox")
-    expected_amount = cash.balance
+    cashbox = make_cash_account("cashbox")
+    expected_amount = cashbox.balance
     amount_missing = expected_amount - amount
+    cashbox.balance = 0
 
     t = CashTransaction(
         from_account = make_cash_account("cashbox"),
