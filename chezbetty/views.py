@@ -54,7 +54,7 @@ def items(request):
     items = DBSession.query(Item).filter(Item.enabled==True).order_by(Item.name).all()
     return {'items': items}
 
-@view_config(route_name='shame', renderer='templates/shame.jinja2', permission="manage")
+@view_config(route_name='shame', renderer='templates/shame.jinja2')
 def users(request):
     users = DBSession.query(User).filter(User.balance < -5).order_by(User.balance).all()
     return {'users': users}
