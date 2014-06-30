@@ -22,6 +22,7 @@ def make_cash_account(name):
     DBSession.flush()
     return t
 
+
 class CashTransaction(Base):
     __tablename__ = 'cash_transactions'
 
@@ -66,7 +67,11 @@ class CashTransaction(Base):
 class CashDeposit(CashTransaction):
     def __init__(self, amount, transaction):
         c_cashbox = make_cash_account("cashbox")
-        assert(c_cashbox)
-        assert(c_cashbox.id)
         CashTransaction.__init__(self, None, c_cashbox, amount, transaction, None)
+
+
+class BTCDeposit(CashTransaction):
+    def __init__(self, amount, transaction):
+        c_chezbetty = make_cash_account("chezbetty")
+        CashTransaction.__init__(self, None, c_chezbetty, amount, transaction, None)
         
