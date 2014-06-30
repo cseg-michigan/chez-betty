@@ -98,7 +98,6 @@ def user(request):
             tx = user.transactions[tx_idx]
             if tx.type == "btcdeposit":
                 svg_html = string_to_qrcode('https://blockchain.info/tx/%s' % tx.btctransaction)
-                print(svg_html)
                 user.transactions[tx_idx].img = svg_html.decode('utf-8')
 
         return {'user': user,
@@ -141,7 +140,7 @@ def transaction_deposit(request):
             .filter(Transaction.id==int(request.matchdict['transaction_id'])).one()
 
         # Choose which page to show based on the type of transaction
-        if transaction.type == 'deposit':
+        if transaction.type == 'deposit' or transaction.type == 'btcdeposit':
             # View the deposit success page
             user = DBSession.query(User) \
                 .filter(User.id==transaction.to_account_id).one()
@@ -149,10 +148,22 @@ def transaction_deposit(request):
             user_info_html = render('templates/user_info.jinja2',
                 {'user': user, 'page': 'deposit'})
 
+            btcimg = ""
+            txhash = ""
+            amount_btc = 0.0
+            if transaction.type == 'btcdeposit':
+                txhash = transaction.btctransaction
+                btcimg = string_to_qrcode('https://blockchain.info/tx/%s' % txhash).decode('utf-8')
+                amount_btc = transaction.amount_btc
+
             deposit = {'transaction_id': transaction.id,
+                       'type': transaction.type,
                        'umid': user.umid,
                        'prev': user.balance - transaction.amount,
                        'amount': transaction.amount,
+                       'btcamount' : amount_btc,
+                       'btcimg' : btcimg,
+                       'txhash' : txhash,
                        'new': user.balance}
             return render_to_response('templates/deposit_complete.jinja2',
                 {'deposit': deposit, 'user_info_block': user_info_html}, request)
