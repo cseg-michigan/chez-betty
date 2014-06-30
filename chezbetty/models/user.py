@@ -43,7 +43,7 @@ class LDAPLookup(object):
                     ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
                     attributes=self.ATTRIBUTES
             )
-        except ldap3.LDAPSocketOpenError as e:
+        except:
             # sometimes our connections time out
             self.__conn = None
             self.__connect()
