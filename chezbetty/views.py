@@ -63,6 +63,10 @@ def users(request):
 def user(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
+        if not user.enabled:
+            request.session.flash('User not permitted to purchase items.', 'error')
+            return HTTPFound(location=request.route_url('index'))
+
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
 
@@ -79,6 +83,7 @@ def user(request):
 def deposit(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
+
         user_info_html = render('templates/user_info.jinja2', {'user': user,
                                                                'page': 'deposit'})
         keypad_html = render('templates/keypad.jinja2', {})
@@ -437,7 +442,6 @@ def login(request):
         referrer = '/' # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
     message = login = password = ""
-    print(request.params)
     if 'login' in request.params:
         login = request.params['login']
         password = request.params['password']
@@ -446,7 +450,10 @@ def login(request):
             # successful login
             headers = remember(request, login)
             return HTTPFound(location=came_from, headers=headers)
-        message = "Login failed. Incorrect username or password.",
+        elif user and not user.enabled:
+            message = "Login failed. User not allowed to login."
+        else:
+            message = "Login failed. Incorrect username or password.",
 
     return dict(
         message = message,
