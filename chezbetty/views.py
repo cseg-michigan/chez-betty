@@ -272,7 +272,7 @@ def admin_restock(request):
 def admin_restock_submit(request):
     i = iter(request.POST)
     items = {}
-    for quantity,cost,salestax in zip(i,i,i):
+    for salestax,quantity,cost in zip(i,i,i):
         if not (quantity.split('-')[2] == cost.split('-')[2] == salestax.split('-')[2]):
             request.session.flash('Error: Malformed POST. Misaligned IDs.', 'error')
             DBSession.rollback()
@@ -285,7 +285,7 @@ def admin_restock_submit(request):
             continue
         try:
             quantity = int(request.POST[quantity])
-            if '/' in cost:
+            if '/' in request.POST[cost]:
                 dividend, divisor = map(float(request.POST[cost].split('/')))
                 cost = dividend / divisor
             else:
@@ -313,7 +313,7 @@ def admin_restock_submit(request):
 
     datalayer.restock(items)
     request.session.flash("Restock complete.", "success")
-    return HTTPFound(location=request.route_url('admin_restock'))
+    return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission="manage")
 def admin_add_items(request):
@@ -390,12 +390,14 @@ def admin_edit_items_submit(request):
         except:
             request.session.flash("No item with ID {}.  Skipped.".format(key.split('-')[2]), 'error')
             continue
+        name = item.name
         try:
             setattr(item, key.split('-')[1], request.POST[key])
             DBSession.flush()
         except:
+            DBSession.rollback()
             request.session.flash("Error updating {} for {}.  Skipped.".\
-                    format(key.split('-')[1], item.name), 'error')
+                    format(key.split('-')[1], name), 'error')
             continue
         updated.add(item.id)
     if len(updated):
