@@ -173,10 +173,12 @@ def item(request):
         item = Item.from_barcode(request.matchdict['barcode'])
     except:
         return {'status': 'unknown_barcode'}
-    if not item.enabled:
-        return {'status': 'disabled'}
+    if item.enabled:
+        status = 'success'
+    else:
+        status = 'disabled'
     item_html = render('templates/item_row.jinja2', {'item': item})
-    return {'status': 'success', 'id':item.id, 'item_row_html' : item_html}
+    return {'status': status, 'id':item.id, 'item_row_html' : item_html}
 
 ###
 ### POST Handlers
@@ -251,9 +253,16 @@ def admin_index(request):
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
 def admin_item_barcode_json(request):
-    item = Item.from_barcode(request.matchdict['barcode'])
+    try:
+        item = Item.from_barcode(request.matchdict['barcode'])
+    except:
+        return {'status': 'unknown_barcode'}
+    if item.enabled:
+        status = 'success'
+    else:
+        status = 'disabled'
     item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
-    return {'data' : item_restock_html, 'id' : item.id}
+    return {'status' : status, 'data' : item_restock_html, 'id' : item.id}
 
 @view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission="manage")
 def admin_restock(request):
