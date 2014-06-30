@@ -142,11 +142,21 @@ def transaction_deposit(request):
 
 @view_config(route_name='transaction_undo', permission="service")
 def transaction_undo(request):
+    # Lookup the transaction that the user wants to undo
     try:
         transaction = Transaction.from_id(request.matchdict['transaction_id'])
     except:
         request.session.flash('Error: Could not find transaction to undo.', 'error')
         return HTTPFound(location=request.route_url('index'))
+
+    # Make sure transaction is a deposit, the only one the user is allowed
+    # to undo
+    if transaction.type != 'deposit':
+        request.session.flash('Error: Only deposits may be undone.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+    # Make sure that the user who is requesting the deposit was the one who
+    # actually placed the deposit.
     try:
         user = DBSession.query(User) \
             .filter(User.id==transaction.to_account_id).one()
@@ -156,6 +166,8 @@ def transaction_undo(request):
     if user.umid != request.matchdict['umid']:
         request.session.flash("Error: Transaction does not belong to specified user", "error")
         return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
+
+    # If the checks pass, actually revert the transaction
     try:
         datalayer.undo_transaction(transaction)
         request.session.flash('Transaction successfully reverted.', 'success')
