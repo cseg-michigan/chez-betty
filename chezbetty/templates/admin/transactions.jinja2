@@ -10,7 +10,16 @@
 {% block content %}
 
 <table class="table table-condensed table-striped">
-  <thead><tr><th>ID</th><th>Timestamp</ht><th>Type</th><th>From Account:</th><th>To Account:</th><th>Amount</th></tr></thead>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Timestamp</th>
+      <th>Type</th>
+      <th>From Account:</th>
+      <th>To Account:</th>
+      <th class="right">Amount</th>
+    </tr>
+  </thead>
   <tbody>
   {% for t in transactions %}
     <tr>
@@ -19,7 +28,7 @@
         <td>{{ t.type }}</td>
         <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
         <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
-        <td>{{ t.amount }}</td>
+        <td class="right">{{ t.amount|format_currency|safe }}</td>
     </tr>
   {% endfor %}
   </tbody>

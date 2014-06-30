@@ -156,10 +156,11 @@ def transaction_undo(request):
     if user.umid != request.matchdict['umid']:
         request.session.flash("Error: Transaction does not belong to specified user", "error")
         return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
-    datalayer.undo_transaction(transaction)
-    #try:
-    #except:
-    #    request.session.flash('Error: Failed to undo transaction.', "error")
+    try:
+        datalayer.undo_transaction(transaction)
+        request.session.flash('Transaction successfully reverted.', 'success')
+    except:
+        request.session.flash('Error: Failed to undo transaction.', "error")
     return HTTPFound(location=request.route_url('user', umid=user.umid))
 
 ###
@@ -168,9 +169,16 @@ def transaction_undo(request):
 
 @view_config(route_name='item', renderer='json', permission="user")
 def item(request):
-    item = Item.from_barcode(request.matchdict['barcode'])
+    try:
+        item = Item.from_barcode(request.matchdict['barcode'])
+    except:
+        return {'status': 'unknown_barcode'}
+    if item.enabled:
+        status = 'success'
+    else:
+        status = 'disabled'
     item_html = render('templates/item_row.jinja2', {'item': item})
-    return {'id':item.id, 'item_row_html' : item_html}
+    return {'status': status, 'id':item.id, 'item_row_html' : item_html}
 
 ###
 ### POST Handlers
@@ -245,9 +253,16 @@ def admin_index(request):
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
 def admin_item_barcode_json(request):
-    item = Item.from_barcode(request.matchdict['barcode'])
+    try:
+        item = Item.from_barcode(request.matchdict['barcode'])
+    except:
+        return {'status': 'unknown_barcode'}
+    if item.enabled:
+        status = 'success'
+    else:
+        status = 'disabled'
     item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
-    return {'data' : item_restock_html, 'id' : item.id}
+    return {'status' : status, 'data' : item_restock_html, 'id' : item.id}
 
 @view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission="manage")
 def admin_restock(request):
@@ -256,8 +271,44 @@ def admin_restock(request):
 @view_config(route_name='admin_restock_submit', request_method='POST')
 def admin_restock_submit(request):
     i = iter(request.POST)
+    items = {}
     for quantity,cost,salestax in zip(i,i,i):
-        pass
+        if not (quantity.split('-')[2] == cost.split('-')[2] == salestax.split('-')[2]):
+            request.session.flash('Error: Malformed POST. Misaligned IDs.', 'error')
+            DBSession.rollback()
+            return HTTPFound(location=request.route_url('admin_restock'))
+        try:
+            item = Item.from_id(int(quantity.split('-')[2]))
+        except:
+            request.session.flash('No item with id {} found. Skipped.'.format(int(quantity.split('-')[2])))
+            continue
+        try:
+            quantity = int(request.POST[quantity])
+            if '/' in cost:
+                dividend, divisor = map(float(request.POST[cost].split('/')))
+                cost = dividend / divisor
+            else:
+                cost = float(request.POST[cost])
+        except ValueError:
+            request.session.flash('Non-numeric value for {}.  Skipped.'.format(item.name))
+            continue
+        except ZeroDivisionError:
+            request.session.flash("Really? Dividing by 0? Item {} skipped.".format(item.name))
+            continue
+        salestax = request.POST[salestax] == 'on'
+        if salestax:
+            wholesale = (cost * 1.06) / quantity
+        else:
+            wholesale = cost / quantity
+
+        item.wholesale = wholesale
+
+        if item.price < item.wholesale:
+            item.price = item.wholesale * 1.15
+
+        items[item] = quantity
+
+    datalayer.restock(items)
     request.session.flash("Restock complete.", "success")
     return HTTPFound(location=request.route_url('admin_restock'))
 
@@ -267,10 +318,7 @@ def admin_add_items(request):
         return {'items' : {'count': 1,
                 'name-0': '',
                 'barcode-0': '',
-                'stock-0': '',
                 'price-0': '',
-                'wholesale-0': '',
-                'enabled-0': True,
                 }}
     else:
         d = {'items' : request.GET}
@@ -283,32 +331,22 @@ def admin_add_items_submit(request):
     for key in request.POST:
         if 'item-name-' in key:
             id = int(key.split('-')[2])
+            stock = 0
+            wholesale = 0
+            enabled = False
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
-                stock = int(request.POST['item-stock-{}'.format(id)])
                 price = float(request.POST['item-price-{}'.format(id)])
-                wholesale = float(request.POST['item-wholesale-{}'.format(id)])
-                try:
-                    enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
-                except KeyError:
-                    enabled = False
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
                 count += 1
             except:
                 if len(name):
-                    try:
-                        enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
-                    except KeyError:
-                        enabled = False
                     error_items.append({
                             'name' : request.POST['item-name-{}'.format(id)],
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
-                            'stock' : request.POST['item-stock-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
-                            'wholesale' : request.POST['item-wholesale-{}'.format(id)],
-                            'enabled' : enabled,
                             })
                     request.session.flash("Error adding item: {}".format(name), "error")
                 # O/w this was probably a blank row; ignore.
