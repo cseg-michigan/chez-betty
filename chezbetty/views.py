@@ -99,7 +99,7 @@ def user(request):
             if tx.type == "btcdeposit":
                 svg_html = string_to_qrcode('https://blockchain.info/tx/%s' % tx.btctransaction)
                 print(svg_html)
-                user.transactions[tx_idx].img = svg_html
+                user.transactions[tx_idx].img = svg_html.decode('utf-8')
 
         return {'user': user,
                 'user_info_block': user_info_html,
