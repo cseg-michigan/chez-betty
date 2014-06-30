@@ -340,6 +340,7 @@ def admin_add_items_submit(request):
                 price = float(request.POST['item-price-{}'.format(id)])
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
+                DBSession.flush()
                 count += 1
             except:
                 if len(name):
@@ -384,6 +385,7 @@ def admin_edit_items_submit(request):
             continue
         try:
             setattr(item, key.split('-')[1], request.POST[key])
+            DBSession.flush()
         except:
             request.session.flash("Error updating {} for {}.  Skipped.".\
                     format(key.split('-')[1], item.name), 'error')
