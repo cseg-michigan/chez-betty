@@ -23,6 +23,9 @@ from btc import Bitcoin
 
 import json
 
+import qrcode
+import qrcode.image.svg
+
 class DepositException(Exception):
     pass
 
@@ -73,6 +76,14 @@ def user(request):
 
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
+
+        for tx in user.transactions:
+            if tx.type == "btcdeposit":
+                img = qrcode.make('https://blockchain.info/tx/%s',
+                        image_factory=qrcode.image.svg.SvgPathImage,
+                        box_size=7,
+                        version=4,
+                        border=0)
 
         return {'user': user,
                 'user_info_block': user_info_html,
@@ -257,7 +268,7 @@ def btc_deposit(request):
 
     ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s" % (addr, amount_btc, txid, created_at, txhash)
     # TODO: dynamic exchange rate
-    datalayer.bitcoin_deposit(user, float(amount_btc) * 600, txhash)
+    datalayer.bitcoin_deposit(user, float(amount_btc) * 600, txhash, addr, amount_btc)
     print(ret)
     #return ret
 
