@@ -18,11 +18,12 @@
 </div>
 
 <div id="front-buttons" class="col-md-12 buttons">
-  <a class="btn btn-default btn-huge" href="/items">Item List</a>
-  <a class="btn btn-default btn-huge" href="/about">About</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/items">Item List</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/about">About</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/shame">Wall of Shame</a>
 
   {% if request.has_permission("manage") %}
-  <a class="btn btn-default btn-huge" href="/admin">Administration</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/admin">Administration</a>
   {% endif %}
 </div>
 
