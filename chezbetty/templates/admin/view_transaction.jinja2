@@ -31,6 +31,9 @@
   </div>
 
 </div>
+
+{% if t.subtransactions %}
+
 <br/>
 <h3 class="page-header">Sub Transactions</h3>
 <table class="table table-condensed table-striped">
@@ -57,5 +60,7 @@
   {% endfor %}
   </tbody>
 </table>
+
+{% endif %}
 
 {% endblock %}
