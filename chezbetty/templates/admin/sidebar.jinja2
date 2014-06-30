@@ -8,6 +8,7 @@
   <li {% if active_page == 'add_items' %}class="active"{% endif %}><a href="/admin/add/items">Add Items</a></li>
   <li {% if active_page == 'edit_items' %}class="active"{% endif %}><a href="/admin/edit/items">Edit Items</a></li>
   <li {% if active_page == 'inventory' %}class="active"{% endif %}><a href="/admin/inventory">Run Inventory</a></li>
+  <li {% if active_page == 'cash_reconcile' %}class="active"{% endif %}><a href="/admin/cash/reconcile">Cash Box</a></li>
 </ul>
 <ul class="nav nav-sidebar">
   <li {% if active_page == 'edit_users' %}class="active"{% endif %}><a href="/admin/edit/users">Edit Users</a></li>
@@ -15,5 +16,7 @@
 </ul>
 <ul class="nav nav-sidebar">
   <li {% if active_page == 'transactions' %}class="active"{% endif %}><a href="/admin/transactions">Transactions</a></li>
-  <li {% if active_page == 'cash_reconcile' %}class="active"{% endif %}><a href="/admin/cash/reconcile">Cash Box</a></li>
+</ul>
+<ul class="nav nav-sidebar">
+  <li {% if active_page == 'edit_password' %}class="active"{% endif %}><a href="/admin/edit/password">Edit Password</a></li>
 </ul>
