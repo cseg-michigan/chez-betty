@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config
 
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder
-from btc import Bitcoin
+from .btc import Bitcoin
 
 def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
