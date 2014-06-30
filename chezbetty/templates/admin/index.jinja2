@@ -2,14 +2,168 @@
 {% block title %}Home{% endblock %}
 
 {% block top %}
+
 <h1 class="page-header">Chez Betty Admin Panel</h1>
+
 {% endblock %}
 
 
 {% block content %}
+<div class="row">
+  <div class="col-md-4">
 
-<p>
-  Welcome to the control panel for Chez Betty
-</p>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Account Information</h3>
+      </div>
+      <div class="panel-body">
+
+        <dl class="dl-horizontal">
+          <dt>Chez Betty</dt>
+          <dd>{{ chezbetty.balance|format_currency|safe }}</dd>
+          <dt>Chez Betty Cash</dt>
+          <dd>{{ chezbetty_cash.balance|format_currency|safe }}</dd>
+
+          <dt>Cash Box</dt>
+          <dd>{{ cashbox.balance|format_currency|safe }}</dd>
+          <dt>Lost/Stolen</dt>
+          <dd>{{ lost.balance|format_currency|safe }}</dd>
+          <dt>Lost/Stolen Cash</dt>
+          <dd>{{ lost_cash.balance|format_currency|safe }}</dd>
+
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Low Stock Items</h3>
+      </div>
+      <div class="panel-body">
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th class="right">In Stock</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in items %}
+    <tr>
+        <td>{{ item.name }}</td>
+        <td class="right">{{ item.in_stock }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+              </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Wall of Shame Overview</h3>
+      </div>
+      <div class="panel-body">
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th class="right">Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for user in users %}
+    <tr>
+        <td>{{ user.name }}</td>
+        <td class="right">{{ user.balance|format_currency|safe }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+              </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Recent Transactions</h3>
+      </div>
+      <div class="panel-body">
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>ID</th>
+      <th>Timestamp</th>
+      <th>Type</th>
+      <th>From Account:</th>
+      <th>To Account:</th>
+      <th class="right">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in transactions %}
+    <tr>
+        <td><a href="/admin/transactions/{{ t.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+        <td>{{ t.id }}</td>
+        <td>{{ t.timestamp|pretty_date }}</td>
+        <td>{{ t.type }}</td>
+        <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
+        <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
+        <td class="right">{{ t.amount|format_currency|safe }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Recent Cash Transfers</h3>
+      </div>
+      <div class="panel-body">
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Transaction</th>
+      <th>Timestamp</th>
+      <th>From Account:</th>
+      <th>To Account:</th>
+      <th class="right">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in ct %}
+    <tr>
+        <td>{{ t.id }}</td>
+        <td> <a href="/admin/transactions/{{ t.transaction_id }}">{{ t.transaction_id if t.transaction_id else ""}}</a></td>
+        <td>{{ t.timestamp|pretty_date }}</td>
+        <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
+        <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
+        <td class="right">{{ t.amount|format_currency|safe }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+        </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

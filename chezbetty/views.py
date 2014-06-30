@@ -12,6 +12,7 @@ from .models.model import *
 from .models.user import User, InvalidUserException
 from .models.item import Item
 from .models.transaction import Transaction, BTCDeposit
+from .models.account import Account
 from .models.cashtransaction import CashAccount, CashTransaction
 
 from pyramid.security import Allow, Everyone, remember, forget
@@ -348,7 +349,22 @@ def deposit_new(request):
 
 @view_config(route_name='admin_index', renderer='templates/admin/index.jinja2', permission='manage')
 def admin_index(request):
-    return {}
+    transactions = DBSession.query(Transaction).order_by(desc(Transaction.id)).limit(10).all()
+    ct = DBSession.query(CashTransaction).order_by(desc(CashTransaction.id)).limit(10).all()
+    items = DBSession.query(Item).filter(Item.enabled == True).order_by(Item.in_stock).limit(10).all()
+    users = DBSession.query(User).order_by(User.balance).limit(10).all()
+    chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
+    lost = DBSession.query(Account).filter(Account.name == "lost").one()
+    cashbox = DBSession.query(CashAccount).filter(CashAccount.name=="cashbox").one()
+    chezbetty_cash = DBSession.query(CashAccount).filter(CashAccount.name=="chezbetty").one()
+    lost_cash = DBSession.query(CashAccount).filter(CashAccount.name=="lost").one()
+    return dict(transactions=transactions, ct=ct, items=items, users=users,
+                    cashbox=cashbox,
+                    chezbetty_cash=chezbetty_cash,
+                    lost_cash=lost_cash,
+                    chezbetty=chezbetty,
+                    lost=lost
+           )
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
 def admin_item_barcode_json(request):
