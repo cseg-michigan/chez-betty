@@ -51,7 +51,7 @@ def purchase(request):
 
 @view_config(route_name='items', renderer='templates/items.jinja2', permission="service")
 def items(request):
-    items = DBSession.query(Item).order_by(Item.name).all()
+    items = DBSession.query(Item).filter(Item.enabled==True).order_by(Item.name).all()
     return {'items': items}
 
 @view_config(route_name='shame', renderer='templates/shame.jinja2', permission="manage")
