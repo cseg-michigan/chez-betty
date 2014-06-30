@@ -125,8 +125,8 @@ class SubTransaction(Base):
     item = relationship(Item, backref="subtransactions")
     amount = Column(Float, nullable=False)
     
-    def __init__(self, transaction, item, quantity):
+    def __init__(self, transaction, item, quantity, amount):
         self.transaction_id = transaction.id
         self.item_id = item.id
         self.quantity = quantity
-        self.amount = quantity * item.price
+        self.amount = quantity * amount

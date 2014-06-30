@@ -69,7 +69,7 @@ def restock(items, admin=None):
     amount = 0.0
     for item, quantity in items.items():
         item.in_stock -= quantity
-        st = SubTransaction(t, item, quantity, item.price)
+        st = SubTransaction(t, item, quantity, item.wholesale)
         DBSession.add(st)
         amount += st.amount
     t.update_amount(amount)
