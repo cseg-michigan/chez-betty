@@ -32,6 +32,28 @@
 
 </div>
 
+{% if t.btctransaction %}
+
+<br/>
+<h3 class="page-header">Bitcoin Transaction Details</h3>
+    <dl class="dl-horizontal">
+      <dt>Transaction</dt><dd><a href="https://blockchain.info/tx/{{ t.btctransaction }}?show_adv=true">{{ t.btctransaction }}</a></dd>
+      <dt>Address</dt><dd><a href="https://blockchain.info/address/{{ t.address }}">{{ t.address }}</a></dd>
+      <dt>BTC Amount</dt><dd>{{ t.amount_btc }}</dd>
+    </dl>
+
+{% endif %}
+
+
+
+{% if t.notes %}
+
+<br/>
+<h3 class="page-header">Transaction Notes</h3>
+{{ t.notes }}
+{% endif %}
+
+
 {% if t.subtransactions %}
 
 <br/>
