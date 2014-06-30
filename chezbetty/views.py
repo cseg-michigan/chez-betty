@@ -169,9 +169,14 @@ def transaction_undo(request):
 
 @view_config(route_name='item', renderer='json', permission="user")
 def item(request):
-    item = Item.from_barcode(request.matchdict['barcode'])
+    try:
+        item = Item.from_barcode(request.matchdict['barcode'])
+    except:
+        return {'status': 'unknown_barcode'}
+    if not item.enabled:
+        return {'status': 'disabled'}
     item_html = render('templates/item_row.jinja2', {'item': item})
-    return {'id':item.id, 'item_row_html' : item_html}
+    return {'status': 'success', 'id':item.id, 'item_row_html' : item_html}
 
 ###
 ### POST Handlers
