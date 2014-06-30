@@ -32,15 +32,27 @@ class LDAPLookup(object):
                     client_strategy=ldap3.STRATEGY_SYNC,
                     authentication=ldap3.AUTH_SIMPLE
             )
-                
+    
+
     def __lookup(self, k, v):
         self.__connect()
         query = "(%s=%s)" % (k, v)
-        self.__conn.search(self.BASE_DN, 
-                query,
-                ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
-                attributes=self.ATTRIBUTES
-        )
+        try:
+            self.__conn.search(self.BASE_DN, 
+                    query,
+                    ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
+                    attributes=self.ATTRIBUTES
+            )
+        except LDAPSocketOpenError, e:
+            # sometimes our connections time out
+            self.__conn = None
+            self.__connect()
+            self.__conn.search(self.BASE_DN, 
+                    query,
+                    ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
+                    attributes=self.ATTRIBUTES
+            )
+
         if len(self.__conn.response) == 0:
             raise InvalidUserException()
         return {
