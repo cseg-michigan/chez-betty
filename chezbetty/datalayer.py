@@ -34,7 +34,7 @@ def bitcoin_deposit(user, amount, btc_transaction):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
     prev = user.balance
-    t = BTCDeposit(user, amount, btc_transaaction)
+    t = BTCDeposit(user, amount, btc_transaction)
     DBSession.add(t)
     c = BTCDeposit(amount, t)
     DBSession.add(c)
