@@ -351,8 +351,8 @@ def deposit_new(request):
 def admin_index(request):
     transactions = DBSession.query(Transaction).order_by(desc(Transaction.id)).limit(10).all()
     ct = DBSession.query(CashTransaction).order_by(desc(CashTransaction.id)).limit(10).all()
-    items = DBSession.query(Item).filter(Item.enabled == True).order_by(Item.in_stock).limit(10).all()
-    users = DBSession.query(User).order_by(User.balance).limit(10).all()
+    items = DBSession.query(Item).filter(Item.enabled == True).order_by(Item.in_stock).limit(5).all()
+    users = DBSession.query(User).filter(User.balance < 0).order_by(User.balance).limit(5).all()
     chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
     lost = DBSession.query(Account).filter(Account.name == "lost").one()
     cashbox = DBSession.query(CashAccount).filter(CashAccount.name=="cashbox").one()
