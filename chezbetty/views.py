@@ -485,7 +485,9 @@ def logout(request):
 
 @view_config(route_name='admin_edit_users', renderer='templates/admin/edit_users.jinja2')
 def admin_edit_users(request):
-    users = DBSession.query(User).all()
+    enabled_users = DBSession.query(User).filter_by(enabled=True).order_by(User.name).all()
+    disabled_users = DBSession.query(User).filter_by(enabled=False).order_by(User.name).all()
+    users = enabled_users + disabled_users
     roles = [('user', 'User'),
              ('serviceaccount', 'Service Account'),
              ('manager', 'Manager'),
