@@ -31,6 +31,7 @@ block[h2] {
 .btn-keypad-wide {
 	height: 100px;
 	width: 210px;
+	font-size: 14pt;
 }
 
 .btn-full-width {
