@@ -130,3 +130,7 @@ class SubTransaction(Base):
         self.item_id = item.id
         self.quantity = quantity
         self.amount = quantity * amount
+
+    @property
+    def item_amount(self):
+       return self.amount/self.quantity
