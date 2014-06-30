@@ -54,7 +54,7 @@ def items(request):
     items = DBSession.query(Item).filter(Item.enabled==True).order_by(Item.name).all()
     return {'items': items}
 
-@view_config(route_name='shame', renderer='templates/shame.jinja2', permission="manage")
+@view_config(route_name='shame', renderer='templates/shame.jinja2')
 def users(request):
     users = DBSession.query(User).filter(User.balance < -5).order_by(User.balance).all()
     return {'users': users}
@@ -321,7 +321,7 @@ def admin_restock_submit(request):
         else:
             wholesale = cost / quantity
 
-        item.wholesale = wholesale
+        item.wholesale = round(wholesale, 4)
 
         if item.price < item.wholesale:
             item.price = item.wholesale * 1.15
@@ -485,7 +485,9 @@ def logout(request):
 
 @view_config(route_name='admin_edit_users', renderer='templates/admin/edit_users.jinja2')
 def admin_edit_users(request):
-    users = DBSession.query(User).all()
+    enabled_users = DBSession.query(User).filter_by(enabled=True).order_by(User.name).all()
+    disabled_users = DBSession.query(User).filter_by(enabled=False).order_by(User.name).all()
+    users = enabled_users + disabled_users
     roles = [('user', 'User'),
              ('serviceaccount', 'Service Account'),
              ('manager', 'Manager'),
