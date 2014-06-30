@@ -11,8 +11,8 @@ from .models import *
 from .models.model import *
 from .models.user import User, InvalidUserException
 from .models.item import Item
-from .models.transaction import Transaction
-from .models.transaction import BTCDeposit
+from .models.transaction import Transaction, BTCDeposit
+from .models.cashtransaction import CashAccount, CashTransaction
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -669,5 +669,8 @@ def admin_edit_password_submit(request):
         request.session.flash('Error: Passwords do not match', 'error')
         return HTTPFound(location=request.route_url('admin_edit_password'))
 
-    # TODO: do it
-
+@view_config(route_name='admin_cash_transactions', permission='admin', renderer="templates/admin/cash_transactions.jinja2")
+def admin_cash_transactions(request):
+    accounts = DBSession.query(CashAccount).order_by(CashAccount.name).all()
+    ct = DBSession.query(CashTransaction).order_by(desc(CashTransaction.id)).all()
+    return dict(accounts=accounts, ct=ct)

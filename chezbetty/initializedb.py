@@ -38,55 +38,55 @@ def main(argv=sys.argv):
     from models.account import Account
     from models.user import User
     from models.item import Item
-    with transaction.manager:
-        DBSession.add(Item(
-            "Nutrigrain Raspberry",
-            "038000358210",
-            14.37,
-            0.47,
-            1,
-            True
-        ))
-        DBSession.add(Item(
-            "Clif Bar: Chocolate Chip",
-            "722252100900",
-            1.25,
-            1.17,
-            5,
-            True
-        ))
-        DBSession.add(Item(
-            "Clif Bar: Crunchy Peanut Butter",
-            "722252101204",
-            1.25,
-            1.14,
-            5,
-            True
-        ))
-        user = User(
-            "zakir",
-            "95951361",
-            "Zakir Durumeric"
-        )
-        user.role = "administrator"
-        user.password = "test"
-        DBSession.add(user)
-        user = User(
-            "bradjc",
-            "11519022",
-            "Brad Campbell"
-        )
-        user.role = "administrator"
-        user.password = "test"
-        DBSession.add(user)
-        user = User(
-                "ppannuto",
-                "64880621",
-                "Pat Pannuto"
-                )
-        user.role = "administrator"
-        user.password = "test2"
-        DBSession.add(user)
+    #with transaction.manager:
+    #    DBSession.add(Item(
+    #        "Nutrigrain Raspberry",
+    #        "038000358210",
+    #        14.37,
+    #        0.47,
+    #        1,
+    #        True
+    #    ))
+    #    DBSession.add(Item(
+    #        "Clif Bar: Chocolate Chip",
+    #        "722252100900",
+    #        1.25,
+    #        1.17,
+    #        5,
+    #        True
+    #    ))
+    #    DBSession.add(Item(
+    #        "Clif Bar: Crunchy Peanut Butter",
+    #        "722252101204",
+    #        1.25,
+    #        1.14,
+    #        5,
+    #        True
+    #    ))
+    #    user = User(
+    #        "zakir",
+    #        "95951361",
+    #        "Zakir Durumeric"
+    #    )
+    #    user.role = "administrator"
+    #    user.password = "test"
+    #    DBSession.add(user)
+    #    user = User(
+    #        "bradjc",
+    #        "11519022",
+    #        "Brad Campbell"
+    #    )
+    #    user.role = "administrator"
+    #    user.password = "test"
+    #    DBSession.add(user)
+    #    user = User(
+    #            "ppannuto",
+    #            "64880621",
+    #            "Pat Pannuto"
+    #            )
+    #    user.role = "administrator"
+    #    user.password = "test2"
+    #    DBSession.add(user)
 
 if __name__ == "__main__":
     main()
