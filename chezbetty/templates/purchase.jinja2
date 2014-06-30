@@ -41,8 +41,8 @@
       </tfoot>
     </table>
 
-    <div class="btn-group btn-group-large pull-right">
-      <button type="button" id="btn-submit-purchase" class="btn btn-success btn-lg">Submit Purchase</button>
+    <div class="btn-group btn-group-large" style="width: 100%">
+      <button type="button" id="btn-submit-purchase" class="btn btn-success btn-lg" style="width: 100%; height: 100px;">Submit Purchase</button>
     </div>
 
   </div>
@@ -53,3 +53,5 @@
 {% block onload %}
 <script src="{{'chezbetty:static/js/chezbetty-item.js'|static_url}}"></script>
 {% endblock %}
+
+{% block timeout %}60*1000*50{% endblock %}

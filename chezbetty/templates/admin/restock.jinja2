@@ -16,7 +16,7 @@
 <p>Please enter the total amount of sales tax at the bottom as a sanity check.</p>
 
 
-<form role="form" action="/admin/restock/submit" method="post" onsubmit="return false;">
+<form role="form" action="/admin/restock/submit" method="post" id="restock-form">
 
   <table id="restock-table" class="table table-bordered">
 
@@ -44,7 +44,8 @@
     </tfoot>
   </table>
 
-  <button type="button" class="btn btn-success" onclick="this.parentNode.submit();">Restock Items</button>
+  <button type="button" id="restock-button" class="btn btn-success">Restock Items</button>
+  <!--<button type="button" class="btn btn-success" onclick="this.parentNode.submit();">Restock Items</button>-->
 
 </form>
 
