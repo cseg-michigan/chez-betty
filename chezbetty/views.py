@@ -305,7 +305,6 @@ def admin_add_items(request):
                 'name-0': '',
                 'barcode-0': '',
                 'price-0': '',
-                'enabled-0': True,
                 }}
     else:
         d = {'items' : request.GET}
@@ -318,30 +317,22 @@ def admin_add_items_submit(request):
     for key in request.POST:
         if 'item-name-' in key:
             id = int(key.split('-')[2])
+            stock = 0
+            wholesale = 0
+            enabled = False
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
-                stock = 0
                 price = float(request.POST['item-price-{}'.format(id)])
-                wholesale = 0
-                try:
-                    enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
-                except KeyError:
-                    enabled = False
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
                 count += 1
             except:
                 if len(name):
-                    try:
-                        enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
-                    except KeyError:
-                        enabled = False
                     error_items.append({
                             'name' : request.POST['item-name-{}'.format(id)],
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
-                            'enabled' : enabled,
                             })
                     request.session.flash("Error adding item: {}".format(name), "error")
                 # O/w this was probably a blank row; ignore.
