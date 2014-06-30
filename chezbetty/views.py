@@ -12,6 +12,7 @@ from .models.model import *
 from .models.user import User, InvalidUserException
 from .models.item import Item
 from .models.transaction import Transaction
+from .models.transaction import BTCDeposit
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -19,6 +20,8 @@ import chezbetty.datalayer as datalayer
 
 import qrcode
 import qrcode.image.svg
+
+from .btc import BTCException
 try:
     import lxml.etree as ET
 except ImportError:
@@ -30,8 +33,18 @@ except ImportError:
 
 def string_to_qrcode(s):
     factory = qrcode.image.svg.SvgPathImage
-    img = qrcode.make(s, image_factory=factory)
+    img = qrcode.make(s, image_factory=factory, box_size=14,
+        version=4,
+        border=0)
+    img.save('/dev/null')   # This is needed, I swear.
     return ET.tostring(img._img)
+
+from .btc import Bitcoin
+
+import json
+
+import qrcode
+import qrcode.image.svg
 
 class DepositException(Exception):
     pass
@@ -84,6 +97,12 @@ def user(request):
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
 
+        for tx_idx in range(len(user.transactions)):
+            tx = user.transactions[tx_idx]
+            if tx.type == "btcdeposit":
+                svg_html = string_to_qrcode('https://blockchain.info/tx/%s' % tx.btctransaction)
+                user.transactions[tx_idx].img = svg_html.decode('utf-8')
+
         return {'user': user,
                 'user_info_block': user_info_html,
                 'transactions': user.transactions}
@@ -101,7 +120,15 @@ def deposit(request):
         user_info_html = render('templates/user_info.jinja2', {'user': user,
                                                                'page': 'deposit'})
         keypad_html = render('templates/keypad.jinja2', {})
-        return {'user_info_block': user_info_html, 'keypad': keypad_html}
+
+        bitcoin = Bitcoin(umid=user.umid)
+        try:
+            btc_addr = bitcoin.get_new_address()
+            btc_html = render('templates/btc.jinja2', {'addr': btc_addr})
+        except BTCException as e:
+            btc_html = ""
+
+        return {'user_info_block': user_info_html, 'keypad': keypad_html, 'btc' : btc_html}
 
     except InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -116,7 +143,7 @@ def transaction_deposit(request):
             .filter(Transaction.id==int(request.matchdict['transaction_id'])).one()
 
         # Choose which page to show based on the type of transaction
-        if transaction.type == 'deposit':
+        if transaction.type == 'deposit' or transaction.type == 'btcdeposit':
             # View the deposit success page
             user = DBSession.query(User) \
                 .filter(User.id==transaction.to_account_id).one()
@@ -124,10 +151,22 @@ def transaction_deposit(request):
             user_info_html = render('templates/user_info.jinja2',
                 {'user': user, 'page': 'deposit'})
 
+            btcimg = ""
+            txhash = ""
+            amount_btc = 0.0
+            if transaction.type == 'btcdeposit':
+                txhash = transaction.btctransaction
+                btcimg = string_to_qrcode('https://blockchain.info/tx/%s' % txhash).decode('utf-8')
+                amount_btc = transaction.amount_btc
+
             deposit = {'transaction_id': transaction.id,
+                       'type': transaction.type,
                        'umid': user.umid,
                        'prev': user.balance - transaction.amount,
                        'amount': transaction.amount,
+                       'btcamount' : amount_btc,
+                       'btcimg' : btcimg,
+                       'txhash' : txhash,
                        'new': user.balance}
             return render_to_response('templates/deposit_complete.jinja2',
                 {'deposit': deposit, 'user_info_block': user_info_html}, request)
@@ -244,6 +283,35 @@ def purchase_new(request):
     except NoResultFound as e:
         # Could not find an item
         return {'error': 'Unable to identify an item.'}
+
+
+@view_config(route_name='btc_deposit', request_method='POST', renderer='json')
+def btc_deposit(request):
+
+    user = User.from_umid(request.matchdict['guid'])
+
+    addr = request.json_body['address']
+    amount_btc = request.json_body['amount']
+    txid = request.json_body['transaction']['id']
+    created_at = request.json_body['transaction']['created_at']
+    txhash = request.json_body['transaction']['hash']
+
+    print("got a btc_deposit request...: %s" % request)
+
+    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s" % (addr, amount_btc, txid, created_at, txhash)
+    # TODO: dynamic exchange rate
+    datalayer.bitcoin_deposit(user, float(amount_btc) * 600, txhash, addr, amount_btc)
+    print(ret)
+    #return ret
+
+@view_config(route_name='btc_check', request_method='GET', renderer='json')
+def btc_check(request):
+    res = 0
+
+    row = DBSession.query(BTCDeposit).filter(BTCDeposit.address==request.matchdict['addr']).first() 
+    if row is not None:
+        res = row.id
+    return {"result" : res}
 
 
 @view_config(route_name='deposit_new', request_method='POST', renderer='json', permission='service')

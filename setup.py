@@ -19,6 +19,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'python3-ldap',
+    'qrcode'
     ]
 
 setup(name='chezbetty',

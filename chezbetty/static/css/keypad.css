@@ -2,7 +2,7 @@
  * http://stackoverflow.com/questions/23077537/create-an-html-numeric-keypad-without-table-layout */
 
 container {
-	width: 342px;
+	width: 330px;
 	display: inline-block;
 }
 
@@ -25,9 +25,27 @@ block[h2] {
 .btn-keypad {
 	height: 100px;
 	width: 100px;
+	font-size: 14pt;
 }
 
 .btn-keypad-wide {
 	height: 100px;
 	width: 210px;
 }
+
+.btn-full-width {
+  width: 320px;
+  height: 100px;
+  margin: 0 5px;
+}
+
+#keypad-total {
+  text-align: right;
+  font-size: 18pt;
+}
+
+.keypad-full-width {
+  width: 320px;
+  margin: 5px;
+}
+

@@ -2,7 +2,7 @@
 
 keyboard_input = "";
 $(document).keypress(function (e) {
-	if (e.which == 13) {
+	if (e.which == 94) {
 		// Got new scan!
 
 		if (keyboard_input.slice(0, 3) == "%B6") {
@@ -28,7 +28,7 @@ $(document).keypress(function (e) {
 			  top: '50%', // Top position relative to parent
 			  left: '50%' // Left position relative to parent
 			};
-			var spinner_location = document.getElementById('login-panel');
+			var spinner_location = document.getElementById('front-buttons');
 			var spinner = new Spinner(opts).spin(spinner_location);
 
 			window.location.replace("/purchase/" + umid);

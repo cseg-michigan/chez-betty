@@ -13,12 +13,24 @@
   </div>
   <div class="panel-body">
 
-    <div class="col-md-12">
-      {{ keypad|safe }}
-    </div>
-    
-    <div class="btn-group btn-group-large">
-      <button type="button" id="btn-submit-deposit" class="btn btn-success">Submit Deposit</button>
+    <div class="row">
+      <div class="col-md-4 deposit-type-col">
+        <div class="row">
+          <div class="col-md-12">
+            <p>Please enter the amount you placed in the box here.</p>
+            {{ keypad|safe }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <button type="button" id="btn-submit-deposit" class="btn btn-success btn-lg btn-full-width">Submit Deposit</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 deposit-type-col">
+        {{ btc|safe }}
+      </div>
     </div>
 
   </div>
