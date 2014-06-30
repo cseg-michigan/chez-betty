@@ -280,7 +280,8 @@ def admin_restock_submit(request):
         try:
             item = Item.from_id(int(quantity.split('-')[2]))
         except:
-            request.session.flash('No item with id {} found. Skipped.'.format(int(quantity.split('-')[2])))
+            request.session.flash('No item with id {} found. Skipped.'.\
+                    format(int(quantity.split('-')[2])), 'error')
             continue
         try:
             quantity = int(request.POST[quantity])
@@ -290,10 +291,12 @@ def admin_restock_submit(request):
             else:
                 cost = float(request.POST[cost])
         except ValueError:
-            request.session.flash('Non-numeric value for {}.  Skipped.'.format(item.name))
+            request.session.flash('Non-numeric value for {}. Skipped.'.\
+                    format(item.name), 'error')
             continue
         except ZeroDivisionError:
-            request.session.flash("Really? Dividing by 0? Item {} skipped.".format(item.name))
+            request.session.flash("Really? Dividing by 0? Item {} skipped.".\
+                    format(item.name), 'error')
             continue
         salestax = request.POST[salestax] == 'on'
         if salestax:
@@ -337,7 +340,10 @@ def admin_add_items_submit(request):
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
-                price = float(request.POST['item-price-{}'.format(id)])
+                try:
+                    price = float(request.POST['item-price-{}'.format(id)])
+                except:
+                    price = 0
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
                 DBSession.flush()
@@ -349,7 +355,8 @@ def admin_add_items_submit(request):
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
                             })
-                    request.session.flash("Error adding item: {}".format(name), "error")
+                    request.session.flash("Error adding item: {}. Most likely a duplicate barcode.".\
+                                    format(name), "error")
                 # O/w this was probably a blank row; ignore.
     if count:
         request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1]), "success")
@@ -376,7 +383,7 @@ def admin_edit_items(request):
 
 @view_config(route_name='admin_edit_items_submit', request_method='POST', permission="manage")
 def admin_edit_items_submit(request):
-    count = 0
+    updated = set()
     for key in request.POST:
         try:
             item = Item.from_id(int(key.split('-')[2]))
@@ -390,9 +397,10 @@ def admin_edit_items_submit(request):
             request.session.flash("Error updating {} for {}.  Skipped.".\
                     format(key.split('-')[1], item.name), 'error')
             continue
-        count += 1
-    if count:
-        request.session.flash("{} item{} updated successfully.".format(count, ['s',''][count==1]), "success")
+        updated.add(item.id)
+    if len(updated):
+        count = len(updated)
+        request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
