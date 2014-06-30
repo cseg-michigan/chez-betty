@@ -17,7 +17,21 @@ from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 
-from pprint import pprint
+import qrcode
+import qrcode.image.svg
+try:
+    import lxml.etree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+###
+### Utility Function
+###
+
+def string_to_qrcode(s):
+    factory = qrcode.image.svg.SvgPathImage
+    img = qrcode.make(s, image_factory=factory)
+    return ET.tostring(img._img)
 
 from btc import Bitcoin
 
@@ -481,11 +495,11 @@ def admin_inventory_submit(request):
     t = datalayer.reconcile_items(items, None)
     request.session.flash('Inventory Reconciled', 'success')
     if t.amount < 0:
-        request.session.flash('Chez Betty made ${}'.format(-t.amount), 'success')
+        request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
     elif t.amount == 0:
         request.session.flash('Chez Betty was spot on.', 'success')
     else:
-        request.session.flash('Chez Betty lost ${}. :('.format(t.amount), 'error')
+        request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
     return HTTPFound(location=request.route_url('admin_inventory'))
 
 @view_config(route_name='login', renderer='teampltes/login.jinja2')
@@ -577,7 +591,6 @@ def admin_cash_reconcile(request):
 @view_config(route_name='admin_cash_reconcile_submit', request_method='POST', 
         permission='manage')
 def admin_cash_reconcile_submit(request):
-    print(request.POST)
     try:
         amount = float(request.POST['amount'])
     except ValueError:
@@ -606,10 +619,28 @@ def admin_transactions(request):
 
 @view_config(route_name='admin_view_transaction',
         renderer='templates/admin/view_transaction.jinja2', permission='admin')
-def view_transaction(request):
+def admin_view_transaction(request):
     id = int(request.matchdict['id'])
     t = DBSession.query(Transaction).filter(Transaction.id == id).first()
     if not t:
         request.session.flush('Invalid transaction ID supplied')
         return HTTPFound(location=request.route_url('admin_index'))
     return dict(t=t)
+
+@view_config(route_name='admin_edit_password',
+        renderer='templates/admin/edit_password.jinja2', permission='manage')
+def admin_edit_password(request):
+    return {}
+
+@view_config(route_name='admin_edit_password_submit', request_method='POST', 
+        permission='manage')
+def admin_edit_password_submit(request):
+    pwd0 = request.POST['edit-password-0']
+    pwd1 = request.POST['edit-password-1']
+
+    if pwd0 != pwd1:
+        request.session.flash('Error: Passwords do not match', 'error')
+        return HTTPFound(location=request.route_url('admin_edit_password'))
+
+    # TODO: do it
+

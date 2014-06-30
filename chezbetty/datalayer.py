@@ -56,7 +56,7 @@ def purchase(user, items):
     amount = 0.0
     for item, quantity in items.items():
         item.in_stock -= quantity
-        st = SubTransaction(t, item, quantity, item.wholesale)
+        st = SubTransaction(t, item, quantity, item.price)
         DBSession.add(st)
         amount += st.amount
     t.update_amount(amount)
