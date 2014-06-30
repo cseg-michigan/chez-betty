@@ -50,6 +50,7 @@ def main(global_config, **settings):
     config.add_route('deposit', '/deposit/{umid}')
 
     config.add_route('btc_deposit', '/bitcoin/deposit/{guid}')
+    config.add_route('btc_check', '/bitcoin/check/{addr}')
 
     config.add_route('transaction', '/transaction/{transaction_id}')
     config.add_route('transaction_undo', '/transaction/undo/{umid}/{transaction_id}')
