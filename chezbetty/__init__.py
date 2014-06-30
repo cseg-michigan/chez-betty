@@ -5,6 +5,7 @@ from sqlalchemy import engine_from_config
 
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder
+from btc import Bitcoin
 
 def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
@@ -16,6 +17,9 @@ def main(global_config, **settings):
     LDAPLookup.PASSWORD = config.registry.settings["ldap.password"]
     LDAPLookup.USERNAME = config.registry.settings["ldap.username"]
     LDAPLookup.SERVER = config.registry.settings["ldap.server"]
+
+    Bitcoin.COINBASE_API_KEY = config.registry.settings["bitcoin.coinbase_api_key"]
+    Bitcoin.COINBASE_API_SECRET = config.registry.settings["bitcoin.coinbase_api_secret"]
     
     authn_policy = AuthTktAuthenticationPolicy(
            config.registry.settings["auth.secret"],
@@ -44,6 +48,8 @@ def main(global_config, **settings):
 
     config.add_route('deposit_new', '/deposit/new')
     config.add_route('deposit', '/deposit/{umid}')
+
+    config.add_route('btc_deposit', '/bitcoin/deposit/{guid}')
 
     config.add_route('transaction', '/transaction/{transaction_id}')
     config.add_route('transaction_undo', '/transaction/undo/{umid}/{transaction_id}')
