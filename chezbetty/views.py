@@ -395,6 +395,7 @@ def admin_edit_items_submit(request):
             setattr(item, key.split('-')[1], request.POST[key])
             DBSession.flush()
         except:
+            DBSession.rollback()
             request.session.flash("Error updating {} for {}.  Skipped.".\
                     format(key.split('-')[1], name), 'error')
             continue
