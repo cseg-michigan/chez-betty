@@ -496,7 +496,7 @@ def admin_edit_users_submit(request):
 @view_config(route_name='admin_edit_balance', 
         renderer='templates/admin/edit_balance.jinja2')
 def admin_edit_balance(request):
-    users = DBSession.query(User).all()
+    users = DBSession.query(User).order_by(User.name).all()
     return {'users': users}
 
 @view_config(route_name='admin_edit_balance_submit', request_method='POST', 
