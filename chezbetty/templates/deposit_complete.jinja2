@@ -25,10 +25,19 @@
         <dd>{{ deposit['prev']|format_currency|safe }}</dd>
 
         <dt>Deposit</dt>
-        <dd>{{ deposit['amount']|format_currency|safe }}</dd>
+        {% if deposit.type == "deposit" %}
+            <dd>{{ deposit['amount']|format_currency|safe }}</dd>
+        {% elif deposit.type == "btcdeposit" %}
+            <dd>{{ deposit['btcamount'] }} BTC ({{ deposit['amount']|format_currency|safe }})</dd>
+        {% endif %}
 
         <dt>New Balance</dt>
         <dd>{{ deposit['new']|format_currency|safe }}</dd>
+
+        {% if deposit.type == "btcdeposit" %}
+            <dt>Transaction</dt>
+            <dd>{{ deposit.btcimg|safe }}<br/>{{ deposit.txhash }}</dd>
+        {% endif %}
       </dl>
 
     </div>
@@ -36,7 +45,8 @@
   </div>
 </div>
 
-
+{% if deposit.type == "deposit" %}
 <a class="btn btn-danger" href="/transaction/undo/{{ deposit['umid'] }}/{{ deposit['transaction_id'] }}">Oops! I made a mistake. Undo this transaction.</a>
+{% endif %}
 
 {% endblock %}
