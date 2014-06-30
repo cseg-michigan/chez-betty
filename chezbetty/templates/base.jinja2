@@ -57,4 +57,9 @@
   <script src="{{'chezbetty:static/js/chezbetty-onload.js'|static_url}}"></script>
   {% block onload %}
   {% endblock %}
+
+  {% set timeout = timeout|default(60*1000*5) -%}
+  <script>
+    setTimeout(function(){window.location.replace("/");}, {{ timeout }});
+  </script>
 </body>
