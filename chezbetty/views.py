@@ -30,7 +30,10 @@ except ImportError:
 
 def string_to_qrcode(s):
     factory = qrcode.image.svg.SvgPathImage
-    img = qrcode.make(s, image_factory=factory)
+    img = qrcode.make(s, image_factory=factory, box_size=14,
+        version=4,
+        border=0)
+    img.save('/dev/null')   # This is needed, I swear.
     return ET.tostring(img._img)
 
 from btc import Bitcoin
@@ -91,13 +94,12 @@ def user(request):
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
 
-        for tx in user.transactions:
+        for tx_idx in range(len(user.transactions)):
+            tx = user.transactions[tx_idx]
             if tx.type == "btcdeposit":
-                img = qrcode.make('https://blockchain.info/tx/%s',
-                        image_factory=qrcode.image.svg.SvgPathImage,
-                        box_size=7,
-                        version=4,
-                        border=0)
+                svg_html = string_to_qrcode('https://blockchain.info/tx/%s' % tx.btctransaction)
+                print(svg_html)
+                user.transactions[tx_idx].img = svg_html
 
         return {'user': user,
                 'user_info_block': user_info_html,

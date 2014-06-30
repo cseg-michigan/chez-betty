@@ -89,7 +89,7 @@
         <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
-          {{ transaction.btctransaction }}
+          {{ transaction.img|safe }}
         </div>
 
         {% endif %}
