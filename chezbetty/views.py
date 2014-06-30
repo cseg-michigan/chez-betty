@@ -414,7 +414,8 @@ def admin_edit_items_submit(request):
         updated.add(item.id)
     if len(updated):
         count = len(updated)
-        request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
+        #request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
+        request.session.flash("Items updated successfully.", "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
