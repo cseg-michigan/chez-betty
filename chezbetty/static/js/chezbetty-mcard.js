@@ -2,7 +2,7 @@
 
 keyboard_input = "";
 $(document).keypress(function (e) {
-	if (e.which == 13) {
+	if (e.which == 94) {
 		// Got new scan!
 
 		if (keyboard_input.slice(0, 3) == "%B6") {
