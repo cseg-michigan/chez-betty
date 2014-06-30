@@ -115,3 +115,9 @@ h1 {
 	color: #ccc;
 	padding-left: 10px;
 }
+
+/* Deposit */
+
+.deposit-type-col {
+	border-right: 1px solid #ccc;
+}
