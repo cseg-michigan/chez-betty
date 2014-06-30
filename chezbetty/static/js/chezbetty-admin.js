@@ -20,13 +20,15 @@ function full_strip_price (price_str) {
 
 // Callback when adding an item to the cart succeeds
 function add_item_success (data) {
-	// Make sure this item isn't already on the list
-	if ($("#restock-item-" + data.id).length == 0) {
-		// Add a new item
-		$("#restock-table tbody").append(data.data);
+	if (data.status == "unknown_barcode") {
+		console.log("Could not find that item.");
+	} else {
+		// Make sure this item isn't already on the list
+		if ($("#restock-item-" + data.id).length == 0) {
+			// Add a new item
+			$("#restock-table tbody").append(data.data);
+		}
 	}
-
-	calculate_total();
 }
 
 // Callback when adding to cart fails.
