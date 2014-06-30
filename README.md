@@ -38,6 +38,17 @@ against, do the following:
         bin/pserve development.ini
 
 
+Usage
+=====
+
+View the client interface using
+  
+    http://127.0.0.1:6543
+
+View the admin interface using
+
+    http://127.0.0.1:6543/admin
+
 Tools
 =====
 
