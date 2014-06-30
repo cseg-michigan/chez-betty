@@ -73,7 +73,7 @@ class BTCDeposit(Deposit):
    
     btctransaction = Column(String(64))
     address = Column(String(64))
-    amount_btc = Column(Float, nullable=False)
+    amount_btc = Column(Float, nullable=True)
 
     def __init__(self, user, amount, btctransaction, address, amount_btc):
         Transaction.__init__(self, None, user, amount)
