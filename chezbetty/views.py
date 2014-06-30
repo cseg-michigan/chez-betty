@@ -12,6 +12,7 @@ from .models.model import *
 from .models.user import User, InvalidUserException
 from .models.item import Item
 from .models.transaction import Transaction
+from .models.transaction import BTCDeposit
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -300,6 +301,13 @@ def btc_deposit(request):
     datalayer.bitcoin_deposit(user, float(amount_btc) * 600, txhash, addr, amount_btc)
     print(ret)
     #return ret
+
+@view_config(route_name='btc_check', request_method='GET', renderer='json')
+def btc_check(request):
+    res = 0
+    if DBSession.query(BTCDeposit).filter(BTCDeposit.address==request.matchdict['addr']).first() is not None:
+        res = 1
+    return {"result" : res}
 
 
 @view_config(route_name='deposit_new', request_method='POST', renderer='json', permission='service')
