@@ -536,7 +536,6 @@ def admin_cash_reconcile(request):
 @view_config(route_name='admin_cash_reconcile_submit', request_method='POST', 
         permission='manage')
 def admin_cash_reconcile_submit(request):
-    print(request.POST)
     try:
         amount = float(request.POST['amount'])
     except ValueError:
@@ -565,10 +564,28 @@ def admin_transactions(request):
 
 @view_config(route_name='admin_view_transaction',
         renderer='templates/admin/view_transaction.jinja2', permission='admin')
-def view_transaction(request):
+def admin_view_transaction(request):
     id = int(request.matchdict['id'])
     t = DBSession.query(Transaction).filter(Transaction.id == id).first()
     if not t:
         request.session.flush('Invalid transaction ID supplied')
         return HTTPFound(location=request.route_url('admin_index'))
     return dict(t=t)
+
+@view_config(route_name='admin_edit_password',
+        renderer='templates/admin/edit_password.jinja2', permission='manage')
+def admin_edit_password(request):
+    return {}
+
+@view_config(route_name='admin_edit_password_submit', request_method='POST', 
+        permission='manage')
+def admin_edit_password_submit(request):
+    pwd0 = request.POST['edit-password-0']
+    pwd1 = request.POST['edit-password-1']
+
+    if pwd0 != pwd1:
+        request.session.flash('Error: Passwords do not match', 'error')
+        return HTTPFound(location=request.route_url('admin_edit_password'))
+
+    # TODO: do it
+
