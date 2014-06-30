@@ -26,11 +26,11 @@ class DepositException(Exception):
 ### HTML Pages
 ###
 
-@view_config(route_name='index', renderer='templates/index.jinja2', permission="user")
+@view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
     return {}
 
-@view_config(route_name='about', renderer='templates/about.jinja2', permission="user")
+@view_config(route_name='about', renderer='templates/about.jinja2')
 def about(request):
     return {}
 
@@ -49,7 +49,7 @@ def purchase(request):
         request.session.flash("Invalid M-Card swipe. Please try again.", "error")
         return HTTPFound(location=request.route_url('index'))
 
-@view_config(route_name='items', renderer='templates/items.jinja2', permission="service")
+@view_config(route_name='items', renderer='templates/items.jinja2')
 def items(request):
     items = DBSession.query(Item).filter(Item.enabled==True).order_by(Item.name).all()
     return {'items': items}
