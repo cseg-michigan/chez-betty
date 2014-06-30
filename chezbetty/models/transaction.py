@@ -12,7 +12,7 @@ class Transaction(Base):
     amount = Column(Float, nullable=False)
     notes = Column(Text)
     type = Column(Enum("purchase", "deposit", "reconciliation", 
-            "adjustment", "restock", "btcdeposit"), nullable=False)
+            "adjustment", "restock", "btcdeposit", name="transaction_type"), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
     # user that performed the reconciliation 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
