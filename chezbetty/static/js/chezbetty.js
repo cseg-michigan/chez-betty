@@ -49,27 +49,36 @@ function disable_button (button) {
 function add_item_success (data) {
 	alert_clear();
 
-	// First, if this is the first item hide the empty order row
-	$("#purchase-empty").hide();
-
-	// Check if this item is already present. In that case we only
-	// need to increment the quantity and price
-	if ($("#purchase-item-" + data.id).length) {
-		item_row = $("#purchase-item-" + data.id);
-
-		// Increment the quantity
-		quantity = parseInt(item_row.children(".item-quantity").text()) + 1;
-		item_price = parseFloat(item_row.children(".item-price-single").text());
-
-		item_row.children(".item-quantity").text(quantity);
-		item_row.children(".item-total").html(format_price(quantity*item_price));
-
+	// Check if there was an error looking up the product
+	if (data.status == "disabled") {
+		alert_error("That product is not currently for sale.");
+	} else if (data.status == "unknown_barcode") {
+		alert_error("Could not find that item.");
 	} else {
-		// Add a new item
-		$("#purchase_table tbody").append(data.item_row_html);
-	}
 
-	calculate_total();
+		// First, if this is the first item hide the empty order row
+		$("#purchase-empty").hide();
+
+		// Check if this item is already present. In that case we only
+		// need to increment the quantity and price
+		if ($("#purchase-item-" + data.id).length) {
+			item_row = $("#purchase-item-" + data.id);
+
+			// Increment the quantity
+			quantity = parseInt(item_row.children(".item-quantity").text()) + 1;
+			item_price = parseFloat(item_row.children(".item-price-single").text());
+
+			item_row.children(".item-quantity").text(quantity);
+			item_row.children(".item-total").html(format_price(quantity*item_price));
+
+		} else {
+			// Add a new item
+			$("#purchase_table tbody").append(data.item_row_html);
+		}
+
+		calculate_total();
+
+	}
 }
 
 // Callback when adding to cart fails.
