@@ -20,6 +20,8 @@ import chezbetty.datalayer as datalayer
 
 import qrcode
 import qrcode.image.svg
+
+from .btc import BTCException
 try:
     import lxml.etree as ET
 except ImportError:
@@ -123,7 +125,7 @@ def deposit(request):
         try:
             btc_addr = bitcoin.get_new_address()
             btc_html = render('templates/btc.jinja2', {'addr': btc_addr})
-        except btc.BTCException as e:
+        except BTCException as e:
             btc_html = ""
 
         return {'user_info_block': user_info_html, 'keypad': keypad_html, 'btc' : btc_html}

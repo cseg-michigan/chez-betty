@@ -34,7 +34,7 @@ class Bitcoin(object):
             opener = self.req("https://coinbase.com/api/v1/account/generate_receive_address",
                  '{"address": {"callback_url": "%s/%s", "label": "%s"}' % (cb_url, self.umid, guid))
         except urllib.error.HTTPError as e:
-            return BTCException("Could not get address")
+            raise BTCException("Could not get address")
 
         res = opener.read()
         obj = json.loads(str(res, 'utf-8'))
