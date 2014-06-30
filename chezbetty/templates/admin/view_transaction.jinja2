@@ -31,6 +31,9 @@
   </div>
 
 </div>
+
+{% if t.subtransactions %}
+
 <br/>
 <h3 class="page-header">Sub Transactions</h3>
 <table class="table table-condensed table-striped">
@@ -38,8 +41,7 @@
     <tr>
       <th>ID</th>
       <th>Item</th>
-      <th class="right">Item Cost</th>
-      <th class="right">Item Wholesale</th>
+      <th class="right">Item Amount</th>
       <th class="right">Quantity</th>
       <th class="right">Amount</th>
     </tr>
@@ -49,13 +51,14 @@
     <tr>
         <td>{{ st.id }}</td>
         <td>{{ st.item.name }}</td>
-        <td class="right">{{ st.item.price|format_currency|safe }}</td>
-        <td class="right">{{ st.item.wholesale|format_currency|safe }}</td>
+        <td class="right">{{ st.item_amount|format_currency|safe }}</td>
         <td class="right">{{ st.quantity }}</td>
         <td class="right">{{ st.amount|format_currency|safe }}</td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
+
+{% endif %}
 
 {% endblock %}

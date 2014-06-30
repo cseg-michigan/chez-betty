@@ -36,7 +36,7 @@ def bitcoin_deposit(user, amount, btc_transaction):
     prev = user.balance
     t = BTCDeposit(user, amount, btc_transaction)
     DBSession.add(t)
-    c = BTCDeposit(amount, t)
+    c = BTCCashDeposit(amount, t)
     DBSession.add(c)
     return dict(prev=prev, new=user.balance, amount=amount,
             transaction=t, cash_transaction=c)
@@ -84,16 +84,17 @@ def reconcile_items(items, admin):
         if item.in_stock == quantity:
             continue
         quantity_missing = item.in_stock - quantity
-        st = SubTransaction(t, item, quantity_missing)
+        st = SubTransaction(t, item, quantity_missing, item.wholesale)
         total_amount_missing += st.amount
         item.in_stock = quantity
     t.update_amount(total_amount_missing)
     return t
 
 def reconcile_cash(amount, admin):
-    cash = make_cash_account("cashbox")
-    expected_amount = cash.balance
+    cashbox = make_cash_account("cashbox")
+    expected_amount = cashbox.balance
     amount_missing = expected_amount - amount
+    cashbox.balance = 0
 
     t = CashTransaction(
         from_account = make_cash_account("cashbox"),

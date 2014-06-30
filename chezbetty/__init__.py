@@ -40,7 +40,7 @@ def main(global_config, **settings):
     config.add_route('items', '/items')
     config.add_route('item', '/item/{barcode}/json')
 
-    config.add_route('users', '/users')
+    config.add_route('shame', '/shame')
     config.add_route('user', '/user/{umid}')
 
     config.add_route('purchase_new', '/purchase/new')

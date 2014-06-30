@@ -30,15 +30,15 @@ class DepositException(Exception):
 ### HTML Pages
 ###
 
-@view_config(route_name='index', renderer='templates/index.jinja2', permission="user")
+@view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
     return {}
 
-@view_config(route_name='about', renderer='templates/about.jinja2', permission="user")
+@view_config(route_name='about', renderer='templates/about.jinja2')
 def about(request):
     return {}
 
-@view_config(route_name='purchase', renderer='templates/purchase.jinja2', permission="service")
+@view_config(route_name='purchase', renderer='templates/purchase.jinja2', permission='service')
 def purchase(request):
     try:
         if len(request.matchdict['umid']) != 8:
@@ -50,23 +50,27 @@ def purchase(request):
         return {'purchase_info_block': purchase_info}
 
     except InvalidUserException as e:
-        request.session.flash("Invalid M-Card swipe. Please try again.", "error")
+        request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
         return HTTPFound(location=request.route_url('index'))
 
-@view_config(route_name='items', renderer='templates/items.jinja2', permission="service")
+@view_config(route_name='items', renderer='templates/items.jinja2')
 def items(request):
-    items = DBSession.query(Item).order_by(Item.name).all()
+    items = DBSession.query(Item).filter(Item.enabled==True).order_by(Item.name).all()
     return {'items': items}
 
-@view_config(route_name='users', renderer='templates/users.jinja2', permission="manage")
+@view_config(route_name='shame', renderer='templates/shame.jinja2')
 def users(request):
-    users = DBSession.query(User).all()
+    users = DBSession.query(User).filter(User.balance < -5).order_by(User.balance).all()
     return {'users': users}
 
-@view_config(route_name='user', renderer='templates/user.jinja2', permission="service")
+@view_config(route_name='user', renderer='templates/user.jinja2', permission='service')
 def user(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
+        if not user.enabled:
+            request.session.flash('User not permitted to purchase items.', 'error')
+            return HTTPFound(location=request.route_url('index'))
+
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
 
@@ -79,10 +83,11 @@ def user(request):
         return HTTPFound(location=request.route_url('index'))
 
 
-@view_config(route_name='deposit', renderer='templates/deposit.jinja2', permission="service")
+@view_config(route_name='deposit', renderer='templates/deposit.jinja2', permission='service')
 def deposit(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
+
         user_info_html = render('templates/user_info.jinja2', {'user': user,
                                                                'page': 'deposit'})
         keypad_html = render('templates/keypad.jinja2', {})
@@ -99,7 +104,7 @@ def deposit(request):
         return HTTPFound(location=request.route_url('index'))
 
 
-@view_config(route_name='transaction', permission="service")
+@view_config(route_name='transaction', permission='service')
 def transaction_deposit(request):
 
     try:
@@ -150,34 +155,46 @@ def transaction_deposit(request):
         # TODO: add generic failure page
         pass
 
-@view_config(route_name='transaction_undo', permission="service")
+@view_config(route_name='transaction_undo', permission='service')
 def transaction_undo(request):
+    # Lookup the transaction that the user wants to undo
     try:
         transaction = Transaction.from_id(request.matchdict['transaction_id'])
     except:
         request.session.flash('Error: Could not find transaction to undo.', 'error')
         return HTTPFound(location=request.route_url('index'))
+
+    # Make sure transaction is a deposit, the only one the user is allowed
+    # to undo
+    if transaction.type != 'deposit':
+        request.session.flash('Error: Only deposits may be undone.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+    # Make sure that the user who is requesting the deposit was the one who
+    # actually placed the deposit.
     try:
         user = DBSession.query(User) \
             .filter(User.id==transaction.to_account_id).one()
     except:
-        request.session.flash("Error: Invalid user for transaction.", 'error')
+        request.session.flash('Error: Invalid user for transaction.', 'error')
         return HTTPFound(location=request.route_url('index'))
     if user.umid != request.matchdict['umid']:
-        request.session.flash("Error: Transaction does not belong to specified user", "error")
+        request.session.flash('Error: Transaction does not belong to specified user', 'error')
         return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
+
+    # If the checks pass, actually revert the transaction
     try:
         datalayer.undo_transaction(transaction)
         request.session.flash('Transaction successfully reverted.', 'success')
     except:
-        request.session.flash('Error: Failed to undo transaction.', "error")
+        request.session.flash('Error: Failed to undo transaction.', 'error')
     return HTTPFound(location=request.route_url('user', umid=user.umid))
 
 ###
 ### JSON Requests
 ###
 
-@view_config(route_name='item', renderer='json', permission="user")
+@view_config(route_name='item', renderer='json', permission='user')
 def item(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])
@@ -194,7 +211,7 @@ def item(request):
 ### POST Handlers
 ###
 
-@view_config(route_name='purchase_new', request_method='POST', renderer='json', permission="service")
+@view_config(route_name='purchase_new', request_method='POST', renderer='json', permission='service')
 def purchase_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
@@ -214,7 +231,7 @@ def purchase_new(request):
         return {'transaction_id': purchase.id}
 
     except InvalidUserException as e:
-        request.session.flash('Invalid user error. Please try again.', "error")
+        request.session.flash('Invalid user error. Please try again.', 'error')
         return {'redirect_url': '/'}
 
     except ValueError as e:
@@ -245,7 +262,7 @@ def btc_deposit(request):
     #return ret
 
 
-@view_config(route_name='deposit_new', request_method='POST', renderer='json', permission="service")
+@view_config(route_name='deposit_new', request_method='POST', renderer='json', permission='service')
 def deposit_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
@@ -261,7 +278,7 @@ def deposit_new(request):
         return {'transaction_id': deposit['transaction'].id}
 
     except InvalidUserException as e:
-        request.session.flash('Invalid user error. Please try again.', "error")
+        request.session.flash('Invalid user error. Please try again.', 'error')
         return {'redirect_url': '/'}
 
     except ValueError as e:
@@ -277,7 +294,7 @@ def deposit_new(request):
 ### Admin
 ###
 
-@view_config(route_name='admin_index', renderer='templates/admin/index.jinja2', permission="manage")
+@view_config(route_name='admin_index', renderer='templates/admin/index.jinja2', permission='manage')
 def admin_index(request):
     return {}
 
@@ -294,7 +311,7 @@ def admin_item_barcode_json(request):
     item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
     return {'status' : status, 'data' : item_restock_html, 'id' : item.id}
 
-@view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission="manage")
+@view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission='manage')
 def admin_restock(request):
     return {}
 
@@ -325,7 +342,7 @@ def admin_restock_submit(request):
                     format(item.name), 'error')
             continue
         except ZeroDivisionError:
-            request.session.flash("Really? Dividing by 0? Item {} skipped.".\
+            request.session.flash('Really? Dividing by 0? Item {} skipped.'.\
                     format(item.name), 'error')
             continue
         salestax = request.POST[salestax] == 'on'
@@ -334,7 +351,7 @@ def admin_restock_submit(request):
         else:
             wholesale = cost / quantity
 
-        item.wholesale = wholesale
+        item.wholesale = round(wholesale, 4)
 
         if item.price < item.wholesale:
             item.price = item.wholesale * 1.15
@@ -342,10 +359,10 @@ def admin_restock_submit(request):
         items[item] = quantity
 
     datalayer.restock(items)
-    request.session.flash("Restock complete.", "success")
+    request.session.flash('Restock complete.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
-@view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission="manage")
+@view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission='manage')
 def admin_add_items(request):
     if len(request.GET) == 0:
         return {'items' : {'count': 1,
@@ -357,7 +374,7 @@ def admin_add_items(request):
         d = {'items' : request.GET}
         return d
 
-@view_config(route_name='admin_add_items_submit', request_method='POST', permission="manage")
+@view_config(route_name='admin_add_items_submit', request_method='POST', permission='manage')
 def admin_add_items_submit(request):
     count = 0
     error_items = []
@@ -385,13 +402,13 @@ def admin_add_items_submit(request):
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
                             })
-                    request.session.flash("Error adding item: {}. Most likely a duplicate barcode.".\
-                                    format(name), "error")
+                    request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
+                                    format(name), 'error')
                 # O/w this was probably a blank row; ignore.
     if count:
-        request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1]), "success")
+        request.session.flash('{} item{} added successfully.'.format(count, ['s',''][count==1]), 'success')
     else:
-        request.session.flash("No items added.", "error")
+        request.session.flash('No items added.', 'error')
     if len(error_items):
         flat = {}
         e_count = 0
@@ -404,21 +421,21 @@ def admin_add_items_submit(request):
     else:
         return HTTPFound(location=request.route_url('admin_edit_items'))
 
-@view_config(route_name='admin_edit_items', renderer='templates/admin/edit_items.jinja2', permission="manage")
+@view_config(route_name='admin_edit_items', renderer='templates/admin/edit_items.jinja2', permission='manage')
 def admin_edit_items(request):
     items_active = DBSession.query(Item).filter_by(enabled=True).order_by(Item.name).all()
     items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
     items = items_active + items_inactive
     return {'items': items}
 
-@view_config(route_name='admin_edit_items_submit', request_method='POST', permission="manage")
+@view_config(route_name='admin_edit_items_submit', request_method='POST', permission='manage')
 def admin_edit_items_submit(request):
     updated = set()
     for key in request.POST:
         try:
             item = Item.from_id(int(key.split('-')[2]))
         except:
-            request.session.flash("No item with ID {}.  Skipped.".format(key.split('-')[2]), 'error')
+            request.session.flash('No item with ID {}.  Skipped.'.format(key.split('-')[2]), 'error')
             continue
         name = item.name
         try:
@@ -426,21 +443,22 @@ def admin_edit_items_submit(request):
             DBSession.flush()
         except:
             DBSession.rollback()
-            request.session.flash("Error updating {} for {}.  Skipped.".\
+            request.session.flash('Error updating {} for {}.  Skipped.'.\
                     format(key.split('-')[1], name), 'error')
             continue
         updated.add(item.id)
     if len(updated):
         count = len(updated)
-        request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
+        #request.session.flash('{} item{} properties updated successfully.'.format(count, ['s',''][count==1]), 'success')
+        request.session.flash('Items updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
-@view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
+@view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission='manage')
 def admin_inventory(request):
     items = DBSession.query(Item).order_by(Item.name).all()
     return {'items': items}
 
-@view_config(route_name='admin_inventory_submit', request_method='POST', permission="manage")
+@view_config(route_name='admin_inventory_submit', request_method='POST', permission='manage')
 def admin_inventory_submit(request):
     items = {}
     for key in request.POST:
@@ -450,15 +468,16 @@ def admin_inventory_submit(request):
         except ValueError:
             pass
     t = datalayer.reconcile_items(items, None)
+    request.session.flash('Inventory Reconciled', 'success')
     if t.amount < 0:
-        request.session.flash("Inventory Reconciled. Chez Betty made ${}".format(-t.amount), "success")
+        request.session.flash('Chez Betty made ${}'.format(-t.amount), 'success')
     elif t.amount == 0:
-        request.session.flash("Inventory Reconciled. Chez Betty was spot on.", "success")
+        request.session.flash('Chez Betty was spot on.', 'success')
     else:
-        request.session.flash("Inventory Reconciled. Chez Betty lost ${}. :(".format(t.amount), "error")
+        request.session.flash('Chez Betty lost ${}. :('.format(t.amount), 'error')
     return HTTPFound(location=request.route_url('admin_inventory'))
 
-@view_config(route_name="login", renderer="teampltes/login.jinja2")
+@view_config(route_name='login', renderer='teampltes/login.jinja2')
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):
     login_url = request.resource_url(request.context, 'login')
@@ -466,8 +485,7 @@ def login(request):
     if referrer == login_url:
         referrer = '/' # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
-    message = login = password = ""
-    print(request.params)
+    message = login = password = ''
     if 'login' in request.params:
         login = request.params['login']
         password = request.params['password']
@@ -476,7 +494,10 @@ def login(request):
             # successful login
             headers = remember(request, login)
             return HTTPFound(location=came_from, headers=headers)
-        message = "Login failed. Incorrect username or password.",
+        elif user and not user.enabled:
+            message = 'Login failed. User not allowed to login.'
+        else:
+            message = 'Login failed. Incorrect username or password.',
 
     return dict(
         message = message,
@@ -495,7 +516,9 @@ def logout(request):
 
 @view_config(route_name='admin_edit_users', renderer='templates/admin/edit_users.jinja2')
 def admin_edit_users(request):
-    users = DBSession.query(User).all()
+    enabled_users = DBSession.query(User).filter_by(enabled=True).order_by(User.name).all()
+    disabled_users = DBSession.query(User).filter_by(enabled=False).order_by(User.name).all()
+    users = enabled_users + disabled_users
     roles = [('user', 'User'),
              ('serviceaccount', 'Service Account'),
              ('manager', 'Manager'),
@@ -503,45 +526,45 @@ def admin_edit_users(request):
     return {'users': users, 'roles': roles}
 
 @view_config(route_name='admin_edit_users_submit', 
-        request_method='POST', permission="admin")
+        request_method='POST', permission='admin')
 def admin_edit_users_submit(request):
     for key in request.POST:
         user = User.from_id(int(key.split('-')[2]))
         setattr(user, key.split('-')[1], request.POST[key])
-    request.session.flash("Users updated successfully.", "success")
+    request.session.flash('Users updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_users'))
 
 @view_config(route_name='admin_edit_balance', 
         renderer='templates/admin/edit_balance.jinja2')
 def admin_edit_balance(request):
-    users = DBSession.query(User).all()
+    users = DBSession.query(User).order_by(User.name).all()
     return {'users': users}
 
 @view_config(route_name='admin_edit_balance_submit', request_method='POST', 
-        permission="admin")
+        permission='admin')
 def admin_edit_balance_submit(request):
     try:
         user = User.from_id(int(request.POST['user']))
     except:
-        request.session.flash("Invalid user?", "error")
+        request.session.flash('Invalid user?', 'error')
         return HTTPFound(location=request.route_url('admin_edit_balance'))
     try:
         adjustment = float(request.POST['amount'])
     except:
-        request.session.flash("Invalid adjustment amount.", "error")
+        request.session.flash('Invalid adjustment amount.', 'error')
         return HTTPFound(location=request.route_url('admin_edit_balance'))
-    reason = request.POST["reason"]
+    reason = request.POST['reason']
     datalayer.adjust_user_balance(user, adjustment, None, reason)
-    request.session.flash("User account updated.", "success")
+    request.session.flash('User account updated.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_balance'))
 
 @view_config(route_name='admin_cash_reconcile', 
-        renderer='templates/admin/cash_reconcile.jinja2', permission="manage")
+        renderer='templates/admin/cash_reconcile.jinja2', permission='manage')
 def admin_cash_reconcile(request):
     return {}
 
 @view_config(route_name='admin_cash_reconcile_submit', request_method='POST', 
-        permission="manage")
+        permission='manage')
 def admin_cash_reconcile_submit(request):
     print(request.POST)
     try:
@@ -557,25 +580,25 @@ def admin_cash_reconcile_submit(request):
         _query={'amount':amount, 'expected_amount':expected_amount}))
 
 @view_config(route_name='admin_cash_reconcile_success', 
-        renderer='templates/admin/cash_reconcile_complete.jinja2', permission="manage")
+        renderer='templates/admin/cash_reconcile_complete.jinja2', permission='manage')
 def admin_cash_reconcile_success(request):
     deposit = float(request.GET['amount'])
     expected = float(request.GET['expected_amount'])
     difference = deposit - expected
     return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
 
-@view_config(route_name="admin_transactions",
-        renderer="templates/admin/transactions.jinja2", permission="admin")
+@view_config(route_name='admin_transactions',
+        renderer='templates/admin/transactions.jinja2', permission='admin')
 def admin_transactions(request):
     transactions = DBSession.query(Transaction).order_by(desc(Transaction.id)).all()
-    return {"transactions":transactions}
+    return {'transactions':transactions}
 
-@view_config(route_name="admin_view_transaction",
-        renderer="templates/admin/view_transaction.jinja2", permission="admin")
+@view_config(route_name='admin_view_transaction',
+        renderer='templates/admin/view_transaction.jinja2', permission='admin')
 def view_transaction(request):
-    id = int(request.matchdict["id"])
+    id = int(request.matchdict['id'])
     t = DBSession.query(Transaction).filter(Transaction.id == id).first()
     if not t:
-        request.session.flush("Invalid transaction ID supplied")
+        request.session.flush('Invalid transaction ID supplied')
         return HTTPFound(location=request.route_url('admin_index'))
     return dict(t=t)

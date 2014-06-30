@@ -19,22 +19,23 @@
   <div class="panel-body">
 
     <div id="transaction-{{ deposit['transaction_id'] }}">
-      <div class="row">
-        <div class="col-md-4">Old Balance</div>
-        <div class="col-md-1 right">{{ deposit['prev']|format_currency|safe }}</div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">Deposit</div>
-        <div class="col-md-1 right">{{ deposit['amount']|format_currency|safe }}</div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">New Balance</div>
-        <div class="col-md-1 right">{{ deposit['new']|format_currency|safe }}</div>
-      </div>
+
+      <dl class="dl-horizontal">
+        <dt>Old Balance</dt>
+        <dd>{{ deposit['prev']|format_currency|safe }}</dd>
+
+        <dt>Deposit</dt>
+        <dd>{{ deposit['amount']|format_currency|safe }}</dd>
+
+        <dt>New Balance</dt>
+        <dd>{{ deposit['new']|format_currency|safe }}</dd>
+      </dl>
+
     </div>
 
   </div>
 </div>
+
 
 <a class="btn btn-danger" href="/transaction/undo/{{ deposit['umid'] }}/{{ deposit['transaction_id'] }}">Oops! I made a mistake. Undo this transaction.</a>
 
