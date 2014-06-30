@@ -51,7 +51,7 @@
               <tr class="purchase-item">
                 <td class="item-title">{{ line_item.item.name }}</td>
                 <td class="item-quantity">{{ line_item.quantity }}</td>
-                <td class="item-price">{{ line_item.item.price|format_currency|safe }}</td>
+                <td class="item-price">{{ line_item.item_amount|format_currency|safe }}</td>
                 <td class="item-total">{{ line_item.amount|format_currency|safe }}</td>
               </tr>
               {% endfor %}
