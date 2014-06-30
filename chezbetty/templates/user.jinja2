@@ -82,6 +82,12 @@
           Notes: {{ transaction.notes }}
         </div>
 
+        {% elif transaction.type == "btcdeposit" %}
+
+        BTC Deposit of {{ transaction.amount|format_currency|safe }}
+
+        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+
         {% endif %}
 
       </li>
