@@ -272,7 +272,7 @@ def admin_restock(request):
 def admin_restock_submit(request):
     i = iter(request.POST)
     items = {}
-    for quantity,cost,salestax in zip(i,i,i):
+    for salestax,quantity,cost in zip(i,i,i):
         if not (quantity.split('-')[2] == cost.split('-')[2] == salestax.split('-')[2]):
             request.session.flash('Error: Malformed POST. Misaligned IDs.', 'error')
             DBSession.rollback()
@@ -285,7 +285,7 @@ def admin_restock_submit(request):
             continue
         try:
             quantity = int(request.POST[quantity])
-            if '/' in cost:
+            if '/' in request.POST[cost]:
                 dividend, divisor = map(float(request.POST[cost].split('/')))
                 cost = dividend / divisor
             else:
