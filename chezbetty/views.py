@@ -51,12 +51,12 @@ def purchase(request):
 
 @view_config(route_name='items', renderer='templates/items.jinja2', permission="service")
 def items(request):
-    items = DBSession.query(Item).order_by(Item.name).all()
+    items = DBSession.query(Item).filter(Item.enabled==True).order_by(Item.name).all()
     return {'items': items}
 
-@view_config(route_name='users', renderer='templates/users.jinja2', permission="manage")
+@view_config(route_name='shame', renderer='templates/shame.jinja2', permission="manage")
 def users(request):
-    users = DBSession.query(User).all()
+    users = DBSession.query(User).filter(User.balance < -5).order_by(User.balance).all()
     return {'users': users}
 
 @view_config(route_name='user', renderer='templates/user.jinja2', permission="service")
@@ -147,11 +147,21 @@ def transaction_deposit(request):
 
 @view_config(route_name='transaction_undo', permission="service")
 def transaction_undo(request):
+    # Lookup the transaction that the user wants to undo
     try:
         transaction = Transaction.from_id(request.matchdict['transaction_id'])
     except:
         request.session.flash('Error: Could not find transaction to undo.', 'error')
         return HTTPFound(location=request.route_url('index'))
+
+    # Make sure transaction is a deposit, the only one the user is allowed
+    # to undo
+    if transaction.type != 'deposit':
+        request.session.flash('Error: Only deposits may be undone.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+    # Make sure that the user who is requesting the deposit was the one who
+    # actually placed the deposit.
     try:
         user = DBSession.query(User) \
             .filter(User.id==transaction.to_account_id).one()
@@ -161,6 +171,8 @@ def transaction_undo(request):
     if user.umid != request.matchdict['umid']:
         request.session.flash("Error: Transaction does not belong to specified user", "error")
         return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
+
+    # If the checks pass, actually revert the transaction
     try:
         datalayer.undo_transaction(transaction)
         request.session.flash('Transaction successfully reverted.', 'success')
@@ -407,7 +419,8 @@ def admin_edit_items_submit(request):
         updated.add(item.id)
     if len(updated):
         count = len(updated)
-        request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
+        #request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
+        request.session.flash("Items updated successfully.", "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
@@ -491,7 +504,7 @@ def admin_edit_users_submit(request):
 @view_config(route_name='admin_edit_balance', 
         renderer='templates/admin/edit_balance.jinja2')
 def admin_edit_balance(request):
-    users = DBSession.query(User).all()
+    users = DBSession.query(User).order_by(User.name).all()
     return {'users': users}
 
 @view_config(route_name='admin_edit_balance_submit', request_method='POST', 

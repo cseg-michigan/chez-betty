@@ -1,0 +1,43 @@
+{% extends "base.jinja2" %}
+{% block title %}Wall of Shame{% endblock %}
+{% block header %}Chez Betty Wall of Shame{% endblock %}
+
+
+
+{% block content %}
+
+<div class="top-button">
+  <a class="btn btn-default btn-lg" href="/">Back</a>
+</div>
+
+<p class="lead">These users owe Chez Betty.</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Users in Debt</h3>
+  </div>
+  <div class="panel-body">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th style="width: 30%">uniqname</th>
+          <th style="width: 30%">Account Balance</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for user in users %}
+        <tr>
+          <td>{{ user.name }}</td>
+          <td>{{ user.uniqname }}</td>
+          <td>{{ user.balance|format_currency|safe }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+
+    </table>
+  </div>
+</div>
+
+{% endblock %}
