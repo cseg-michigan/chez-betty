@@ -4,7 +4,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from sqlalchemy import engine_from_config
 
 from .models.model import *
-from .models.user import LDAPLookup, groupfinder
+from .models.user import LDAPLookup, groupfinder, get_user
 from .btc import Bitcoin
 
 def main(global_config, **settings):
@@ -81,6 +81,7 @@ def main(global_config, **settings):
 
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+    config.add_request_method(get_user, "user", reify=True)
 
     config.scan(".views")
 

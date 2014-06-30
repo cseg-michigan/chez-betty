@@ -529,7 +529,7 @@ def admin_inventory_submit(request):
         request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
     return HTTPFound(location=request.route_url('admin_inventory'))
 
-@view_config(route_name='login', renderer='teampltes/login.jinja2')
+@view_config(route_name='login', renderer='templates/login.jinja2')
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):
     login_url = request.resource_url(request.context, 'login')
@@ -664,10 +664,13 @@ def admin_edit_password(request):
 def admin_edit_password_submit(request):
     pwd0 = request.POST['edit-password-0']
     pwd1 = request.POST['edit-password-1']
-
     if pwd0 != pwd1:
         request.session.flash('Error: Passwords do not match', 'error')
         return HTTPFound(location=request.route_url('admin_edit_password'))
+    request.user.password = pwd0
+    request.session.flash('Password changed successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_index'))
+    # check that changing password for actually logged in user
 
 @view_config(route_name='admin_cash_transactions', permission='admin', renderer="templates/admin/cash_transactions.jinja2")
 def admin_cash_transactions(request):

@@ -1,3 +1,4 @@
+from pyramid.security import authenticated_userid
 import hashlib
 import binascii
 import os
@@ -136,7 +137,11 @@ class User(Account):
         return c == self._password
 
 
-
+def get_user(request):
+    login = authenticated_userid(request)
+    if not login:
+        return None
+    return DBSession.query(User).filter(User.uniqname == login).one()
 
 
 def groupfinder(userid, request):
