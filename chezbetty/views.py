@@ -17,7 +17,21 @@ from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 
-from pprint import pprint
+import qrcode
+import qrcode.image.svg
+try:
+    import lxml.etree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+###
+### Utility Function
+###
+
+def string_to_qrcode(s):
+    factory = qrcode.image.svg.SvgPathImage
+    img = qrcode.make(s, image_factory=factory)
+    return ET.tostring(img._img)
 
 class DepositException(Exception):
     pass
