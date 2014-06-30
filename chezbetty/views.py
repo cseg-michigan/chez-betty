@@ -390,12 +390,13 @@ def admin_edit_items_submit(request):
         except:
             request.session.flash("No item with ID {}.  Skipped.".format(key.split('-')[2]), 'error')
             continue
+        name = item.name
         try:
             setattr(item, key.split('-')[1], request.POST[key])
             DBSession.flush()
         except:
             request.session.flash("Error updating {} for {}.  Skipped.".\
-                    format(key.split('-')[1], item.name), 'error')
+                    format(key.split('-')[1], name), 'error')
             continue
         updated.add(item.id)
     if len(updated):
