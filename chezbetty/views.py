@@ -169,9 +169,16 @@ def transaction_undo(request):
 
 @view_config(route_name='item', renderer='json', permission="user")
 def item(request):
-    item = Item.from_barcode(request.matchdict['barcode'])
+    try:
+        item = Item.from_barcode(request.matchdict['barcode'])
+    except:
+        return {'status': 'unknown_barcode'}
+    if item.enabled:
+        status = 'success'
+    else:
+        status = 'disabled'
     item_html = render('templates/item_row.jinja2', {'item': item})
-    return {'id':item.id, 'item_row_html' : item_html}
+    return {'status': status, 'id':item.id, 'item_row_html' : item_html}
 
 ###
 ### POST Handlers
@@ -259,9 +266,16 @@ def admin_index(request):
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
 def admin_item_barcode_json(request):
-    item = Item.from_barcode(request.matchdict['barcode'])
+    try:
+        item = Item.from_barcode(request.matchdict['barcode'])
+    except:
+        return {'status': 'unknown_barcode'}
+    if item.enabled:
+        status = 'success'
+    else:
+        status = 'disabled'
     item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
-    return {'data' : item_restock_html, 'id' : item.id}
+    return {'status' : status, 'data' : item_restock_html, 'id' : item.id}
 
 @view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission="manage")
 def admin_restock(request):
@@ -271,7 +285,7 @@ def admin_restock(request):
 def admin_restock_submit(request):
     i = iter(request.POST)
     items = {}
-    for quantity,cost,salestax in zip(i,i,i):
+    for salestax,quantity,cost in zip(i,i,i):
         if not (quantity.split('-')[2] == cost.split('-')[2] == salestax.split('-')[2]):
             request.session.flash('Error: Malformed POST. Misaligned IDs.', 'error')
             DBSession.rollback()
@@ -279,20 +293,23 @@ def admin_restock_submit(request):
         try:
             item = Item.from_id(int(quantity.split('-')[2]))
         except:
-            request.session.flash('No item with id {} found. Skipped.'.format(int(quantity.split('-')[2])))
+            request.session.flash('No item with id {} found. Skipped.'.\
+                    format(int(quantity.split('-')[2])), 'error')
             continue
         try:
             quantity = int(request.POST[quantity])
-            if '/' in cost:
+            if '/' in request.POST[cost]:
                 dividend, divisor = map(float(request.POST[cost].split('/')))
                 cost = dividend / divisor
             else:
                 cost = float(request.POST[cost])
         except ValueError:
-            request.session.flash('Non-numeric value for {}.  Skipped.'.format(item.name))
+            request.session.flash('Non-numeric value for {}. Skipped.'.\
+                    format(item.name), 'error')
             continue
         except ZeroDivisionError:
-            request.session.flash("Really? Dividing by 0? Item {} skipped.".format(item.name))
+            request.session.flash("Really? Dividing by 0? Item {} skipped.".\
+                    format(item.name), 'error')
             continue
         salestax = request.POST[salestax] == 'on'
         if salestax:
@@ -309,7 +326,7 @@ def admin_restock_submit(request):
 
     datalayer.restock(items)
     request.session.flash("Restock complete.", "success")
-    return HTTPFound(location=request.route_url('admin_restock'))
+    return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission="manage")
 def admin_add_items(request):
@@ -318,7 +335,6 @@ def admin_add_items(request):
                 'name-0': '',
                 'barcode-0': '',
                 'price-0': '',
-                'enabled-0': True,
                 }}
     else:
         d = {'items' : request.GET}
@@ -331,32 +347,29 @@ def admin_add_items_submit(request):
     for key in request.POST:
         if 'item-name-' in key:
             id = int(key.split('-')[2])
+            stock = 0
+            wholesale = 0
+            enabled = False
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
-                stock = 0
-                price = float(request.POST['item-price-{}'.format(id)])
-                wholesale = 0
                 try:
-                    enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
-                except KeyError:
-                    enabled = False
+                    price = float(request.POST['item-price-{}'.format(id)])
+                except:
+                    price = 0
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
+                DBSession.flush()
                 count += 1
             except:
                 if len(name):
-                    try:
-                        enabled = request.POST['item-enabled-{}'.format(id)] == 'on'
-                    except KeyError:
-                        enabled = False
                     error_items.append({
                             'name' : request.POST['item-name-{}'.format(id)],
                             'barcode' : request.POST['item-barcode-{}'.format(id)],
                             'price' : request.POST['item-price-{}'.format(id)],
-                            'enabled' : enabled,
                             })
-                    request.session.flash("Error adding item: {}".format(name), "error")
+                    request.session.flash("Error adding item: {}. Most likely a duplicate barcode.".\
+                                    format(name), "error")
                 # O/w this was probably a blank row; ignore.
     if count:
         request.session.flash("{} item{} added successfully.".format(count, ['s',''][count==1]), "success")
@@ -383,10 +396,26 @@ def admin_edit_items(request):
 
 @view_config(route_name='admin_edit_items_submit', request_method='POST', permission="manage")
 def admin_edit_items_submit(request):
+    updated = set()
     for key in request.POST:
-        item = Item.from_id(int(key.split('-')[2]))
-        setattr(item, key.split('-')[1], request.POST[key])
-    request.session.flash("Items updated successfully.", "success")
+        try:
+            item = Item.from_id(int(key.split('-')[2]))
+        except:
+            request.session.flash("No item with ID {}.  Skipped.".format(key.split('-')[2]), 'error')
+            continue
+        name = item.name
+        try:
+            setattr(item, key.split('-')[1], request.POST[key])
+            DBSession.flush()
+        except:
+            DBSession.rollback()
+            request.session.flash("Error updating {} for {}.  Skipped.".\
+                    format(key.split('-')[1], name), 'error')
+            continue
+        updated.add(item.id)
+    if len(updated):
+        count = len(updated)
+        request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
@@ -523,3 +552,13 @@ def admin_cash_reconcile_success(request):
 def admin_transactions(request):
     transactions = DBSession.query(Transaction).order_by(desc(Transaction.id)).all()
     return {"transactions":transactions}
+
+@view_config(route_name="admin_view_transaction",
+        renderer="templates/admin/view_transaction.jinja2", permission="admin")
+def view_transaction(request):
+    id = int(request.matchdict["id"])
+    t = DBSession.query(Transaction).filter(Transaction.id == id).first()
+    if not t:
+        request.session.flush("Invalid transaction ID supplied")
+        return HTTPFound(location=request.route_url('admin_index'))
+    return dict(t=t)

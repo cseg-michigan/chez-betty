@@ -1,0 +1,61 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'transactions' %}
+{% block title %}Transaction Ledger {% endblock %}
+
+{% block top %}
+<h1 class="page-header">View Transaction</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<h3 class="page-header">Transaction Details</h3>
+<div class="row">
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <dt>Type</dt><dd>{{ t.type }}</dd>
+      <dt>Amount</dt><dd>{{ t.amount|format_currency|safe }}</dd>
+    </dl>
+  </div>
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>To Account</dt><dd>{{ t.to_account.name if t.to_account else "n/a" }}</dd>
+      <dt>From Account</dt><dd>{{ t.from_account.name if t.from_account else "n/a" }}</dd>
+    </dl>
+  </div>
+  <div class="col-md-4">
+    <dl class="dl-horizontal">
+      <dt>Timestamp</dt><dd>{{ t.timestamp|pretty_date }}</dd>
+      <dt>Owner</dt><dd>{{ t.admin.name if t.admin else "n/a" }}</dd>
+    </dl>
+  </div>
+
+</div>
+<br/>
+<h3 class="page-header">Sub Transactions</h3>
+<table class="table table-condensed table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Item</th>
+      <th class="right">Item Cost</th>
+      <th class="right">Item Wholesale</th>
+      <th class="right">Quantity</th>
+      <th class="right">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for st in t.subtransactions %}
+    <tr>
+        <td>{{ st.id }}</td>
+        <td>{{ st.item.name }}</td>
+        <td class="right">{{ st.item.price|format_currency|safe }}</td>
+        <td class="right">{{ st.item.wholesale|format_currency|safe }}</td>
+        <td class="right">{{ st.quantity }}</td>
+        <td class="right">{{ st.amount|format_currency|safe }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

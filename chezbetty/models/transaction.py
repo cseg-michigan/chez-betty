@@ -11,7 +11,8 @@ class Transaction(Base):
     from_account_id = Column(Integer, ForeignKey("accounts.id"))
     amount = Column(Float, nullable=False)
     notes = Column(Text)
-    type = Column(Enum("purchase", "deposit", "reconciliation", "adjustment"), nullable=False)
+    type = Column(Enum("purchase", "deposit", "reconciliation", 
+            "adjustment", "restock", "btcdeposit"), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
     # user that performed the reconciliation 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
@@ -67,12 +68,30 @@ class Deposit(Transaction):
         Transaction.__init__(self, None, user, amount)
 
 
+class BTCDeposit(Deposit):
+    __mapper_args__ = {'polymorphic_identity': 'btcdeposit'}
+   
+    btctransaction = Column(String(255))
+
+    def __init__(self, user, amount, btctransaction):
+        Transaction.__init__(self, None, user, amount)
+        self.btctransaction = btctransaction
+
+
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
     def __init__(self, user):
         chezbetty = make_account("chezbetty")
         Transaction.__init__(self, user, chezbetty, 0.0)
-        
+
+
+class Restock(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'restock'}
+    def __init__(self, user):
+        chezbetty = make_account("chezbetty")
+        store = make_account("store")
+        Transaction.__init__(self, chezbetty, store, 0.0)
+
 
 class Reconciliation(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'reconciliation'}
@@ -82,6 +101,7 @@ class Reconciliation(Transaction):
         lost = make_account("lost")
         Transaction.__init__(self, chezbetty, lost, 0.0)
         self.user_id = user.id if user else None
+
 
 class Adjustment(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'adjustment'}
@@ -105,8 +125,8 @@ class SubTransaction(Base):
     item = relationship(Item, backref="subtransactions")
     amount = Column(Float, nullable=False)
     
-    def __init__(self, transaction, item, quantity):
+    def __init__(self, transaction, item, quantity, amount):
         self.transaction_id = transaction.id
         self.item_id = item.id
         self.quantity = quantity
-        self.amount = quantity * item.price
+        self.amount = quantity * amount

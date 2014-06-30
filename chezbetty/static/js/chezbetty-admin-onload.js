@@ -138,3 +138,27 @@ $("#restock-table").on("click", "input:checkbox", function () {
 	calculate_total();
 });
 
+// Check that sales tax matches up
+$("#restock-button").click(function () {
+	var user_sales_tax = parseFloat(strip_price($("#restock-salestax").val()));
+	if (isNaN(user_sales_tax)) {
+		user_sales_tax = 0.0;
+	}
+
+	var calc_sales_tax = 0.0;
+	$(".restock-item").each(function (index) {
+		var id = $(this).attr("id").split("-")[2];
+		if ($("#restock-salestax-"+id+":checked").length > 0) {
+			var price = calculate_price($("#restock-cost-"+id).val());
+			calc_sales_tax += 0.06*price;
+		}
+	});
+
+	if (Math.abs(user_sales_tax - calc_sales_tax) >= 0.01) {
+		// Sales tax calculation is wrong. Something isn't rigth here.
+		alert_error("Sales tax calculation invalid. Did you forget something that was taxed?");
+	} else {
+		$("#restock-form").submit();
+	}
+});
+

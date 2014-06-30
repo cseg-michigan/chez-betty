@@ -18,15 +18,27 @@ function full_strip_price (price_str) {
 	return price_str.replace(/^\s+|\s+$|\.|\$/g, '');
 }
 
+function alert_clear () {
+	$("#alerts").empty();
+}
+
+function alert_error (error_str) {
+	html = '<div class="alert alert-danger" role="alert">'+error_str+'</div>';
+	$("#alerts").empty();
+	$("#alerts").html(html);
+}
+
 // Callback when adding an item to the cart succeeds
 function add_item_success (data) {
-	// Make sure this item isn't already on the list
-	if ($("#restock-item-" + data.id).length == 0) {
-		// Add a new item
-		$("#restock-table tbody").append(data.data);
+	if (data.status == "unknown_barcode") {
+		console.log("Could not find that item.");
+	} else {
+		// Make sure this item isn't already on the list
+		if ($("#restock-item-" + data.id).length == 0) {
+			// Add a new item
+			$("#restock-table tbody").append(data.data);
+		}
 	}
-
-	calculate_total();
 }
 
 // Callback when adding to cart fails.
@@ -43,21 +55,25 @@ function add_item (barcode) {
 	});
 }
 
+function calculate_price (price_str) {
+	divides = price_str.split("/");
+	if (divides.length > 1) {
+		price = parseFloat(divides[0]) / parseInt(divides[1]);
+	} else {
+		price = parseFloat(divides[0]);
+	}
+	if (isNaN(price)) {
+		price = 0.0;
+	}
+	return price;
+}
+
 // Function to add up the items in a cart to display the total.
 function calculate_total () {
 	total = 0.0;
 	$(".item-cost input").each(function (index) {
-		price_str = $(this).val();
+		price = calculate_price($(this).val());
 		item_id = $(this).attr("id").split("-")[2];
-		divides = price_str.split("/");
-		if (divides.length > 1) {
-			price = parseFloat(divides[0]) / parseInt(divides[1]);
-		} else {
-			price = parseFloat(divides[0]);
-		}
-		if (isNaN(price)) {
-			price = 0.0;
-		}
 
 		// Check if we should add sales tax
 		if ($("#restock-salestax-"+item_id+":checked").length == 1) {

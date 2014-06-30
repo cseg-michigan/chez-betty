@@ -5,7 +5,7 @@ class Item(Versioned, Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String(255), nullable=False)
-    barcode = Column(String(255), nullable=True)
+    barcode = Column(String(255), nullable=True, unique=True)
     price = Column(Float, nullable=False)
     wholesale = Column(Float, nullable=False)
 

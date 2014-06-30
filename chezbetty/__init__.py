@@ -73,6 +73,7 @@ def main(global_config, **settings):
     config.add_route('admin_cash_reconcile_submit', '/admin/cash/reconcile/submit')
     config.add_route('admin_cash_reconcile_success', '/admin/cash/reconcile/success')
     config.add_route('admin_transactions', '/admin/transactions')
+    config.add_route('admin_view_transaction', '/admin/transactions/{id}')
 
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')

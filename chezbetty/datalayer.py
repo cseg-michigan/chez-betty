@@ -29,6 +29,19 @@ def deposit(user, amount):
     return dict(prev=prev, new=user.balance, amount=amount,
             transaction=t, cash_transaction=c)
 
+
+def bitcoin_deposit(user, amount, btc_transaction):
+    assert(amount > 0.0)
+    assert(hasattr(user, "id"))
+    prev = user.balance
+    t = BTCDeposit(user, amount, btc_transaaction)
+    DBSession.add(t)
+    c = BTCDeposit(amount, t)
+    DBSession.add(c)
+    return dict(prev=prev, new=user.balance, amount=amount,
+            transaction=t, cash_transaction=c)
+
+
 def adjust_user_balance(user, adjustment, notes, admin=None):
     assert(hasattr(user, "id"))
     t = Adjustment(user, adjustment, notes, admin)
@@ -43,11 +56,26 @@ def purchase(user, items):
     amount = 0.0
     for item, quantity in items.items():
         item.in_stock -= quantity
-        st = SubTransaction(t, item, quantity)
+        st = SubTransaction(t, item, quantity, item.wholesale)
         DBSession.add(st)
         amount += st.amount
     t.update_amount(amount)
     return t
+
+def restock(items, admin=None):
+    t = Restock(user)
+    DBSession.add(t)
+    DBSession.flush()
+    amount = 0.0
+    for item, quantity in items.items():
+        item.in_stock += quantity
+        item.enabled = True
+        st = SubTransaction(t, item, quantity, item.wholesale)
+        DBSession.add(st)
+        amount += st.amount
+    t.update_amount(amount)
+    return t
+
 
 def reconcile_items(items, admin):
     t = Reconciliation(admin)

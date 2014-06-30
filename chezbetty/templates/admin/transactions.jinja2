@@ -12,6 +12,7 @@
 <table class="table table-condensed table-striped">
   <thead>
     <tr>
+      <th></th>
       <th>ID</th>
       <th>Timestamp</th>
       <th>Type</th>
@@ -23,6 +24,7 @@
   <tbody>
   {% for t in transactions %}
     <tr>
+        <td><a href="/admin/transactions/{{ t.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
         <td>{{ t.id }}</td>
         <td>{{ t.timestamp|pretty_date }}</td>
         <td>{{ t.type }}</td>
