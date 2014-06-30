@@ -208,6 +208,19 @@ def purchase_new(request):
         return {'error': 'Unable to identify an item.'}
 
 
+@view_config(route_name='btc_deposit', request_method='POST', renderer='json', permission="service")
+def btc_deposit(request):
+    addr = request.POST['address']
+    amount = request.POST['amount']
+    txid = request.POST['transaction']['id']
+    created_at = request.POST['transaction']['created_at']
+    txhash = request.POST['transaction']['hash']
+
+    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s" % (addr, amount, txid, created_at, txhash)
+    print ret
+    #return ret
+
+
 @view_config(route_name='deposit_new', request_method='POST', renderer='json', permission="service")
 def deposit_new(request):
     try:
