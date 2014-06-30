@@ -19,6 +19,10 @@ import chezbetty.datalayer as datalayer
 
 from pprint import pprint
 
+from btc import Bitcoin
+
+import json
+
 class DepositException(Exception):
     pass
 
@@ -82,7 +86,13 @@ def deposit(request):
         user_info_html = render('templates/user_info.jinja2', {'user': user,
                                                                'page': 'deposit'})
         keypad_html = render('templates/keypad.jinja2', {})
-        return {'user_info_block': user_info_html, 'keypad': keypad_html}
+
+        btc = Bitcoin(umid=user.umid)
+        btc_addr = btc.get_new_address()
+
+        btc_html = render('templates/btc.jinja2', {'addr': btc_addr})
+
+        return {'user_info_block': user_info_html, 'keypad': keypad_html, 'btc' : btc_html}
 
     except InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -215,16 +225,23 @@ def purchase_new(request):
         return {'error': 'Unable to identify an item.'}
 
 
-@view_config(route_name='btc_deposit', request_method='POST', renderer='json', permission="service")
+@view_config(route_name='btc_deposit', request_method='POST', renderer='json')
 def btc_deposit(request):
-    addr = request.POST['address']
-    amount = request.POST['amount']
-    txid = request.POST['transaction']['id']
-    created_at = request.POST['transaction']['created_at']
-    txhash = request.POST['transaction']['hash']
 
-    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s" % (addr, amount, txid, created_at, txhash)
-    print ret
+    user = User.from_umid(request.matchdict['guid'])
+
+    addr = request.json_body['address']
+    amount_btc = request.json_body['amount']
+    txid = request.json_body['transaction']['id']
+    created_at = request.json_body['transaction']['created_at']
+    txhash = request.json_body['transaction']['hash']
+
+    print("got a btc_deposit request...: %s" % request)
+
+    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s" % (addr, amount_btc, txid, created_at, txhash)
+    # TODO: dynamic exchange rate
+    datalayer.bitcoin_deposit(user, float(amount_btc) * 600, txhash)
+    print(ret)
     #return ret
 
 
