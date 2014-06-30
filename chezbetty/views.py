@@ -36,7 +36,7 @@ def string_to_qrcode(s):
     img.save('/dev/null')   # This is needed, I swear.
     return ET.tostring(img._img)
 
-from btc import Bitcoin
+from .btc import Bitcoin
 
 import json
 
