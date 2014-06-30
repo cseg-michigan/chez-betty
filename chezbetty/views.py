@@ -280,7 +280,8 @@ def admin_restock_submit(request):
         try:
             item = Item.from_id(int(quantity.split('-')[2]))
         except:
-            request.session.flash('No item with id {} found. Skipped.'.format(int(quantity.split('-')[2])))
+            request.session.flash('No item with id {} found. Skipped.'.\
+                    format(int(quantity.split('-')[2])), 'error')
             continue
         try:
             quantity = int(request.POST[quantity])
@@ -290,10 +291,12 @@ def admin_restock_submit(request):
             else:
                 cost = float(request.POST[cost])
         except ValueError:
-            request.session.flash('Non-numeric value for {}.  Skipped.'.format(item.name))
+            request.session.flash('Non-numeric value for {}. Skipped.'.\
+                    format(item.name), 'error')
             continue
         except ZeroDivisionError:
-            request.session.flash("Really? Dividing by 0? Item {} skipped.".format(item.name))
+            request.session.flash("Really? Dividing by 0? Item {} skipped.".\
+                    format(item.name), 'error')
             continue
         salestax = request.POST[salestax] == 'on'
         if salestax:
