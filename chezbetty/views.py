@@ -340,6 +340,7 @@ def admin_add_items_submit(request):
                 price = float(request.POST['item-price-{}'.format(id)])
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
+                DBSession.flush()
                 count += 1
             except:
                 if len(name):
@@ -375,10 +376,23 @@ def admin_edit_items(request):
 
 @view_config(route_name='admin_edit_items_submit', request_method='POST', permission="manage")
 def admin_edit_items_submit(request):
+    count = 0
     for key in request.POST:
-        item = Item.from_id(int(key.split('-')[2]))
-        setattr(item, key.split('-')[1], request.POST[key])
-    request.session.flash("Items updated successfully.", "success")
+        try:
+            item = Item.from_id(int(key.split('-')[2]))
+        except:
+            request.session.flash("No item with ID {}.  Skipped.".format(key.split('-')[2]), 'error')
+            continue
+        try:
+            setattr(item, key.split('-')[1], request.POST[key])
+            DBSession.flush()
+        except:
+            request.session.flash("Error updating {} for {}.  Skipped.".\
+                    format(key.split('-')[1], item.name), 'error')
+            continue
+        count += 1
+    if count:
+        request.session.flash("{} item{} updated successfully.".format(count, ['s',''][count==1]), "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
