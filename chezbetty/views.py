@@ -56,7 +56,7 @@ def items(request):
 
 @view_config(route_name='shame', renderer='templates/shame.jinja2', permission="manage")
 def users(request):
-    users = DBSession.query(User).all()
+    users = DBSession.query(User).order_by(User.balance).all()
     return {'users': users}
 
 @view_config(route_name='user', renderer='templates/user.jinja2', permission="service")
@@ -414,7 +414,8 @@ def admin_edit_items_submit(request):
         updated.add(item.id)
     if len(updated):
         count = len(updated)
-        request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
+        #request.session.flash("{} item{} properties updated successfully.".format(count, ['s',''][count==1]), "success")
+        request.session.flash("Items updated successfully.", "success")
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission="manage")
@@ -496,7 +497,7 @@ def admin_edit_users_submit(request):
 @view_config(route_name='admin_edit_balance', 
         renderer='templates/admin/edit_balance.jinja2')
 def admin_edit_balance(request):
-    users = DBSession.query(User).all()
+    users = DBSession.query(User).order_by(User.name).all()
     return {'users': users}
 
 @view_config(route_name='admin_edit_balance_submit', request_method='POST', 
