@@ -1,4 +1,9 @@
 
+$(".date").each(function (index) {
+	d = new Date($(this).text());
+	s = $.format.date(d, "MMM d, yyyy") + " at " + $.format.date(d, "h:mm a");
+	$(this).text(s);
+});
 
 $(".edit-item-row").on("click", "button", function () {
 	btn_type = $(this).attr("id").split("-")[1];
@@ -132,6 +137,16 @@ $("#balance-change-amount").on("input", function () {
 
 $("#edit-items").click(function () {
 	alert_clear();
+});
+
+// Update markup
+$("#edit-items").on("input", "input:text",  function () {
+	var id = $(this).attr("id").split("-")[2];
+	var price = parseFloat($("#item-price-"+id).val());
+	var wholesale = parseFloat($("#item-wholesale-"+id).val());
+
+	var markup = (((price/wholesale) - 1.0) * 100.0).toFixed(2);
+	$("#item-markup-"+id).text(markup + "%");
 });
 
 $("#restock-table").on("input", "input:text",  function () {

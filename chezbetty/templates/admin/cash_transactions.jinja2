@@ -52,7 +52,7 @@
     <tr>
         <td>{{ t.id }}</td>
         <td> <a href="/admin/transactions/{{ t.transaction_id }}">{{ t.transaction_id if t.transaction_id else ""}}</a></td>
-        <td>{{ t.timestamp|pretty_date }}</td>
+        <td>{{ t.timestamp|pretty_date|safe }}</td>
         <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
         <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
         <td class="right">{{ t.amount|format_currency|safe }}</td>

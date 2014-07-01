@@ -6,23 +6,23 @@ class Transaction(Base):
     __tablename__ = 'transactions'
 
     id = Column(Integer, primary_key=True, nullable=False)
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     to_account_id = Column(Integer, ForeignKey("accounts.id"))
     from_account_id = Column(Integer, ForeignKey("accounts.id"))
     amount = Column(Float, nullable=False)
     notes = Column(Text)
-    type = Column(Enum("purchase", "deposit", "reconciliation", 
+    type = Column(Enum("purchase", "deposit", "reconciliation",
             "adjustment", "restock", "btcdeposit", name="transaction_type"), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
-    # user that performed the reconciliation 
+    # user that performed the reconciliation
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-   
-    to_account = relationship(Account, 
+
+    to_account = relationship(Account,
         foreign_keys=[to_account_id,],
         backref="transactions_to"
     )
-    
-    from_account = relationship(Account, 
+
+    from_account = relationship(Account,
         foreign_keys=[from_account_id,],
         backref="transactions_from"
     )
@@ -70,7 +70,7 @@ class Deposit(Transaction):
 
 class BTCDeposit(Deposit):
     __mapper_args__ = {'polymorphic_identity': 'btcdeposit'}
-   
+
     btctransaction = Column(String(64))
     address = Column(String(64))
     amount_btc = Column(Float, nullable=True)
@@ -99,7 +99,7 @@ class Restock(Transaction):
 
 class Reconciliation(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'reconciliation'}
-        
+
     def __init__(self, user):
         chezbetty = make_account("chezbetty")
         lost = make_account("lost")
@@ -123,12 +123,12 @@ class SubTransaction(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=False)
     transaction = relationship(Transaction, backref="subtransactions", cascade="all")
-   
-    quantity = Column(Integer, nullable=False) 
+
+    quantity = Column(Integer, nullable=False)
     item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
     item = relationship(Item, backref="subtransactions")
     amount = Column(Float, nullable=False)
-    
+
     def __init__(self, transaction, item, quantity, amount):
         self.transaction_id = transaction.id
         self.item_id = item.id

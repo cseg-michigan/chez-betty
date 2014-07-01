@@ -3,6 +3,12 @@
  *
  */
 
+$(".date").each(function (index) {
+	d = new Date($(this).text());
+	s = $.format.date(d, "MMM d, yyyy") + " at " + $.format.date(d, "h:mm a");
+	$(this).text(s);
+});
+
 // Click handler to remove an item from a purchase.
 $("#purchase_table tbody").on("click", ".btn-remove-item", function () {
 	$(this).parent().parent().slideUp().remove();
