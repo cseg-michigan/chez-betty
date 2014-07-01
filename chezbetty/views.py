@@ -309,7 +309,7 @@ def btc_deposit(request):
 def btc_check(request):
     res = 0
 
-    row = DBSession.query(BTCDeposit).filter(BTCDeposit.address==request.matchdict['addr']).first() 
+    row = DBSession.query(BTCDeposit).filter(BTCDeposit.address==request.matchdict['addr']).first()
     if row is not None:
         res = row.id
     return {"result" : res}
@@ -593,7 +593,7 @@ def admin_edit_users(request):
              ('administrator', 'Administrator')]
     return {'users': users, 'roles': roles}
 
-@view_config(route_name='admin_edit_users_submit', 
+@view_config(route_name='admin_edit_users_submit',
         request_method='POST', permission='admin')
 def admin_edit_users_submit(request):
     for key in request.POST:
@@ -602,13 +602,13 @@ def admin_edit_users_submit(request):
     request.session.flash('Users updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_users'))
 
-@view_config(route_name='admin_edit_balance', 
+@view_config(route_name='admin_edit_balance',
         renderer='templates/admin/edit_balance.jinja2')
 def admin_edit_balance(request):
     users = DBSession.query(User).order_by(User.name).all()
     return {'users': users}
 
-@view_config(route_name='admin_edit_balance_submit', request_method='POST', 
+@view_config(route_name='admin_edit_balance_submit', request_method='POST',
         permission='admin')
 def admin_edit_balance_submit(request):
     try:
@@ -626,12 +626,12 @@ def admin_edit_balance_submit(request):
     request.session.flash('User account updated.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_balance'))
 
-@view_config(route_name='admin_cash_reconcile', 
+@view_config(route_name='admin_cash_reconcile',
         renderer='templates/admin/cash_reconcile.jinja2', permission='manage')
 def admin_cash_reconcile(request):
     return {}
 
-@view_config(route_name='admin_cash_reconcile_submit', request_method='POST', 
+@view_config(route_name='admin_cash_reconcile_submit', request_method='POST',
         permission='manage')
 def admin_cash_reconcile_submit(request):
     try:
@@ -646,7 +646,7 @@ def admin_cash_reconcile_submit(request):
     return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
         _query={'amount':amount, 'expected_amount':expected_amount}))
 
-@view_config(route_name='admin_cash_reconcile_success', 
+@view_config(route_name='admin_cash_reconcile_success',
         renderer='templates/admin/cash_reconcile_complete.jinja2', permission='manage')
 def admin_cash_reconcile_success(request):
     deposit = float(request.GET['amount'])
@@ -675,7 +675,7 @@ def admin_view_transaction(request):
 def admin_edit_password(request):
     return {}
 
-@view_config(route_name='admin_edit_password_submit', request_method='POST', 
+@view_config(route_name='admin_edit_password_submit', request_method='POST',
         permission='manage')
 def admin_edit_password_submit(request):
     pwd0 = request.POST['edit-password-0']

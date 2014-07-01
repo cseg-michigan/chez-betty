@@ -16,7 +16,7 @@
 
     <ul id="transaction-history" class="list-group">
 
-      
+
       {# Iterate all of the transactions in the user's history.
        #}
       {% for transaction in transactions|reverse %}
@@ -30,7 +30,7 @@
 
         Purchase totalling {{ transaction.amount|format_currency|safe }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
-        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
 
         {# Show a purchase transaction
          #}
@@ -70,13 +70,13 @@
 
         Deposit of {{ transaction.amount|format_currency|safe }}
 
-        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
 
 
         {% elif transaction.type == "adjustment" %}
 
         Adjustment of {{ transaction.amount|format_currency|safe }} by {{ user.name }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
-        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
           Notes: {{ transaction.notes }}
@@ -86,7 +86,7 @@
 
         BTC Deposit of {{ transaction.amount|format_currency|safe }} ({{ transaction.amount_btc|safe }} BTC) <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
-        <span class="pull-right">{{ transaction.timestamp|pretty_date }}</span>
+        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
           {{ transaction.img|safe }}

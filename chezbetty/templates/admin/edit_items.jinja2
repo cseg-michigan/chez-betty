@@ -13,40 +13,62 @@
 
   <div id="edit-items">
 
-    <div class="row item-list-header">
-      <div class="col-sm-4">Name</div>
-      <div class="col-sm-2">Barcode</div>
-      <div class="col-sm-2">Item Price</div>
-      <div class="col-sm-2">Item Wholesale</div>
-      <div class="col-sm-1">Stock</div>
-      <div class="col-sm-1">Actions</div>
-    </div>
+    <table class="table">
+
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Barcode</th>
+          <th>Item Price</th>
+          <th>Item Wholesale</th>
+          <th>Markup</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for item in items %}
 
 
-    {% for item in items %}
-    <div id="item-{{ item.id }}" class="form-group row edit-item-row">
-      <div class="col-sm-4">
-        <input type="text" class="form-control" id="item-name-{{ item.id }}" name="item-name-{{ item.id }}" value="{{ item.name }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
-      </div>
-      <div class="col-sm-2">
-        <input type="text" class="form-control" id="item-barcode-{{ item.id }}" name="item-barcode-{{ item.id }}" value="{{ item.barcode }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
-      </div>
-      <div class="col-sm-2">
-        <input type="text" class="form-control" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
-      </div>
-      <div class="col-sm-2">
-        <input type="text" class="form-control" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale }}" {% if item.enabled == False %}disabled="disabled"{% endif %}>
-      </div>
-      <div class="col-sm-1 item-stock">
-        {{ item.in_stock }}
-      </div>
-      <div class="col-sm-1 item-actions">
-        <button type="button" id="btn-disable-item-{{ item.id }}" class="btn btn-danger" {% if item.enabled == False %}style="display:none;"{% endif %}>X</button>
-        <button type="button" id="btn-enable-item-{{ item.id }}" class="btn btn-success" {% if item.enabled == True %}style="display:none;"{% endif %}>+</button>
-      </div>
-      <input type="hidden" class="form-control" id="item-enabled-{{ item.id }}" name="item-enabled-{{ item.id }}" value="{{ item.enabled|int }}">
-    </div>
-    {% endfor %}
+        {# Color boxes if the prices look wonky #}
+        {% if item.price == 0.0  %}
+          {% set price_class = "price-red" %}
+        {% elif item.price < 1.05*item.wholesale  %}
+          {% set price_class = "price-red" %}
+        {% elif item.price < 1.15*item.wholesale %}
+          {% set price_class = "price-yellow" %}
+        {% else %}
+          {% set price_class = "" %}
+        {% endif %}
+
+        {% if item.wholesale == 0.0  %}
+          {% set wholesale_class = "price-red" %}
+          {% set markup = "-" %}
+        {% else %}
+          {% set wholesale_class = "" %}
+          {% set markup = (((item.price / item.wholesale) - 1.0) * 100.0)|round(2) %}
+        {% endif %}
+
+        <tr class="edit-item-row">
+
+          <td><input type="text" class="form-control" id="item-name-{{ item.id }}" name="item-name-{{ item.id }}" value="{{ item.name }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td><input type="text" class="form-control" id="item-barcode-{{ item.id }}" name="item-barcode-{{ item.id }}" value="{{ item.barcode }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="{{ price_class }}"><input type="text" class="form-control" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="{{ wholesale_class }}"><input type="text" class="form-control" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td id="item-markup-{{ item.id }}" class="item-markup right">{{ markup }}%</td>
+          <td>{{ item.in_stock }}</td>
+          <td class="item-actions">
+            <button type="button" id="btn-disable-item-{{ item.id }}" class="btn btn-danger" {% if item.enabled == False %}style="display:none;"{% endif %}>X</button>
+            <button type="button" id="btn-enable-item-{{ item.id }}" class="btn btn-success" {% if item.enabled == True %}style="display:none;"{% endif %}>+</button>
+          </td>
+          <input type="hidden" class="form-control" id="item-enabled-{{ item.id }}" name="item-enabled-{{ item.id }}" value="{{ item.enabled|int }}">
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
 
     <button type="submit" class="btn btn-success">Update Items</button>
 

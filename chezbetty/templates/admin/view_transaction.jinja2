@@ -25,7 +25,7 @@
   </div>
   <div class="col-md-4">
     <dl class="dl-horizontal">
-      <dt>Timestamp</dt><dd>{{ t.timestamp|pretty_date }}</dd>
+      <dt>Timestamp</dt><dd>{{ t.timestamp|pretty_date|safe }}</dd>
       <dt>Owner</dt><dd>{{ t.admin.name if t.admin else "n/a" }}</dd>
     </dl>
   </div>
