@@ -69,6 +69,9 @@ def purchase(request):
             raise InvalidUserException
 
         user = User.from_umid(request.matchdict['umid'])
+        if not user.enabled:
+            request.session.flash('User is not enabled. Please contact chezbetty@umich.edu.', 'error')
+            return HTTPFound(location=request.route_url('index'))
         purchase_info = render('templates/user_info.jinja2', {'user': user,
                                                               'page': 'purchase'})
         return {'purchase_info_block': purchase_info}
@@ -558,12 +561,12 @@ def login(request):
         login = request.params['login']
         password = request.params['password']
         user = DBSession.query(User).filter(User.uniqname == login).first()
-        if user and user.check_password(password):
+        if user and not user.enabled:
+            message = 'Login failed. User not allowed to login.'
+        elif user and user.check_password(password):
             # successful login
             headers = remember(request, login)
             return HTTPFound(location=came_from, headers=headers)
-        elif user and not user.enabled:
-            message = 'Login failed. User not allowed to login.'
         else:
             message = 'Login failed. Incorrect username or password.',
 

@@ -74,6 +74,10 @@ def restock(items, admin=None):
         DBSession.add(st)
         amount += st.amount
     t.update_amount(amount)
+    DBSession.add(CashSpend(
+        amount=amount,
+        transaction=t,
+        user=admin))
     return t
 
 

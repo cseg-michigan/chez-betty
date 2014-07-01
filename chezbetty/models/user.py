@@ -117,7 +117,7 @@ class User(Account):
         return u
 
     def __make_salt(self):
-        return binascii.b2a_base64(os.urandom(32))[:-3].decode("ascii")
+        return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii") 
 
     @hybrid_property
     def password(self):
