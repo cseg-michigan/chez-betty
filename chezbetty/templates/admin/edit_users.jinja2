@@ -37,7 +37,7 @@
       </select>
     </div>
     <div class="col-sm-1">{{ user.balance|format_currency|safe }}</div>
-    <div class="col-sm-2">{{ user.created_at|pretty_date }}</div>
+    <div class="col-sm-2">{{ user.created_at|pretty_date|safe }}</div>
     <div class="col-sm-1 user-actions">
       <button type="button" id="btn-disable-user-{{ user.id }}" class="btn btn-danger" {% if user.enabled == False %}style="display:none;"{% endif %}>X</button>
       <button type="button" id="btn-enable-user-{{ user.id }}" class="btn btn-success" {% if user.enabled == True %}style="display:none;"{% endif %}>+</button>

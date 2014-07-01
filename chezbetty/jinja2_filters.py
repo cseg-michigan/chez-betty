@@ -1,4 +1,3 @@
-import time
 
 def format_currency(value):
 	p = float(value)
@@ -7,5 +6,6 @@ def format_currency(value):
 	else:
 		return '<span class="positive">${:,.2f}</span>'.format(value)
 
+# This should be done client side
 def pretty_date(datetime_obj):
-	return datetime_obj.strftime('%B %d, %Y at %I:%M%p')
+	return '<span class="date">{}</span>'.format(datetime_obj.strftime('%m/%d/%Y %I:%M:%S %p UTC'))

@@ -1,4 +1,9 @@
 
+$(".date").each(function (index) {
+	d = new Date($(this).text());
+	s = $.format.date(d, "MMM d, yyyy") + " at " + $.format.date(d, "h:mm a");
+	$(this).text(s);
+});
 
 $(".edit-item-row").on("click", "button", function () {
 	btn_type = $(this).attr("id").split("-")[1];
