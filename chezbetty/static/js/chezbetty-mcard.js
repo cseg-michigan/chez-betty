@@ -1,6 +1,7 @@
 
 
 function clear_spinner () {
+	keyboard_input = "";
 	$(".spinner").remove();
 	$("#index-main").show();
 	$("#front-buttons").show();
