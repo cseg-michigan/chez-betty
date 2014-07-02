@@ -1,5 +1,6 @@
 from .model import *
 from .transaction import Transaction
+from decimal import Decimal
 
 class CashAccount(Versioned, Base):
     __tablename__ = "cash_accounts"
@@ -10,7 +11,7 @@ class CashAccount(Versioned, Base):
 
     def __init__(self, name):
         self.name = name
-        self.balance = 0.0
+        self.balance = Decimal(0.0)
 
 
 def make_cash_account(name):
