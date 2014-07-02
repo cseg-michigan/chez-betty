@@ -9,7 +9,7 @@ UMich version of [Chez Bob](http://chezbob.ucsd.edu/). Running
 [here](http://chezbetty.zakird.com).
 
 Chez Betty is written as a Python web app designed to run on a server with
-a brower based user interface.
+a brower based user interface. It supports cash and bitcoin deposits.
 
 Installation
 ============
@@ -37,6 +37,16 @@ against, do the following:
 
         bin/pserve development.ini
 
+
+LDAP
+====
+
+TODO: add information about how to setup LDAP connection.
+
+Bitcoin
+=======
+
+TODO: add info about how to setup bitcoin/coinbase.
 
 Usage
 =====
