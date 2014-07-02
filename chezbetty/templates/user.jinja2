@@ -19,7 +19,7 @@
 
       {# Iterate all of the transactions in the user's history.
        #}
-      {% for transaction in transactions|reverse %}
+      {% for transaction, btc_img in transactions|reverse %}
 
       <li id="btn-trans-{{ transaction.id }}" class="list-group-item btn-trans-showhide">
 
@@ -89,7 +89,7 @@
         <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
-          {{ transaction.img|safe }}
+          {{ btc_img|safe }}
         </div>
 
         {% endif %}

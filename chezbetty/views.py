@@ -102,15 +102,18 @@ def user(request):
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
 
+        tx_tuples = []  # list of (transaction, btc_tx_url_image)s
         for tx_idx in range(len(user.transactions)):
             tx = user.transactions[tx_idx]
+            img = ''
             if tx.type == "btcdeposit":
                 svg_html = string_to_qrcode('https://blockchain.info/tx/%s' % tx.btctransaction)
-                user.transactions[tx_idx].img = svg_html.decode('utf-8')
+                img = svg_html.decode('utf-8')
+            tx_tuples.append((tx, img))
 
         return {'user': user,
                 'user_info_block': user_info_html,
-                'transactions': user.transactions}
+                'transactions': tx_tuples}
 
     except InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
