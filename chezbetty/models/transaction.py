@@ -127,7 +127,7 @@ class Donation(Transaction):
         self.notes = notes
 
 
-class Withdrawal(Transaction)
+class Withdrawal(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'withdrawal'}
     def __init__(self, amount, admin, notes):
         chezbetty = make_account("chezbetty")
