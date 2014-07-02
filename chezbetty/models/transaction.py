@@ -11,7 +11,7 @@ class Transaction(Base):
     from_account_id = Column(Integer, ForeignKey("accounts.id"))
     amount = Column(Numeric, nullable=False)
     notes = Column(Text)
-    type = Column(Enum("purchase", "deposit", "reconciliation", "donation",
+    type = Column(Enum("purchase", "deposit", "reconciliation", "donation", "withdrawal"
             "adjustment", "restock", "btcdeposit", name="transaction_type"), nullable=False)
     __mapper_args__ = {'polymorphic_on':type}
     # user that performed the reconciliation
@@ -124,6 +124,15 @@ class Donation(Transaction):
     def __init__(self, amount, admin, notes):
         chezbetty = make_account("chezbetty")
         Transaction.__init__(self, None, chezbetty, amount)
+        self.user_id = admin.id if admin else None
+        self.notes = notes
+
+
+class Withdrawal(Transaction)
+    __mapper_args__ = {'polymorphic_identity': 'withdrawal'}
+    def __init__(self, amount, admin, notes):
+        chezbetty = make_account("chezbetty")
+        Transaction.__init__(self, chezbetty, None, amount)
         self.user_id = admin.id if admin else None
         self.notes = notes
 
