@@ -27,25 +27,27 @@ class Transaction(Base):
         backref="transactions_from"
     )
 
-    def __init__(self, from_account, to_account, amount):
-        self.to_account_id = to_account.id if to_account else None
-        self.from_account_id = from_account.id if from_account else None
+    def __init__(self, from_acct, to_acct, amount):
+        self.to_account_id = to_acct.id if to_acct else None
+        self.from_account_id = from_acct.id if from_acct else None
+        self.to_acct = to_acct
+        self.from_acct = from_acct
         self.amount = amount
-        if to_account:
-            to_account.balance += self.amount
-        if from_account:
-            from_account.balance -= self.amount
+        if to_acct:
+            to_acct.balance += self.amount
+        if from_acct:
+            from_acct.balance -= self.amount
 
     def update_amount(self, amount):
-        if self.to_account:
-            self.to_account.balance -= self.amount
-        if self.from_account:
-            self.from_account.balance += self.amount
+        if self.to_acct:
+            self.to_acct.balance -= self.amount
+        if self.from_acct:
+            self.from_acct.balance += self.amount
         self.amount = amount
-        if self.to_account:
-            self.to_account.balance += self.amount
-        if self.from_account:
-            self.from_account.balance -= self.amount
+        if self.to_acct:
+            self.to_acct.balance += self.amount
+        if self.from_acct:
+            self.from_acct.balance -= self.amount
 
     @classmethod
     def from_id(cls, id):

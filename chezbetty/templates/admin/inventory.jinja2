@@ -11,19 +11,26 @@
 
 <form role="form" action="/admin/inventory/submit" method="post">
 
-  <div class="row item-list-header">
-    <div class="col-sm-8">Name</div>
-    <div class="col-sm-2">In Stock</div>
-    <div class="col-sm-2">New Count</div>
-  </div>
+  <table class="table">
+    <thead>
+      <tr class="item-list-header">
+        <th>Name</th>
+        <th>In Stock</th>
+        <th>New Count</th>
+      </tr>
+    </thead>
 
-  {% for item in items %}
-  <div id="item-{{ item.id }}" class="form-group row">
-    <div class="col-sm-8">{{ item.name }}</div>
-    <div class="col-sm-2">{{ item.in_stock }}</div>
-    <div class="col-sm-2"><input type="text" class="form-control" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value=""></div>
-  </div>
-  {% endfor %}
+    <tbody>
+      {% for item in items %}
+      <tr id="item-{{ item.id }}">
+        <td>{{ item.name }}</td>
+        <td>{{ item.in_stock }}</td>
+        <td><input type="text" class="form-control" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value=""></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
 
   <button type="submit" class="btn btn-success">Process Inventory</button>
 

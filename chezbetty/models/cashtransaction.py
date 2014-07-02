@@ -45,16 +45,16 @@ class CashTransaction(Base):
         backref="transactions_from"
     )
 
-    def __init__(self, from_account, to_account, amount, transaction, user):
-        self.from_account_id = from_account.id if from_account else None
-        self.to_account_id = to_account.id if to_account else None
+    def __init__(self, from_acct, to_acct, amount, transaction, user):
+        self.from_account_id = from_acct.id if from_acct else None
+        self.to_account_id = to_acct.id if to_acct else None
         self.amount = amount
         self.transaction_id = transaction.id if transaction else None
         self.user_id = user.id if user else None
-        if to_account:
-            to_account.balance += amount
-        if from_account:
-            to_account.balance -= amount
+        if to_acct:
+            to_acct.balance += amount
+        if from_acct:
+            from_acct.balance -= amount
 
     def __str__(self):
         return "<CashTransaction (%i: %s -> %s: $%f)>" % (

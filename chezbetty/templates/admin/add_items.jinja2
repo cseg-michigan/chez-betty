@@ -1,9 +1,9 @@
 {% extends "base.jinja2" %}
 {% set active_page = 'add_items' %}
-{% block title %}Add Items{% endblock %}
+{% block title %}Add New Items{% endblock %}
 
 {% block top %}
-<h1 class="page-header">Add Items</h1>
+<h1 class="page-header">Add New Items</h1>
 {% endblock %}
 
 
@@ -11,23 +11,31 @@
 
 <form role="form" action="/admin/add/items/submit" method="post">
 
-  <div class="row item-list-header">
-    <div class="col-sm-4">Name</div>
-    <div class="col-sm-2">Barcode</div>
-    <div class="col-sm-2">Item Price</div>
-  </div>
+  <table class="table">
 
-  <div id="new-items">
-    {% for number in range(0, items['count']|int) %}
-    <div id="new-item-0" class="form-group row new-item">
-      <div class="col-sm-4"><input type="text" class="form-control" id="item-name-{{ number }}" name="item-name-{{ number }}" value={{ items['name-'~number] }}></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-barcode-{{ number }}" name="item-barcode-{{ number }}" value={{ items['barcode-'~number] }}></div>
-      <div class="col-sm-2"><input type="text" class="form-control" id="item-price-{{ number }}" name="item-price-{{ number }}" value={{ items['price-'~number] }}></div>
-    </div>
-    {% endfor %}
-  </div>
+    <thead>
+      <tr class="item-list-header">
+        <th>Name</th>
+        <th>Barcode</th>
+        <th>Item Price</th>
+      </tr>
+    </thead>
+
+    <tbody id="new-items">
+      {% for number in range(0, items['count']|int) %}
+      <tr id="new-item-0" class="new-item">
+        <td><input type="text" class="form-control" id="item-name-{{ number }}" name="item-name-{{ number }}" value={{ items['name-'~number] }}></td>
+        <td><input type="text" class="form-control" id="item-barcode-{{ number }}" name="item-barcode-{{ number }}" value={{ items['barcode-'~number] }}></td>
+        <td><input type="text" class="form-control" id="item-price-{{ number }}" name="item-price-{{ number }}" value={{ items['price-'~number] }}></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
 
   <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another Item</button>
+  <br />
+  <br />
   <button type="submit" class="btn btn-success">Add Items</button>
 
   <input type="hidden" id="new-items-number" name="new-items-number" value="{{ items['count'] }}">
@@ -37,6 +45,5 @@
 {% endblock %}
 
 {% block onload %}
-<script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
 <script src="{{'chezbetty:static/js/chezbetty-admin-noenter.js'|static_url}}"></script>
 {% endblock %}

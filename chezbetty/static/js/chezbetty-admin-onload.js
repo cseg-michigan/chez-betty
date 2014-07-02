@@ -108,16 +108,6 @@ $("#btn-items-add-row").click(function () {
 	$("#new-items-number").val(item_lines_count+1);
 });
 
-function update_new_balance () {
-	start = parseFloat(strip_price($(".current-balance:visible").text()));
-	amount = parseFloat($("#balance-change-amount").val());
-	if (isNaN(amount)) {
-		amount = 0.0;
-	}
-	new_balance = format_price(start + amount);
-	$("#new_balance").html(new_balance);
-}
-
 $("#select-user").change(function () {
 	user_id = $("#select-user option:selected").val();
 	console.log(user_id);

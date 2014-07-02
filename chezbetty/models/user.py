@@ -21,25 +21,25 @@ class LDAPLookup(object):
     BASE_DN = "ou=People,dc=umich,dc=edu"
     PASSWORD = None
     ATTRIBUTES = ["uid", "entityid", "displayName"]
-        
+
     def __init__(self):
         self.__conn = None
-        
+
     def __connect(self):
         if not self.__conn:
             s = ldap3.Server(self.SERVER, port=636, use_ssl=True, get_info=ldap3.GET_ALL_INFO)
-            self.__conn = ldap3.Connection(s, auto_bind=True, 
+            self.__conn = ldap3.Connection(s, auto_bind=True,
                     user=self.USERNAME, password=self.PASSWORD,
                     client_strategy=ldap3.STRATEGY_SYNC,
                     authentication=ldap3.AUTH_SIMPLE
             )
-    
+
 
     def __lookup(self, k, v):
         self.__connect()
         query = "(%s=%s)" % (k, v)
         try:
-            self.__conn.search(self.BASE_DN, 
+            self.__conn.search(self.BASE_DN,
                     query,
                     ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
                     attributes=self.ATTRIBUTES
@@ -48,7 +48,7 @@ class LDAPLookup(object):
             # sometimes our connections time out
             self.__conn = None
             self.__connect()
-            self.__conn.search(self.BASE_DN, 
+            self.__conn.search(self.BASE_DN,
                     query,
                     ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
                     attributes=self.ATTRIBUTES
@@ -86,6 +86,7 @@ class User(Account):
     __ldap = LDAPLookup()
 
     def __init__(self, uniqname, umid, name):
+        self.enabled = True
         self.uniqname = uniqname
         self.umid = umid
         self.name = name
@@ -107,7 +108,7 @@ class User(Account):
             u = cls(**cls.__ldap.lookup_uniqname(uniqname))
             DBSession.add(u)
         return u
-            
+
     @classmethod
     def from_umid(cls, umid):
         u = DBSession.query(cls).filter(cls.umid == umid).first()
@@ -117,7 +118,7 @@ class User(Account):
         return u
 
     def __make_salt(self):
-        return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii") 
+        return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
 
     @hybrid_property
     def password(self):

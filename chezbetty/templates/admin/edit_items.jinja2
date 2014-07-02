@@ -51,7 +51,7 @@
           {% set markup = (((item.price / item.wholesale) - 1.0) * 100.0)|round(2) %}
         {% endif %}
 
-        <tr class="edit-item-row">
+        <tr id="item-{{ item.id }}" class="edit-item-row">
 
           <td><input type="text" class="form-control" id="item-name-{{ item.id }}" name="item-name-{{ item.id }}" value="{{ item.name }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td><input type="text" class="form-control" id="item-barcode-{{ item.id }}" name="item-barcode-{{ item.id }}" value="{{ item.barcode }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
@@ -79,6 +79,5 @@
 {% endblock %}
 
 {% block onload %}
-<script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
 <script src="{{'chezbetty:static/js/chezbetty-admin-noenter.js'|static_url}}"></script>
 {% endblock %}

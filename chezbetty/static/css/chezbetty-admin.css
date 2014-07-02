@@ -59,6 +59,11 @@ body {
   padding-right: 20px;
   padding-left: 20px;
 }
+.nav-sidebar > li > span {
+  padding-right: 20px;
+  padding-left: 10px;
+  font-weight: bold;
+}
 .nav-sidebar > .active > a,
 .nav-sidebar > .active > a:hover,
 .nav-sidebar > .active > a:focus {
@@ -84,6 +89,14 @@ body {
   margin-top: 0;
 }
 
+#edit-balance dt, #edit-balance dd {
+  margin-bottom: 10px;
+}
+
+#edit-balance dd span {
+  padding-left: 0;
+  padding-right: 0;
+}
 
 /*
  * Placeholder dashboard ideas
@@ -119,4 +132,12 @@ body {
 
 .price-yellow {
   background-color: #FFFDD0;
+}
+
+tfoot {
+  font-weight: bold;
+}
+
+tfoot tr td {
+  border-top: 2px solid #ddd !important;
 }

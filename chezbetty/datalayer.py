@@ -92,30 +92,32 @@ def reconcile_items(items, admin):
         total_amount_missing += st.amount
         item.in_stock = quantity
     t.update_amount(total_amount_missing)
+    DBSession.add(t)
+    DBSession.flush()
     return t
 
 def reconcile_cash(amount, admin):
     cashbox = make_cash_account("cashbox")
     expected_amount = cashbox.balance
     amount_missing = expected_amount - amount
-    cashbox.balance = 0
 
-    t = CashTransaction(
-        from_account = make_cash_account("cashbox"),
-        to_account = make_cash_account("chezbetty"),
+    if round(amount_missing, 2) != 0.0:
+        t1 = CashTransaction(
+            from_acct = make_cash_account("lost"),
+            to_acct = make_cash_account("cashbox"),
+            amount = -1.0 * amount_missing,
+            transaction = None,
+            user = admin
+        )
+        DBSession.add(t1)
+
+    t2 = CashTransaction(
+        from_acct = make_cash_account("cashbox"),
+        to_acct = make_cash_account("chezbetty"),
         amount = amount,
         transaction = None,
         user = admin
     )
-    DBSession.add(t)
-    if amount_missing != 0.0:
-        t2 = CashTransaction(
-            from_account = make_cash_account("cashbox"),
-            to_account = make_cash_account("lost"),
-            amount = amount_missing,
-            transaction = None,
-            user = admin
-        )
-        DBSession.add(t2)
+    DBSession.add(t2)
     return expected_amount
 

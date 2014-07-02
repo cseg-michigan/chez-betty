@@ -112,3 +112,8 @@ $(".btn-trans-showhide").click(function () {
 		$("#transaction-small-"+transaction_id).text("touch to hide");
 	}
 });
+
+$(".faq-q").click(function() {
+	$(this).next().toggle("fast");
+});
+

@@ -4,6 +4,7 @@ from pyramid.response import Response
 from pyramid.view import view_config, forbidden_view_config
 from pyramid.httpexceptions import HTTPFound
 
+from sqlalchemy.sql import func
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -11,7 +12,7 @@ from .models import *
 from .models.model import *
 from .models.user import User, InvalidUserException
 from .models.item import Item
-from .models.transaction import Transaction, BTCDeposit
+from .models.transaction import Transaction, BTCDeposit, SubTransaction
 from .models.account import Account
 from .models.cashtransaction import CashAccount, CashTransaction
 
@@ -101,15 +102,18 @@ def user(request):
         user_info_html = render('templates/user_info.jinja2',
             {'user': user, 'page': 'account'})
 
+        tx_tuples = []  # list of (transaction, btc_tx_url_image)s
         for tx_idx in range(len(user.transactions)):
             tx = user.transactions[tx_idx]
+            img = ''
             if tx.type == "btcdeposit":
                 svg_html = string_to_qrcode('https://blockchain.info/tx/%s' % tx.btctransaction)
-                user.transactions[tx_idx].img = svg_html.decode('utf-8')
+                img = svg_html.decode('utf-8')
+            tx_tuples.append((tx, img))
 
         return {'user': user,
                 'user_info_block': user_info_html,
-                'transactions': user.transactions}
+                'transactions': tx_tuples}
 
     except InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -302,9 +306,17 @@ def btc_deposit(request):
 
     print("got a btc_deposit request...: %s" % request)
 
-    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s" % (addr, amount_btc, txid, created_at, txhash)
+    try:
+        obj = Bitcoin.req("https://coinbase.com/api/v1/prices/spot_rate")
+        usd_per_btc = float(obj['amount'])  # why do we continue to use floats for currency...
+    except BTCException as e:
+        # unknown exchange rate?
+        print('Could not get exchange rate; failing...')
+        return {}
+
+    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%f/BTC" % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
     # TODO: dynamic exchange rate
-    datalayer.bitcoin_deposit(user, float(amount_btc) * 600, txhash, addr, amount_btc)
+    datalayer.bitcoin_deposit(user, float(amount_btc) * usd_per_btc, txhash, addr, amount_btc)
     print(ret)
     #return ret
 
@@ -356,17 +368,42 @@ def admin_index(request):
     ct = DBSession.query(CashTransaction).order_by(desc(CashTransaction.id)).limit(10).all()
     items = DBSession.query(Item).filter(Item.enabled == True).filter(Item.in_stock < 10).order_by(Item.in_stock).limit(5).all()
     users = DBSession.query(User).filter(User.balance < 0).order_by(User.balance).limit(5).all()
+    users_balance = DBSession.query(func.sum(User.balance).label("total_balance")).one()[0]
     chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
     lost = DBSession.query(Account).filter(Account.name == "lost").one()
     cashbox = DBSession.query(CashAccount).filter(CashAccount.name=="cashbox").one()
     chezbetty_cash = DBSession.query(CashAccount).filter(CashAccount.name=="chezbetty").one()
     lost_cash = DBSession.query(CashAccount).filter(CashAccount.name=="lost").one()
+
+    class Object(object):
+        pass
+
+    inventory = Object()
+    inventory.wholesale = DBSession.query(func.sum(Item.in_stock * Item.wholesale)).one()[0]
+    inventory.price = DBSession.query(func.sum(Item.in_stock * Item.price)).one()[0]
+
+    bsi = DBSession.query(func.sum(SubTransaction.quantity).label('quantity'), Item.name)\
+                   .join(Item)\
+                   .join(Transaction)\
+                   .filter(Transaction.type=='purchase')\
+                   .group_by(Item.id)\
+                   .order_by(desc('quantity'))\
+                   .limit(5).all()
+
+    sums = Object()
+    sums.virtual = chezbetty.balance + lost.balance + users_balance
+    sums.cash = chezbetty_cash.balance + lost_cash.balance + cashbox.balance
+
     return dict(transactions=transactions, ct=ct, items=items, users=users,
+                    users_total_balance=users_balance,
                     cashbox=cashbox,
                     chezbetty_cash=chezbetty_cash,
                     lost_cash=lost_cash,
                     chezbetty=chezbetty,
-                    lost=lost
+                    lost=lost,
+                    sums=sums,
+                    inventory=inventory,
+                    best_selling_items=bsi
            )
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
@@ -404,7 +441,7 @@ def admin_restock_submit(request):
         try:
             quantity = int(request.POST[quantity])
             if '/' in request.POST[cost]:
-                dividend, divisor = map(float(request.POST[cost].split('/')))
+                dividend, divisor = map(float, request.POST[cost].split('/'))
                 cost = dividend / divisor
             else:
                 cost = float(request.POST[cost])
@@ -425,7 +462,7 @@ def admin_restock_submit(request):
         item.wholesale = round(wholesale, 4)
 
         if item.price < item.wholesale:
-            item.price = item.wholesale * 1.15
+            item.price = round(item.wholesale * 1.15, 2)
 
         items[item] = quantity
 
@@ -449,12 +486,16 @@ def admin_add_items(request):
 def admin_add_items_submit(request):
     count = 0
     error_items = []
+
+    # Iterate all the POST keys and find the ones that are item names
     for key in request.POST:
         if 'item-name-' in key:
             id = int(key.split('-')[2])
             stock = 0
             wholesale = 0
             enabled = False
+
+            # Parse out the important fields looking for errors
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
@@ -462,6 +503,20 @@ def admin_add_items_submit(request):
                     price = float(request.POST['item-price-{}'.format(id)])
                 except:
                     price = 0
+
+                # Check that name and barcode are not blank. If name is blank
+                # treat this as an empty row and skip. If barcode is blank
+                # we will get a database error so send that back to the user.
+                if name == '':
+                    continue
+                if barcode == '':
+                    request.session.flash('Error adding item "{}". Barcode cannot be blank.'.format(name), 'error')
+                    error_items.append({
+                        'name': name, 'barcode': '', 'price': price,
+                    })
+                    continue
+
+                # Add the item to the DB
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
                 DBSession.flush()
@@ -475,7 +530,7 @@ def admin_add_items_submit(request):
                             })
                     request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
-                # O/w this was probably a blank row; ignore.
+                # Otherwise this was probably a blank row; ignore.
     if count:
         request.session.flash('{} item{} added successfully.'.format(count, ['s',''][count==1]), 'success')
     else:
@@ -510,7 +565,15 @@ def admin_edit_items_submit(request):
             continue
         name = item.name
         try:
-            setattr(item, key.split('-')[1], request.POST[key])
+            field = key.split('-')[1]
+            if field == 'price':
+                val = round(float(request.POST[key]), 2)
+            elif field == 'wholesale':
+                val = round(float(request.POST[key]), 4)
+            else:
+                val = request.POST[key]
+
+            setattr(item, field, val)
             DBSession.flush()
         except:
             DBSession.rollback()
@@ -669,8 +732,8 @@ def admin_view_transaction(request):
     id = int(request.matchdict['id'])
     t = DBSession.query(Transaction).filter(Transaction.id == id).first()
     if not t:
-        request.session.flush('Invalid transaction ID supplied')
-        return HTTPFound(location=request.route_url('admin_index'))
+        request.session.flash('Invalid transaction ID supplied', 'error')
+        return HTTPFound(location=request.route_url('admin_transactions'))
     return dict(t=t)
 
 @view_config(route_name='admin_edit_password',
