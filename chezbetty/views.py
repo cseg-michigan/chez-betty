@@ -724,8 +724,8 @@ def admin_view_transaction(request):
     id = int(request.matchdict['id'])
     t = DBSession.query(Transaction).filter(Transaction.id == id).first()
     if not t:
-        request.session.flush('Invalid transaction ID supplied')
-        return HTTPFound(location=request.route_url('admin_index'))
+        request.session.flash('Invalid transaction ID supplied', 'error')
+        return HTTPFound(location=request.route_url('admin_transactions'))
     return dict(t=t)
 
 @view_config(route_name='admin_edit_password',
