@@ -430,7 +430,7 @@ def admin_restock_submit(request):
         try:
             quantity = int(request.POST[quantity])
             if '/' in request.POST[cost]:
-                dividend, divisor = map(float(request.POST[cost].split('/')))
+                dividend, divisor = map(float, request.POST[cost].split('/'))
                 cost = dividend / divisor
             else:
                 cost = float(request.POST[cost])
