@@ -12,8 +12,7 @@ keyboard_input = "";
 $(document).keypress(function (e) {
 	alert_clear();
 
-	if (e.which == 37) {
-		// got percent character. show spinner
+	if (keyboard_input.length == 1) {
 
 		$("#index-main").hide();
 		$("#front-buttons").hide();
@@ -42,14 +41,20 @@ $(document).keypress(function (e) {
 
 		setTimeout(clear_spinner, 20*1000);
 
+		keyboard_input += String.fromCharCode(e.which);
+
 	} else if (e.which == 94) {
 		// Got new scan!
+
+		console.log(keyboard_input)
 
 		if (keyboard_input.slice(0, 3) == "%B6") {
 			// This looks like an M-Card
 			umid = keyboard_input.slice(8, 16);
 
 			window.location.replace("/purchase/" + umid);
+		} else {
+			clear_spinner();
 		}
 
 		keyboard_input = "";
