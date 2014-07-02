@@ -40,13 +40,19 @@ class Bitcoin(object):
             raise BTCException("Could not load HTTP")
 
 
-    def get_new_address(self, cb_url='http://chezbetty.zakird.com/bitcoin/deposit', guid='chezbetty'):
+    @staticmethod
+    def get_new_address(umid="", cb_url='http://chezbetty.zakird.com/bitcoin/deposit', guid='chezbetty'):
 
         obj = Bitcoin.req("https://coinbase.com/api/v1/account/generate_receive_address",
-                      '{"address": {"callback_url": "%s/%s", "label": "%s"}' % (cb_url, self.umid, guid))
+                      '{"address": {"callback_url": "%s/%s", "label": "%s"}' % (cb_url, umid, guid))
 
         if not(obj['success']):
             raise BTCException("Could not get address: %s" % res)
 
         return obj['address']
+
+    @staticmethod
+    def get_spot_price(currency="USD"):
+        obj = Bitcoin.req("https://coinbase.com/api/v1/prices/spot_rate?currency=%s" % currency)
+        return float(obj['amount'])  # why do we continue to use floats for currency...
 

@@ -129,9 +129,8 @@ def deposit(request):
                                                                'page': 'deposit'})
         keypad_html = render('templates/keypad.jinja2', {})
 
-        bitcoin = Bitcoin(umid=user.umid)
         try:
-            btc_addr = bitcoin.get_new_address()
+            btc_addr = Bitcoin.get_new_address(user.umid)
             btc_html = render('templates/btc.jinja2', {'addr': btc_addr})
         except BTCException as e:
             btc_html = ""
@@ -307,8 +306,7 @@ def btc_deposit(request):
     print("got a btc_deposit request...: %s" % request)
 
     try:
-        obj = Bitcoin.req("https://coinbase.com/api/v1/prices/spot_rate")
-        usd_per_btc = float(obj['amount'])  # why do we continue to use floats for currency...
+        usd_per_btc = Bitcoin.get_spot_price()
     except BTCException as e:
         # unknown exchange rate?
         print('Could not get exchange rate; failing...')
