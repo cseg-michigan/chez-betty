@@ -54,7 +54,7 @@ Tools
 
 Chez Betty currently runs using:
 
-- [Beagle Bone Black](http://beagleboard.org/black)
-- [Magnetic Strip Reader](https://www.cdw.com/shop/products/MagTek-SureSwipe-Reader-USB-HID-Keyboard-Interface-magnetic-card-reader/1140626.aspx)
-- [Barcode Scanner](https://www.cdw.com/shop/products/Motorola-LS2208-barcode-scanner-scanner-and-USB-cable-included/3021140.aspx)
-- [Touchscreen Monitor](http://www.amazon.com/ViewSonic-TD2220-22-Inch-LED-Lit-Display/dp/B009F1IKFC)
+- [Beagle Bone Black](http://beagleboard.org/black) - Running Debian, LXDE, and Ice Weasel.
+- [Magnetic Strip Reader](https://www.cdw.com/shop/products/MagTek-SureSwipe-Reader-USB-HID-Keyboard-Interface-magnetic-card-reader/1140626.aspx) - Acts as a keyboard input.
+- [Barcode Scanner](https://www.cdw.com/shop/products/Motorola-LS2208-barcode-scanner-scanner-and-USB-cable-included/3021140.aspx) - Also keyboard input.
+- [Touchscreen Monitor](http://www.amazon.com/ViewSonic-TD2220-22-Inch-LED-Lit-Display/dp/B009F1IKFC) - Acts as a mouse.
