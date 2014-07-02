@@ -10,7 +10,7 @@
 
 {% block content %}
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-5">
 
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -18,20 +18,51 @@
       </div>
       <div class="panel-body">
 
-        <dl class="dl-horizontal">
-          <dt>Chez Betty</dt>
-          <dd>{{ chezbetty.balance|format_currency|safe }}</dd>
-          <dt>Chez Betty Cash</dt>
-          <dd>{{ chezbetty_cash.balance|format_currency|safe }}</dd>
+        <div class="row">
+          <div class="col-md-6">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th colspan="2">Virtual Accounts</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Chez Betty</td>
+                  <td class="right">{{ chezbetty.balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Lost/Stolen</td>
+                  <td class="right">{{ lost.balance|format_currency|safe }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th colspan="2">Cash Accounts</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Chez Betty Cash</td>
+                  <td class="right">{{ chezbetty_cash.balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Cash Box</td>
+                  <td class="right">{{ cashbox.balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Lost/Stolen Cash</td>
+                  <td class="right">{{ lost_cash.balance|format_currency|safe }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-          <dt>Cash Box</dt>
-          <dd>{{ cashbox.balance|format_currency|safe }}</dd>
-          <dt>Lost/Stolen</dt>
-          <dd>{{ lost.balance|format_currency|safe }}</dd>
-          <dt>Lost/Stolen Cash</dt>
-          <dd>{{ lost_cash.balance|format_currency|safe }}</dd>
-
-        </dl>
       </div>
     </div>
   </div>
@@ -62,7 +93,7 @@
     </div>
   </div>
 
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Wall of Shame Overview</h3>
