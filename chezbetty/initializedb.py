@@ -93,6 +93,7 @@ def main(argv=sys.argv):
         make_cash_account("cashbox")
         make_cash_account("lost")
         make_cash_account("chezbetty")
+        make_cash_account("bitcoinbox")
 
 if __name__ == "__main__":
     main()
