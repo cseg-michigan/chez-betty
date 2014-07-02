@@ -79,6 +79,7 @@ class CashSpend(CashTransaction):
 
 class BTCCashDeposit(CashTransaction):
     def __init__(self, amount, transaction):
-        c_chezbetty = make_cash_account("chezbetty")
-        CashTransaction.__init__(self, None, c_chezbetty, amount, transaction, None)
+        c_btcbox = make_cash_account("btcbox")
+        CashTransaction.__init__(self, None, c_btcbox,
+                amount, transaction, None)
 
