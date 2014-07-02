@@ -466,7 +466,7 @@ def admin_restock_submit(request):
 
         items[item] = quantity
 
-    datalayer.restock(items)
+    datalayer.restock(items, session.user)
     request.session.flash('Restock complete.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
@@ -601,7 +601,7 @@ def admin_inventory_submit(request):
             items[item] = int(request.POST[key])
         except ValueError:
             pass
-    t = datalayer.reconcile_items(items, None)
+    t = datalayer.reconcile_items(items, request.user)
     request.session.flash('Inventory Reconciled', 'success')
     if t.amount < 0:
         request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
@@ -688,7 +688,7 @@ def admin_edit_balance_submit(request):
         request.session.flash('Invalid adjustment amount.', 'error')
         return HTTPFound(location=request.route_url('admin_edit_balance'))
     reason = request.POST['reason']
-    datalayer.adjust_user_balance(user, adjustment, None, reason)
+    datalayer.adjust_user_balance(user, adjustment, reason, request.user)
     request.session.flash('User account updated.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_balance'))
 
@@ -706,7 +706,7 @@ def admin_cash_reconcile_submit(request):
         request.session.flash('Error: Bad value for cash box amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
-    expected_amount = datalayer.reconcile_cash(amount, None)
+    expected_amount = datalayer.reconcile_cash(amount, request.user)
 
     request.session.flash('Cash box recorded successfully', 'success')
     return HTTPFound(location=request.route_url('admin_cash_reconcile_success',

@@ -43,8 +43,7 @@ def bitcoin_deposit(user, amount, btc_transaction, address, amount_btc):
 
 
 def adjust_user_balance(user, adjustment, notes, admin=None):
-    assert(hasattr(user, "id"))
-    t = Adjustment(user, adjustment, notes, admin)
+    t = Adjustment(user, adjustment, admin, notes)
     DBSession.add(t)
 
 
