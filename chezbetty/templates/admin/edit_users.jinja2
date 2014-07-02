@@ -11,40 +11,49 @@
 
 <form role="form" action="/admin/edit/users/submit" method="post">
 
-  <div class="row user-list-header">
-    <div class="col-sm-4">Name</div>
-    <div class="col-sm-1">uniqname</div>
-    <div class="col-sm-1">UMID</div>
-    <div class="col-sm-2">Role</div>
-    <div class="col-sm-1">Balance</div>
-    <div class="col-sm-2">Created Date</div>
-    <div class="col-sm-1">Actions</div>
-  </div>
 
+  <table class="table">
 
-  {% for user in users %}
-  <div id="user-{{ user.id }}" class="form-group row edit-user-row">
-    <div class="col-sm-4">
-      <input type="text" class="form-control" id="user-name-{{ user.id }}" name="user-name-{{ user.id }}" value="{{ user.name }}" {% if user.enabled == False %}disabled="disabled"{% endif %}>
-    </div>
-    <div class="col-sm-1">{{ user.uniqname }}</div>
-    <div class="col-sm-1">{{ user.umid }}</div>
-    <div class="col-sm-2">
-      <select class="form-control" id="user-role-{{ user.id }}" name="user-role-{{ user.id }}">
-        {% for role in roles %}
-        <option value="{{ role[0] }}" {% if role[0] == user.role %}selected="selected"{% endif %}>{{ role[1] }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-sm-1">{{ user.balance|format_currency|safe }}</div>
-    <div class="col-sm-2">{{ user.created_at|pretty_date|safe }}</div>
-    <div class="col-sm-1 user-actions">
-      <button type="button" id="btn-disable-user-{{ user.id }}" class="btn btn-danger" {% if user.enabled == False %}style="display:none;"{% endif %}>X</button>
-      <button type="button" id="btn-enable-user-{{ user.id }}" class="btn btn-success" {% if user.enabled == True %}style="display:none;"{% endif %}>+</button>
-    </div>
-    <input type="hidden" class="form-control" id="user-enabled-{{ user.id }}" name="user-enabled-{{ user.id }}" value="{{ user.enabled|int }}">
-  </div>
-  {% endfor %}
+    <thead>
+      <tr class="user-list-header">
+        <th>&nbsp;</th>
+        <th>Name</th>
+        <th>uniqname</th>
+        <th>UMID</th>
+        <th>Role</th>
+        <th>Balance</th>
+        <th>Created Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      {% for user in users %}
+      <tr id="user-{{ user.id }}" class="edit-user-row">
+        <td><a href="/user/{{ user.umid }}"><span class="glyphicon glyphicon-user"></span></a></td>
+        <td><input type="text" class="form-control" id="user-name-{{ user.id }}" name="user-name-{{ user.id }}" value="{{ user.name }}" {% if user.enabled == False %}disabled="disabled"{% endif %}></td>
+        <td>{{ user.uniqname }}</td>
+        <td>{{ user.umid }}</td>
+        <td>
+          <select class="form-control" id="user-role-{{ user.id }}" name="user-role-{{ user.id }}">
+            {% for role in roles %}
+            <option value="{{ role[0] }}" {% if role[0] == user.role %}selected="selected"{% endif %}>{{ role[1] }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>{{ user.balance|format_currency|safe }}</td>
+        <td>{{ user.created_at|pretty_date|safe }}</td>
+        <td class=" user-actions">
+          <button type="button" id="btn-disable-user-{{ user.id }}" class="btn btn-danger" {% if user.enabled == False %}style="display:none;"{% endif %}>X</button>
+          <button type="button" id="btn-enable-user-{{ user.id }}" class="btn btn-success" {% if user.enabled == True %}style="display:none;"{% endif %}>+</button>
+        </td>
+        <input type="hidden" class="form-control" id="user-enabled-{{ user.id }}" name="user-enabled-{{ user.id }}" value="{{ user.enabled|int }}">
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
 
   <button type="submit" class="btn btn-success">Update users</button>
 
