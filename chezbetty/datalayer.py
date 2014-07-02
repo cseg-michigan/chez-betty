@@ -47,6 +47,13 @@ def adjust_user_balance(user, adjustment, notes, admin=None):
     t = Adjustment(user, adjustment, notes, admin)
     DBSession.add(t)
 
+
+def add_donation(amount, notes, admin=None):
+    t = Donation(amount, notes, admin)
+    DBSession.add(t)
+    return t
+
+
 def purchase(user, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
