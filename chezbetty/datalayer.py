@@ -92,6 +92,8 @@ def reconcile_items(items, admin):
         total_amount_missing += st.amount
         item.in_stock = quantity
     t.update_amount(total_amount_missing)
+    DBSession.add(t)
+    DBSession.flush()
     return t
 
 def reconcile_cash(amount, admin):
