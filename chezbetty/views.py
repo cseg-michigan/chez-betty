@@ -306,9 +306,17 @@ def btc_deposit(request):
 
     print("got a btc_deposit request...: %s" % request)
 
-    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s" % (addr, amount_btc, txid, created_at, txhash)
+    try:
+        obj = Bitcoin.req("https://coinbase.com/api/v1/prices/spot_rate")
+        usd_per_btc = float(obj['amount'])  # why do we continue to use floats for currency...
+    except BTCException as e:
+        # unknown exchange rate?
+        print('Could not get exchange rate; failing...')
+        return {}
+
+    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%f/BTC" % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
     # TODO: dynamic exchange rate
-    datalayer.bitcoin_deposit(user, float(amount_btc) * 600, txhash, addr, amount_btc)
+    datalayer.bitcoin_deposit(user, float(amount_btc) * usd_per_btc, txhash, addr, amount_btc)
     print(ret)
     #return ret
 
