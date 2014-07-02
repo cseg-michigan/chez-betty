@@ -53,6 +53,10 @@ def add_donation(amount, notes, admin=None):
     DBSession.add(t)
     return t
 
+def add_withdrawal(amount, notes, admin=None):
+    t = Withdrawal(amount, notes, admin)
+    DBSession.add(t)
+    return t
 
 def purchase(user, items):
     assert(hasattr(user, "id"))
