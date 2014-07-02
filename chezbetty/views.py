@@ -466,7 +466,7 @@ def admin_restock_submit(request):
 
         items[item] = quantity
 
-    datalayer.restock(items, session.user)
+    datalayer.restock(items, request.user)
     request.session.flash('Restock complete.', 'success')
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
