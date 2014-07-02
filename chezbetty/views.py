@@ -462,7 +462,7 @@ def admin_restock_submit(request):
         item.wholesale = round(wholesale, 4)
 
         if item.price < item.wholesale:
-            item.price = item.wholesale * 1.15
+            item.price = round(item.wholesale * 1.15, 2)
 
         items[item] = quantity
 
@@ -565,7 +565,15 @@ def admin_edit_items_submit(request):
             continue
         name = item.name
         try:
-            setattr(item, key.split('-')[1], request.POST[key])
+            field = key.split('-')[1]
+            if field == 'price':
+                val = round(float(request.POST[key]), 2)
+            elif field == 'wholesale':
+                val = round(float(request.POST[key]), 4)
+            else:
+                val = request.POST[key]
+
+            setattr(item, field, val)
             DBSession.flush()
         except:
             DBSession.rollback()
