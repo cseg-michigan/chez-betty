@@ -449,12 +449,16 @@ def admin_add_items(request):
 def admin_add_items_submit(request):
     count = 0
     error_items = []
+
+    # Iterate all the POST keys and find the ones that are item names
     for key in request.POST:
         if 'item-name-' in key:
             id = int(key.split('-')[2])
             stock = 0
             wholesale = 0
             enabled = False
+
+            # Parse out the important fields looking for errors
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
@@ -462,6 +466,20 @@ def admin_add_items_submit(request):
                     price = float(request.POST['item-price-{}'.format(id)])
                 except:
                     price = 0
+
+                # Check that name and barcode are not blank. If name is blank
+                # treat this as an empty row and skip. If barcode is blank
+                # we will get a database error so send that back to the user.
+                if name == '':
+                    continue
+                if barcode == '':
+                    request.session.flash('Error adding item "{}". Barcode cannot be blank.'.format(name), 'error')
+                    error_items.append({
+                        'name': name, 'barcode': '', 'price': price,
+                    })
+                    continue
+
+                # Add the item to the DB
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
                 DBSession.flush()
@@ -475,7 +493,7 @@ def admin_add_items_submit(request):
                             })
                     request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
-                # O/w this was probably a blank row; ignore.
+                # Otherwise this was probably a blank row; ignore.
     if count:
         request.session.flash('{} item{} added successfully.'.format(count, ['s',''][count==1]), 'success')
     else:
