@@ -21,7 +21,7 @@
         <th>uniqname</th>
         <th>UMID</th>
         <th>Role</th>
-        <th>Balance</th>
+        <th class="right">Balance</th>
         <th>Created Date</th>
         <th>Actions</th>
       </tr>
@@ -42,7 +42,7 @@
             {% endfor %}
           </select>
         </td>
-        <td>{{ user.balance|format_currency|safe }}</td>
+        <td class="right">{{ user.balance|format_currency|safe }}</td>
         <td>{{ user.created_at|pretty_date|safe }}</td>
         <td class=" user-actions">
           <button type="button" id="btn-disable-user-{{ user.id }}" class="btn btn-danger" {% if user.enabled == False %}style="display:none;"{% endif %}>X</button>

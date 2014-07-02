@@ -371,10 +371,13 @@ def admin_index(request):
     inventory.wholesale = DBSession.query(func.sum(Item.in_stock * Item.wholesale)).one()[0]
     inventory.price = DBSession.query(func.sum(Item.in_stock * Item.price)).one()[0]
 
-    best_selling_items = DBSession.query(SubTransaction.id, Item.id, Item.name, Transaction.type, func.sum(SubTransaction.quantity).label('quantity'))\
-                                  .join(Item)\
-                                  .filter(Transaction.type=='purchase')\
-                                  .group_by(Item).all()
+    bsi = DBSession.query(func.sum(SubTransaction.quantity).label('quantity'), Item.name)\
+                   .join(Item)\
+                   .join(Transaction)\
+                   .filter(Transaction.type=='purchase')\
+                   .group_by(Item.id)\
+                   .order_by(desc('quantity'))\
+                   .limit(5).all()
 
     sums = Object()
     sums.virtual = chezbetty.balance + lost.balance + users_balance
@@ -389,7 +392,7 @@ def admin_index(request):
                     lost=lost,
                     sums=sums,
                     inventory=inventory,
-                    best_selling_items=best_selling_items
+                    best_selling_items=bsi
            )
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
