@@ -5,7 +5,7 @@ class Account(Versioned, Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     type = Column(Enum("user", "placeholder", name="account_type"), nullable=False)
-    balance = Column(Float, nullable=False)
+    balance = Column(Numeric, nullable=False)
     name = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

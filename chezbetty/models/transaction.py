@@ -9,7 +9,7 @@ class Transaction(Base):
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     to_account_id = Column(Integer, ForeignKey("accounts.id"))
     from_account_id = Column(Integer, ForeignKey("accounts.id"))
-    amount = Column(Float, nullable=False)
+    amount = Column(Numeric, nullable=False)
     notes = Column(Text)
     type = Column(Enum("purchase", "deposit", "reconciliation",
             "adjustment", "restock", "btcdeposit", name="transaction_type"), nullable=False)
@@ -73,7 +73,7 @@ class BTCDeposit(Deposit):
 
     btctransaction = Column(String(64))
     address = Column(String(64))
-    amount_btc = Column(Float, nullable=True)
+    amount_btc = Column(Numeric, nullable=True)
 
     def __init__(self, user, amount, btctransaction, address, amount_btc):
         Transaction.__init__(self, None, user, amount)
@@ -127,7 +127,7 @@ class SubTransaction(Base):
     quantity = Column(Integer, nullable=False)
     item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
     item = relationship(Item, backref="subtransactions")
-    amount = Column(Float, nullable=False)
+    amount = Column(Numeric, nullable=False)
 
     def __init__(self, transaction, item, quantity, amount):
         self.transaction_id = transaction.id

@@ -6,8 +6,8 @@ class Item(Versioned, Base):
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String(255), nullable=False)
     barcode = Column(String(255), nullable=True, unique=True)
-    price = Column(Float, nullable=False)
-    wholesale = Column(Float, nullable=False)
+    price = Column(Numeric, nullable=False)
+    wholesale = Column(Numeric, nullable=False)
 
     enabled = Column(Boolean, default=True, nullable=False)
     in_stock = Column(Integer, nullable=False, default=0)

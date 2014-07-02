@@ -6,7 +6,7 @@ class CashAccount(Versioned, Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String(255), nullable=False, unique=True)
-    balance = Column(Float, nullable=False)
+    balance = Column(Numeric, nullable=False)
 
     def __init__(self, name):
         self.name = name
@@ -30,7 +30,7 @@ class CashTransaction(Base):
     transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=True, unique=True)
     transaction = relationship(Transaction, backref=backref("cash_transaction", uselist=False), uselist=False)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    amount = Column(Float, nullable=False)
+    amount = Column(Numeric, nullable=False)
 
     to_account_id = Column(Integer, ForeignKey("cash_accounts.id"))
     from_account_id = Column(Integer, ForeignKey("cash_accounts.id"))

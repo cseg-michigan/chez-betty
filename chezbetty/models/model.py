@@ -4,7 +4,7 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
-    Float,
+    Numeric,
     Text,
     Enum,
     DateTime,
