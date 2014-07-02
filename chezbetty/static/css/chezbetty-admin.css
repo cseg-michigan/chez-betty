@@ -120,3 +120,11 @@ body {
 .price-yellow {
   background-color: #FFFDD0;
 }
+
+tfoot {
+  font-weight: bold;
+}
+
+tfoot tr td {
+  border-top: 2px solid #ddd !important;
+}

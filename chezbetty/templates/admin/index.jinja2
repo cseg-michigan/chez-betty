@@ -32,10 +32,20 @@
                   <td class="right">{{ chezbetty.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
+                  <td>Users</td>
+                  <td class="right">{{ users_total_balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
                   <td>Lost/Stolen</td>
                   <td class="right">{{ lost.balance|format_currency|safe }}</td>
                 </tr>
               </tbody>
+              <tfoot>
+                <tr>
+                  <td>Total</td>
+                  <td class="right">{{ sums.virtual|format_currency|safe }}</td>
+                </tr>
+              </tfoot>
             </table>
           </div>
           <div class="col-md-6">
@@ -59,9 +69,40 @@
                   <td class="right">{{ lost_cash.balance|format_currency|safe }}</td>
                 </tr>
               </tbody>
+              <tfoot>
+                <tr>
+                  <td>Total</td>
+                  <td class="right">{{ sums.cash|format_currency|safe }}</td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Assets</h3>
+      </div>
+      <div class="panel-body">
+
+        <table class="table">
+          <tbody>
+            <tr>
+              <td>Inventory (Wholesale)</td>
+              <td class="right">{{ inventory.wholesale|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Inventory (Price)</td>
+              <td class="right">{{ inventory.price|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
 
       </div>
     </div>
@@ -92,8 +133,10 @@
       </div>
     </div>
   </div>
+</div>
 
-  <div class="col-md-3">
+<div class="row">
+  <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Wall of Shame Overview</h3>
@@ -111,6 +154,35 @@
             <tr>
               <td>{{ user.name }}</td>
               <td class="right">{{ user.balance|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Best Selling Items</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Quantity Sold</th>
+              <th>Quantity Sold</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in best_selling_items %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.type }}</td>
             </tr>
             {% endfor %}
           </tbody>

@@ -4,6 +4,7 @@ from pyramid.response import Response
 from pyramid.view import view_config, forbidden_view_config
 from pyramid.httpexceptions import HTTPFound
 
+from sqlalchemy.sql import func
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -11,7 +12,7 @@ from .models import *
 from .models.model import *
 from .models.user import User, InvalidUserException
 from .models.item import Item
-from .models.transaction import Transaction, BTCDeposit
+from .models.transaction import Transaction, BTCDeposit, SubTransaction
 from .models.account import Account
 from .models.cashtransaction import CashAccount, CashTransaction
 
@@ -356,17 +357,39 @@ def admin_index(request):
     ct = DBSession.query(CashTransaction).order_by(desc(CashTransaction.id)).limit(10).all()
     items = DBSession.query(Item).filter(Item.enabled == True).filter(Item.in_stock < 10).order_by(Item.in_stock).limit(5).all()
     users = DBSession.query(User).filter(User.balance < 0).order_by(User.balance).limit(5).all()
+    users_balance = DBSession.query(func.sum(User.balance).label("total_balance")).one()[0]
     chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
     lost = DBSession.query(Account).filter(Account.name == "lost").one()
     cashbox = DBSession.query(CashAccount).filter(CashAccount.name=="cashbox").one()
     chezbetty_cash = DBSession.query(CashAccount).filter(CashAccount.name=="chezbetty").one()
     lost_cash = DBSession.query(CashAccount).filter(CashAccount.name=="lost").one()
+
+    class Object(object):
+        pass
+
+    inventory = Object()
+    inventory.wholesale = DBSession.query(func.sum(Item.in_stock * Item.wholesale)).one()[0]
+    inventory.price = DBSession.query(func.sum(Item.in_stock * Item.price)).one()[0]
+
+    best_selling_items = DBSession.query(SubTransaction.id, Item.id, Item.name, Transaction.type, func.sum(SubTransaction.quantity).label('quantity'))\
+                                  .join(Item)\
+                                  .filter(Transaction.type=='purchase')\
+                                  .group_by(Item).all()
+
+    sums = Object()
+    sums.virtual = chezbetty.balance + lost.balance + users_balance
+    sums.cash = chezbetty_cash.balance + lost_cash.balance + cashbox.balance
+
     return dict(transactions=transactions, ct=ct, items=items, users=users,
+                    users_total_balance=users_balance,
                     cashbox=cashbox,
                     chezbetty_cash=chezbetty_cash,
                     lost_cash=lost_cash,
                     chezbetty=chezbetty,
-                    lost=lost
+                    lost=lost,
+                    sums=sums,
+                    inventory=inventory,
+                    best_selling_items=best_selling_items
            )
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
