@@ -39,7 +39,7 @@ $(document).keypress(function (e) {
 		var spinner_location = document.getElementById('spinner-box');
 		var spinner = new Spinner(opts).spin(spinner_location);
 
-		setTimeout(clear_spinner, 20*1000);
+		setTimeout(clear_spinner, 10*1000);
 
 		keyboard_input += String.fromCharCode(e.which);
 
