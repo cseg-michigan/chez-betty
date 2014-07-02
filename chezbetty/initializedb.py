@@ -88,7 +88,6 @@ def main(argv=sys.argv):
         user.password = "test2"
         DBSession.add(user)
         make_account("chezbetty")
-        make_account("store")
         make_account("lost")
         make_cash_account("cashbox")
         make_cash_account("lost")

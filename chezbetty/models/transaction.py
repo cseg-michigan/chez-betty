@@ -95,8 +95,7 @@ class Restock(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'restock'}
     def __init__(self, user):
         chezbetty = make_account("chezbetty")
-        store = make_account("store")
-        Transaction.__init__(self, chezbetty, store, 0.0)
+        Transaction.__init__(self, chezbetty, None, 0.0)
 
 
 class Reconciliation(Transaction):
