@@ -11,12 +11,10 @@
 
 <form role="form" action="/admin/cash/reconcile/submit" method="post">
 
-  <div class="row">
-    <div class="col-sm-2">Cash Box Contents</div>
-    <div class="col-sm-3">
-      <input type="text" class="form-control" id="cash-box-amount" name="amount">
-    </div>
-  </div>
+  <dl class="dl-horizontal">
+    <dt>Cash Box Contents</dt>
+    <dd><input type="text" class="form-control" id="cash-box-amount" name="amount"></dd>
+  </dl>
 
   <button type="submit" class="btn btn-success">Deposit</button>
 

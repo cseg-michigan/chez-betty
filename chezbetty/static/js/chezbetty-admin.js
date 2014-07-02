@@ -3,8 +3,10 @@
 function format_price (price) {
 	p = price.toFixed(2);
 
+	console.log(p*-1.0)
+
 	if (p < 0) {
-		return '<span class="negative">-$' + (p*-1.0) + '</span>';
+		return '<span class="negative">-$' + (p*-1.0).toFixed(2) + '</span>';
 	} else {
 		return '<span class="positive">$' + p + '</span>';
 	}
@@ -84,4 +86,14 @@ function calculate_total () {
 	});
 
 	$("#restock-total").html(format_price(total));
+}
+
+function update_new_balance () {
+	start = parseFloat(strip_price($(".current-balance:visible").text()));
+	amount = parseFloat($("#balance-change-amount").val());
+	if (isNaN(amount)) {
+		amount = 0.0;
+	}
+	new_balance = format_price(start + amount);
+	$("#new_balance").html(new_balance);
 }

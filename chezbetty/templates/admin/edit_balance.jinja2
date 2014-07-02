@@ -11,38 +11,32 @@
 
 <form role="form" action="/admin/edit/balance/submit" method="post">
 
-  <div class="row">
-    <div class="col-sm-2">Select User</div>
-    <div class="col-sm-3">
+  <dl id="edit-balance" class="dl-horizontal">
+    <dt>Select User</dt>
+    <dd>
       <select class="form-control" id="select-user" name="user">
         {% for user in users %}
         <option value="{{ user.id }}">{{ user.name~" ("~user.uniqname~")" }}</option>
         {% endfor %}
       </select>
-    </div>
-  </div>
+    </dd>
 
-  <div class="row">
-    <div class="col-sm-2">Current Balance</div>
-    {% for user in users %}
-    <div class="col-sm-3 current-balance" id="current-balance-{{ user.id }}" {% if loop.index != 1 %}style="display:none;"{% endif %}>{{ user.balance|format_currency|safe }}</div>
-    {% endfor %}
-  </div>
+    <dt>Current Balance</dt>
+    <dd>
+      {% for user in users %}
+      <span class="col-sm-3 current-balance" id="current-balance-{{ user.id }}" {% if loop.index != 1 %}style="display:none;"{% endif %}>{{ user.balance|format_currency|safe }}</span>
+      {% endfor %}
+    </dd>
 
-  <div class="row">
-    <div class="col-sm-2">Balance Adjustment</div>
-    <div class="col-sm-3"><input type="text" class="form-control" id="balance-change-amount" name="amount"></div>
-  </div>
+    <dt>Balance Adjustment</dt>
+    <dd><input type="text" class="form-control" id="balance-change-amount" name="amount"></dd>
 
-  <div class="row">
-    <div class="col-sm-2">New Balance</div>
-    <div class="col-sm-3" id="new_balance">{{ users[0].balance|format_currency|safe }}</div>
-  </div>
+    <dt>New Balance</dt>
+    <dd id="new_balance">{{ users[0].balance|format_currency|safe }}</dd>
 
-  <div class="row">
-    <div class="col-sm-2">Reason</div>
-    <div class="col-sm-3"><input type="text" class="form-control" id="balance-change-reason" name="reason"></div>
-  </div>
+    <dt>Reason</dt>
+    <dd><input type="text" class="form-control" id="balance-change-reason" name="reason"></dd>
+  </dl>
 
 
   <button type="submit" class="btn btn-success">Adjust Balance</button>
