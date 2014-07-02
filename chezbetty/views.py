@@ -24,6 +24,8 @@ import qrcode
 import qrcode.image.svg
 
 from .btc import BTCException
+from decimal import Decimal
+
 try:
     import lxml.etree as ET
 except ImportError:
@@ -309,12 +311,11 @@ def btc_deposit(request):
         usd_per_btc = Bitcoin.get_spot_price()
     except BTCException as e:
         # unknown exchange rate?
-        print('Could not get exchange rate; failing...')
+        print('Could not get exchange rate for addr %s txhash %s; failing...' % (addr, txhash))
         return {}
 
-    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%f/BTC" % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
-    # TODO: dynamic exchange rate
-    datalayer.bitcoin_deposit(user, float(amount_btc) * usd_per_btc, txhash, addr, amount_btc)
+    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%s/BTC" % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
+    datalayer.bitcoin_deposit(user, Decimal(amount_btc) * usd_per_btc, txhash, addr, amount_btc)
     print(ret)
     #return ret
 
@@ -332,7 +333,7 @@ def btc_check(request):
 def deposit_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
-        amount = float(request.POST['amount'])
+        amount = Decimal(request.POST['amount'])
 
         if amount > 20.0:
             raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))

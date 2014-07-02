@@ -4,6 +4,7 @@ import time
 import json
 import hashlib
 import hmac
+from decimal import Decimal
 
 
 class BTCException(Exception):
@@ -54,5 +55,5 @@ class Bitcoin(object):
     @staticmethod
     def get_spot_price(currency="USD"):
         obj = Bitcoin.req("https://coinbase.com/api/v1/prices/spot_rate?currency=%s" % currency)
-        return float(obj['amount'])  # why do we continue to use floats for currency...
+        return Decimal(obj['amount'])
 
