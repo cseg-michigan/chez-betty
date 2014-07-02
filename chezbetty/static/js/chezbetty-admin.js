@@ -3,8 +3,6 @@
 function format_price (price) {
 	p = price.toFixed(2);
 
-	console.log(p*-1.0)
-
 	if (p < 0) {
 		return '<span class="negative">-$' + (p*-1.0).toFixed(2) + '</span>';
 	} else {
