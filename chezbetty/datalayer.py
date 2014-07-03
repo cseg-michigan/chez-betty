@@ -7,7 +7,7 @@ from .models import account
 def undo_event(e):
     assert(e.type=='deposit')
 
-    for t in e.transaction:
+    for t in e.transactions:
 
         assert(t.type=='deposit')
 

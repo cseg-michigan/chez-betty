@@ -3,6 +3,8 @@ from .model import *
 from . import account
 from . import event
 from . import item
+from .. import utility
+
 
 class Transaction(Base):
     __tablename__ = 'transactions'
@@ -53,7 +55,7 @@ class Transaction(Base):
     )
     event = relationship(event.Event,
         foreign_keys=[event_id,],
-        backref="transaction"
+        backref="transactions"
     )
 
 
@@ -121,6 +123,17 @@ def __transactions(self):
                     Transaction.fr_account_cash_id == self.id)).all()
 account.Account.transactions = __transactions
 
+@property
+def __events(self):
+    return object_session(self).query(event.Event)\
+            .join(Transaction)\
+            .filter(or_(
+                    Transaction.to_account_virt_id == self.id,
+                    Transaction.fr_account_virt_id == self.id,
+                    Transaction.to_account_cash_id == self.id,
+                    Transaction.fr_account_cash_id == self.id)).all()
+account.Account.events = __events
+
 
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
@@ -149,6 +162,7 @@ class BTCDeposit(Deposit):
         self.btctransaction = btctransaction
         self.address = address
         self.amount_btc = amount_btc
+        self.img = utility.string_to_qrcode(self.btctransaction)
 
 
 class Adjustment(Transaction):
@@ -237,7 +251,7 @@ class SubTransaction(Base):
     wholesale       = Column(Numeric, nullable=False)
 
     transaction     = relationship(Transaction, backref="subtransactions", cascade="all")
-    item      = relationship(item.Item, backref="subtransactions")
+    item            = relationship(item.Item, backref="subtransactions")
 
     __mapper_args__ = {'polymorphic_on': type}
 
@@ -268,7 +282,7 @@ class RestockLineItem(SubTransaction):
 class InventoryLineItem(SubTransaction):
     __mapper_args__    = {'polymorphic_identity': 'inventorylineitem'}
     quantity_predicted = synonym(SubTransaction.quantity)
-    quantity_counted   = Column(Numeric)
+    quantity_counted   = Column(Integer)
 
     def __init__(self, transaction, amount, item, quantity_predicted, quantity_counted, wholesale):
         SubTransaction.__init__(self, transaction, amount, item.id, quantity_predicted, wholesale)

@@ -4,7 +4,8 @@
 
 {% block content %}
 
-{{ user_info_block|safe }}
+{% set page = 'account' %}
+{% include "user_info.jinja2" %}
 
 {# Display the transaction history list
  #}
@@ -19,7 +20,7 @@
 
       {# Iterate all of the transactions in the user's history.
        #}
-      {% for transaction, btc_img in transactions|reverse %}
+      {% for transaction in transactions|reverse %}
 
       <li id="btn-trans-{{ transaction.id }}" class="list-group-item btn-trans-showhide">
 
@@ -75,7 +76,7 @@
 
         {% elif transaction.type == "adjustment" %}
 
-        Adjustment of {{ transaction.amount|format_currency|safe }} by {{ transaction.user_id }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        Adjustment of {{ transaction.amount|format_currency|safe }} by {{ transaction.event.admin.name }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
@@ -89,7 +90,7 @@
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
-          {{ btc_img|safe }}
+          {{ transaction.img|safe }}
         </div>
 
         {% endif %}

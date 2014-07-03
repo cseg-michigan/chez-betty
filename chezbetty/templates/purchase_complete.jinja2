@@ -8,7 +8,8 @@
 
 {% block content %}
 
-{{ user_info_block|safe }}
+{% set page = 'purchase' %}
+{% include "user_info.jinja2" %}
 
 
 <div class="panel panel-default">

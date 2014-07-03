@@ -2,15 +2,10 @@
 {% block title %}Deposit Complete{% endblock %}
 {% block header %}Deposit Complete{% endblock %}
 
-{% block alerts %}
-<div class="alert alert-success" role="alert">
-  Success! The deposit was added successfully.
-</div>
-{% endblock %}
-
 {% block content %}
 
-{{ user_info_block|safe }}
+{% set page = 'deposit' %}
+{% include "user_info.jinja2" %}
 
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -18,25 +13,25 @@
   </div>
   <div class="panel-body">
 
-    <div id="transaction-{{ deposit['transaction_id'] }}">
+    <div id="transaction-{{ deposit.id }}">
 
       <dl class="dl-horizontal">
         <dt>Old Balance</dt>
-        <dd>{{ deposit['prev']|format_currency|safe }}</dd>
+        <dd>{{ prev_balance|format_currency|safe }}</dd>
 
         <dt>Deposit</dt>
         {% if deposit.type == "deposit" %}
-            <dd>{{ deposit['amount']|format_currency|safe }}</dd>
+            <dd>{{ deposit.amount|format_currency|safe }}</dd>
         {% elif deposit.type == "btcdeposit" %}
-            <dd>{{ deposit['btcamount'] }} BTC ({{ deposit['amount']|format_currency|safe }})</dd>
+            <dd>{{ deposit.amount_btc }} BTC ({{ deposit.amount|format_currency|safe }})</dd>
         {% endif %}
 
         <dt>New Balance</dt>
-        <dd>{{ deposit['new']|format_currency|safe }}</dd>
+        <dd>{{ user.balance|format_currency|safe }}</dd>
 
         {% if deposit.type == "btcdeposit" %}
             <dt>Transaction</dt>
-            <dd>{{ deposit.btcimg|safe }}<br/>{{ deposit.txhash }}</dd>
+            <dd>{{ deposit.img|safe }}<br/>{{ deposit.btctransaction }}</dd>
         {% endif %}
       </dl>
 
@@ -46,7 +41,7 @@
 </div>
 
 {% if deposit.type == "deposit" %}
-<a class="btn btn-danger" href="/event/undo/{{ deposit['umid'] }}/{{ deposit['event_id'] }}">Oops! I made a mistake. Undo this transaction.</a>
+<a class="btn btn-danger" href="/event/undo/{{ user.umid }}/{{ event.id }}">Oops! I made a mistake. Undo this transaction.</a>
 {% endif %}
 
 {% endblock %}
