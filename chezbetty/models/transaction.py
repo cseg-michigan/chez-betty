@@ -1,9 +1,8 @@
 from .model import *
-#from .account import Account, account.get_virt_account
 from . import account
 from . import event
 from . import item
-from .. import utility
+from chezbetty import utility
 
 
 class Transaction(Base):
@@ -172,7 +171,12 @@ class BTCDeposit(Deposit):
         self.btctransaction = btctransaction
         self.address = address
         self.amount_btc = amount_btc
-        self.img = utility.string_to_qrcode(self.btctransaction)
+
+    def __getattr__(self, name):
+        if name == 'img':
+            return utility.string_to_qrcode(self.btctransaction)
+        else:
+            raise AttributeError
 
     @classmethod
     def from_address(cls, address):

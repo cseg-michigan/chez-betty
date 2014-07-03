@@ -1,7 +1,7 @@
 import requests
 import json
 
-j = {'address': '19Q7Ew6aFkYYoYGrk8czrNHmr1vUAVmxqc',
+j = {'address': '14dFWhzrddSCywE91x2i7sPLPYk5zqqBUN',
      'amount' : 1.0,
      'transaction': {'id': '342',
                      'created_at': 'fdsaf',

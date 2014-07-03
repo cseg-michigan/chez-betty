@@ -17,6 +17,7 @@ from models.user import User
 from models.model import *
 from models.transaction import *
 
+
 def usage(argv):
     cmd = os.path.basename(argv[0])
     print('usage: %s <config_uri> [var=value]\n'
