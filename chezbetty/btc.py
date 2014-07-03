@@ -15,6 +15,8 @@ class Bitcoin(object):
     COINBASE_API_KEY = ""
     COINBASE_API_SECRET = ""
 
+    HOSTNAME = 'chezbetty.zakird.com'
+
     def __init__(self, umid=None):
         self.umid = umid
         pass
@@ -42,7 +44,9 @@ class Bitcoin(object):
 
 
     @staticmethod
-    def get_new_address(umid="", cb_url='http://chezbetty.zakird.com/bitcoin/deposit', guid='chezbetty'):
+    def get_new_address(umid="", cb_url='http://{}/bitcoin/deposit', guid='chezbetty'):
+
+        cb_url = cb_url.format(Bitcoin.HOSTNAME)
 
         obj = Bitcoin.req("https://coinbase.com/api/v1/account/generate_receive_address",
                       '{"address": {"callback_url": "%s/%s", "label": "%s"}' % (cb_url, umid, guid))

@@ -229,7 +229,7 @@ def purchase_new(request):
         for item_id,quantity in request.POST.items():
             if item_id == 'umid':
                 continue
-            item = DBSession.query(Item).filter(Item.id == int(item_id)).one()
+            item = Item.from_id(int(item_id))
             items[item] = int(quantity)
 
         # Commit the purchase
@@ -250,39 +250,39 @@ def purchase_new(request):
         return {'error': 'Unable to identify an item.'}
 
 
+# Handle the POST from coinbase saying Chez Betty got a btc deposit.
+# Store the bitcoin record in the DB
 @view_config(route_name='btc_deposit', request_method='POST', renderer='json')
 def btc_deposit(request):
 
     user = User.from_umid(request.matchdict['guid'])
 
-    addr = request.json_body['address']
+    addr       = request.json_body['address']
     amount_btc = request.json_body['amount']
-    txid = request.json_body['transaction']['id']
+    txid       = request.json_body['transaction']['id']
     created_at = request.json_body['transaction']['created_at']
-    txhash = request.json_body['transaction']['hash']
+    txhash     = request.json_body['transaction']['hash']
 
-    print("got a btc_deposit request...: %s" % request)
+    #try:
+    usd_per_btc = Bitcoin.get_spot_price()
+    #except BTCException as e:
+    #    # unknown exchange rate?
+    #    print('Could not get exchange rate for addr %s txhash %s; failing...' % (addr, txhash))
+    #    return {}
 
-    try:
-        usd_per_btc = Bitcoin.get_spot_price()
-    except BTCException as e:
-        # unknown exchange rate?
-        print('Could not get exchange rate for addr %s txhash %s; failing...' % (addr, txhash))
-        return {}
-
-    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%s/BTC" % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
+    ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%s/BTC"\
+           % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
     datalayer.bitcoin_deposit(user, Decimal(amount_btc) * usd_per_btc, txhash, addr, amount_btc)
     print(ret)
-    #return ret
+
 
 @view_config(route_name='btc_check', request_method='GET', renderer='json')
 def btc_check(request):
-    res = 0
-
-    row = DBSession.query(BTCDeposit).filter(BTCDeposit.address==request.matchdict['addr']).first()
-    if row is not None:
-        res = row.id
-    return {"result" : res}
+    try:
+        deposit = BTCDeposit.from_address(request.matchdict['addr'])
+        return {"event_id": deposit.event.id}
+    except:
+        return {}
 
 
 @view_config(route_name='deposit_new', request_method='POST', renderer='json', permission='service')

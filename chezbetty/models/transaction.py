@@ -164,6 +164,11 @@ class BTCDeposit(Deposit):
         self.amount_btc = amount_btc
         self.img = utility.string_to_qrcode(self.btctransaction)
 
+    @classmethod
+    def from_address(cls, address):
+        t = DBSession.query(cls).filter(cls.address == address).one()
+        return t
+
 
 class Adjustment(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'adjustment'}
