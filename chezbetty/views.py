@@ -214,12 +214,12 @@ def event(request):
 @view_config(route_name='event_undo', permission='service')
 def event_undo(request):
     # Lookup the transaction that the user wants to undo
-    #try:
-    event = Event.from_id(request.matchdict['event_id'])
-    transaction = event.transaction[0]
-    #except:
-    #    request.session.flash('Error: Could not find transaction to undo.', 'error')
-    #    return HTTPFound(location=request.route_url('index'))
+    try:
+        event = Event.from_id(request.matchdict['event_id'])
+        transaction = event.transaction[0]
+    except:
+        request.session.flash('Error: Could not find transaction to undo.', 'error')
+        return HTTPFound(location=request.route_url('index'))
 
     # Make sure transaction is a deposit, the only one the user is allowed
     # to undo
@@ -240,11 +240,11 @@ def event_undo(request):
         return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
 
     # If the checks pass, actually revert the transaction
-    #try:
-    datalayer.undo_event(event)
-    #    request.session.flash('Transaction successfully reverted.', 'success')
-    #except:
-    #    request.session.flash('Error: Failed to undo transaction.', 'error')
+    try:
+        datalayer.undo_event(event)
+        request.session.flash('Transaction successfully reverted.', 'success')
+    except:
+        request.session.flash('Error: Failed to undo transaction.', 'error')
     return HTTPFound(location=request.route_url('user', umid=user.umid))
 
 ###
