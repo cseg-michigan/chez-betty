@@ -35,9 +35,9 @@
         {# Color boxes if the prices look wonky #}
         {% if item.price == 0.0  %}
           {% set price_class = "price-red" %}
-        {% elif item.price < 1.05*item.wholesale  %}
+        {% elif item.price < 1.05*item.wholesale|float  %}
           {% set price_class = "price-red" %}
-        {% elif item.price < 1.15*item.wholesale %}
+        {% elif item.price < 1.15*item.wholesale|float %}
           {% set price_class = "price-yellow" %}
         {% else %}
           {% set price_class = "" %}
@@ -48,7 +48,7 @@
           {% set markup = "-" %}
         {% else %}
           {% set wholesale_class = "" %}
-          {% set markup = (((item.price / item.wholesale) - 1.0) * 100.0)|round(2) %}
+          {% set markup = (((item.price / item.wholesale)|float - 1.0) * 100.0)|round(2) %}
         {% endif %}
 
         <tr id="item-{{ item.id }}" class="edit-item-row">

@@ -30,7 +30,7 @@
 
         Purchase totaling {{ transaction.amount|format_currency|safe }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
-        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
+        <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         {# Show a purchase transaction
          #}
@@ -51,7 +51,7 @@
               <tr class="purchase-item">
                 <td class="item-title">{{ line_item.item.name }}</td>
                 <td class="item-quantity">{{ line_item.quantity }}</td>
-                <td class="item-price">{{ line_item.item_amount|format_currency|safe }}</td>
+                <td class="item-price">{{ line_item.price|format_currency|safe }}</td>
                 <td class="item-total">{{ line_item.amount|format_currency|safe }}</td>
               </tr>
               {% endfor %}
@@ -70,13 +70,13 @@
 
         Deposit of {{ transaction.amount|format_currency|safe }}
 
-        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
+        <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
 
         {% elif transaction.type == "adjustment" %}
 
         Adjustment of {{ transaction.amount|format_currency|safe }} by {{ transaction.user_id }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
-        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
+        <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
           Notes: {{ transaction.notes }}
@@ -86,7 +86,7 @@
 
         BTC Deposit of {{ transaction.amount|format_currency|safe }} ({{ transaction.amount_btc|safe }} BTC) <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
-        <span class="pull-right">{{ transaction.timestamp|pretty_date|safe }}</span>
+        <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
           {{ btc_img|safe }}

@@ -46,7 +46,7 @@
 </div>
 
 {% if deposit.type == "deposit" %}
-<a class="btn btn-danger" href="/transaction/undo/{{ deposit['umid'] }}/{{ deposit['transaction_id'] }}">Oops! I made a mistake. Undo this transaction.</a>
+<a class="btn btn-danger" href="/event/undo/{{ deposit['umid'] }}/{{ deposit['event_id'] }}">Oops! I made a mistake. Undo this transaction.</a>
 {% endif %}
 
 {% endblock %}

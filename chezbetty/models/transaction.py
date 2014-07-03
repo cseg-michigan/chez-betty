@@ -1,53 +1,110 @@
 from .model import *
-from .account import Account, make_account
-from .item import Item
+#from .account import Account, account.get_virt_account
+from . import account
+from . import event
+from . import item
 
 class Transaction(Base):
     __tablename__ = 'transactions'
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    to_account_id = Column(Integer, ForeignKey("accounts.id"))
-    from_account_id = Column(Integer, ForeignKey("accounts.id"))
-    amount = Column(Numeric, nullable=False)
-    notes = Column(Text)
-    type = Column(Enum("purchase", "deposit", "reconciliation", "donation", "withdrawal"
-            "adjustment", "restock", "btcdeposit", name="transaction_type"), nullable=False)
-    __mapper_args__ = {'polymorphic_on':type}
-    # user that performed the reconciliation
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    id                 = Column(Integer, primary_key=True, nullable=False)
 
-    to_account = relationship(Account,
-        foreign_keys=[to_account_id,],
-        backref="transactions_to"
+    event_id           = Column(Integer, ForeignKey("events.id"))
+
+    to_account_virt_id = Column(Integer, ForeignKey("accounts.id"))
+    fr_account_virt_id = Column(Integer, ForeignKey("accounts.id"))
+    to_account_cash_id = Column(Integer, ForeignKey("accounts.id"))
+    fr_account_cash_id = Column(Integer, ForeignKey("accounts.id"))
+    amount             = Column(Numeric, nullable=False)
+
+                                        # Virtual Transaction Meaning     # Cash Transaction Meaning  # Notes required?
+    type = Column(Enum("purchase",      # user_account -> chezbetty.        None
+                       "deposit",       # null         -> user_account.     null      -> cashbox.
+                       "btcdeposit",    # null         -> user_account      null      -> btcbox
+                       "adjustment",    # chezbetty   <-> user              None                            Yes
+                       "restock",       # chezbetty    -> null              chezbetty -> null
+                       "inventory",     # chezbetty   <-> null              None
+                       "emptycashbox",  # None                              cashbox   -> chezbetty
+                       "emptybitcoin",  # None                              btcbox    -> chezbetty
+                       "lost",          # None                              chezbetty/cashbox -> null       Yes
+                       "found",         # None                              null      -> chezbetty/cashbox  Yes
+                       "donation",      # null         -> chezbetty         null      -> chezbetty          Yes
+                       "withdrawal",    # chezbetty    -> null              chezbetty -> null               Yes
+                       name="transaction_type"), nullable=False)
+    __mapper_args__ = {'polymorphic_on': type}
+
+
+    to_account_virt = relationship(account.Account,
+        foreign_keys=[to_account_virt_id,],
+        backref="transactions_to_virt"
+    )
+    fr_account_virt = relationship(account.Account,
+        foreign_keys=[fr_account_virt_id,],
+        backref="transactions_from_virt"
     )
 
-    from_account = relationship(Account,
-        foreign_keys=[from_account_id,],
-        backref="transactions_from"
+    to_account_cash = relationship(account.Account,
+        foreign_keys=[to_account_cash_id,],
+        backref="transactions_to_cash"
+    )
+    fr_account_cash = relationship(account.Account,
+        foreign_keys=[fr_account_cash_id,],
+        backref="transactions_from_cash"
+    )
+    event = relationship(event.Event,
+        foreign_keys=[event_id,],
+        backref="transaction"
     )
 
-    def __init__(self, from_acct, to_acct, amount):
-        self.to_account_id = to_acct.id if to_acct else None
-        self.from_account_id = from_acct.id if from_acct else None
-        self.to_acct = to_acct
-        self.from_acct = from_acct
+
+    def __init__(self, event, fr_acct_virt, to_acct_virt, fr_acct_cash, to_acct_cash, amount):
+        self.to_account_virt_id = to_acct_virt.id if to_acct_virt else None
+        self.fr_account_virt_id = fr_acct_virt.id if fr_acct_virt else None
+        self.to_account_cash_id = to_acct_cash.id if to_acct_cash else None
+        self.fr_account_cash_id = fr_acct_cash.id if fr_acct_cash else None
+
+        self.to_acct_virt = to_acct_virt
+        self.fr_acct_virt = fr_acct_virt
+        self.to_acct_cash = to_acct_cash
+        self.fr_acct_cash = fr_acct_cash
+
+        self.event_id = event.id
         self.amount = amount
-        if to_acct:
-            to_acct.balance += self.amount
-        if from_acct:
-            from_acct.balance -= self.amount
+
+        # Update the balances of the accounts we are moving money between
+        if to_acct_virt:
+            to_acct_virt.balance += self.amount
+        if fr_acct_virt:
+            fr_acct_virt.balance -= self.amount
+
+        if to_acct_cash:
+            to_acct_cash.balance += self.amount
+        if fr_acct_cash:
+            fr_acct_cash.balance -= self.amount
 
     def update_amount(self, amount):
-        if self.to_acct:
-            self.to_acct.balance -= self.amount
-        if self.from_acct:
-            self.from_acct.balance += self.amount
+        # Remove the balance we added before (upon init or last update_amount)
+        if self.to_acct_virt:
+            self.to_acct_virt.balance -= self.amount
+        if self.fr_acct_virt:
+            self.fr_acct_virt.balance += self.amount
+        if self.to_acct_cash:
+            self.to_acct_cash.balance -= self.amount
+        if self.fr_acct_cash:
+            self.fr_acct_cash.balance += self.amount
+
+        # Save the amount so we can subtract it later if needed
         self.amount = amount
-        if self.to_acct:
-            self.to_acct.balance += self.amount
-        if self.from_acct:
-            self.from_acct.balance -= self.amount
+
+        # Apply the new amount
+        if self.to_acct_virt:
+            self.to_acct_virt.balance += self.amount
+        if self.fr_acct_virt:
+            self.fr_acct_virt.balance -= self.amount
+        if self.to_acct_cash:
+            self.to_acct_cash.balance += self.amount
+        if self.fr_acct_cash:
+            self.fr_acct_cash.balance -= self.amount
 
     @classmethod
     def from_id(cls, id):
@@ -58,102 +115,164 @@ class Transaction(Base):
 def __transactions(self):
     return object_session(self).query(Transaction)\
             .filter(or_(
-                    Transaction.to_account_id == self.id,
-                    Transaction.from_account_id == self.id)).all()
-Account.transactions = __transactions
+                    Transaction.to_account_virt_id == self.id,
+                    Transaction.fr_account_virt_id == self.id,
+                    Transaction.to_account_cash_id == self.id,
+                    Transaction.fr_account_cash_id == self.id)).all()
+account.Account.transactions = __transactions
+
+
+class Purchase(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'purchase'}
+    def __init__(self, event, user):
+        chezbetty_v = account.get_virt_account("chezbetty")
+        Transaction.__init__(self, event, user, chezbetty_v, None, None, Decimal(0.0))
 
 
 class Deposit(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'deposit'}
-
-    def __init__(self, user, amount):
-        Transaction.__init__(self, None, user, amount)
+    def __init__(self, event, user, amount):
+        cashbox_c = account.get_cash_account("cashbox")
+        Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
 
 
 class BTCDeposit(Deposit):
     __mapper_args__ = {'polymorphic_identity': 'btcdeposit'}
 
     btctransaction = Column(String(64))
-    address = Column(String(64))
-    amount_btc = Column(Numeric, nullable=True)
+    address        = Column(String(64))
+    amount_btc     = Column(Numeric, nullable=True)
 
-    def __init__(self, user, amount, btctransaction, address, amount_btc):
-        Transaction.__init__(self, None, user, amount)
+    def __init__(self, event, user, amount, btctransaction, address, amount_btc):
+        cashbox_c = account.get_cash_account("cashbox")
+        Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
         self.btctransaction = btctransaction
         self.address = address
         self.amount_btc = amount_btc
 
 
-class Purchase(Transaction):
-    __mapper_args__ = {'polymorphic_identity': 'purchase'}
-    def __init__(self, user):
-        chezbetty = make_account("chezbetty")
-        Transaction.__init__(self, user, chezbetty, 0.0)
+class Adjustment(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'adjustment'}
+
+    def __init__(self, event, user, amount):
+        chezbetty_v = account.get_virt_account("chezbetty")
+        Transaction.__init__(self, event, chezbetty_v, user, None, None, amount)
 
 
 class Restock(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'restock'}
-    def __init__(self, user):
-        chezbetty = make_account("chezbetty")
-        Transaction.__init__(self, chezbetty, None, 0.0)
+    def __init__(self, event):
+        chezbetty_v = account.get_virt_account("chezbetty")
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, None, Decimal(0.0))
 
 
-class Reconciliation(Transaction):
-    __mapper_args__ = {'polymorphic_identity': 'reconciliation'}
-
-    def __init__(self, user):
-        chezbetty = make_account("chezbetty")
-        lost = make_account("lost")
-        Transaction.__init__(self, chezbetty, lost, 0.0)
-        self.user_id = user.id if user else None
+class Inventory(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'inventory'}
+    def __init__(self, event):
+        chezbetty_v = account.get_virt_account("chezbetty")
+        Transaction.__init__(self, event, chezbetty_v, None, None, None, Decimal(0.0))
 
 
-class Adjustment(Transaction):
-    __mapper_args__ = {'polymorphic_identity': 'adjustment'}
+class EmptyCashBox(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'emptycashbox'}
+    def __init__(self, event, amount):
+        cashbox_c = account.get_cash_account("cashbox")
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, None, None, cashbox_c, chezbetty_c, amount)
 
-    def __init__(self, user, amount, admin, notes):
-        chezbetty = make_account("chezbetty")
-        Transaction.__init__(self, chezbetty, user, amount)
-        self.user_id = admin.id if admin else None
-        self.notes = notes
+
+class EmptyBitcoin(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'emptybitcoin'}
+    def __init__(self, event, amount):
+        btnbox_c = account.get_cash_account("btcbox")
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, None, None, btnbox_c, chezbetty_c, amount)
+
+
+class Lost(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'lost'}
+    def __init__(self, event, source_acct, amount):
+        Transaction.__init__(self, event, None, None, source_acct, None, amount)
+
+
+class Found(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'found'}
+    def __init__(self, event, dest_acct, amount):
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, None, None, None, dest_acct, amount)
 
 
 class Donation(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'donation'}
-    def __init__(self, amount, admin, notes):
-        chezbetty = make_account("chezbetty")
-        Transaction.__init__(self, None, chezbetty, amount)
-        self.user_id = admin.id if admin else None
-        self.notes = notes
+    def __init__(self, event, amount):
+        chezbetty_v = account.get_virt_account("chezbetty")
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, None, chezbetty_v, None, chezbetty_c, amount)
 
 
 class Withdrawal(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'withdrawal'}
-    def __init__(self, amount, admin, notes):
-        chezbetty = make_account("chezbetty")
-        Transaction.__init__(self, chezbetty, None, amount)
-        self.user_id = admin.id if admin else None
-        self.notes = notes
+    def __init__(self, event, amount):
+        chezbetty_v = account.get_virt_account("chezbetty")
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, None, amount)
 
+
+################################################################################
+## SUB TRANSACTIONS
+################################################################################
 
 class SubTransaction(Base):
-    __tablename__ = "subtransactions"
+    __tablename__   = "subtransactions"
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=False)
-    transaction = relationship(Transaction, backref="subtransactions", cascade="all")
+    id              = Column(Integer, primary_key=True, nullable=False)
+    transaction_id  = Column(Integer, ForeignKey("transactions.id"), nullable=False)
+    amount          = Column(Numeric, nullable=False)
+    type            = Column(Enum("purchaselineitem", "restocklineitem",
+                                  "inventorylineitem",
+                                  name="subtransaction_type"), nullable=False)
+    item_id         = Column(Integer, ForeignKey("items.id"), nullable=False)
+    quantity        = Column(Integer, nullable=False)
+    wholesale       = Column(Numeric, nullable=False)
 
-    quantity = Column(Integer, nullable=False)
-    item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
-    item = relationship(Item, backref="subtransactions")
-    amount = Column(Numeric, nullable=False)
+    transaction     = relationship(Transaction, backref="subtransactions", cascade="all")
+    item      = relationship(item.Item, backref="subtransactions")
 
-    def __init__(self, transaction, item, quantity, amount):
+    __mapper_args__ = {'polymorphic_on': type}
+
+    def __init__(self, transaction, amount, item_id, quantity, wholesale):
         self.transaction_id = transaction.id
-        self.item_id = item.id
+        self.amount = amount
+        self.item_id = item_id
         self.quantity = quantity
-        self.amount = quantity * amount
+        self.wholesale = wholesale
 
-    @property
-    def item_amount(self):
-       return self.amount/self.quantity
+
+class PurchaseLineItem(SubTransaction):
+    __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}
+    price     = Column(Numeric)
+    def __init__(self, transaction, amount, item, quantity, price, wholesale):
+        SubTransaction.__init__(self, transaction, amount, item.id, quantity, wholesale)
+        self.price = price
+
+
+class RestockLineItem(SubTransaction):
+    __mapper_args__ = {'polymorphic_identity': 'restocklineitem'}
+    def __init__(self, transaction, amount, item, quantity, wholesale):
+        SubTransaction.__init__(self, transaction, amount, item.id, quantity, wholesale)
+        self.quantity = quantity
+        self.wholesale = wholesale
+
+
+class InventoryLineItem(SubTransaction):
+    __mapper_args__    = {'polymorphic_identity': 'inventorylineitem'}
+    quantity_predicted = synonym(SubTransaction.quantity)
+    quantity_counted   = Column(Numeric)
+
+    def __init__(self, transaction, amount, item, quantity_predicted, quantity_counted, wholesale):
+        SubTransaction.__init__(self, transaction, amount, item.id, quantity_predicted, wholesale)
+        self.quantity_counted = quantity_counted
+
+
+

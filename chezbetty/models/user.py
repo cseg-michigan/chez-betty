@@ -5,6 +5,7 @@ import os
 from .model import *
 from .account import Account
 from .transaction import Transaction
+from .event import Event
 
 import ldap3
 
@@ -73,16 +74,16 @@ class User(Account):
     __tablename__ = 'users'
     __mapper_args__ = {'polymorphic_identity': 'user'}
 
-    id = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
-    uniqname = Column(String(8), nullable=False, unique=True)
-    umid = Column(String(8), unique=True)
+    id        = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
+    uniqname  = Column(String(8), nullable=False, unique=True)
+    umid      = Column(String(8), unique=True)
     _password = Column("password", String(255))
-    _salt = Column("salt", String(255))
-    enabled = Column(Boolean, nullable=False, default=True)
-    role = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
-            nullable=False, default="user")
+    _salt     = Column("salt", String(255))
+    enabled   = Column(Boolean, nullable=False, default=True)
+    role      = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
+                       nullable=False, default="user")
 
-    administrative_transactions = relationship(Transaction, backref="admin")
+    administrative_events = relationship(Event, backref="admin")
     __ldap = LDAPLookup()
 
     def __init__(self, uniqname, umid, name):

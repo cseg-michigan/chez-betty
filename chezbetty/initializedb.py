@@ -11,12 +11,11 @@ from pyramid.paster import (
 
 from pyramid.scripts.common import parse_vars
 
-from models.account import Account, make_account
+import models.account as account
 from models.item import Item
 from models.user import User
 from models.model import *
 from models.transaction import *
-from models.cashtransaction import *
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -35,9 +34,7 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
-    from models.account import Account
-    from models.user import User
-    from models.item import Item
+
     with transaction.manager:
         DBSession.add(Item(
            "Nutrigrain Raspberry",
@@ -87,12 +84,10 @@ def main(argv=sys.argv):
         user.role = "administrator"
         user.password = "test2"
         DBSession.add(user)
-        make_account("chezbetty")
-        make_account("lost")
-        make_cash_account("cashbox")
-        make_cash_account("lost")
-        make_cash_account("chezbetty")
-        make_cash_account("btcbox")
+        account.get_virt_account("chezbetty")
+        account.get_cash_account("cashbox")
+        account.get_cash_account("chezbetty")
+        account.get_cash_account("btcbox")
 
 if __name__ == "__main__":
     main()

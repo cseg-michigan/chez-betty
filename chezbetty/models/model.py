@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from sqlalchemy import (
     Column,
     Index,
@@ -25,6 +26,7 @@ from sqlalchemy.orm import (
     )
 
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from sqlalchemy.orm import synonym
 from sqlalchemy.sql.expression import or_
 from zope.sqlalchemy import ZopeTransactionExtension
 

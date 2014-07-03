@@ -10,11 +10,12 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from .models import *
 from .models.model import *
-from .models.user import User, InvalidUserException
+from .models import user as __user
+from .models.user import User
 from .models.item import Item
-from .models.transaction import Transaction, BTCDeposit, SubTransaction
-from .models.account import Account
-from .models.cashtransaction import CashAccount, CashTransaction
+from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
+from .models.account import Account, VirtualAccount, CashAccount
+from .models.event import Event
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -69,7 +70,7 @@ def about(request):
 def purchase(request):
     try:
         if len(request.matchdict['umid']) != 8:
-            raise InvalidUserException
+            raise __user.InvalidUserException()
 
         user = User.from_umid(request.matchdict['umid'])
         if not user.enabled:
@@ -79,7 +80,7 @@ def purchase(request):
                                                               'page': 'purchase'})
         return {'purchase_info_block': purchase_info}
 
-    except InvalidUserException as e:
+    except __user.InvalidUserException as e:
         request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
         return HTTPFound(location=request.route_url('index'))
 
@@ -117,7 +118,7 @@ def user(request):
                 'user_info_block': user_info_html,
                 'transactions': tx_tuples}
 
-    except InvalidUserException as e:
+    except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
         return HTTPFound(location=request.route_url('index'))
 
@@ -139,23 +140,25 @@ def deposit(request):
 
         return {'user_info_block': user_info_html, 'keypad': keypad_html, 'btc' : btc_html}
 
-    except InvalidUserException as e:
+    except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
         return HTTPFound(location=request.route_url('index'))
 
 
-@view_config(route_name='transaction', permission='service')
-def transaction_deposit(request):
+@view_config(route_name='event', permission='service')
+def event(request):
 
     try:
-        transaction = DBSession.query(Transaction) \
-            .filter(Transaction.id==int(request.matchdict['transaction_id'])).one()
+        event = DBSession.query(Event) \
+            .filter(Event.id==int(request.matchdict['event_id'])).one()
+        transaction = event.transaction[0]
 
-        # Choose which page to show based on the type of transaction
-        if transaction.type == 'deposit' or transaction.type == 'btcdeposit':
+        # Choose which page to show based on the type of event
+        if event.type == 'deposit':
             # View the deposit success page
+
             user = DBSession.query(User) \
-                .filter(User.id==transaction.to_account_id).one()
+                .filter(User.id==transaction.to_account_virt_id).one()
 
             user_info_html = render('templates/user_info.jinja2',
                 {'user': user, 'page': 'deposit'})
@@ -176,14 +179,15 @@ def transaction_deposit(request):
                        'btcamount' : amount_btc,
                        'btcimg' : btcimg,
                        'txhash' : txhash,
-                       'new': user.balance}
+                       'new': user.balance,
+                       'event_id': event.id}
             return render_to_response('templates/deposit_complete.jinja2',
                 {'deposit': deposit, 'user_info_block': user_info_html}, request)
 
-        elif transaction.type == 'purchase':
+        elif event.type == 'purchase':
             # View the purchase success page
             user = DBSession.query(User) \
-                .filter(User.id==transaction.from_account_id).one()
+                .filter(User.id==transaction.fr_account_virt_id).one()
 
             user_info_html = render('templates/user_info.jinja2',
                 {'user': user, 'page': 'purchase'})
@@ -207,14 +211,15 @@ def transaction_deposit(request):
         # TODO: add generic failure page
         pass
 
-@view_config(route_name='transaction_undo', permission='service')
-def transaction_undo(request):
+@view_config(route_name='event_undo', permission='service')
+def event_undo(request):
     # Lookup the transaction that the user wants to undo
-    try:
-        transaction = Transaction.from_id(request.matchdict['transaction_id'])
-    except:
-        request.session.flash('Error: Could not find transaction to undo.', 'error')
-        return HTTPFound(location=request.route_url('index'))
+    #try:
+    event = Event.from_id(request.matchdict['event_id'])
+    transaction = event.transaction[0]
+    #except:
+    #    request.session.flash('Error: Could not find transaction to undo.', 'error')
+    #    return HTTPFound(location=request.route_url('index'))
 
     # Make sure transaction is a deposit, the only one the user is allowed
     # to undo
@@ -226,7 +231,7 @@ def transaction_undo(request):
     # actually placed the deposit.
     try:
         user = DBSession.query(User) \
-            .filter(User.id==transaction.to_account_id).one()
+            .filter(User.id==transaction.to_account_virt_id).one()
     except:
         request.session.flash('Error: Invalid user for transaction.', 'error')
         return HTTPFound(location=request.route_url('index'))
@@ -235,11 +240,11 @@ def transaction_undo(request):
         return HTTPFound(location=request.route_url('user', umid=request.matchdict['umid']))
 
     # If the checks pass, actually revert the transaction
-    try:
-        datalayer.undo_transaction(transaction)
-        request.session.flash('Transaction successfully reverted.', 'success')
-    except:
-        request.session.flash('Error: Failed to undo transaction.', 'error')
+    #try:
+    datalayer.undo_event(event)
+    #    request.session.flash('Transaction successfully reverted.', 'success')
+    #except:
+    #    request.session.flash('Error: Failed to undo transaction.', 'error')
     return HTTPFound(location=request.route_url('user', umid=user.umid))
 
 ###
@@ -280,9 +285,9 @@ def purchase_new(request):
         purchase = datalayer.purchase(user, items)
 
         # Return the committed transaction ID
-        return {'transaction_id': purchase.id}
+        return {'event_id': purchase.id}
 
-    except InvalidUserException as e:
+    except __user.InvalidUserException as e:
         request.session.flash('Invalid user error. Please try again.', 'error')
         return {'redirect_url': '/'}
 
@@ -342,9 +347,9 @@ def deposit_new(request):
 
         # Return a JSON blob of the transaction ID so the client can redirect to
         # the deposit success page
-        return {'transaction_id': deposit['transaction'].id}
+        return {'event_id': deposit['event'].id}
 
-    except InvalidUserException as e:
+    except __user.InvalidUserException as e:
         request.session.flash('Invalid user error. Please try again.', 'error')
         return {'redirect_url': '/'}
 
@@ -363,18 +368,20 @@ def deposit_new(request):
 
 @view_config(route_name='admin_index', renderer='templates/admin/index.jinja2', permission='manage')
 def admin_index(request):
-    transactions = DBSession.query(Transaction).order_by(desc(Transaction.id)).limit(10).all()
-    ct = DBSession.query(CashTransaction).order_by(desc(CashTransaction.id)).limit(10).all()
+    events = DBSession.query(Event).order_by(desc(Event.id)).limit(10).all()
+    #ct = DBSession.query(Transaction).order_by(desc(CashTransaction.id)).limit(10).all()
     items = DBSession.query(Item).filter(Item.enabled == True).filter(Item.in_stock < 10).order_by(Item.in_stock).limit(5).all()
     users = DBSession.query(User).filter(User.balance < 0).order_by(User.balance).limit(5).all()
     users_balance = DBSession.query(func.sum(User.balance).label("total_balance")).one()[0]
-    chezbetty = DBSession.query(Account).filter(Account.name == "chezbetty").one()
-    lost = DBSession.query(Account).filter(Account.name == "lost").one()
+    chezbetty = DBSession.query(VirtualAccount).filter(Account.name == "chezbetty").one()
     cashbox = DBSession.query(CashAccount).filter(CashAccount.name=="cashbox").one()
     chezbetty_cash = DBSession.query(CashAccount).filter(CashAccount.name=="chezbetty").one()
-    lost_cash = DBSession.query(CashAccount).filter(CashAccount.name=="lost").one()
-    btc_balance = Bitcoin.get_balance()
-    usd_btc_balance = btc_balance * Bitcoin.get_spot_price()
+    #try:
+    #    btc_balance = Bitcoin.get_balance()
+    #except:
+    btc_balance = -1
+    #usd_btc_balance = btc_balance * Bitcoin.get_spot_price()
+    usd_btc_balance = -1
 
     class Object(object):
         pass
@@ -383,7 +390,7 @@ def admin_index(request):
     inventory.wholesale = DBSession.query(func.sum(Item.in_stock * Item.wholesale)).one()[0]
     inventory.price = DBSession.query(func.sum(Item.in_stock * Item.price)).one()[0]
 
-    bsi = DBSession.query(func.sum(SubTransaction.quantity).label('quantity'), Item.name)\
+    bsi = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item.name)\
                    .join(Item)\
                    .join(Transaction)\
                    .filter(Transaction.type=='purchase')\
@@ -392,16 +399,14 @@ def admin_index(request):
                    .limit(5).all()
 
     sums = Object()
-    sums.virtual = chezbetty.balance + lost.balance + users_balance
-    sums.cash = chezbetty_cash.balance + lost_cash.balance + cashbox.balance
+    sums.virtual = chezbetty.balance + users_balance
+    sums.cash = chezbetty_cash.balance + cashbox.balance
 
-    return dict(transactions=transactions, ct=ct, items=items, users=users,
+    return dict(events=events, items=items, users=users,
                     users_total_balance=users_balance,
                     cashbox=cashbox,
                     chezbetty_cash=chezbetty_cash,
-                    lost_cash=lost_cash,
                     chezbetty=chezbetty,
-                    lost=lost,
                     btc_balance={"btc": btc_balance, "mbtc" : round(btc_balance*1000, 2), "usd": usd_btc_balance},
                     sums=sums,
                     inventory=inventory,
@@ -446,7 +451,7 @@ def admin_restock_submit(request):
                 dividend, divisor = map(float, request.POST[cost].split('/'))
                 cost = dividend / divisor
             else:
-                cost = float(request.POST[cost])
+                cost = Decimal(request.POST[cost])
         except ValueError:
             request.session.flash('Non-numeric value for {}. Skipped.'.\
                     format(item.name), 'error')
@@ -464,7 +469,7 @@ def admin_restock_submit(request):
         item.wholesale = round(wholesale, 4)
 
         if item.price < item.wholesale:
-            item.price = round(item.wholesale * 1.15, 2)
+            item.price = round(item.wholesale * Decimal(1.15), 2)
 
         items[item] = quantity
 
@@ -685,7 +690,7 @@ def admin_edit_balance_submit(request):
         request.session.flash('Invalid user?', 'error')
         return HTTPFound(location=request.route_url('admin_edit_balance'))
     try:
-        adjustment = float(request.POST['amount'])
+        adjustment = Decimal(request.POST['amount'])
     except:
         request.session.flash('Invalid adjustment amount.', 'error')
         return HTTPFound(location=request.route_url('admin_edit_balance'))
@@ -703,7 +708,7 @@ def admin_cash_reconcile(request):
         permission='manage')
 def admin_cash_reconcile_submit(request):
     try:
-        amount = float(request.POST['amount'])
+        amount = Decimal(request.POST['amount'])
     except ValueError:
         request.session.flash('Error: Bad value for cash box amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))

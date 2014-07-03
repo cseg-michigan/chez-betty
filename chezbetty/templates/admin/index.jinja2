@@ -37,7 +37,7 @@
                 </tr>
                 <tr>
                   <td>Lost/Stolen</td>
-                  <td class="right">{{ lost.balance|format_currency|safe }}</td>
+                  <td class="right">{{ -1|format_currency|safe }}</td>
                 </tr>
               </tbody>
               <tfoot>
@@ -70,7 +70,7 @@
                 </tr>
                 <tr>
                   <td>Lost/Stolen Cash</td>
-                  <td class="right">{{ lost_cash.balance|format_currency|safe }}</td>
+                  <td class="right">{{ -1|format_currency|safe }}</td>
                 </tr>
               </tbody>
               <tfoot>
@@ -216,18 +216,23 @@
               <th>Type</th>
               <th>From Account:</th>
               <th>To Account:</th>
+              <th>From Account (Cash):</th>
+              <th>To Account (Cash):</th>
               <th class="right">Amount</th>
             </tr>
           </thead>
           <tbody>
-            {% for t in transactions %}
+            {% for e in events %}
+            {% set t = e.transaction[0] %}
             <tr>
               <td><a href="/admin/transactions/{{ t.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
               <td>{{ t.id }}</td>
-              <td>{{ t.timestamp|pretty_date|safe }}</td>
+              <td>{{ e.timestamp|pretty_date|safe }}</td>
               <td>{{ t.type }}</td>
-              <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
-              <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
+              <td>{{ t.fr_account_virt.name if t.fr_account_virt else "n/a" }}</td>
+              <td>{{ t.to_account_virt.name if t.to_account_virt else "n/a" }}</td>
+              <td>{{ t.fr_account_cash.name if t.fr_account_cash else "n/a" }}</td>
+              <td>{{ t.to_account_cash.name if t.to_account_cash else "n/a" }}</td>
               <td class="right">{{ t.amount|format_currency|safe }}</td>
             </tr>
             {% endfor %}
@@ -239,42 +244,5 @@
 
 </div>
 
-<div class="row">
-
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Recent Cash Transfers</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-condensed table-striped">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Transaction</th>
-              <th>Timestamp</th>
-              <th>From Account:</th>
-              <th>To Account:</th>
-              <th class="right">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for t in ct %}
-            <tr>
-              <td>{{ t.id }}</td>
-              <td> <a href="/admin/transactions/{{ t.transaction_id }}">{{ t.transaction_id if t.transaction_id else ""}}</a></td>
-              <td>{{ t.timestamp|pretty_date|safe }}</td>
-              <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
-              <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
-              <td class="right">{{ t.amount|format_currency|safe }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-</div>
 
 {% endblock %}

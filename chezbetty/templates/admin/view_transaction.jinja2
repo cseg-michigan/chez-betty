@@ -17,16 +17,22 @@
       <dt>Amount</dt><dd>{{ t.amount|format_currency|safe }}</dd>
     </dl>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <dl class="dl-horizontal">
-      <dt>To Account</dt><dd>{{ t.to_account.name if t.to_account else "n/a" }}</dd>
-      <dt>From Account</dt><dd>{{ t.from_account.name if t.from_account else "n/a" }}</dd>
+      <dt>To Account</dt><dd>{{ t.to_account_virt.name if t.to_account_virt else "n/a" }}</dd>
+      <dt>From Account</dt><dd>{{ t.fr_account_virt.name if t.fr_account_virt else "n/a" }}</dd>
     </dl>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <dl class="dl-horizontal">
-      <dt>Timestamp</dt><dd>{{ t.timestamp|pretty_date|safe }}</dd>
-      <dt>Owner</dt><dd>{{ t.admin.name if t.admin else "n/a" }}</dd>
+      <dt>To Account Cash</dt><dd>{{ t.to_account_cash.name if t.to_account_cash else "n/a" }}</dd>
+      <dt>From Account Cash</dt><dd>{{ t.fr_account_cash.name if t.fr_account_cash else "n/a" }}</dd>
+    </dl>
+  </div>
+  <div class="col-md-3">
+    <dl class="dl-horizontal">
+      <dt>Timestamp</dt><dd>{{ t.event.timestamp|pretty_date|safe }}</dd>
+      <dt>Owner</dt><dd>{{ t.event.admin.name if t.event.admin else "n/a" }}</dd>
     </dl>
   </div>
 

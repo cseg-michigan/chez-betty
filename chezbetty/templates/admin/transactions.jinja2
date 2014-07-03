@@ -18,6 +18,8 @@
       <th>Type</th>
       <th>From Account:</th>
       <th>To Account:</th>
+      <th>From Account Cash:</th>
+      <th>To Account Cash:</th>
       <th class="right">Amount</th>
     </tr>
   </thead>
@@ -26,10 +28,12 @@
     <tr>
         <td><a href="/admin/transactions/{{ t.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
         <td>{{ t.id }}</td>
-        <td>{{ t.timestamp|pretty_date|safe }}</td>
+        <td>{{ t.event.timestamp|pretty_date|safe }}</td>
         <td>{{ t.type }}</td>
-        <td>{{ t.from_account.name if t.from_account else "n/a" }}</td>
-        <td>{{ t.to_account.name if t.to_account else "n/a" }}</td>
+        <td>{{ t.fr_account_virt.name if t.fr_account_virt else "n/a" }}</td>
+        <td>{{ t.to_account_virt.name if t.to_account_virt else "n/a" }}</td>
+        <td>{{ t.fr_account_cash.name if t.fr_account_cash else "n/a" }}</td>
+        <td>{{ t.to_account_cash.name if t.to_account_cash else "n/a" }}</td>
         <td class="right">{{ t.amount|format_currency|safe }}</td>
     </tr>
   {% endfor %}

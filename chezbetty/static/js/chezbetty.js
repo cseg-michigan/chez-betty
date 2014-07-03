@@ -96,7 +96,7 @@ function purchase_success (data) {
 	} else {
 		// On successful purchase, redirect the user to the transaction complete
 		// page showing the transaction.
-		window.location.replace("/transaction/" + data.transaction_id);
+		window.location.replace("/event/" + data.event_id);
 	}
 }
 
@@ -117,7 +117,7 @@ function deposit_success (data) {
 	} else {
 		// On successful deposit, redirect the user to the transaction complete
 		// page showing the transaction.
-		window.location.replace("/transaction/" + data.transaction_id);
+		window.location.replace("/event/" + data.event_id);
 	}
 }
 

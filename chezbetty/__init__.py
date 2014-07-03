@@ -13,24 +13,24 @@ def main(global_config, **settings):
 
     Base.metadata.bind = engine
     config = Configurator(settings=settings, root_factory="chezbetty.models.model.RootFactory")
-    
+
     LDAPLookup.PASSWORD = config.registry.settings["ldap.password"]
     LDAPLookup.USERNAME = config.registry.settings["ldap.username"]
     LDAPLookup.SERVER = config.registry.settings["ldap.server"]
 
     Bitcoin.COINBASE_API_KEY = config.registry.settings["bitcoin.coinbase_api_key"]
     Bitcoin.COINBASE_API_SECRET = config.registry.settings["bitcoin.coinbase_api_secret"]
-    
+
     authn_policy = AuthTktAuthenticationPolicy(
            config.registry.settings["auth.secret"],
            callback=groupfinder, hashalg='sha512')
     authz_policy = ACLAuthorizationPolicy()
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
-    
+
     config.include('pyramid_jinja2')
     config.include('pyramid_beaker')
-    
+
     config.add_static_view('static', 'static', cache_max_age=3600)
 
     config.add_route('index', '/')
@@ -52,8 +52,8 @@ def main(global_config, **settings):
     config.add_route('btc_deposit', '/bitcoin/deposit/{guid}')
     config.add_route('btc_check', '/bitcoin/check/{addr}')
 
-    config.add_route('transaction', '/transaction/{transaction_id}')
-    config.add_route('transaction_undo', '/transaction/undo/{umid}/{transaction_id}')
+    config.add_route('event', '/event/{event_id}')
+    config.add_route('event_undo', '/event/undo/{umid}/{event_id}')
 
     # ADMIN
     config.add_route('admin_index', '/admin')
