@@ -28,8 +28,8 @@ class Transaction(Base):
                        "inventory",     # chezbetty   <-> null              None
                        "emptycashbox",  # None                              cashbox   -> chezbetty
                        "emptybitcoin",  # None                              btcbox    -> chezbetty
-                       "lost",          # None                              chezbetty/cashbox -> null       Yes
-                       "found",         # None                              null      -> chezbetty/cashbox  Yes
+                       "lost",          # None                              chezbetty/cashbox/btcbox -> null       Yes
+                       "found",         # None                              null      -> chezbetty/cashbox/btcbox  Yes
                        "donation",      # null         -> chezbetty         null      -> chezbetty          Yes
                        "withdrawal",    # chezbetty    -> null              chezbetty -> null               Yes
                        name="transaction_type"), nullable=False)
@@ -113,6 +113,16 @@ class Transaction(Base):
         t = DBSession.query(cls).filter(cls.id == id).one()
         return t
 
+    @classmethod
+    def get_balance(cls, trans_type, account_obj):
+        return DBSession.query(coalesce(func.sum(cls.amount), 0).label("balance"))\
+                     .filter(or_(cls.fr_account_cash_id==account_obj.id,
+                                 cls.to_account_cash_id==account_obj.id,
+                                 cls.fr_account_virt_id==account_obj.id,
+                                 cls.to_account_virt_id==account_obj.id))\
+                     .filter(cls.type==trans_type).one()
+
+
 @property
 def __transactions(self):
     return object_session(self).query(Transaction)\
@@ -157,8 +167,8 @@ class BTCDeposit(Deposit):
     amount_btc     = Column(Numeric, nullable=True)
 
     def __init__(self, event, user, amount, btctransaction, address, amount_btc):
-        cashbox_c = account.get_cash_account("cashbox")
-        Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
+        btcbox_c = account.get_cash_account("btcbox")
+        Transaction.__init__(self, event, None, user, None, btcbox_c, amount)
         self.btctransaction = btctransaction
         self.address = address
         self.amount_btc = amount_btc
@@ -218,7 +228,6 @@ class Lost(Transaction):
 class Found(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'found'}
     def __init__(self, event, dest_acct, amount):
-        chezbetty_c = account.get_cash_account("chezbetty")
         Transaction.__init__(self, event, None, None, None, dest_acct, amount)
 
 

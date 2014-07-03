@@ -17,7 +17,12 @@
 <ul class="nav nav-sidebar">
   <li><span>View Transactions</span></li>
   <li {% if active_page == 'transactions' %}class="active"{% endif %}><a href="/admin/transactions">Transactions</a></li>
-  <li {% if active_page == 'cash_transactions' %}class="active"{% endif %}><a href="/admin/cash_transactions">Cash Transactions</a></li>
+</ul>
+<ul class="nav nav-sidebar">
+  <li><span>Move Money</span></li>
+  <li {% if active_page == 'donation' %}class="active"{% endif %}><a href="/admin/cash/donation">Donation</a></li>
+  <li {% if active_page == 'withdrawal' %}class="active"{% endif %}><a href="/admin/cash/withdrawal">Withdrawal</a></li>
+  <li {% if active_page == 'adjustmen' %}class="active"{% endif %}><a href="/admin/cash/adjustment">Adjustment</a></li>
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>Administrative</span></li>

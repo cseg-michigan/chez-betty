@@ -33,19 +33,9 @@
                 </tr>
                 <tr>
                   <td>Users</td>
-                  <td class="right">{{ users_total_balance|format_currency|safe }}</td>
-                </tr>
-                <tr>
-                  <td>Lost/Stolen</td>
-                  <td class="right">{{ -1|format_currency|safe }}</td>
+                  <td class="right">{{ users_balance.total_balance|format_currency|safe }}</td>
                 </tr>
               </tbody>
-              <tfoot>
-                <tr>
-                  <td>Total</td>
-                  <td class="right">{{ sums.virtual|format_currency|safe }}</td>
-                </tr>
-              </tfoot>
             </table>
           </div>
           <div class="col-md-6">
@@ -57,7 +47,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>Chez Betty Cash</td>
+                  <td>Chez Betty</td>
                   <td class="right">{{ chezbetty_cash.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
@@ -65,20 +55,10 @@
                   <td class="right">{{ cashbox.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Coinbase</td>
-                  <td class="right">{{ btc_balance.mbtc }} mBTC ({{ btc_balance.usd|format_currency|safe }})</td>
-                </tr>
-                <tr>
-                  <td>Lost/Stolen Cash</td>
-                  <td class="right">{{ -1|format_currency|safe }}</td>
+                  <td>Bitcoin Box</td>
+                  <td class="right">{{ btcbox.balance|format_currency|safe }}</td>
                 </tr>
               </tbody>
-              <tfoot>
-                <tr>
-                  <td>Total</td>
-                  <td class="right">{{ sums.cash|format_currency|safe }}</td>
-                </tr>
-              </tfoot>
             </table>
           </div>
         </div>
@@ -87,7 +67,7 @@
     </div>
   </div>
 
-  <div class="col-md-3">
+  <div class="col-md-4">
 
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -102,6 +82,10 @@
               <td class="right">{{ chezbetty_cash.balance|format_currency|safe }}</td>
             </tr>
             <tr>
+              <td>Coinbase</td>
+              <td class="right">{{ btc_balance.mbtc }} mBTC ({{ btc_balance.usd|format_currency|safe }})</td>
+            </tr>
+            <tr>
               <td>Inventory (Wholesale)</td>
               <td class="right">{{ inventory.wholesale|format_currency|safe }}</td>
             </tr>
@@ -109,6 +93,90 @@
               <td>Inventory (Price)</td>
               <td class="right">{{ inventory.price|format_currency|safe }}</td>
             </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Cash Summary</h3>
+      </div>
+      <div class="panel-body">
+
+        <table class="table">
+          <tbody>
+            <tr>
+              <td>Cashbox Lost</td>
+              <td class="right">{{ cashbox_lost.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Cashbox Found</td>
+              <td class="right">{{ cashbox_found.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Bitcoin Lost</td>
+              <td class="right">{{ btcbox_lost.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Bitcoin Found</td>
+              <td class="right">{{ btcbox_found.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Chezbetty Lost</td>
+              <td class="right">{{ chezbetty_lost.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Chezbetty Found</td>
+              <td class="right">{{ chezbetty_found.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Store</td>
+              <td class="right">{{ restock.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Donation</td>
+              <td class="right">{{ donation.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Withdrawal</td>
+              <td class="right">{{ withdrawal.balance|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Wall of Shame Overview</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th class="right">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users_shame %}
+            <tr>
+              <td>{{ user.name }}</td>
+              <td class="right">{{ user.balance|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
           </tbody>
         </table>
 
@@ -130,7 +198,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for item in items %}
+            {% for item in items_low_stock %}
             <tr>
               <td>{{ item.name }}</td>
               <td class="right">{{ item.in_stock }}</td>
@@ -141,37 +209,8 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Wall of Shame Overview</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-condensed table-striped">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th class="right">Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for user in users %}
-            <tr>
-              <td>{{ user.name }}</td>
-              <td class="right">{{ user.balance|format_currency|safe }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Best Selling Items</h3>
@@ -211,6 +250,7 @@
           <thead>
             <tr>
               <th></th>
+              <th>Event ID</th>
               <th>ID</th>
               <th>Timestamp</th>
               <th>Type</th>
@@ -223,9 +263,12 @@
           </thead>
           <tbody>
             {% for e in events %}
-            {% set t = e.transaction[0] %}
+            {% for t in e.transactions %}
             <tr>
-              <td><a href="/admin/transactions/{{ t.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+              {% if loop.index == 1 %}
+              <td rowspan="{{ loop.length }}"><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+              <td rowspan="{{ loop.length }}">{{ e.id }}</td>
+              {% endif %}
               <td>{{ t.id }}</td>
               <td>{{ e.timestamp|pretty_date|safe }}</td>
               <td>{{ t.type }}</td>
@@ -235,6 +278,7 @@
               <td>{{ t.to_account_cash.name if t.to_account_cash else "n/a" }}</td>
               <td class="right">{{ t.amount|format_currency|safe }}</td>
             </tr>
+            {% endfor %}
             {% endfor %}
           </tbody>
         </table>

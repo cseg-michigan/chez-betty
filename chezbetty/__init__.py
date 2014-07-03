@@ -73,16 +73,23 @@ def main(global_config, **settings):
     config.add_route('admin_cash_reconcile', '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit', '/admin/cash/reconcile/submit')
     config.add_route('admin_cash_reconcile_success', '/admin/cash/reconcile/success')
+    config.add_route('admin_cash_donation', '/admin/cash/donation')
+    config.add_route('admin_cash_donation_submit', '/admin/cash/donation/submit')
+    config.add_route('admin_cash_withdrawal', '/admin/cash/withdrawal')
+    config.add_route('admin_cash_withdrawal_submit', '/admin/cash/withdrawal/submit')
+    config.add_route('admin_cash_adjustment', '/admin/cash/adjustment')
+    config.add_route('admin_cash_adjustment_submit', '/admin/cash/adjustment/submit')
     config.add_route('admin_transactions', '/admin/transactions')
-    config.add_route('admin_view_transaction', '/admin/transactions/{id}')
+    config.add_route('admin_event', '/admin/event/{event_id}')
     config.add_route('admin_edit_password', '/admin/edit/password')
     config.add_route('admin_edit_password_submit', '/admin/edit/password/submit')
-    config.add_route('admin_cash_transactions', '/admin/cash_transactions')
+
 
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_request_method(get_user, "user", reify=True)
 
     config.scan(".views")
+    config.scan(".views_admin")
 
     return config.make_wsgi_app()

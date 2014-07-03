@@ -11,11 +11,11 @@ function format_price (price) {
 }
 
 function strip_price (price_str) {
-	return price_str.replace(/^\s+|\s+$|\$/g, '');
+	return price_str.replace(/^\s+|\s+$|\$|,/g, '');
 }
 
 function full_strip_price (price_str) {
-	return price_str.replace(/^\s+|\s+$|\.|\$/g, '');
+	return price_str.replace(/^\s+|\s+$|\.|\$|\,/g, '');
 }
 
 function alert_clear () {

@@ -13,6 +13,7 @@
   <thead>
     <tr>
       <th></th>
+      <th>Event ID</th>
       <th>ID</th>
       <th>Timestamp</th>
       <th>Type</th>
@@ -24,9 +25,13 @@
     </tr>
   </thead>
   <tbody>
-  {% for t in transactions %}
+  {% for e in events %}
+  {% for t in e.transactions %}
     <tr>
-        <td><a href="/admin/transactions/{{ t.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+        {% if loop.index == 1 %}
+        <td rowspan="{{ loop.length }}"><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+        <td rowspan="{{ loop.length }}">{{ e.id }}</td>
+        {% endif %}
         <td>{{ t.id }}</td>
         <td>{{ t.event.timestamp|pretty_date|safe }}</td>
         <td>{{ t.type }}</td>
@@ -36,6 +41,7 @@
         <td>{{ t.to_account_cash.name if t.to_account_cash else "n/a" }}</td>
         <td class="right">{{ t.amount|format_currency|safe }}</td>
     </tr>
+  {% endfor %}
   {% endfor %}
   </tbody>
 </table>

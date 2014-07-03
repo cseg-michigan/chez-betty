@@ -1,0 +1,76 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'transactions' %}
+{% block title %}Event{% endblock %}
+
+{% block top %}
+<h1 class="page-header">View Event</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">Event Details</div>
+  <div class="panel-body">
+    <dl class="dl-horizontal">
+      <dt>Timestamp</dt><dd>{{ event.timestamp|pretty_date|safe }}</dd>
+      <dt>Creator</dt><dd>{{ event.admin.name if event.admin else "n/a" }}</dd>
+      <dt>Type</dt><dd>{{ event.type }}</dd>
+      {% if event.notes %}
+      <dt>Notes</dt><dd>{{ event.notes }}</dd>
+      {% endif %}
+    </dl>
+  </div>
+
+  <ul class="list-group">
+    {% for t in event.transactions %}
+    <li class="list-group-item">
+      <dl class="dl-horizontal">
+        <dt>Type</dt><dd>{{ t.type }}</dd>
+        <dt>Amount</dt><dd>{{ t.amount|format_currency|safe }}</dd>
+        <dt>From Account (Virt)</dt><dd>{{ t.fr_account_virt.name if t.fr_account_virt else "n/a" }}</dd>
+        <dt>To Account (Virt)</dt><dd>{{ t.to_account_virt.name if t.to_account_virt else "n/a" }}</dd>
+        <dt>From Account (Cash)</dt><dd>{{ t.fr_account_cash.name if t.fr_account_cash else "n/a" }}</dd>
+        <dt>To Account (Cash)</dt><dd>{{ t.to_account_cash.name if t.to_account_cash else "n/a" }}</dd>
+        {% if t.type == "btcdeposit" %}
+        <dt>Transaction</dt><dd><a href="https://blockchain.info/tx/{{ t.btctransaction }}?show_adv=true">{{ t.btctransaction }}</a></dd>
+        <dt>Address</dt><dd><a href="https://blockchain.info/address/{{ t.address }}">{{ t.address }}</a></dd>
+        <dt>BTC Amount</dt><dd>{{ t.amount_btc }}</dd>
+        {% endif %}
+      </dl>
+
+      {% if t.subtransactions %}
+
+      <br/>
+      <table class="table table-condensed table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Item</th>
+            <th class="right">Item Amount</th>
+            <th class="right">Quantity</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for st in t.subtransactions %}
+          <tr>
+              <td>{{ st.id }}</td>
+              <td>{{ st.item.name }}</td>
+              <td class="right">{{ st.price|format_currency|safe }}</td>
+              <td class="right">{{ st.quantity }}</td>
+              <td class="right">{{ st.amount|format_currency|safe }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      {% endif %}
+
+
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

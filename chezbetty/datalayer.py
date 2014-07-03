@@ -172,7 +172,7 @@ def reconcile_cash(amount, admin):
         else:
             # We got more in the box than expected! Use a found transaction
             # to reconcile the difference
-            t1 = transaction.Found(e, account.get_cash_account("cashbox"), amount_missing)
+            t1 = transaction.Found(e, account.get_cash_account("cashbox"), abs(amount_missing))
             DBSession.add(t1)
 
 
@@ -207,7 +207,7 @@ def reconcile_bitcoins(amount, admin):
         else:
             # We got more in bitcoins than expected! Use a found transaction
             # to reconcile the difference
-            t1 = transaction.Found(e, account.get_cash_account("btcbox"), amount_missing)
+            t1 = transaction.Found(e, account.get_cash_account("btcbox"), abs(amount_missing))
             DBSession.add(t1)
 
 
@@ -218,7 +218,7 @@ def reconcile_bitcoins(amount, admin):
 
 
 # Call this to make a miscellaneous adjustment to the chezbetty account
-def reconcile_misc(amount, admin, notes):
+def reconcile_misc(amount, notes, admin):
     assert(amount != 0.0)
 
     e = event.Reconcile(admin, notes)
@@ -226,7 +226,7 @@ def reconcile_misc(amount, admin, notes):
     DBSession.flush()
 
     if amount < 0.0:
-        t = transaction.Lost(e, account.get_cash_account("chezbetty"), amount)
+        t = transaction.Lost(e, account.get_cash_account("chezbetty"), abs(amount))
     else:
         t = transaction.Found(e, account.get_cash_account("chezbetty"), amount)
     DBSession.add(t)

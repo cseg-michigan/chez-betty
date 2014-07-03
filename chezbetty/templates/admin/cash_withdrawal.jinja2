@@ -1,0 +1,29 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'withdrawal' %}
+{% block title %}Withdrawal{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Withdrawal</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<p>Withdraw cash from Chez Betty to move to a different account</p>
+
+<form role="form" action="/admin/cash/withdrawal/submit" method="post">
+
+  <dl class="dl-horizontal">
+    <dt>Withdrawal Amount</dt>
+    <dd><input type="text" class="form-control" id="withdrawal-amount" name="amount"></dd>
+  </dl>
+  <dl class="dl-horizontal">
+    <dt>Reason</dt>
+    <dd><input type="text" class="form-control" id="withdrawal-reason" name="notes"></dd>
+  </dl>
+
+  <button type="submit" class="btn btn-success">Withdraw</button>
+
+</form>
+
+{% endblock %}
