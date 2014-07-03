@@ -22,13 +22,16 @@ function clear_spinner () {
 }
 
 keyboard_input = "";
+input_timer = null;
 $(document).keypress(function (e) {
 	alert_clear();
 
-	clearInterval(input_timer);
+	if (input_timer) {
+		clearInterval(input_timer);
+	}
 	input_timer = setInterval(submit_input, 500);
 
-	if (keyboard_input.length > 0 && !$(".spinner").length) {
+	if (keyboard_input.length > 0 && $(".spinner").length) {
 
 		$("#index-main").hide();
 		$("#front-buttons").hide();

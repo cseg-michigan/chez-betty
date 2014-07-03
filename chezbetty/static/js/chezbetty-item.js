@@ -1,11 +1,14 @@
 
-function clear_input() {
+function clear_input () {
 	keyboard_input = "";
 }
 
 keyboard_input = "";
+input_timer = null;
 $(document).keypress(function (e) {
-	clearInterval(input_timer);
+	if (input_timer) {
+		clearInterval(input_timer);
+	}
 	input_timer = setInterval(clear_input, 500);
 
 	if (e.which == 13) {
