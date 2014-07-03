@@ -65,6 +65,10 @@
                   <td class="right">{{ cashbox.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
+                  <td>Coinbase</td>
+                  <td class="right">{{ btc_balance.mbtc }} mBTC ({{ btc_balance.usd|format_currency|safe }})</td>
+                </tr>
+                <tr>
                   <td>Lost/Stolen Cash</td>
                   <td class="right">{{ lost_cash.balance|format_currency|safe }}</td>
                 </tr>

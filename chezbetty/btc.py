@@ -57,3 +57,8 @@ class Bitcoin(object):
         obj = Bitcoin.req("https://coinbase.com/api/v1/prices/spot_rate?currency=%s" % currency)
         return Decimal(obj['amount'])
 
+    @staticmethod
+    def get_balance():
+        obj = Bitcoin.req("https://coinbase.com/api/v1/account/balance")
+        return Decimal(obj['amount'])
+

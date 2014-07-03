@@ -373,6 +373,8 @@ def admin_index(request):
     cashbox = DBSession.query(CashAccount).filter(CashAccount.name=="cashbox").one()
     chezbetty_cash = DBSession.query(CashAccount).filter(CashAccount.name=="chezbetty").one()
     lost_cash = DBSession.query(CashAccount).filter(CashAccount.name=="lost").one()
+    btc_balance = Bitcoin.get_balance()
+    usd_btc_balance = btc_balance * Bitcoin.get_spot_price()
 
     class Object(object):
         pass
@@ -400,6 +402,7 @@ def admin_index(request):
                     lost_cash=lost_cash,
                     chezbetty=chezbetty,
                     lost=lost,
+                    btc_balance={"btc": btc_balance, "mbtc" : round(btc_balance*1000, 2), "usd": usd_btc_balance},
                     sums=sums,
                     inventory=inventory,
                     best_selling_items=bsi
