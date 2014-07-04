@@ -83,7 +83,11 @@
             </tr>
             <tr>
               <td>Coinbase</td>
-              <td class="right">{{ btc_balance.mbtc }} mBTC ({{ btc_balance.usd|format_currency|safe }})</td>
+              {% if btc_balance.mbtc is none %}
+                <td class="right">Error loading BTC Value</td>
+              {% else %}
+                <td class="right">{{ btc_balance.mbtc }} mBTC ({{ btc_balance.usd|format_currency|safe }})</td>
+              {% endif %}
             </tr>
             <tr>
               <td>Inventory (Wholesale)</td>

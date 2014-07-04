@@ -69,10 +69,15 @@ def admin_index(request):
     donation        = Transaction.get_balance("donation", account.get_cash_account("chezbetty"))
     withdrawal      = Transaction.get_balance("withdrawal", account.get_cash_account("chezbetty"))
 
-    btc_balance = Bitcoin.get_balance()
-    btc = {"btc": btc_balance,
-           "mbtc": round(btc_balance*1000, 2),
-           "usd": btc_balance * Bitcoin.get_spot_price()}
+    try:
+        btc_balance = Bitcoin.get_balance()
+        btc = {"btc": btc_balance,
+               "mbtc": round(btc_balance*1000, 2),
+               "usd": btc_balance * Bitcoin.get_spot_price()}
+    except BTCException:
+        btc = {"btc": None,
+               "mbtc": None,
+               "usd": None}
 
     return dict(events=events,
                 items_low_stock=items_low_stock,

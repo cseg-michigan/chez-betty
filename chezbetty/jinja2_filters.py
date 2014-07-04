@@ -1,6 +1,9 @@
 
 def format_currency(value):
-	p = float(value)
+	try:
+		p = float(value)
+	except ValueError:
+		return value
 	if p < 0:
 		 return '<span class="negative">-${:,.2f}</span>'.format(p*-1.0)
 	else:
