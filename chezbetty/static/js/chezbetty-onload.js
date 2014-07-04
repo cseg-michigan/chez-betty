@@ -117,3 +117,21 @@ $(".faq-q").click(function() {
 	$(this).next().toggle("fast");
 });
 
+
+//
+// Check for unsaved data in forms
+//
+var serialized_form_clean;
+
+// When the page load we get the values serialize
+serialized_form_clean = $("form").serialize(); 
+
+// Before we leave the page we now compare between the new form values and the orignal
+window.onbeforeunload = function (e) {
+    var serialized_form_dirty = $("form").serialize();
+    if (serialized_form_clean != serialized_form_dirty) {
+        return "You are about to leave a page where you have not saved the data.";
+    }
+};
+
+
