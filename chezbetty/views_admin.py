@@ -169,7 +169,6 @@ def admin_add_items(request):
         return {'items' : {'count': 1,
                 'name-0': '',
                 'barcode-0': '',
-                'price-0': '',
                 }}
     else:
         d = {'items' : request.GET}
@@ -187,16 +186,13 @@ def admin_add_items_submit(request):
             id = int(key.split('-')[2])
             stock = 0
             wholesale = 0
+            price = 0
             enabled = False
 
             # Parse out the important fields looking for errors
             try:
                 name = request.POST['item-name-{}'.format(id)]
                 barcode = request.POST['item-barcode-{}'.format(id)]
-                try:
-                    price = float(request.POST['item-price-{}'.format(id)])
-                except:
-                    price = 0
 
                 # Check that name and barcode are not blank. If name is blank
                 # treat this as an empty row and skip. If barcode is blank
@@ -206,7 +202,7 @@ def admin_add_items_submit(request):
                 if barcode == '':
                     request.session.flash('Error adding item "{}". Barcode cannot be blank.'.format(name), 'error')
                     error_items.append({
-                        'name': name, 'barcode': '', 'price': price,
+                        'name': name, 'barcode': ''
                     })
                     continue
 
@@ -219,8 +215,7 @@ def admin_add_items_submit(request):
                 if len(name):
                     error_items.append({
                             'name' : request.POST['item-name-{}'.format(id)],
-                            'barcode' : request.POST['item-barcode-{}'.format(id)],
-                            'price' : request.POST['item-price-{}'.format(id)],
+                            'barcode' : request.POST['item-barcode-{}'.format(id)]
                             })
                     request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
