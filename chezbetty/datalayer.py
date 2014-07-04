@@ -5,11 +5,13 @@ from .models import account
 
 # Call this to remove an event from chez betty. Only works with cash deposits
 def undo_event(e):
-    assert(e.type=='deposit')
+    assert(e.type=='deposit' or e.type=='purchase')
+
+    line_items = {}
 
     for t in e.transactions:
 
-        assert(t.type=='deposit')
+        assert(t.type=='deposit' or e.type=='purchase')
 
         if t.to_account_virt:
             t.to_account_virt.balance -= t.amount
@@ -19,6 +21,10 @@ def undo_event(e):
             t.to_account_cash.balance -= t.amount
         if t.fr_account_cash:
             t.fr_account_cash.balance += t.amount
+
+        for s in t.subtransactions:
+            line_items[s.item_id] = s.quantity
+            DBSession.delete(s)
 
         DBSession.delete(t)
 
@@ -33,6 +39,7 @@ def undo_event(e):
 
     DBSession.delete(e)
 
+    return line_items
 
 # Call this to let a user purchase items
 def purchase(user, items):

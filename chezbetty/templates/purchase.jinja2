@@ -63,6 +63,13 @@
 
 {% block onload %}
 <script src="{{'chezbetty:static/js/chezbetty-item.js'|static_url}}"></script>
+<script>
+{% for barcode,qty in cart.items() %}
+  {% for q in range(0, qty|int) %}
+  add_item("{{ barcode }}");
+  {% endfor %}
+{% endfor %}
+</script>
 {% endblock %}
 
 {% block timeout %}60*1000*50{% endblock %}

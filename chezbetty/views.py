@@ -68,9 +68,16 @@ def purchase(request):
             request.session.flash('User is not enabled. Please contact chezbetty@umich.edu.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
+        # For Demo mode:
         items = DBSession.query(Item).filter(Item.enabled == True).order_by(Item.name).limit(6).all()
 
-        return {'user': user, 'items': items}
+        # Pre-populate cart if returning from undone transaction
+        cart = {}
+        if len(request.GET) != 0:
+            for (item_id, qty) in request.GET.items():
+                cart[Item.from_id(int(item_id)).barcode] = int(qty)
+
+        return {'user': user, 'items': items, 'cart': cart}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
@@ -159,6 +166,7 @@ def event(request):
             request.session.flash('Success! The purchase was added successfully', 'success')
             return render_to_response('templates/purchase_complete.jinja2',
                 {'user': user,
+                 'event': event,
                  'order': order}, request)
 
     except NoResultFound as e:
@@ -178,14 +186,17 @@ def event_undo(request):
 
         # Make sure transaction is a deposit, the only one the user is allowed
         # to undo
-        if transaction.type != 'deposit':
-            request.session.flash('Error: Only deposits may be undone.', 'error')
+        if transaction.type not in ('deposit', 'purchase'):
+            request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
         # Make sure that the user who is requesting the deposit was the one who
         # actually placed the deposit.
         try:
-            user = User.from_id(transaction.to_account_virt_id)
+            if transaction.type == 'deposit':
+                user = User.from_id(transaction.to_account_virt_id)
+            elif transaction.type == 'purchase':
+                user = User.from_id(transaction.fr_account_virt_id)
         except:
             request.session.flash('Error: Invalid user for transaction.', 'error')
             return HTTPFound(location=request.route_url('index'))
@@ -196,11 +207,16 @@ def event_undo(request):
 
     # If the checks pass, actually revert the transaction
     try:
-        datalayer.undo_event(event)
+        line_items = datalayer.undo_event(event)
         request.session.flash('Transaction successfully reverted.', 'success')
     except:
         request.session.flash('Error: Failed to undo transaction.', 'error')
-    return HTTPFound(location=request.route_url('user', umid=user.umid))
+    if event.type == 'deposit':
+        return HTTPFound(location=request.route_url('user', umid=user.umid))
+    elif event.type == 'purchase':
+        return HTTPFound(location=request.route_url('purchase', umid=user.umid, _query=line_items))
+    else:
+        assert(False and "Should not be able to get here?")
 
 ###
 ### JSON Requests
