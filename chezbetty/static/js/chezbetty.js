@@ -65,11 +65,15 @@ function add_item_success (data) {
 			item_row = $("#purchase-item-" + data.id);
 
 			// Increment the quantity
-			quantity = parseInt(item_row.children(".item-quantity").text()) + 1;
+			quantity = parseInt(item_row.find(".item-quantity span").text()) + 1;
 			item_price = parseFloat(item_row.children(".item-price-single").text());
 
-			item_row.children(".item-quantity").text(quantity);
+			item_row.find(".item-quantity span").text(quantity);
 			item_row.children(".item-total").html(format_price(quantity*item_price));
+
+			if (quantity >= 2) {
+				item_row.find("td .btn-decrement-item").show();
+			}
 
 		} else {
 			// Add a new item

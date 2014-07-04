@@ -22,6 +22,18 @@ $("#purchase_table tbody").on("click", ".btn-remove-item", function () {
 	calculate_total();
 });
 
+// Click handler to remove an item from a purchase.
+$("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
+	quantity = parseInt($(this).parent().find("span").text()) - 1;
+	$(this).parent().find("span").text(quantity);
+	if (quantity < 2) {
+		$(this).hide();
+	}
+
+	item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
+	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
+});
+
 // Click handler to submit a purchase.
 $("#btn-submit-purchase").click(function () {
 	console.log("submitting purchase");
