@@ -42,6 +42,11 @@
 	text-align: center;
 }
 
+#front-demo {
+  padding-top: 50px;
+	text-align: center;
+}
+
 .btn-bordered {
 	border: 1px solid #428bca;
 }

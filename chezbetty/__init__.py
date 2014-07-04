@@ -57,6 +57,7 @@ def main(global_config, **settings):
 
     # ADMIN
     config.add_route('admin_index', '/admin')
+    config.add_route('admin_demo', '/admin/demo/{state}')
     config.add_route('admin_item_barcode_json', '/admin/item/{barcode}/json')
     config.add_route('admin_restock', '/admin/restock')
     config.add_route('admin_restock_submit', '/admin/restock/submit')

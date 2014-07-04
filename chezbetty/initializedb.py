@@ -61,6 +61,14 @@ def main(argv=sys.argv):
            5,
            True
         ))
+        DBSession.add(Item(
+            "Coke (12 oz)",
+            "04963406",
+            0.42,
+            0.37,
+            12,
+            True
+        ))
         user = User(
            "zakir",
            "95951361",

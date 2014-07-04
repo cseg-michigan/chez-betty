@@ -26,5 +26,10 @@
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>Administrative</span></li>
+  {% if demo %}
+  <li><a href="#">Demo Mode<div style="float: right;"><input type="checkbox" name="admin-demo-mode" checked></input></div></a></li>
+  {% else %}
+  <li><a href="#">Demo Mode<div style="float: right;"><input type="checkbox" name="admin-demo-mode"></input></div></a></li>
+  {% endif %}
   <li {% if active_page == 'edit_password' %}class="active"{% endif %}><a href="/admin/edit/password">Edit Password</a></li>
 </ul>

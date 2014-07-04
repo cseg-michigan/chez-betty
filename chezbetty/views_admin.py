@@ -1,8 +1,10 @@
+from pyramid.events import subscriber
+from pyramid.events import BeforeRender
+from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config, forbidden_view_config
-from pyramid.httpexceptions import HTTPFound
 
 from sqlalchemy.sql import func
 from sqlalchemy.exc import DBAPIError
@@ -23,7 +25,19 @@ from pyramid.security import Allow, Everyone, remember, forget
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
 
+import threading
+demo_lock = threading.Lock()
+demo = False
 
+###
+### Global Attributes (passed to every template)
+###   - n.b. This really is global, it will pick up views routes too
+###
+@subscriber(BeforeRender)
+def add_global(event):
+    assert(event.rendering_val.get('demo') is None)
+    with demo_lock:
+        event.rendering_val['demo'] = demo
 
 ###
 ### Admin
@@ -100,6 +114,16 @@ def admin_index(request):
                 inventory=inventory,
                 best_selling_items=bsi)
 
+@view_config(route_name='admin_demo', renderer='json')
+def admin_demo(request):
+    global demo_lock
+    global demo
+    with demo_lock:
+        if request.matchdict['state'].lower() == 'true':
+            demo = True
+        else:
+            demo = False
+        return {}
 
 @view_config(route_name='admin_item_barcode_json', renderer='json')
 def admin_item_barcode_json(request):

@@ -5,6 +5,33 @@ $(".date").each(function (index) {
 	$(this).text(s);
 });
 
+// Make the Demo Mode checkbox in the sidebar a pretty on/off slider
+$("[name='admin-demo-mode']").bootstrapSwitch();
+$('input[name="admin-demo-mode"]').on('switchChange.bootstrapSwitch', function(event, state) {
+	//console.log(this); // DOM element
+	//console.log(event); // jQuery event
+	//console.log(state); // true | false
+	$.ajax({
+		dataType: "json",
+		url: "/admin/demo/" + state,
+		success: demo_state_success,
+		error: demo_state_fail
+	});
+	console.log('called ajax with state ' + state);
+});
+
+function demo_state_success(data) {
+	console.log('demo state updated');
+}
+
+function demo_state_fail(data) {
+	console.log('demo state update failed');
+	// Reset the checkbox to indicate the failure
+	var cb = $('input[name="admin-demo-mode"]');
+	cb.bootstrapSwitch('toggleState', skip=true);
+	alert_error("Failed to save demo state.");
+}
+
 $(".edit-item-row").on("click", "button", function () {
 	btn_type = $(this).attr("id").split("-")[1];
 	item_id = $(this).attr("id").split("-")[3];
