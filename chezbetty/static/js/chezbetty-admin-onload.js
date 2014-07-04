@@ -177,6 +177,7 @@ $("#restock-button").click(function () {
 // Check for unsaved data in forms
 //
 var serialized_form_clean;
+var clicked_submit = false;
 
 // When the page load we get the values serialize
 serialized_form_clean = $("form").serialize(); 
@@ -184,8 +185,12 @@ serialized_form_clean = $("form").serialize();
 // Before we leave the page we now compare between the new form values and the orignal
 window.onbeforeunload = function (e) {
     var serialized_form_dirty = $("form").serialize();
-    if (serialized_form_clean != serialized_form_dirty) {
+    if (serialized_form_clean != serialized_form_dirty && !clicked_submit) {
         return "You are about to leave a page where you have not saved the data.";
     }
 };
+
+$("button:submit").click(function () {
+	clicked_submit = true;
+});
 
