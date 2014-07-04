@@ -68,7 +68,9 @@ def purchase(request):
             request.session.flash('User is not enabled. Please contact chezbetty@umich.edu.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
-        return {'user': user}
+        items = DBSession.query(Item).filter(Item.enabled == True).order_by(Item.name).limit(6).all()
+
+        return {'user': user, 'items': items}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
