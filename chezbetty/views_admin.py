@@ -444,46 +444,9 @@ def admin_inventory_submit(request):
         request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
     return HTTPFound(location=request.route_url('admin_inventory'))
 
-@view_config(route_name='login', renderer='templates/login.jinja2')
-@forbidden_view_config(renderer='templates/login.jinja2')
-def login(request):
-    login_url = request.resource_url(request.context, 'login')
-    referrer = request.url
-    if referrer == login_url:
-        referrer = '/' # never use the login form itself as came_from
-    came_from = request.params.get('came_from', referrer)
-    message = login = password = ''
-    if 'login' in request.params:
-        login = request.params['login']
-        password = request.params['password']
-        user = DBSession.query(User).filter(User.uniqname == login).first()
-        if user and not user.enabled:
-            message = 'Login failed. User not allowed to login.'
-        elif user and user.check_password(password):
-            # successful login
-            headers = remember(request, login)
-            return HTTPFound(location=came_from, headers=headers)
-        else:
-            message = 'Login failed. Incorrect username or password.',
 
-    return dict(
-        message = message,
-        url = request.application_url + '/login',
-        came_from = came_from,
-        login = login,
-        password = password
-    )
-
-
-@view_config(route_name='logout')
-def logout(request):
-    headers = forget(request)
-    return HTTPFound(location=request.route_url('index'),
-                     headers = headers)
-
-
-@view_config(route_name='admin_edit_users', renderer='templates/admin/edit_users.jinja2')
-def admin_edit_users(request):
+@view_config(route_name='admin_users_edit', renderer='templates/admin/users_edit.jinja2')
+def admin_users_edit(request):
     enabled_users = DBSession.query(User).filter_by(enabled=True).order_by(User.name).all()
     disabled_users = DBSession.query(User).filter_by(enabled=False).order_by(User.name).all()
     users = enabled_users + disabled_users
@@ -493,38 +456,38 @@ def admin_edit_users(request):
              ('administrator', 'Administrator')]
     return {'users': users, 'roles': roles}
 
-@view_config(route_name='admin_edit_users_submit',
+@view_config(route_name='admin_users_edit_submit',
         request_method='POST', permission='admin')
-def admin_edit_users_submit(request):
+def admin_users_edit_submit(request):
     for key in request.POST:
         user = User.from_id(int(key.split('-')[2]))
         setattr(user, key.split('-')[1], request.POST[key])
     request.session.flash('Users updated successfully.', 'success')
-    return HTTPFound(location=request.route_url('admin_edit_users'))
+    return HTTPFound(location=request.route_url('admin_users_edit'))
 
-@view_config(route_name='admin_edit_balance',
-        renderer='templates/admin/edit_balance.jinja2')
-def admin_edit_balance(request):
+@view_config(route_name='admin_user_balance_edit',
+        renderer='templates/admin/user_balance_edit.jinja2')
+def admin_user_balance_edit(request):
     users = DBSession.query(User).order_by(User.name).all()
     return {'users': users}
 
-@view_config(route_name='admin_edit_balance_submit', request_method='POST',
+@view_config(route_name='admin_user_balance_edit_submit', request_method='POST',
         permission='admin')
-def admin_edit_balance_submit(request):
+def admin_user_balance_edit_submit(request):
     try:
         user = User.from_id(int(request.POST['user']))
     except:
         request.session.flash('Invalid user?', 'error')
-        return HTTPFound(location=request.route_url('admin_edit_balance'))
+        return HTTPFound(location=request.route_url('admin_user_balance_edit'))
     try:
         adjustment = Decimal(request.POST['amount'])
     except:
         request.session.flash('Invalid adjustment amount.', 'error')
-        return HTTPFound(location=request.route_url('admin_edit_balance'))
+        return HTTPFound(location=request.route_url('admin_user_balance_edit'))
     reason = request.POST['reason']
     datalayer.adjust_user_balance(user, adjustment, reason, request.user)
     request.session.flash('User account updated.', 'success')
-    return HTTPFound(location=request.route_url('admin_edit_balance'))
+    return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
 
 @view_config(route_name='admin_cash_reconcile',
@@ -689,20 +652,20 @@ def admin_event(request):
         return HTTPFound(location=request.route_url('admin_transactions'))
 
 
-@view_config(route_name='admin_edit_password',
-        renderer='templates/admin/edit_password.jinja2', permission='manage')
-def admin_edit_password(request):
+@view_config(route_name='admin_password_edit',
+        renderer='templates/admin/password_edit.jinja2', permission='manage')
+def admin_password_edit(request):
     return {}
 
 
-@view_config(route_name='admin_edit_password_submit', request_method='POST',
+@view_config(route_name='admin_password_edit_submit', request_method='POST',
         permission='manage')
-def admin_edit_password_submit(request):
+def admin_password_edit_submit(request):
     pwd0 = request.POST['edit-password-0']
     pwd1 = request.POST['edit-password-1']
     if pwd0 != pwd1:
         request.session.flash('Error: Passwords do not match', 'error')
-        return HTTPFound(location=request.route_url('admin_edit_password'))
+        return HTTPFound(location=request.route_url('admin_password_edit'))
     request.user.password = pwd0
     request.session.flash('Password changed successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
@@ -734,3 +697,40 @@ def admin_shopping_list(request):
 
     return {'vendors': vendors, 'items': l}
 
+
+@view_config(route_name='login', renderer='templates/login.jinja2')
+@forbidden_view_config(renderer='templates/login.jinja2')
+def login(request):
+    login_url = request.resource_url(request.context, 'login')
+    referrer = request.url
+    if referrer == login_url:
+        referrer = '/' # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+    message = login = password = ''
+    if 'login' in request.params:
+        login = request.params['login']
+        password = request.params['password']
+        user = DBSession.query(User).filter(User.uniqname == login).first()
+        if user and not user.enabled:
+            message = 'Login failed. User not allowed to login.'
+        elif user and user.check_password(password):
+            # successful login
+            headers = remember(request, login)
+            return HTTPFound(location=came_from, headers=headers)
+        else:
+            message = 'Login failed. Incorrect username or password.',
+
+    return dict(
+        message = message,
+        url = request.application_url + '/login',
+        came_from = came_from,
+        login = login,
+        password = password
+    )
+
+
+@view_config(route_name='logout')
+def logout(request):
+    headers = forget(request)
+    return HTTPFound(location=request.route_url('index'),
+                     headers = headers)

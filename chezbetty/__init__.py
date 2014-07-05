@@ -57,10 +57,11 @@ def main(global_config, **settings):
 
     # ADMIN
     config.add_route('admin_index', '/admin')
-    config.add_route('admin_demo', '/admin/demo/{state}')
+    config.add_route('admin_demo',  '/admin/demo/{state}')
+
     config.add_route('admin_item_barcode_json', '/admin/item/{barcode}/json')
-    config.add_route('admin_restock', '/admin/restock')
-    config.add_route('admin_restock_submit', '/admin/restock/submit')
+    config.add_route('admin_restock',           '/admin/restock')
+    config.add_route('admin_restock_submit',    '/admin/restock/submit')
 
     config.add_route('admin_items_add',         '/admin/items/add')
     config.add_route('admin_items_add_submit',  '/admin/items/add/submit')
@@ -75,10 +76,10 @@ def main(global_config, **settings):
     config.add_route('admin_inventory',        '/admin/inventory')
     config.add_route('admin_inventory_submit', '/admin/inventory/submit')
 
-    config.add_route('admin_edit_users',          '/admin/edit/users')
-    config.add_route('admin_edit_users_submit',   '/admin/edit/users/submit')
-    config.add_route('admin_edit_balance',        '/admin/edit/balance')
-    config.add_route('admin_edit_balance_submit', '/admin/edit/balance/submit')
+    config.add_route('admin_users_edit',               '/admin/users/edit')
+    config.add_route('admin_users_edit_submit',        '/admin/users/edit/submit')
+    config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
+    config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
 
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',  '/admin/cash/reconcile/submit')
@@ -94,15 +95,15 @@ def main(global_config, **settings):
     config.add_route('admin_btc_reconcile_submit', '/admin/btc/reconcile/submit')
 
     config.add_route('admin_transactions', '/admin/transactions')
-    config.add_route('admin_event', '/admin/event/{event_id}')
+    config.add_route('admin_event',       '/admin/event/{event_id}')
 
-    config.add_route('admin_edit_password', '/admin/edit/password')
-    config.add_route('admin_edit_password_submit', '/admin/edit/password/submit')
+    config.add_route('admin_password_edit',        '/admin/password/edit')
+    config.add_route('admin_password_edit_submit', '/admin/password/edit/submit')
 
     config.add_route('admin_shopping_list', '/admin/shopping')
 
 
-    config.add_route('login', '/login')
+    config.add_route('login',  '/login')
     config.add_route('logout', '/logout')
     config.add_request_method(get_user, "user", reify=True)
 

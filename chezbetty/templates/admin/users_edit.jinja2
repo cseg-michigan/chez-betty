@@ -1,5 +1,5 @@
 {% extends "base.jinja2" %}
-{% set active_page = 'edit_users' %}
+{% set active_page = 'user_edit' %}
 {% block title %}Edit Users{% endblock %}
 
 {% block top %}
@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<form role="form" action="/admin/edit/users/submit" method="post">
+<form role="form" action="/admin/users/edit/submit" method="post">
 
 
   <table class="table">

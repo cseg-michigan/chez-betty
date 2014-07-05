@@ -1,5 +1,5 @@
 {% extends "base.jinja2" %}
-{% set active_page = 'edit_balance' %}
+{% set active_page = 'user_balance_edit' %}
 {% block title %}Edit User Balance{% endblock %}
 
 {% block top %}
@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<form role="form" action="/admin/edit/balance/submit" method="post">
+<form role="form" action="/admin/user/balance/edit/submit" method="post">
 
   <dl id="edit-balance" class="dl-horizontal">
     <dt>Select User</dt>

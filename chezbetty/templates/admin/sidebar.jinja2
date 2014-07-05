@@ -19,8 +19,8 @@
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>Manage Users</span></li>
-  <li {% if active_page == 'edit_users' %}class="active"{% endif %}><a href="/admin/edit/users">Edit Users</a></li>
-  <li {% if active_page == 'edit_balance' %}class="active"{% endif %}><a href="/admin/edit/balance">Edit User Balance</a></li>
+  <li {% if active_page == 'users_edit' %}class="active"{% endif %}><a href="/admin/users/edit">Edit Users</a></li>
+  <li {% if active_page == 'user_balance_edit' %}class="active"{% endif %}><a href="/admin/user/balance/edit">Edit User Balance</a></li>
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>View Transactions</span></li>
@@ -36,5 +36,5 @@
   <li><span>Administrative</span></li>
   <li><a href="#">Demo Mode<div style="float: right;"><input type="checkbox" name="admin-demo-mode" {% if demo %}checked="checked"{% endif %}></input></div></a></li>
   <li {% if active_page == 'shopping_list' %}class="active"{% endif %}><a href="/admin/shopping">Shopping List</a></li>
-  <li {% if active_page == 'edit_password' %}class="active"{% endif %}><a href="/admin/edit/password">Edit Password</a></li>
+  <li {% if active_page == 'password_edit' %}class="active"{% endif %}><a href="/admin/password/edit">Edit Password</a></li>
 </ul>
