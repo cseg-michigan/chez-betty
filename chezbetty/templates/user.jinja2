@@ -80,7 +80,7 @@
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
-          Notes: {{ transaction.notes }}
+          Notes: {{ transaction.event.notes }}
         </div>
 
         {% elif transaction.type == "btcdeposit" %}
