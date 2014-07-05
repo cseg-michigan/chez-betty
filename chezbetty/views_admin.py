@@ -476,18 +476,20 @@ def admin_user_balance_edit(request):
 def admin_user_balance_edit_submit(request):
     try:
         user = User.from_id(int(request.POST['user']))
-    except:
+        adjustment = Decimal(request.POST['amount'])
+        reason = request.POST['reason']
+        datalayer.adjust_user_balance(user, adjustment, reason, request.user)
+        request.session.flash('User account updated.', 'success')
+        return HTTPFound(location=request.route_url('admin_user_balance_edit'))
+    except NoResultFound:
         request.session.flash('Invalid user?', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
-    try:
-        adjustment = Decimal(request.POST['amount'])
-    except:
+    except ValueError:
         request.session.flash('Invalid adjustment amount.', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
-    reason = request.POST['reason']
-    datalayer.adjust_user_balance(user, adjustment, reason, request.user)
-    request.session.flash('User account updated.', 'success')
-    return HTTPFound(location=request.route_url('admin_user_balance_edit'))
+    except event.NotesMissingException:
+        request.session.flash('Must include a reason', 'error')
+        return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
 
 @view_config(route_name='admin_cash_reconcile',
@@ -540,7 +542,7 @@ def admin_cash_donation_submit(request):
     except ValueError:
         request.session.flash('Error: Bad value for donation amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_donation'))
-    except __event.NotesMissingException:
+    except event.NotesMissingException:
         request.session.flash('Error: Must include a donation reason', 'error')
         return HTTPFound(location=request.route_url('admin_cash_donation'))
     except:
@@ -567,7 +569,7 @@ def admin_cash_withdrawal_submit(request):
     except ValueError:
         request.session.flash('Error: Bad value for withdrawal amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_withdrawal'))
-    except __event.NotesMissingException:
+    except event.NotesMissingException:
         request.session.flash('Error: Must include a withdrawal reason', 'error')
         return HTTPFound(location=request.route_url('admin_cash_withdrawal'))
     except:
@@ -594,7 +596,7 @@ def admin_cash_adjustment_submit(request):
     except ValueError:
         request.session.flash('Error: Bad value for adjustment amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_adjustment'))
-    except __event.NotesMissingException:
+    except event.NotesMissingException:
         request.session.flash('Error: Must include a adjustment reason', 'error')
         return HTTPFound(location=request.route_url('admin_cash_adjustment'))
     except:
