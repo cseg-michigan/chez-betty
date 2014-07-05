@@ -1,0 +1,30 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'user_email' %}
+{% block title %}Email Users{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Email Users</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Email All Deadbeat Users</h2>
+<p>Send an email to users who are more than $20.00 in debt to Chez Betty
+encouraging them to settle up.</p>
+<form role="form" action="/admin/users/email/deadbeats" method="post">
+  <button type="submit" class="btn btn-success">Email Deadbeat Users</button>
+</form>
+
+<h2>Email All Users</h2>
+<p>Send an email to all users</p>
+
+<form role="form" action="/admin/users/email/all" method="post">
+
+  <textarea class="form-control" id="email-all-text" name="text"></textarea>
+
+  <button type="submit" class="btn btn-success">Email All Users</button>
+</form>
+
+
+{% endblock %}

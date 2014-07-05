@@ -118,6 +118,10 @@ class User(Account):
             DBSession.add(u)
         return u
 
+    @classmethod
+    def all(cls):
+        return DBSession.query(cls).filter(cls.enabled).all()
+
     def __make_salt(self):
         return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
 

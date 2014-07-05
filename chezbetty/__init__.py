@@ -78,6 +78,9 @@ def main(global_config, **settings):
 
     config.add_route('admin_users_edit',               '/admin/users/edit')
     config.add_route('admin_users_edit_submit',        '/admin/users/edit/submit')
+    config.add_route('admin_users_email',              '/admin/users/email')
+    config.add_route('admin_users_email_deadbeats',    '/admin/users/email/deadbeats')
+    config.add_route('admin_users_email_all',    '/admin/users/email/all')
     config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
 

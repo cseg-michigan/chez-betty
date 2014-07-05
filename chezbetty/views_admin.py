@@ -492,6 +492,34 @@ def admin_user_balance_edit_submit(request):
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
 
+@view_config(route_name='admin_users_email', renderer='templates/admin/users_email.jinja2')
+def admin_users_email(request):
+    return {}
+
+
+@view_config(route_name='admin_users_email_deadbeats',
+        request_method='POST', permission='admin')
+def admin_users_email_deadbeats(request):
+    deadbeats = DBSession.query(User).filter(User.enabled).filter(User.balance<-20.0).all()
+    for deadbeat in deadbeats:
+        text = render('templates/admin/email_deadbeats.jinja2', {'user': deadbeat})
+        print(text)
+
+    request.session.flash('Deadbeat users emailed.', 'success')
+    return HTTPFound(location=request.route_url('admin_index'))
+
+
+@view_config(route_name='admin_users_email_all',
+        request_method='POST', permission='admin')
+def admin_users_email_all(request):
+    users = User.all()
+    text = request.POST['text']
+    print(text)
+
+    request.session.flash('All users emailed.', 'success')
+    return HTTPFound(location=request.route_url('admin_index'))
+
+
 @view_config(route_name='admin_cash_reconcile',
         renderer='templates/admin/cash_reconcile.jinja2', permission='manage')
 def admin_cash_reconcile(request):
