@@ -1,0 +1,27 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'btc_reconcile' %}
+{% block title %}Bitcoins{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Convert Bitcoins to USD</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/btc/reconcile/submit" method="post">
+
+  <dl class="dl-horizontal">
+    <dt>Bitcoins in Account</dt>
+    <dd>{{ btc.btc }}</dd>
+    <dt>Predicted Value</dt>
+    <dd>{{ btc.usd|format_currency|safe }}</dd>
+    <dt>Expected</dt>
+    <dd>{{ btcbox.balance|format_currency|safe }}</dd>
+  </dl>
+
+  <button type="submit" class="btn btn-success">Convert Bitcoins</button>
+
+</form>
+
+{% endblock %}

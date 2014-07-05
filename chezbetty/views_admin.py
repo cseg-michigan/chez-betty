@@ -639,6 +639,34 @@ def admin_cash_adjustment_submit(request):
         return HTTPFound(location=request.route_url('admin_cash_adjustment'))
 
 
+@view_config(route_name='admin_btc_reconcile',
+        renderer='templates/admin/btc_reconcile.jinja2', permission='manage')
+def admin_btc_reconcile(request):
+    try:
+        btc_balance = Bitcoin.get_balance()
+        btc = {"btc": btc_balance,
+               "usd": btc_balance * Bitcoin.get_spot_price()}
+    except BTCException:
+        btc = {"btc": None,
+               "usd": 0.0}
+    btcbox = CashAccount.from_name("btcbox")
+
+    return {'btc': btc, 'btcbox': btcbox}
+
+
+@view_config(route_name='admin_btc_reconcile_submit', request_method='POST',
+        permission='manage')
+def admin_btc_reconcile_submit(request):
+    try:
+        bitcoin_usd = Bitcoin.convert_all()
+        datalayer.reconcile_bitcoins(bitcoin_usd, request.user)
+        request.session.flash('Converted Bitcoins to USD', 'success')
+    except:
+        request.session.flash('Error converting bitcoins', 'error')
+    
+    return HTTPFound(location=request.route_url('admin_index'))
+
+
 @view_config(route_name='admin_transactions',
         renderer='templates/admin/transactions.jinja2', permission='admin')
 def admin_transactions(request):

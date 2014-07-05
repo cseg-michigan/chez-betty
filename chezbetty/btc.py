@@ -66,3 +66,8 @@ class Bitcoin(object):
         obj = Bitcoin.req("https://coinbase.com/api/v1/account/balance")
         return Decimal(obj['amount'])
 
+    @staticmethod
+    # Returns the amount in USD that the bitcoins were exchanged for
+    def convert_all():
+        raise NotImplementedError()
+
