@@ -2,8 +2,15 @@
   <td class="item-actions"><button type="button" class="btn btn-danger btn-lg btn-remove-item"><span class="glyphicon glyphicon-remove-sign"></span></button></td>
   <td class="item-title">{{ item.name }}</td>
   <td class="item-quantity">
-    <span>1</span>
-    <button type="button" class="btn btn-danger btn-lg btn-decrement-item" style="display:none;">-</button>
+    <span>
+      {% if quantity %}
+      {{ quantity }}
+      {% else %}
+      {% set quantity = 1 %}
+      1
+      {% endif %}
+    </span>
+    <button type="button" class="btn btn-danger btn-lg btn-decrement-item" {% if quantity < 2 %}style="display:none;"{% endif %}>-</button>
   </td>
   <td class="item-price">{{ item.price|format_currency|safe }}</td>
   <td class="item-total">{{ item.price|format_currency|safe }}</td>

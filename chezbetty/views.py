@@ -72,12 +72,13 @@ def purchase(request):
         items = DBSession.query(Item).filter(Item.enabled == True).order_by(Item.name).limit(6).all()
 
         # Pre-populate cart if returning from undone transaction
-        cart = {}
+        existing_items = ''
         if len(request.GET) != 0:
-            for (item_id, qty) in request.GET.items():
-                cart[Item.from_id(int(item_id)).barcode] = int(qty)
+            for (item_id, quantity) in request.GET.items():
+                item = Item.from_id(int(item_id))
+                existing_items += render('templates/item_row.jinja2', {'item': item, 'quantity': int(quantity)})
 
-        return {'user': user, 'items': items, 'cart': cart}
+        return {'user': user, 'items': items, 'existing_items': existing_items}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
