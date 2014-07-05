@@ -99,6 +99,8 @@ def main(global_config, **settings):
     config.add_route('admin_edit_password', '/admin/edit/password')
     config.add_route('admin_edit_password_submit', '/admin/edit/password/submit')
 
+    config.add_route('admin_shopping_list', '/admin/shopping')
+
 
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')

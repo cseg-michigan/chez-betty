@@ -708,3 +708,29 @@ def admin_edit_password_submit(request):
     return HTTPFound(location=request.route_url('admin_index'))
     # check that changing password for actually logged in user
 
+
+@view_config(route_name='admin_shopping_list',
+        renderer='templates/admin/shopping.jinja2', permission='manage')
+def admin_shopping_list(request):
+    l = {'misc': []}
+    vendors = Vendor.all()
+    items = Item.all()
+    for item in items:
+        if item.in_stock < 10:
+            for iv in item.vendors:
+                if iv.vendor_id not in l:
+                    l[iv.vendor_id] = []
+                l[iv.vendor_id].append(item)
+            if len(item.vendors) == 0:
+                l['misc'].append(item)
+
+    class Object():
+        pass
+
+    misc_vendor = Object()
+    misc_vendor.name = 'Other'
+    misc_vendor.id = 'misc'
+    vendors.append(misc_vendor)
+
+    return {'vendors': vendors, 'items': l}
+

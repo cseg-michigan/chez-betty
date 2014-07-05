@@ -28,6 +28,10 @@ class Item(Versioned, Base):
     def from_barcode(cls, barcode):
         return DBSession.query(cls).filter(cls.barcode == barcode).one()
 
+    @classmethod
+    def all(cls):
+        return DBSession.query(cls).filter(cls.enabled).all()
+
     def __str__(self):
         return "<Item (%s)>" % self.name
 

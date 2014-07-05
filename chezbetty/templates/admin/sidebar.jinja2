@@ -35,5 +35,6 @@
 <ul class="nav nav-sidebar">
   <li><span>Administrative</span></li>
   <li><a href="#">Demo Mode<div style="float: right;"><input type="checkbox" name="admin-demo-mode" {% if demo %}checked="checked"{% endif %}></input></div></a></li>
+  <li {% if active_page == 'shopping_list' %}class="active"{% endif %}><a href="/admin/shopping">Shopping List</a></li>
   <li {% if active_page == 'edit_password' %}class="active"{% endif %}><a href="/admin/edit/password">Edit Password</a></li>
 </ul>

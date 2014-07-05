@@ -1,0 +1,50 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'shopping_list' %}
+{% block title %}Shopping List{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Shopping List</h1>
+{% endblock %}
+
+
+{% block content %}
+
+{% for vendor in vendors %}
+
+<h2>{{ vendor.name }}</h2>
+
+<table class="table">
+
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Vendor Item Num</th>
+      <th>Barcode</th>
+      <th>In Stock</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for item in items[vendor.id] %}
+    <tr>
+      <td>{{ item.name }}</td>
+      {% if item.vendors %}
+      {% for iv in item.vendors %}
+      {% if iv.vendor_id == vendor.id %}
+      <td>{{ iv.item_number }}</td>
+      {% endif %}
+      {% endfor %}
+      {% else %}
+      <td></td>
+      {% endif %}
+      <td>{{ item.barcode }}</td>
+      <td>{{ item.in_stock }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endfor %}
+
+
+{% endblock %}
