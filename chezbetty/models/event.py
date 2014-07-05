@@ -10,7 +10,7 @@ class Event(Base):
 
     id        = Column(Integer, primary_key=True, nullable=False)
     timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
-    user_id   = Column(Integer, ForeignKey("users.id"), nullable=True) # user that performed the transaction
+    user_id   = Column(Integer, ForeignKey("users.id"), nullable=False) # user that performed the event
     notes     = Column(Text)
 
     type = Column(Enum("purchase", "deposit", "adjustment", "restock",
