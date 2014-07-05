@@ -32,74 +32,51 @@ function demo_state_fail(data) {
 	alert_error("Failed to save demo state.");
 }
 
-$(".edit-item-row").on("click", "button", function () {
-	btn_type = $(this).attr("id").split("-")[1];
-	item_id = $(this).attr("id").split("-")[3];
-	item_row = $("#item-" + item_id);
+function toggle_enabled (type, btn) {
+	btn_type = btn.attr("id").split("-")[1];
+	id = btn.attr("id").split("-")[3];
+	row = $("#"+type+"-" + id)
 
 	if (btn_type == "disable") {
 
-		// Mark the item to be disabled upon submit
-		item_row.children("#item-enabled-"+item_id).val("0");
+		// Mark the row to be disabled upon submit
+		row.children("#"+type+"-enabled-"+id).val("0");
 
-		// Gray out the item to show it will be deleted
-		$("#item-" + item_id + " input:text").attr("disabled", "disabled");
-
-		// Hide the delete button
-		$(this).hide();
-
-		// Display the undo button
-		$("#btn-enable-item-" + item_id).show();
-
-	} else if (btn_type == "enable") {
-
-		// Mark the item as enabled
-		item_row.children("#item-enabled-"+item_id).val("1");
-
-		// Un-disable the boxes in the row
-		$("#item-" + item_id + " input:text").removeAttr("disabled");
-
-		// Hide the undo button
-		$(this).hide();
-
-		// Show the delete button again
-		$("#btn-disable-item-" + item_id).show();
-	}
-});
-
-$(".edit-user-row").on("click", "button", function () {
-	btn_type = $(this).attr("id").split("-")[1];
-	user_id = $(this).attr("id").split("-")[3];
-	user_row = $("#user-" + user_id);
-
-	if (btn_type == "disable") {
-
-		// Mark the user to be disabled upon submit
-		user_row.children("#user-enabled-"+user_id).val("0");
-
-		// Gray out the user to show it will be deleted
-		$("#user-" + user_id + " input:text").attr("disabled", "disabled");
+		// Gray out the row to show it will be deleted
+		$("#"+type+"-" + id + " input:text").attr("disabled", "disabled");
 
 		// Hide the delete button
-		$(this).hide();
+		btn.hide();
 
 		// Display the undo button
-		$("#btn-enable-user-" + user_id).show();
+		$("#btn-enable-"+type+"-" + id).show();
 
 	} else if (btn_type == "enable") {
 
 		// Mark the user as enabled
-		user_row.children("#user-enabled-"+user_id).val("1");
+		row.children("#"+type+"-enabled-"+id).val("1");
 
 		// Un-disable the boxes in the row
-		$("#user-" + user_id + " input:text").removeAttr("disabled");
+		$("#"+type+"-" + id + " input:text").removeAttr("disabled");
 
 		// Hide the undo button
-		$(this).hide();
+		btn.hide();
 
 		// Show the delete button again
-		$("#btn-disable-user-" + user_id).show();
+		$("#btn-disable-"+type+"-" + id).show();
 	}
+}
+
+$(".edit-item-row").on("click", "button", function () {
+	toggle_enabled("item", $(this));
+});
+
+$(".edit-user-row").on("click", "button", function () {
+	toggle_enabled("user", $(this));
+});
+
+$(".edit-vendor-row").on("click", "button", function () {
+	toggle_enabled("vendor", $(this));
 });
 
 // Add a new row to the add items form

@@ -19,6 +19,8 @@ from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
 from .models import event as __event
+from .models.vendor import Vendor
+from .models.item_vendor import ItemVendor
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -114,6 +116,7 @@ def admin_index(request):
                 inventory=inventory,
                 best_selling_items=bsi)
 
+
 @view_config(route_name='admin_demo', renderer='json')
 def admin_demo(request):
     global demo_lock
@@ -125,18 +128,18 @@ def admin_demo(request):
             demo = False
         return {}
 
+
 @view_config(route_name='admin_item_barcode_json', renderer='json')
 def admin_item_barcode_json(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])
+        status = 'success'
+        item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
+        return {'status': 'success',
+                'data':   item_restock_html,
+                'id':     item.id}
     except:
         return {'status': 'unknown_barcode'}
-    if item.enabled:
-        status = 'success'
-    else:
-        status = 'disabled'
-    item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
-    return {'status' : status, 'data' : item_restock_html, 'id' : item.id}
 
 
 @view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission='manage')
@@ -192,20 +195,19 @@ def admin_restock_submit(request):
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 
-@view_config(route_name='admin_add_items', renderer='templates/admin/add_items.jinja2', permission='manage')
-def admin_add_items(request):
+@view_config(route_name='admin_items_add', renderer='templates/admin/items_add.jinja2', permission='manage')
+def admin_items_add(request):
     if len(request.GET) == 0:
-        return {'items' : {'count': 1,
-                'name-0': '',
-                'barcode-0': '',
-                }}
+        return {'items': {'count': 1,
+                          'name-0': '',
+                          'barcode-0': '',
+                         }}
     else:
-        d = {'items' : request.GET}
-        return d
+        return {'items': request.GET}
 
 
-@view_config(route_name='admin_add_items_submit', request_method='POST', permission='manage')
-def admin_add_items_submit(request):
+@view_config(route_name='admin_items_add_submit', request_method='POST', permission='manage')
+def admin_items_add_submit(request):
     count = 0
     error_items = []
 
@@ -261,21 +263,21 @@ def admin_add_items_submit(request):
                 flat['{}-{}'.format(k, e_count)] = v
             e_count += 1
         flat['count'] = len(error_items)
-        return HTTPFound(location=request.route_url('admin_add_items', _query=flat))
+        return HTTPFound(location=request.route_url('admin_items_add', _query=flat))
     else:
-        return HTTPFound(location=request.route_url('admin_edit_items'))
+        return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
-@view_config(route_name='admin_edit_items', renderer='templates/admin/edit_items.jinja2', permission='manage')
-def admin_edit_items(request):
+@view_config(route_name='admin_items_edit', renderer='templates/admin/items_edit.jinja2', permission='manage')
+def admin_items_edit(request):
     items_active = DBSession.query(Item).filter_by(enabled=True).order_by(Item.name).all()
     items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
     items = items_active + items_inactive
     return {'items': items}
 
 
-@view_config(route_name='admin_edit_items_submit', request_method='POST', permission='manage')
-def admin_edit_items_submit(request):
+@view_config(route_name='admin_items_edit_submit', request_method='POST', permission='manage')
+def admin_items_edit_submit(request):
     updated = set()
     for key in request.POST:
         try:
@@ -305,7 +307,116 @@ def admin_edit_items_submit(request):
         count = len(updated)
         #request.session.flash('{} item{} properties updated successfully.'.format(count, ['s',''][count==1]), 'success')
         request.session.flash('Items updated successfully.', 'success')
-    return HTTPFound(location=request.route_url('admin_edit_items'))
+    return HTTPFound(location=request.route_url('admin_items_edit'))
+
+
+@view_config(route_name='admin_item_edit', renderer='templates/admin/item_edit.jinja2', permission='manage')
+def admin_item_edit(request):
+    try:
+        item = Item.from_id(request.matchdict['item_id'])
+        vendors = Vendor.all()
+
+        # Don't display vendors that already have an item number in the add
+        # new vendor item number section
+        used_vendors = []
+        for vendoritem in item.vendors:
+            if vendoritem.enabled:
+                used_vendors.append(vendoritem.vendor_id)
+        new_vendors = []
+        for vendor in vendors:
+            if vendor.id not in used_vendors and vendor.enabled:
+                new_vendors.append(vendor)
+
+        return {'item': item, 'vendors': vendors, 'new_vendors': new_vendors}
+    except Exception as e:
+        print(e)
+        request.session.flash('Unable to find item {}'.format(request.matchdict['item_id']), 'error')
+        return HTTPFound(location=request.route_url('admin_items_edit'))
+
+
+@view_config(route_name='admin_item_edit_submit', request_method='POST', permission='manage')
+def admin_item_edit_submit(request):
+    try:
+        item = Item.from_id(int(request.POST['item-id']))
+
+        for key in request.POST:
+            fields = key.split('-')
+            if fields[1] == 'vendor' and fields[2] == 'id':
+                # Handle the vendor item numbers
+                vendor_id = int(request.POST['item-vendor-id-'+fields[3]])
+                item_num  = request.POST['item-vendor-item_num-'+fields[3]]
+
+                for vendoritem in item.vendors:
+                    # Update the VendorItem record.
+                    # If the item num is blank, set the record to disabled
+                    # and do not update the item number.
+                    if vendoritem.vendor_id == vendor_id and vendoritem.enabled:
+                        if item_num == '':
+                            vendoritem.enabled = False
+                        else:
+                            vendoritem.item_number = item_num
+                        break
+                else:
+                    if item_num != '':
+                        # Add a new vendor to the item
+                        vendor = Vendor.from_id(vendor_id)
+                        item_vendor = ItemVendor(vendor, item, item_num)
+                        DBSession.add(item_vendor)
+
+            else:
+                # Update the base item
+                field = fields[1]
+                if field == 'price':
+                    val = round(float(request.POST[key]), 2)
+                elif field == 'wholesale':
+                    val = round(float(request.POST[key]), 4)
+                else:
+                    val = request.POST[key]
+
+                setattr(item, field, val)
+        
+        DBSession.flush()
+        request.session.flash('Item updated successfully.', 'success')
+        return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
+
+    except Exception as e:
+        request.session.flash('Error when updating product.', 'error')
+        return HTTPFound(location=request.route_url('admin_items_edit'))
+
+
+@view_config(route_name='admin_vendors_edit', renderer='templates/admin/vendors_edit.jinja2', permission='manage')
+def admin_vendors_edit(request):
+    vendors_active = DBSession.query(Vendor).filter_by(enabled=True).order_by(Vendor.name).all()
+    vendors_inactive = DBSession.query(Vendor).filter_by(enabled=False).order_by(Vendor.name).all()
+    vendors = vendors_active + vendors_inactive
+    return {'vendors': vendors}
+
+
+@view_config(route_name='admin_vendors_edit_submit', request_method='POST', permission='manage')
+def admin_vendors_edit_submit(request):
+
+    # Group all the form items into a nice dict that we can cleanly iterate
+    vendors = {}
+    for key in request.POST:
+        fields = key.split('-')
+        if fields[2] not in vendors:
+            vendors[fields[2]] = {}
+        vendors[fields[2]][fields[1]] = request.POST[key]
+
+    for vendor_id, vendor_props in vendors.items():
+        if vendor_id == 'new':
+            if vendor_props['name'] == '':
+                # Don't add blank vendors
+                continue
+            vendor = Vendor(vendor_props['name'])
+            DBSession.add(vendor)
+        else:
+            vendor = Vendor.from_id(int(vendor_id))
+            for prop_name, prop_val in vendor_props.items():
+                setattr(vendor, prop_name, prop_val)
+
+    request.session.flash('Vendors updated successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_vendors_edit'))
 
 
 @view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission='manage')

@@ -1,5 +1,5 @@
 {% extends "base.jinja2" %}
-{% set active_page = 'edit_items' %}
+{% set active_page = 'items_edit' %}
 {% block title %}Edit Items{% endblock %}
 
 {% block top %}
@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<form role="form" action="/admin/edit/items/submit" method="post" id="form-edit-items">
+<form role="form" action="/admin/items/edit/submit" method="post" id="form-edit-items">
 
   <div id="edit-items">
 
@@ -17,8 +17,8 @@
 
       <thead>
         <tr>
+          <th></th>
           <th>Name</th>
-          <th>Barcode</th>
           <th>Item Price</th>
           <th>Item Wholesale</th>
           <th>Markup</th>
@@ -53,8 +53,8 @@
 
         <tr id="item-{{ item.id }}" class="edit-item-row">
 
-          <td><input type="text" class="form-control" id="item-name-{{ item.id }}" name="item-name-{{ item.id }}" value="{{ item.name }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
-          <td><input type="text" class="form-control" id="item-barcode-{{ item.id }}" name="item-barcode-{{ item.id }}" value="{{ item.barcode }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td><a href="/admin/item/edit/{{ item.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+          <td>{{ item.name }}</td>
           <td class="{{ price_class }}"><input type="text" class="form-control" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td class="{{ wholesale_class }}"><input type="text" class="form-control" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td id="item-markup-{{ item.id }}" class="item-markup right">{{ markup }}%</td>

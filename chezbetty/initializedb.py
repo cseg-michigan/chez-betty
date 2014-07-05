@@ -14,6 +14,8 @@ from pyramid.scripts.common import parse_vars
 import models.account as account
 from models.item import Item
 from models.user import User
+from models.vendor import Vendor
+from models.item_vendor import ItemVendor
 from models.model import *
 from models.transaction import *
 

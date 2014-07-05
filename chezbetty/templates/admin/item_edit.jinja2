@@ -1,0 +1,88 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'items_edit' %}
+{% block title %}Edit Item{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Edit Item</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/item/edit/submit" method="post" id="form-edit-item">
+  <input type="hidden" id="item-id" name="item-id" value="{{ item.id }}">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Item Details</div>
+    <div class="panel-body">
+      <dl class="dl-horizontal">
+        <dt>Name</dt>
+        <dd><input type="text" class="form-control" id="item-name" name="item-name" value="{{ item.name }}"></dd>
+
+        <dt>Barcode</dt>
+        <dd><input type="text" class="form-control" id="item-barcode" name="item-barcode" value="{{ item.barcode }}"></dd>
+
+        <dt>Price</dt>
+        <dd><input type="text" class="form-control" id="item-price" name="item-price" value="{{ item.price }}"></dd>
+
+        <dt>Wholesale</dt>
+        <dd><input type="text" class="form-control" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale }}"></dd>
+
+        <dt>In Stock</dt>
+        <dd>{{ item.in_stock }}</dd>
+      </dl>
+    </div>
+
+    <ul class="list-group">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Vendor</th>
+            <th>Product Num</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {% for v in item.vendors %}
+          {% if v.enabled %}
+          <tr>
+
+            <td>{{ v.vendor.name }} <input type="hidden" name="item-vendor-id-{{ v.id}}" value="{{ v.vendor_id }}"></td>
+            <td>
+              <input type="text" class="form-control" id="item-vendor-item_num-{{ v.id }}" name="item-vendor-item_num-{{ v.id }}" value="{{ v.item_number }}">
+            </td>
+
+          </tr>
+          {% endif %}
+          {% endfor %}
+
+          {% if new_vendors %}
+          <tr>
+
+            <td>
+              <select class="form-control" id="item-vendor-id-new" name="item-vendor-id-new">
+                {% for vendor in new_vendors %}
+                <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <input type="text" class="form-control" id="item-vendor-item_num-new" name="item-vendor-item_num-new">
+            </td>
+
+          </tr>
+          {% endif %}
+
+        </tbody>
+      </table>
+    </ul>
+  </div>
+
+  <button type="submit" class="btn btn-success">Update Item</button>
+
+</form>
+
+{% endblock %}
