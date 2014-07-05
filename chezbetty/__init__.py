@@ -61,16 +61,25 @@ def main(global_config, **settings):
     config.add_route('admin_item_barcode_json', '/admin/item/{barcode}/json')
     config.add_route('admin_restock', '/admin/restock')
     config.add_route('admin_restock_submit', '/admin/restock/submit')
-    config.add_route('admin_add_items', '/admin/add/items')
-    config.add_route('admin_add_items_submit', '/admin/add/items/submit')
-    config.add_route('admin_edit_items', '/admin/edit/items')
-    config.add_route('admin_edit_items_submit', '/admin/edit/items/submit')
+
+    config.add_route('admin_items_add',         '/admin/items/add')
+    config.add_route('admin_items_add_submit',  '/admin/items/add/submit')
+    config.add_route('admin_items_edit',        '/admin/items/edit')
+    config.add_route('admin_items_edit_submit', '/admin/items/edit/submit')
+    config.add_route('admin_item_edit_submit',  '/admin/item/edit/submit')
+    config.add_route('admin_item_edit',         '/admin/item/edit/{item_id}')
+
+    config.add_route('admin_vendors_edit',        '/admin/vendors/edit')
+    config.add_route('admin_vendors_edit_submit', '/admin/vendors/edit/submit')
+
     config.add_route('admin_inventory', '/admin/inventory')
     config.add_route('admin_inventory_submit', '/admin/inventory/submit')
+
     config.add_route('admin_edit_users', '/admin/edit/users')
     config.add_route('admin_edit_users_submit', '/admin/edit/users/submit')
     config.add_route('admin_edit_balance', '/admin/edit/balance')
     config.add_route('admin_edit_balance_submit', '/admin/edit/balance/submit')
+
     config.add_route('admin_cash_reconcile', '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit', '/admin/cash/reconcile/submit')
     config.add_route('admin_cash_reconcile_success', '/admin/cash/reconcile/success')
@@ -80,8 +89,10 @@ def main(global_config, **settings):
     config.add_route('admin_cash_withdrawal_submit', '/admin/cash/withdrawal/submit')
     config.add_route('admin_cash_adjustment', '/admin/cash/adjustment')
     config.add_route('admin_cash_adjustment_submit', '/admin/cash/adjustment/submit')
+
     config.add_route('admin_transactions', '/admin/transactions')
     config.add_route('admin_event', '/admin/event/{event_id}')
+
     config.add_route('admin_edit_password', '/admin/edit/password')
     config.add_route('admin_edit_password_submit', '/admin/edit/password/submit')
 
