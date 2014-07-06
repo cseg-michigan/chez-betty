@@ -157,6 +157,6 @@ def groupfinder(userid, request):
     elif user.role == "manager":
         return ["user","manager"]
     elif user.role == "administrator":
-        return ["user","manager","admin", "serviceaccount"]
+        return ["user","manager","admin","serviceaccount"]
     elif user.role == "serviceaccount":
         return ["user", "serviceaccount"]

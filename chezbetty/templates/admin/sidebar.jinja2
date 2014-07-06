@@ -6,7 +6,9 @@
   <li {% if active_page == 'restock' %}class="active"{% endif %}><a href="/admin/restock">Restock</a></li>
   <li {% if active_page == 'inventory' %}class="active"{% endif %}><a href="/admin/inventory">Run Inventory</a></li>
   <li {% if active_page == 'cash_reconcile' %}class="active"{% endif %}><a href="/admin/cash/reconcile">Empty Cash Box</a></li>
+  {% if request.has_permission("admin") %}
   <li {% if active_page == 'btc_reconcile' %}class="active"{% endif %}><a href="/admin/btc/reconcile">Deposit Bitcoins</a></li>
+  {% endif %}
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>Manage Items</span></li>
@@ -17,25 +19,31 @@
   <li><span>Manage Vendors</span></li>
   <li {% if active_page == 'vendors_edit' %}class="active"{% endif %}><a href="/admin/vendors/edit">Edit Vendors</a></li>
 </ul>
+{% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
   <li><span>Manage Users</span></li>
   <li {% if active_page == 'users_edit' %}class="active"{% endif %}><a href="/admin/users/edit">Edit Users</a></li>
   <li {% if active_page == 'user_balance_edit' %}class="active"{% endif %}><a href="/admin/user/balance/edit">Edit User Balance</a></li>
   <li {% if active_page == 'users_email' %}class="active"{% endif %}><a href="/admin/users/email">Email Users</a></li>
 </ul>
+{% endif %}
 <ul class="nav nav-sidebar">
   <li><span>View Transactions</span></li>
   <li {% if active_page == 'transactions' %}class="active"{% endif %}><a href="/admin/transactions">Transactions</a></li>
 </ul>
+{% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
   <li><span>Move Money</span></li>
   <li {% if active_page == 'donation' %}class="active"{% endif %}><a href="/admin/cash/donation">Donation</a></li>
   <li {% if active_page == 'withdrawal' %}class="active"{% endif %}><a href="/admin/cash/withdrawal">Withdrawal</a></li>
   <li {% if active_page == 'adjustmen' %}class="active"{% endif %}><a href="/admin/cash/adjustment">Adjustment</a></li>
 </ul>
+{% endif %}
+{% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
   <li><span>Administrative</span></li>
   <li><a href="#">Demo Mode<div style="float: right;"><input type="checkbox" name="admin-demo-mode" {% if demo %}checked="checked"{% endif %}></input></div></a></li>
   <li {% if active_page == 'shopping_list' %}class="active"{% endif %}><a href="/admin/shopping">Shopping List</a></li>
   <li {% if active_page == 'password_edit' %}class="active"{% endif %}><a href="/admin/password/edit">Edit Password</a></li>
 </ul>
+{% endif %}

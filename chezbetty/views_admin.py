@@ -45,7 +45,9 @@ def add_global(event):
 ### Admin
 ###
 
-@view_config(route_name='admin_index', renderer='templates/admin/index.jinja2', permission='manage')
+@view_config(route_name='admin_index',
+             renderer='templates/admin/index.jinja2',
+             permission='manage')
 def admin_index(request):
     events          = DBSession.query(Event)\
                                .order_by(desc(Event.id))\
@@ -117,7 +119,9 @@ def admin_index(request):
                 best_selling_items=bsi)
 
 
-@view_config(route_name='admin_demo', renderer='json')
+@view_config(route_name='admin_demo',
+             renderer='json',
+             permission='admin')
 def admin_demo(request):
     global demo_lock
     global demo
@@ -129,7 +133,9 @@ def admin_demo(request):
         return {}
 
 
-@view_config(route_name='admin_item_barcode_json', renderer='json')
+@view_config(route_name='admin_item_barcode_json',
+             renderer='json',
+             permission='manage')
 def admin_item_barcode_json(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])
@@ -142,12 +148,16 @@ def admin_item_barcode_json(request):
         return {'status': 'unknown_barcode'}
 
 
-@view_config(route_name='admin_restock', renderer='templates/admin/restock.jinja2', permission='manage')
+@view_config(route_name='admin_restock',
+             renderer='templates/admin/restock.jinja2',
+             permission='manage')
 def admin_restock(request):
     return {}
 
 
-@view_config(route_name='admin_restock_submit', request_method='POST')
+@view_config(route_name='admin_restock_submit',
+             request_method='POST',
+             permission='manage')
 def admin_restock_submit(request):
     i = iter(request.POST)
     items = {}
@@ -195,7 +205,71 @@ def admin_restock_submit(request):
     return HTTPFound(location=request.route_url('admin_edit_items'))
 
 
-@view_config(route_name='admin_items_add', renderer='templates/admin/items_add.jinja2', permission='manage')
+@view_config(route_name='admin_cash_reconcile',
+             renderer='templates/admin/cash_reconcile.jinja2',
+             permission='manage')
+def admin_cash_reconcile(request):
+    return {}
+
+
+@view_config(route_name='admin_cash_reconcile_submit', request_method='POST',
+        permission='manage')
+def admin_cash_reconcile_submit(request):
+    try:
+        amount = Decimal(request.POST['amount'])
+    except ValueError:
+        request.session.flash('Error: Bad value for cash box amount', 'error')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+    expected_amount = datalayer.reconcile_cash(amount, request.user)
+
+    request.session.flash('Cash box recorded successfully', 'success')
+    return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
+        _query={'amount':amount, 'expected_amount':expected_amount}))
+
+
+@view_config(route_name='admin_cash_reconcile_success',
+        renderer='templates/admin/cash_reconcile_complete.jinja2', permission='manage')
+def admin_cash_reconcile_success(request):
+    deposit = float(request.GET['amount'])
+    expected = float(request.GET['expected_amount'])
+    difference = deposit - expected
+    return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
+
+
+@view_config(route_name='admin_inventory',
+             renderer='templates/admin/inventory.jinja2',
+             permission='manage')
+def admin_inventory(request):
+    items = DBSession.query(Item).order_by(Item.name).all()
+    return {'items': items}
+
+
+@view_config(route_name='admin_inventory_submit',
+             request_method='POST',
+             permission='manage')
+def admin_inventory_submit(request):
+    items = {}
+    for key in request.POST:
+        item = Item.from_id(key.split('-')[2])
+        try:
+            items[item] = int(request.POST[key])
+        except ValueError:
+            pass
+    t = datalayer.reconcile_items(items, request.user)
+    request.session.flash('Inventory Reconciled', 'success')
+    if t.amount < 0:
+        request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
+    elif t.amount == 0:
+        request.session.flash('Chez Betty was spot on.', 'success')
+    else:
+        request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
+    return HTTPFound(location=request.route_url('admin_inventory'))
+
+
+@view_config(route_name='admin_items_add',
+             renderer='templates/admin/items_add.jinja2',
+             permission='manage')
 def admin_items_add(request):
     if len(request.GET) == 0:
         return {'items': {'count': 1,
@@ -206,7 +280,9 @@ def admin_items_add(request):
         return {'items': request.GET}
 
 
-@view_config(route_name='admin_items_add_submit', request_method='POST', permission='manage')
+@view_config(route_name='admin_items_add_submit',
+             request_method='POST',
+             permission='manage')
 def admin_items_add_submit(request):
     count = 0
     error_items = []
@@ -268,7 +344,9 @@ def admin_items_add_submit(request):
         return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
-@view_config(route_name='admin_items_edit', renderer='templates/admin/items_edit.jinja2', permission='manage')
+@view_config(route_name='admin_items_edit',
+             renderer='templates/admin/items_edit.jinja2',
+             permission='manage')
 def admin_items_edit(request):
     items_active = DBSession.query(Item).filter_by(enabled=True).order_by(Item.name).all()
     items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
@@ -276,7 +354,9 @@ def admin_items_edit(request):
     return {'items': items}
 
 
-@view_config(route_name='admin_items_edit_submit', request_method='POST', permission='manage')
+@view_config(route_name='admin_items_edit_submit',
+             request_method='POST',
+             permission='manage')
 def admin_items_edit_submit(request):
     updated = set()
     for key in request.POST:
@@ -314,7 +394,9 @@ def admin_items_edit_submit(request):
     return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
-@view_config(route_name='admin_item_edit', renderer='templates/admin/item_edit.jinja2', permission='manage')
+@view_config(route_name='admin_item_edit',
+             renderer='templates/admin/item_edit.jinja2',
+             permission='manage')
 def admin_item_edit(request):
     try:
         item = Item.from_id(request.matchdict['item_id'])
@@ -338,7 +420,9 @@ def admin_item_edit(request):
         return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
-@view_config(route_name='admin_item_edit_submit', request_method='POST', permission='manage')
+@view_config(route_name='admin_item_edit_submit',
+             request_method='POST',
+             permission='manage')
 def admin_item_edit_submit(request):
     try:
         item = Item.from_id(int(request.POST['item-id']))
@@ -388,7 +472,9 @@ def admin_item_edit_submit(request):
         return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
-@view_config(route_name='admin_vendors_edit', renderer='templates/admin/vendors_edit.jinja2', permission='manage')
+@view_config(route_name='admin_vendors_edit',
+             renderer='templates/admin/vendors_edit.jinja2',
+             permission='manage')
 def admin_vendors_edit(request):
     vendors_active = DBSession.query(Vendor).filter_by(enabled=True).order_by(Vendor.name).all()
     vendors_inactive = DBSession.query(Vendor).filter_by(enabled=False).order_by(Vendor.name).all()
@@ -396,7 +482,9 @@ def admin_vendors_edit(request):
     return {'vendors': vendors}
 
 
-@view_config(route_name='admin_vendors_edit_submit', request_method='POST', permission='manage')
+@view_config(route_name='admin_vendors_edit_submit',
+             request_method='POST',
+             permission='manage')
 def admin_vendors_edit_submit(request):
 
     # Group all the form items into a nice dict that we can cleanly iterate
@@ -423,33 +511,9 @@ def admin_vendors_edit_submit(request):
     return HTTPFound(location=request.route_url('admin_vendors_edit'))
 
 
-@view_config(route_name='admin_inventory', renderer='templates/admin/inventory.jinja2', permission='manage')
-def admin_inventory(request):
-    items = DBSession.query(Item).order_by(Item.name).all()
-    return {'items': items}
-
-
-@view_config(route_name='admin_inventory_submit', request_method='POST', permission='manage')
-def admin_inventory_submit(request):
-    items = {}
-    for key in request.POST:
-        item = Item.from_id(key.split('-')[2])
-        try:
-            items[item] = int(request.POST[key])
-        except ValueError:
-            pass
-    t = datalayer.reconcile_items(items, request.user)
-    request.session.flash('Inventory Reconciled', 'success')
-    if t.amount < 0:
-        request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
-    elif t.amount == 0:
-        request.session.flash('Chez Betty was spot on.', 'success')
-    else:
-        request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
-    return HTTPFound(location=request.route_url('admin_inventory'))
-
-
-@view_config(route_name='admin_users_edit', renderer='templates/admin/users_edit.jinja2')
+@view_config(route_name='admin_users_edit',
+             renderer='templates/admin/users_edit.jinja2',
+             permission='admin')
 def admin_users_edit(request):
     enabled_users = DBSession.query(User).filter_by(enabled=True).order_by(User.name).all()
     disabled_users = DBSession.query(User).filter_by(enabled=False).order_by(User.name).all()
@@ -460,8 +524,10 @@ def admin_users_edit(request):
              ('administrator', 'Administrator')]
     return {'users': users, 'roles': roles}
 
+
 @view_config(route_name='admin_users_edit_submit',
-        request_method='POST', permission='admin')
+             request_method='POST',
+             permission='admin')
 def admin_users_edit_submit(request):
     for key in request.POST:
         user = User.from_id(int(key.split('-')[2]))
@@ -469,14 +535,18 @@ def admin_users_edit_submit(request):
     request.session.flash('Users updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_users_edit'))
 
+
 @view_config(route_name='admin_user_balance_edit',
-        renderer='templates/admin/user_balance_edit.jinja2')
+             renderer='templates/admin/user_balance_edit.jinja2',
+             permission='admin')
 def admin_user_balance_edit(request):
     users = DBSession.query(User).order_by(User.name).all()
     return {'users': users}
 
-@view_config(route_name='admin_user_balance_edit_submit', request_method='POST',
-        permission='admin')
+
+@view_config(route_name='admin_user_balance_edit_submit',
+             request_method='POST',
+             permission='admin')
 def admin_user_balance_edit_submit(request):
     try:
         user = User.from_id(int(request.POST['user']))
@@ -496,13 +566,16 @@ def admin_user_balance_edit_submit(request):
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
 
-@view_config(route_name='admin_users_email', renderer='templates/admin/users_email.jinja2')
+@view_config(route_name='admin_users_email',
+             renderer='templates/admin/users_email.jinja2',
+             permission='admin')
 def admin_users_email(request):
     return {}
 
 
 @view_config(route_name='admin_users_email_deadbeats',
-        request_method='POST', permission='admin')
+             request_method='POST',
+             permission='admin')
 def admin_users_email_deadbeats(request):
     deadbeats = DBSession.query(User).filter(User.enabled).filter(User.balance<-20.0).all()
     for deadbeat in deadbeats:
@@ -514,7 +587,8 @@ def admin_users_email_deadbeats(request):
 
 
 @view_config(route_name='admin_users_email_all',
-        request_method='POST', permission='admin')
+             request_method='POST',
+             permission='admin')
 def admin_users_email_all(request):
     users = User.all()
     text = request.POST['text']
@@ -524,45 +598,16 @@ def admin_users_email_all(request):
     return HTTPFound(location=request.route_url('admin_index'))
 
 
-@view_config(route_name='admin_cash_reconcile',
-        renderer='templates/admin/cash_reconcile.jinja2', permission='manage')
-def admin_cash_reconcile(request):
-    return {}
-
-
-@view_config(route_name='admin_cash_reconcile_submit', request_method='POST',
-        permission='manage')
-def admin_cash_reconcile_submit(request):
-    try:
-        amount = Decimal(request.POST['amount'])
-    except ValueError:
-        request.session.flash('Error: Bad value for cash box amount', 'error')
-        return HTTPFound(location=request.route_url('admin_cash_reconcile'))
-
-    expected_amount = datalayer.reconcile_cash(amount, request.user)
-
-    request.session.flash('Cash box recorded successfully', 'success')
-    return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
-        _query={'amount':amount, 'expected_amount':expected_amount}))
-
-
-@view_config(route_name='admin_cash_reconcile_success',
-        renderer='templates/admin/cash_reconcile_complete.jinja2', permission='manage')
-def admin_cash_reconcile_success(request):
-    deposit = float(request.GET['amount'])
-    expected = float(request.GET['expected_amount'])
-    difference = deposit - expected
-    return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
-
-
 @view_config(route_name='admin_cash_donation',
-        renderer='templates/admin/cash_donation.jinja2', permission='manage')
+             renderer='templates/admin/cash_donation.jinja2',
+             permission='admin')
 def admin_cash_donation(request):
     return {}
 
 
-@view_config(route_name='admin_cash_donation_submit', request_method='POST',
-        permission='manage')
+@view_config(route_name='admin_cash_donation_submit',
+             request_method='POST',
+             permission='admin')
 def admin_cash_donation_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
@@ -583,13 +628,15 @@ def admin_cash_donation_submit(request):
 
 
 @view_config(route_name='admin_cash_withdrawal',
-        renderer='templates/admin/cash_withdrawal.jinja2', permission='manage')
+             renderer='templates/admin/cash_withdrawal.jinja2',
+             permission='admin')
 def admin_cash_withdrawal(request):
     return {}
 
 
-@view_config(route_name='admin_cash_withdrawal_submit', request_method='POST',
-        permission='manage')
+@view_config(route_name='admin_cash_withdrawal_submit',
+             request_method='POST',
+             permission='admin')
 def admin_cash_withdrawal_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
@@ -610,13 +657,15 @@ def admin_cash_withdrawal_submit(request):
 
 
 @view_config(route_name='admin_cash_adjustment',
-        renderer='templates/admin/cash_adjustment.jinja2', permission='manage')
+             renderer='templates/admin/cash_adjustment.jinja2',
+             permission='admin')
 def admin_cash_adjustment(request):
     return {}
 
 
-@view_config(route_name='admin_cash_adjustment_submit', request_method='POST',
-        permission='manage')
+@view_config(route_name='admin_cash_adjustment_submit',
+             request_method='POST',
+             permission='admin')
 def admin_cash_adjustment_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
@@ -637,7 +686,8 @@ def admin_cash_adjustment_submit(request):
 
 
 @view_config(route_name='admin_btc_reconcile',
-        renderer='templates/admin/btc_reconcile.jinja2', permission='manage')
+             renderer='templates/admin/btc_reconcile.jinja2',
+             permission='admin')
 def admin_btc_reconcile(request):
     try:
         btc_balance = Bitcoin.get_balance()
@@ -651,8 +701,9 @@ def admin_btc_reconcile(request):
     return {'btc': btc, 'btcbox': btcbox}
 
 
-@view_config(route_name='admin_btc_reconcile_submit', request_method='POST',
-        permission='manage')
+@view_config(route_name='admin_btc_reconcile_submit',
+             request_method='POST',
+             permission='admin')
 def admin_btc_reconcile_submit(request):
     try:
         bitcoin_usd = Bitcoin.convert_all()
@@ -665,14 +716,16 @@ def admin_btc_reconcile_submit(request):
 
 
 @view_config(route_name='admin_transactions',
-        renderer='templates/admin/transactions.jinja2', permission='admin')
+             renderer='templates/admin/transactions.jinja2',
+             permission='manage')
 def admin_transactions(request):
     events = DBSession.query(Event).order_by(desc(Event.id)).all()
     return {'events':events}
 
 
 @view_config(route_name='admin_event',
-        renderer='templates/admin/event.jinja2', permission='admin')
+             renderer='templates/admin/event.jinja2',
+             permission='manage')
 def admin_event(request):
     try:
         e = Event.from_id(int(request.matchdict['event_id']))
@@ -687,13 +740,15 @@ def admin_event(request):
 
 
 @view_config(route_name='admin_password_edit',
-        renderer='templates/admin/password_edit.jinja2', permission='manage')
+             renderer='templates/admin/password_edit.jinja2',
+             permission='manage')
 def admin_password_edit(request):
     return {}
 
 
-@view_config(route_name='admin_password_edit_submit', request_method='POST',
-        permission='manage')
+@view_config(route_name='admin_password_edit_submit',
+             request_method='POST',
+             permission='manage')
 def admin_password_edit_submit(request):
     pwd0 = request.POST['edit-password-0']
     pwd1 = request.POST['edit-password-1']
@@ -707,7 +762,8 @@ def admin_password_edit_submit(request):
 
 
 @view_config(route_name='admin_shopping_list',
-        renderer='templates/admin/shopping.jinja2', permission='manage')
+             renderer='templates/admin/shopping.jinja2',
+             permission='manage')
 def admin_shopping_list(request):
     l = {'misc': []}
     vendors = Vendor.all()
@@ -732,7 +788,8 @@ def admin_shopping_list(request):
     return {'vendors': vendors, 'items': l}
 
 
-@view_config(route_name='login', renderer='templates/login.jinja2')
+@view_config(route_name='login',
+             renderer='templates/login.jinja2')
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):
     login_url = request.resource_url(request.context, 'login')
@@ -766,5 +823,5 @@ def login(request):
 @view_config(route_name='logout')
 def logout(request):
     headers = forget(request)
-    return HTTPFound(location=request.route_url('index'),
+    return HTTPFound(location=request.route_url('login'),
                      headers = headers)

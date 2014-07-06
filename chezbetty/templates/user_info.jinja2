@@ -43,6 +43,9 @@
         <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">Deposit</a>
         {% endif %}
         <a class="btn btn-warning btn-lg" href="/">Logout</a>
+        {% if user.role == "administrator" or user.role == "manager" %}
+        <a class="btn btn-success btn-lg" href="/admin">Admin</a>
+        {% endif %}
       </div>
     </div>
 
