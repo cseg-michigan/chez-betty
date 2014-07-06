@@ -14,7 +14,7 @@
   </div>
   <div class="panel-body">
 
-    {% if demo %}
+    {% if demo and request.has_permission("admin") %}
     <div class="well">
       <h3>Demo Mode:</h3>
       <p class="lead">Touch to scan items</p>
