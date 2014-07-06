@@ -193,7 +193,7 @@ def admin_restock_submit(request):
         else:
             wholesale = cost / quantity
 
-        item.wholesale = round(wholesale, 4)
+        item.wholesale = Decimal(round(wholesale, 4))
 
         if item.price < item.wholesale:
             item.price = round(item.wholesale * Decimal(1.15), 2)
@@ -202,7 +202,7 @@ def admin_restock_submit(request):
 
     datalayer.restock(items, request.user)
     request.session.flash('Restock complete.', 'success')
-    return HTTPFound(location=request.route_url('admin_edit_items'))
+    return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
 @view_config(route_name='admin_cash_reconcile',
@@ -216,16 +216,21 @@ def admin_cash_reconcile(request):
         permission='manage')
 def admin_cash_reconcile_submit(request):
     try:
+        if request.POST['amount'] == '':
+            # We just got an empty string (and not 0)
+            request.session.flash('Error: must enter a cash box amount', 'error')
+            return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
         amount = Decimal(request.POST['amount'])
+        expected_amount = datalayer.reconcile_cash(amount, request.user)
+
+        request.session.flash('Cash box recorded successfully', 'success')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
+            _query={'amount':amount, 'expected_amount':expected_amount}))
+
     except ValueError:
         request.session.flash('Error: Bad value for cash box amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
-
-    expected_amount = datalayer.reconcile_cash(amount, request.user)
-
-    request.session.flash('Cash box recorded successfully', 'success')
-    return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
-        _query={'amount':amount, 'expected_amount':expected_amount}))
 
 
 @view_config(route_name='admin_cash_reconcile_success',

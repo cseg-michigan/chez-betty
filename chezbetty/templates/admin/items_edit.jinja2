@@ -55,8 +55,8 @@
 
           <td><a href="/admin/item/edit/{{ item.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
           <td>{{ item.name }}</td>
-          <td class="{{ price_class }}"><input type="text" class="form-control" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
-          <td class="{{ wholesale_class }}"><input type="text" class="form-control" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="{{ price_class }}"><input type="text" class="form-control numeric" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price|round(2) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="{{ wholesale_class }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td id="item-markup-{{ item.id }}" class="item-markup right">{{ markup }}%</td>
           <td>{{ item.in_stock }}</td>
           <td class="item-actions">
@@ -80,4 +80,5 @@
 
 {% block onload %}
 <script src="{{'chezbetty:static/js/chezbetty-admin-noenter.js'|static_url}}"></script>
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

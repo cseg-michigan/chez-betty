@@ -13,11 +13,15 @@
 
   <dl class="dl-horizontal">
     <dt>Cash Box Contents</dt>
-    <dd><input type="text" class="form-control" id="cash-box-amount" name="amount"></dd>
+    <dd><input type="text" class="form-control numeric" id="cash-box-amount" name="amount"></dd>
   </dl>
 
   <button type="submit" class="btn btn-success">Deposit</button>
 
 </form>
 
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

@@ -23,10 +23,10 @@
         <dd><input type="text" class="form-control" id="item-barcode" name="item-barcode" value="{{ item.barcode }}"></dd>
 
         <dt>Price</dt>
-        <dd><input type="text" class="form-control" id="item-price" name="item-price" value="{{ item.price }}"></dd>
+        <dd><input type="text" class="form-control numeric" id="item-price" name="item-price" value="{{ item.price|round(2) }}"></dd>
 
         <dt>Wholesale</dt>
-        <dd><input type="text" class="form-control" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale }}"></dd>
+        <dd><input type="text" class="form-control numeric" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale|round(4) }}"></dd>
 
         <dt>In Stock</dt>
         <dd>{{ item.in_stock }}</dd>
@@ -85,4 +85,8 @@
 
 </form>
 
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

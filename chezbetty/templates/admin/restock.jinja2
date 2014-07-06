@@ -35,7 +35,7 @@
     <tfoot>
       <tr>
         <td colspan="3">Sales Tax</td>
-        <td><input type="text" class="form-control" id="restock-salestax" name="salestax"></td>
+        <td><input type="text" class="form-control numeric" id="restock-salestax" name="salestax"></td>
       </tr>
       <tr>
         <td colspan="2">Total</td>
@@ -45,7 +45,6 @@
   </table>
 
   <button type="button" id="restock-button" class="btn btn-success">Restock Items</button>
-  <!--<button type="button" class="btn btn-success" onclick="this.parentNode.submit();">Restock Items</button>-->
 
 </form>
 
@@ -53,4 +52,5 @@
 
 {% block onload %}
 <script src="{{'chezbetty:static/js/chezbetty-admin-item.js'|static_url}}"></script>
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

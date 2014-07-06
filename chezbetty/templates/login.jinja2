@@ -54,11 +54,16 @@ body {
   <form class="form-signin" role="form" method="post" action="/login">
     <input type="hidden" name="came_from" value="{{ came_from }}"/>
     <h2 class="form-signin-heading">Please sign in</h2>
-<span class="label label-danger">{{ message[0] }}</span>
-    <input name="login" type="login" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
-    <input name="password" type="password" class="form-control" placeholder="password" required value = "{{ password }}">
+    <span class="label label-danger">{{ message[0] }}</span>
+    <input name="login" type="login" id="login-uniqname" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
+    <input name="password" type="password" id="login-password" class="form-control" placeholder="password" required value = "{{ password }}">
     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
   </form>
 
 </div>
+
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

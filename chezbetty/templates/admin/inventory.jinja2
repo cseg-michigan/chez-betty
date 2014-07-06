@@ -25,7 +25,7 @@
       <tr id="item-{{ item.id }}">
         <td>{{ item.name }}</td>
         <td>{{ item.in_stock }}</td>
-        <td><input type="text" class="form-control" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value=""></td>
+        <td><input type="text" class="form-control numeric" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value=""></td>
       </tr>
       {% endfor %}
     </tbody>
@@ -36,4 +36,8 @@
 
 </form>
 
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

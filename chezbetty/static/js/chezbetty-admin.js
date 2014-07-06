@@ -37,6 +37,7 @@ function add_item_success (data) {
 		if ($("#restock-item-" + data.id).length == 0) {
 			// Add a new item
 			$("#restock-table tbody").append(data.data);
+			attach_keypad();
 		}
 	}
 }

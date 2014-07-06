@@ -7,10 +7,7 @@ $(".date").each(function (index) {
 
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
 $("[name='admin-demo-mode']").bootstrapSwitch();
-$('input[name="admin-demo-mode"]').on('switchChange.bootstrapSwitch', function(event, state) {
-	//console.log(this); // DOM element
-	//console.log(event); // jQuery event
-	//console.log(state); // true | false
+$('input[name="admin-demo-mode"]').on('switchChange.bootstrapSwitch', function (event, state) {
 	$.ajax({
 		dataType: "json",
 		url: "/admin/demo/" + state,
@@ -20,11 +17,11 @@ $('input[name="admin-demo-mode"]').on('switchChange.bootstrapSwitch', function(e
 	console.log('called ajax with state ' + state);
 });
 
-function demo_state_success(data) {
+function demo_state_success (data) {
 	console.log('demo state updated');
 }
 
-function demo_state_fail(data) {
+function demo_state_fail (data) {
 	console.log('demo state update failed');
 	// Reset the checkbox to indicate the failure
 	var cb = $('input[name="admin-demo-mode"]');
@@ -110,6 +107,8 @@ $("#btn-items-add-row").click(function () {
 
 	// Update the number of new items to be added
 	$("#new-items-number").val(item_lines_count+1);
+
+	attach_keypad();
 });
 
 $("#select-user").change(function () {
@@ -171,6 +170,7 @@ $("#restock-button").click(function () {
 		// Sales tax calculation is wrong. Something isn't rigth here.
 		alert_error("Sales tax calculation invalid. Did you forget something that was taxed?");
 	} else {
+		clicked_submit = true;
 		$("#restock-form").submit();
 	}
 });
