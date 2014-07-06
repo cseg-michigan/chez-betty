@@ -15,7 +15,7 @@ class Bitcoin(object):
     COINBASE_API_KEY = ""
     COINBASE_API_SECRET = ""
 
-    HOSTNAME = 'chezbetty.zakird.com'
+    HOSTNAME = ''
 
     def __init__(self, umid=None):
         self.umid = umid
@@ -27,7 +27,9 @@ class Bitcoin(object):
             opener = urllib.request.build_opener()
             nonce = int(time.time() * 1e6)
             message = str(nonce) + url + ('' if body is None else body)
-            signature = hmac.new(bytes(Bitcoin.COINBASE_API_SECRET, "utf-8"), bytes(message, "utf-8"), hashlib.sha256).hexdigest()
+            signature = hmac.new(bytes(Bitcoin.COINBASE_API_SECRET, "utf-8"),
+                                 bytes(message, "utf-8"),
+                                 hashlib.sha256).hexdigest()
             opener.addheaders = [('ACCESS_KEY', Bitcoin.COINBASE_API_KEY),
                                 ('ACCESS_SIGNATURE', signature),
                                 ('ACCESS_NONCE', nonce)]
@@ -37,8 +39,10 @@ class Bitcoin(object):
             if body is not None:
                 body_b = bytes(body, "utf-8")
 
-            res_s = opener.open(urllib.request.Request(url, body_b, {'Content-Type': 'application/json'})).read()
+            res_s = opener.open(urllib.request.Request(url,
+                body_b, {'Content-Type': 'application/json'})).read()
             return json.loads(str(res_s, 'utf-8'))
+
         except urllib.error.HTTPError as e:
             raise BTCException("Could not load HTTP")
 

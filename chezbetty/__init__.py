@@ -12,7 +12,8 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
 
     Base.metadata.bind = engine
-    config = Configurator(settings=settings, root_factory="chezbetty.models.model.RootFactory")
+    config = Configurator(settings=settings,
+                          root_factory="chezbetty.models.model.RootFactory")
 
     LDAPLookup.PASSWORD = config.registry.settings["ldap.password"]
     LDAPLookup.USERNAME = config.registry.settings["ldap.username"]
@@ -20,6 +21,7 @@ def main(global_config, **settings):
 
     Bitcoin.COINBASE_API_KEY = config.registry.settings["bitcoin.coinbase_api_key"]
     Bitcoin.COINBASE_API_SECRET = config.registry.settings["bitcoin.coinbase_api_secret"]
+    Bitcoin.HOSTNAME = config.registry.settings["chezbetty.host"]
 
     authn_policy = AuthTktAuthenticationPolicy(
            config.registry.settings["auth.secret"],
@@ -38,21 +40,21 @@ def main(global_config, **settings):
     config.add_route('about', '/about')
 
     config.add_route('items', '/items')
-    config.add_route('item', '/item/{barcode}/json')
+    config.add_route('item',  '/item/{barcode}/json')
 
     config.add_route('shame', '/shame')
-    config.add_route('user', '/user/{umid}')
+    config.add_route('user',  '/user/{umid}')
 
     config.add_route('purchase_new', '/purchase/new')
-    config.add_route('purchase', '/purchase/{umid}')
+    config.add_route('purchase',     '/purchase/{umid}')
 
     config.add_route('deposit_new', '/deposit/new')
-    config.add_route('deposit', '/deposit/{umid}')
+    config.add_route('deposit',     '/deposit/{umid}')
 
     config.add_route('btc_deposit', '/bitcoin/deposit/{guid}')
-    config.add_route('btc_check', '/bitcoin/check/{addr}')
+    config.add_route('btc_check',   '/bitcoin/check/{addr}')
 
-    config.add_route('event', '/event/{event_id}')
+    config.add_route('event',      '/event/{event_id}')
     config.add_route('event_undo', '/event/undo/{umid}/{event_id}')
 
     # ADMIN
@@ -80,7 +82,7 @@ def main(global_config, **settings):
     config.add_route('admin_users_edit_submit',        '/admin/users/edit/submit')
     config.add_route('admin_users_email',              '/admin/users/email')
     config.add_route('admin_users_email_deadbeats',    '/admin/users/email/deadbeats')
-    config.add_route('admin_users_email_all',    '/admin/users/email/all')
+    config.add_route('admin_users_email_all',          '/admin/users/email/all')
     config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
 

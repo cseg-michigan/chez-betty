@@ -28,15 +28,6 @@ def undo_event(e):
 
         DBSession.delete(t)
 
-    # if e.transaction.cash_transaction:
-    #     c_to_acct = t.cash_transaction.to_account
-    #     if c_to_acct:
-    #         c_to_acct.balance -= t.cash_transaction.amount
-    #     c_from_acct = t.cash_transaction.from_account
-    #     if c_from_acct:
-    #         c_from_acct.balance += t.cash_transaction.amount
-    #     DBSession.delete(t.cash_transaction)
-
     DBSession.delete(e)
 
     return line_items

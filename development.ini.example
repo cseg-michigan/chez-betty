@@ -17,6 +17,9 @@ pyramid.includes =
 
 sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 
+chezbetty.host = chezbetty.com
+chezbetty.email = chezbetty@chezbetty.com
+
 ldap.server = ldap.domain.com
 ldap.password = abc123
 ldap.username = cn=<name>,ou=Applications,o=services

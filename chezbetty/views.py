@@ -45,13 +45,17 @@ def about(request):
 
 @view_config(route_name='items', renderer='templates/items.jinja2')
 def items(request):
-    items = DBSession.query(Item).filter(Item.enabled==True).order_by(Item.name).all()
+    items = DBSession.query(Item)\
+                     .filter(Item.enabled==True)\
+                     .order_by(Item.name).all()
     return {'items': items}
 
 
 @view_config(route_name='shame', renderer='templates/shame.jinja2')
 def users(request):
-    users = DBSession.query(User).filter(User.balance < -5).order_by(User.balance).all()
+    users = DBSession.query(User)\
+                     .filter(User.balance < -5)\
+                     .order_by(User.balance).all()
     return {'users': users}
 
 
@@ -65,18 +69,23 @@ def purchase(request):
 
         user = User.from_umid(request.matchdict['umid'])
         if not user.enabled:
-            request.session.flash('User is not enabled. Please contact chezbetty@umich.edu.', 'error')
+            request.session.flash('User is not enabled. Please contact {}.'\
+                .format(request.registry.settings['chezbetty.email']), 'error')
             return HTTPFound(location=request.route_url('index'))
 
         # For Demo mode:
-        items = DBSession.query(Item).filter(Item.enabled == True).order_by(Item.name).limit(6).all()
+        items = DBSession.query(Item)\
+                         .filter(Item.enabled == True)\
+                         .order_by(Item.name)\
+                         .limit(6).all()
 
         # Pre-populate cart if returning from undone transaction
         existing_items = ''
         if len(request.GET) != 0:
             for (item_id, quantity) in request.GET.items():
                 item = Item.from_id(int(item_id))
-                existing_items += render('templates/item_row.jinja2', {'item': item, 'quantity': int(quantity)})
+                existing_items += render('templates/item_row.jinja2',
+                    {'item': item, 'quantity': int(quantity)})
 
         return {'user': user, 'items': items, 'existing_items': existing_items}
 
