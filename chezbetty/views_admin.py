@@ -297,6 +297,10 @@ def admin_items_edit_submit(request):
 
             setattr(item, field, val)
             DBSession.flush()
+        except ValueError:
+            # Could not parse price or wholesale as float
+            request.session.flash('Error updating {}'.format(name), 'error')
+            continue
         except:
             DBSession.rollback()
             request.session.flash('Error updating {} for {}.  Skipped.'.\
