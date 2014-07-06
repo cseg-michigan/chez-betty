@@ -95,6 +95,14 @@ def main(argv=sys.argv):
         user.role = "administrator"
         user.password = "test2"
         DBSession.add(user)
+        user = User(
+               "betty",
+               "00000000",
+               "Betty"
+               )
+        user.role = "serviceaccount"
+        user.password = "cb"
+        DBSession.add(user)
         account.get_virt_account("chezbetty")
         account.get_cash_account("cashbox")
         account.get_cash_account("chezbetty")

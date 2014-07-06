@@ -47,8 +47,15 @@
           <tr>
             <th>ID</th>
             <th>Item</th>
+            {% if t.type == "purchase" %}
             <th class="right">Item Amount</th>
+            {% endif %}
+            {% if t.type == "inventory" %}
+            <th class="right">Quantity Predicted</th>
+            <th class="right">Quantity Counted</th>
+            {% else %}
             <th class="right">Quantity</th>
+            {% endif %}
             <th class="right">Amount</th>
           </tr>
         </thead>
@@ -57,8 +64,15 @@
           <tr>
               <td>{{ st.id }}</td>
               <td>{{ st.item.name }}</td>
+              {% if t.type == "purchase" %}
               <td class="right">{{ st.price|format_currency|safe }}</td>
+              {% endif %}
+              {% if t.type == "inventory" %}
               <td class="right">{{ st.quantity }}</td>
+              <td class="right">{{ st.quantity_counted }}</td>
+              {% else %}
+              <td class="right">{{ st.quantity }}</td>
+              {% endif %}
               <td class="right">{{ st.amount|format_currency|safe }}</td>
           </tr>
         {% endfor %}

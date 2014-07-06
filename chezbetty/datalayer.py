@@ -127,6 +127,8 @@ def reconcile_items(items, admin):
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Inventory(e)
+    DBSession.add(t)
+    DBSession.flush()
     total_amount_missing = Decimal(0.0)
     for item, quantity in items.items():
         if item.in_stock == quantity:
@@ -135,6 +137,7 @@ def reconcile_items(items, admin):
         line_amount = quantity_missing * item.wholesale
         ili = transaction.InventoryLineItem(t, line_amount, item, item.in_stock,
                                 quantity, item.wholesale)
+        DBSession.add(ili)
         total_amount_missing += ili.amount
         item.in_stock = quantity
     t.update_amount(total_amount_missing)
