@@ -232,7 +232,7 @@ def event_undo(request):
 ### JSON Requests
 ###
 
-@view_config(route_name='item', renderer='json', permission='user')
+@view_config(route_name='item', renderer='json', permission='service')
 def item(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])

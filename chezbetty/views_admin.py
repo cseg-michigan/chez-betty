@@ -535,8 +535,26 @@ def admin_users_edit(request):
              permission='admin')
 def admin_users_edit_submit(request):
     for key in request.POST:
-        user = User.from_id(int(key.split('-')[2]))
-        setattr(user, key.split('-')[1], request.POST[key])
+        user_id = int(key.split('-')[2])
+        field = key.split('-')[1]
+        val = request.POST[key]
+
+        user = User.from_id(user_id)
+
+        if field == 'role' and user.role == 'user' and val != 'user':
+            # The user was previously just a user and now is being set to
+            # something else. Every other role type requires a password.
+            # Here, we set the password to the default (so the user can
+            # login) and the user can change it themselves.
+            user.password = request.registry.settings['chezbetty.default_password']
+
+        elif field == 'role' and user.role != 'user' and val == 'user':
+            # The user was something other than just a user and is being
+            # downgraded. The user no longer needs to be able to login
+            # so we reset the password.
+            user.password = ''
+
+        setattr(user, field, val)
     request.session.flash('Users updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_users_edit'))
 

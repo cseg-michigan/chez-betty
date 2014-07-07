@@ -4,7 +4,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from sqlalchemy import engine_from_config
 
 from .models.model import *
-from .models.user import LDAPLookup, groupfinder, get_user
+from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
 
 def main(global_config, **settings):

@@ -71,14 +71,14 @@ def main(argv=sys.argv):
             12,
             True
         ))
-        user = User(
-           "zakir",
-           "95951361",
-           "Zakir Durumeric"
-        )
-        user.role = "administrator"
-        user.password = "test"
-        DBSession.add(user)
+        # user = User(
+        #    "zakir",
+        #    "95951361",
+        #    "Zakir Durumeric"
+        # )
+        # user.role = "administrator"
+        # user.password = "test"
+        # DBSession.add(user)
         user = User(
            "bradjc",
            "11519022",

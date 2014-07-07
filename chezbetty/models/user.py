@@ -131,9 +131,13 @@ class User(Account):
 
     @password.setter
     def password(self, password):
-        self._salt = self.__make_salt()
-        salted = (self._salt + password).encode('utf-8')
-        self._password = hashlib.sha256(salted).hexdigest()
+        if password == '':
+            # Use this to clear the password so the user can't login
+            self._password = None
+        else:
+            self._salt = self.__make_salt()
+            salted = (self._salt + password).encode('utf-8')
+            self._password = hashlib.sha256(salted).hexdigest()
 
     def check_password(self, cand):
         if not self._salt:
