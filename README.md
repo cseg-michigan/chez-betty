@@ -1,21 +1,29 @@
 Chez Betty
 ==========
 
-Chez Betty is a mini food store where users can deposit money to their account
-and use it to purchase food and other items they scan. The system is linked
+Chez Betty is a mini, cooperative food store where users can deposit money to their account
+and use it to purchase food and other items. The system is linked
 to the UMich ldap server so users can swipe their M-Card to login.
 
-UMich version of [Chez Bob](http://chezbob.ucsd.edu/). Running
-[here](http://chezbetty.zakird.com).
+UMich version is an homage to UCSD's [Chez Bob](http://chezbob.ucsd.edu/).
+Chez Betty runs [here](http://chezbetty.zakird.com).
 
 Chez Betty is written as a Python web app designed to run on a server with
-a brower based user interface. It supports cash and bitcoin deposits.
+a browser based user interface. It supports cash and bitcoin deposits. The
+user interface expects a card swiper and barcode scanner to be attached to
+the machine. See the list at the end of this README for products we use.
+To test / demo the system without hardware, turn on "Demo mode" in the admin
+interface.
 
 Installation
 ============
 
-The Chez Betty application is developed using Python Pyramid. To develop
-against, do the following:
+The Chez Betty application is developed using Python Pyramid. To get a
+development environment set up, do the following:
+
+1. Clone this repository
+
+        git clone https://github.com/um-cseg/chez-betty.git
 
 1. Setup virtualenv with Python3:
 
@@ -28,6 +36,9 @@ against, do the following:
         python setup.py develop
 
 3. Update `development.ini` to set config information and passwords.
+
+        cp development.ini.example development.ini
+        [edit development.ini]
 
 3. Setup the database:
 
