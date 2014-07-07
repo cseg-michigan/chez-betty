@@ -27,6 +27,25 @@
 
 {% block body %}
 
+  {% if "keyboard" in request.cookies %}
+    {% if request.cookies['keyboard']|int %}
+      {% set keyboard = True %}
+    {% else %}
+      {% set keyboard = False %}
+    {% endif %}
+  {% else %}
+    {% set keyboard = True %}
+  {% endif %}
+
+  <script>
+    {% if keyboard %}
+    onscreen_keyboard = true;
+    {% else %}
+    onscreen_keyboard = false;
+    {% endif %}
+  </script>
+
+
   {% set active_page = active_page|default('index') -%}
   {% include 'navbar.jinja2' %}
 

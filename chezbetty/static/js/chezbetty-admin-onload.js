@@ -6,27 +6,21 @@ $(".date").each(function (index) {
 });
 
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
-$("[name='admin-demo-mode']").bootstrapSwitch();
-$('input[name="admin-demo-mode"]').on('switchChange.bootstrapSwitch', function (event, state) {
+$(".admin-switch").bootstrapSwitch();
+$(".admin-switch").on('switchChange.bootstrapSwitch', function (event, state) {
+	var type = $(this).attr("id").split("-")[1];
 	$.ajax({
-		dataType: "json",
-		url: "/admin/demo/" + state,
-		success: demo_state_success,
-		error: demo_state_fail
+		url: "/admin/" + type + "/" + state,
+		success: toggle_state_success,
+		error: toggle_state_fail
 	});
-	console.log('called ajax with state ' + state);
 });
 
-function demo_state_success (data) {
-	console.log('demo state updated');
+function toggle_state_success (data) {
 }
 
-function demo_state_fail (data) {
-	console.log('demo state update failed');
-	// Reset the checkbox to indicate the failure
-	var cb = $('input[name="admin-demo-mode"]');
-	cb.bootstrapSwitch('toggleState', skip=true);
-	alert_error("Failed to save demo state.");
+function toggle_state_fail (data) {
+	alert_error("Failed to save toggle state.");
 }
 
 function toggle_enabled (type, btn) {

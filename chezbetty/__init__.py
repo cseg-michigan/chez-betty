@@ -58,8 +58,9 @@ def main(global_config, **settings):
     config.add_route('event_undo', '/event/undo/{umid}/{event_id}')
 
     # ADMIN
-    config.add_route('admin_index', '/admin')
-    config.add_route('admin_demo',  '/admin/demo/{state}')
+    config.add_route('admin_index',     '/admin')
+    config.add_route('admin_demo',      '/admin/demo/{state}')
+    config.add_route('admin_keyboard',  '/admin/keyboard/{state}')
 
     config.add_route('admin_item_barcode_json', '/admin/item/{barcode}/json')
     config.add_route('admin_restock',           '/admin/restock')

@@ -133,6 +133,16 @@ def admin_demo(request):
         return {}
 
 
+@view_config(route_name='admin_keyboard',
+             permission='manage')
+def admin_keyboard(request):
+    if request.matchdict['state'].lower() == 'true':
+        request.response.set_cookie('keyboard', '1')
+    else:
+        request.response.set_cookie('keyboard', '0')
+    return request.response
+
+
 @view_config(route_name='admin_item_barcode_json',
              renderer='json',
              permission='manage')
