@@ -17,6 +17,7 @@ pyramid.includes =
 
 sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 
+chezbetty.default_password = chezbetty
 chezbetty.host = chezbetty.com
 chezbetty.email = chezbetty@chezbetty.com
 
