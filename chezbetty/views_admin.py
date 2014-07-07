@@ -238,7 +238,7 @@ def admin_cash_reconcile_submit(request):
         return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
             _query={'amount':amount, 'expected_amount':expected_amount}))
 
-    except ValueError:
+    except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for cash box amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
@@ -591,7 +591,7 @@ def admin_user_balance_edit_submit(request):
     except NoResultFound:
         request.session.flash('Invalid user?', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
-    except ValueError:
+    except decimal.InvalidOperation:
         request.session.flash('Invalid adjustment amount.', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
     except event.NotesMissingException:
@@ -649,7 +649,7 @@ def admin_cash_donation_submit(request):
         request.session.flash('Donation recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
 
-    except ValueError:
+    except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for donation amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_donation'))
     except event.NotesMissingException:
@@ -678,7 +678,7 @@ def admin_cash_withdrawal_submit(request):
         request.session.flash('Withdrawal recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
 
-    except ValueError:
+    except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for withdrawal amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_withdrawal'))
     except event.NotesMissingException:
@@ -707,7 +707,7 @@ def admin_cash_adjustment_submit(request):
         request.session.flash('Adjustment recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
 
-    except ValueError:
+    except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for adjustment amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_adjustment'))
     except event.NotesMissingException:
