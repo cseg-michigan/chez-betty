@@ -9,6 +9,7 @@
   {% if request.has_permission("admin") %}
   <li {% if active_page == 'btc_reconcile' %}class="active"{% endif %}><a href="/admin/btc/reconcile">Deposit Bitcoins</a></li>
   {% endif %}
+  <li {% if active_page == 'shopping_list' %}class="active"{% endif %}><a href="/admin/shopping">Shopping List</a></li>
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>Manage Items</span></li>
@@ -43,7 +44,6 @@
 <ul class="nav nav-sidebar">
   <li><span>Administrative</span></li>
   <li><a href="#">Demo Mode<div style="float: right;"><input type="checkbox" name="admin-demo-mode" {% if demo %}checked="checked"{% endif %}></input></div></a></li>
-  <li {% if active_page == 'shopping_list' %}class="active"{% endif %}><a href="/admin/shopping">Shopping List</a></li>
   <li {% if active_page == 'password_edit' %}class="active"{% endif %}><a href="/admin/password/edit">Edit Password</a></li>
 </ul>
 {% endif %}
