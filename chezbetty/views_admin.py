@@ -482,9 +482,13 @@ def admin_item_edit_submit(request):
         request.session.flash('Item updated successfully.', 'success')
         return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
 
-    except Exception as e:
+    except NoResultFound:
         request.session.flash('Error when updating product.', 'error')
         return HTTPFound(location=request.route_url('admin_items_edit'))
+
+    except:
+        request.session.flash('Error processing item fields.', 'error')
+        return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
 
 
 @view_config(route_name='admin_vendors_edit',
