@@ -18,7 +18,9 @@ class Vendor(Base):
 
     @classmethod
     def all(cls):
-        return DBSession.query(cls).order_by(cls.name).all()
+        return DBSession.query(cls)\
+                        .filter(cls.enabled)\
+                        .order_by(cls.name).all()
 
     def __str__(self):
         return "<Vendor (%s)>" % self.name
