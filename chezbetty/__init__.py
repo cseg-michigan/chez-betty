@@ -75,6 +75,7 @@ def main(global_config, **settings):
     config.add_route('admin_items_edit_submit', '/admin/items/edit/submit')
     config.add_route('admin_item_edit_submit',  '/admin/item/edit/submit')
     config.add_route('admin_item_edit',         '/admin/item/edit/{item_id}')
+    config.add_route('admin_item_barcode_pdf', '/admin/item/barcode/{item_id}.pdf')
 
     config.add_route('admin_vendors_edit',        '/admin/vendors/edit')
     config.add_route('admin_vendors_edit_submit', '/admin/vendors/edit/submit')

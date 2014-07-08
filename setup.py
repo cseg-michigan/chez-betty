@@ -10,7 +10,7 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 
 requires = [
     'pyramid',
-	'pyramid_jinja2',
+    'pyramid_jinja2',
     'pyramid_debugtoolbar',
     'pyramid_tm',
     'pyramid_beaker',
@@ -19,7 +19,8 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'python3-ldap',
-    'qrcode'
+    'qrcode',
+    'reportlab'
     ]
 
 setup(name='chezbetty',

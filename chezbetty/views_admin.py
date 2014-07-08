@@ -4,6 +4,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
+from pyramid.response import FileResponse
 from pyramid.view import view_config, forbidden_view_config
 
 from sqlalchemy.sql import func
@@ -29,6 +30,12 @@ from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
+
+# Used for generating barcodes
+from reportlab.graphics.barcode import code39
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import mm
+from reportlab.pdfgen import canvas
 
 import threading
 demo_lock = threading.Lock()
@@ -493,6 +500,35 @@ def admin_item_edit_submit(request):
         request.session.flash('Error processing item fields.', 'error')
         return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
 
+@view_config(route_name='admin_item_barcode_pdf', permission='manage')
+def admin_item_barcode_pdf(request):
+    item = Item.from_id(request.matchdict['item_id'])
+    fname = '/tmp/{}.pdf'.format(item.id)
+
+    c = canvas.Canvas(fname, pagesize=letter)
+
+    x = 1 * mm
+    y = 285 * mm
+    x1 = 6.4 * mm
+
+    for code in [item.barcode]*77:
+        barcode = code39.Extended39(code)
+        barcode.drawOn(c, x, y)
+        x1 = x + 6.4 * mm
+        y = y - 5 * mm
+        c.drawString(x1, y, code)
+        x = x
+        y = y - 10 * mm
+
+        if int(y) == 0:
+            x = x + 50 * mm
+            y = 285 * mm
+
+    c.showPage()
+    c.save()
+
+    response = FileResponse(fname, request=request)
+    return response
 
 @view_config(route_name='admin_vendors_edit',
              renderer='templates/admin/vendors_edit.jinja2',
