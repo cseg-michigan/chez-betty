@@ -335,12 +335,12 @@ def btc_deposit(request):
         pending = BtcPendingDeposit.from_auth_key(auth_key)
     except NoResultFound as e:
         print("No result for auth_key %s" % auth_key)
-        return
+        return {}
 
 
     if (pending.user_id != user.id or pending.address != addr):
         print("Mismatch of BtcPendingDeposit userid or address: (%d/%d), (%s/%s)" % (pending.user_id, user.id, pending.address, addr))
-        return
+        return {}
 
     #try:
     usd_per_btc = Bitcoin.get_spot_price()
@@ -353,6 +353,8 @@ def btc_deposit(request):
            % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
     datalayer.bitcoin_deposit(user, Decimal(amount_btc) * usd_per_btc, txhash, addr, amount_btc)
     print(ret)
+
+    return {}
 
 
 @view_config(route_name='btc_check', request_method='GET', renderer='json')
