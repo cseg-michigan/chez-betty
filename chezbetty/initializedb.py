@@ -20,6 +20,7 @@ from models.item_vendor import ItemVendor
 from models.announcement import Announcement
 from models.model import *
 from models.transaction import *
+from models.btcdeposit import BtcPendingDeposit
 
 
 def usage(argv):
