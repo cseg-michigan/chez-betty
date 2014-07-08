@@ -114,6 +114,9 @@ def main(global_config, **settings):
     config.add_route('admin_requests',        '/admin/requests')
     config.add_route('admin_requests_delete', '/admin/request/delete/{request_id}')
 
+    config.add_route('admin_announcements_edit',        '/admin/announcements/edit')
+    config.add_route('admin_announcements_edit_submit', '/admin/announcements/edit/submit')
+
 
     config.add_route('login',  '/login')
     config.add_route('logout', '/logout')

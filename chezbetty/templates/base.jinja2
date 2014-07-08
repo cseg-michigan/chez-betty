@@ -41,6 +41,11 @@
         {{ msg }}
       </div>
       {% endfor %}
+      {% for msg in request.session.pop_flash('info') %}
+      <div class="alert alert-info" role="alert">
+        {{ msg }}
+      </div>
+      {% endfor %}
       {% endblock %}
     </div>
 

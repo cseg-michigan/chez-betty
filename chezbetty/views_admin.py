@@ -22,6 +22,7 @@ from .models import event as __event
 from .models.vendor import Vendor
 from .models.item_vendor import ItemVendor
 from .models.request import Request
+from .models.announcement import Announcement
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -846,6 +847,45 @@ def admin_requests_delete(request):
                 'request_id': request_id}
     except:
         return {'status': 'error'}
+
+
+@view_config(route_name='admin_announcements_edit',
+             renderer='templates/admin/announcements_edit.jinja2',
+             permission='admin')
+def admin_announcements_edit(request):
+    announcements = Announcement.all()
+    return {'announcements': announcements}
+
+
+@view_config(route_name='admin_announcements_edit_submit',
+             request_method='POST',
+             permission='admin')
+def admin_announcements_edit_submit(request):
+
+    # Group all the form items into a nice dict that we can cleanly iterate
+    announcements = {}
+    for key in request.POST:
+        fields = key.split('-')
+        if fields[2] not in announcements:
+            announcements[fields[2]] = {}
+        announcements[fields[2]][fields[1]] = request.POST[key]
+
+    for announcement_id, props in announcements.items():
+        if announcement_id == 'new':
+            if props['text'] == '':
+                # Don't add blank announcements
+                continue
+            announcement = Announcement(request.user, props['text'])
+            DBSession.add(announcement)
+        else:
+            announcement = Announcement.from_id(int(announcement_id))
+            if not int(props['enabled']):
+                announcement.enabled = False
+            else:
+                announcement.announcement = props['text']
+
+    request.session.flash('Announcements updated successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_announcements_edit'))
 
 
 @view_config(route_name='login',

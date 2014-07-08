@@ -17,6 +17,7 @@ from models.user import User
 from models.vendor import Vendor
 from models.request import Request
 from models.item_vendor import ItemVendor
+from models.announcement import Announcement
 from models.model import *
 from models.transaction import *
 

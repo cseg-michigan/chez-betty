@@ -18,6 +18,7 @@ from .models.item import Item
 from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
+from .models.announcement import Announcement
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -35,6 +36,9 @@ class DepositException(Exception):
 
 @view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
+    announcements = Announcement.all()
+    for announcement in announcements:
+        request.session.flash(announcement.announcement, 'info')
     return {}
 
 

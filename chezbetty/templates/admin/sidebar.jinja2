@@ -42,8 +42,9 @@
 {% endif %}
 {% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
-  <li><span>View Requests</span></li>
+  <li><span>Misc</span></li>
   <li {% if active_page == 'requests' %}class="active"{% endif %}><a href="/admin/requests">Requests</a></li>
+  <li {% if active_page == 'announcements' %}class="active"{% endif %}><a href="/admin/announcements/edit">Announcements</a></li>
 </ul>
 {% endif %}
 <ul class="nav nav-sidebar">

@@ -70,6 +70,10 @@ $(".edit-vendor-row").on("click", "button", function () {
 	toggle_enabled("vendor", $(this));
 });
 
+$(".edit-announcement-row").on("click", "button", function () {
+	toggle_enabled("announcement", $(this));
+});
+
 // Add a new row to the add items form
 $("#btn-items-add-row").click(function () {
 

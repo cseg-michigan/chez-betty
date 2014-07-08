@@ -1,0 +1,53 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'announcements' %}
+{% block title %}Edit Announcements{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Edit Announcements</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/announcements/edit/submit" method="post">
+
+
+  <table class="table">
+
+    <thead>
+      <tr>
+        <th>Announcement</th>
+        <th style="width: 15%;">Date</th>
+        <th style="width:  5%;">Delete</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      {% for announcement in announcements %}
+      <tr id="announcement-{{ announcement.id }}" class="edit-announcement-row">
+        <td><input type="text" class="form-control" id="announcement-text-{{ announcement.id }}" name="announcement-text-{{ announcement.id }}" value="{{ announcement.announcement }}"></td>
+        <td>{{ announcement.timestamp|pretty_date|safe }}</td>
+        <td>
+          <button type="button" id="btn-disable-announcement-{{ announcement.id }}" class="btn btn-danger" >X</button>
+          <button type="button" id="btn-enable-announcement-{{ announcement.id }}" class="btn btn-success" style="display:none;">+</button>
+        </td>
+        <input type="hidden" class="form-control" id="announcement-enabled-{{ announcement.id }}" name="announcement-enabled-{{ announcement.id }}" value="{{ announcement.enabled|int }}">
+      </tr>
+      {% endfor %}
+
+      <tr id="announcement-new" class="edit-announcement-row">
+        <td><input type="text" class="form-control" id="announcement-text-new" name="announcement-text-new"></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+
+    </tbody>
+
+  </table>
+
+  <button type="submit" class="btn btn-success">Update Announcements</button>
+
+</form>
+
+{% endblock %}
