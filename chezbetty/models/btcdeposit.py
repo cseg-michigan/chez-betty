@@ -21,6 +21,6 @@ class BtcPendingDeposit(Base):
         return e
 
     @classmethod
-    def from_auth_key(cls, id):
+    def from_auth_key(cls, auth_key):
         e = DBSession.query(cls).filter(cls.auth_key == auth_key).one()
         return e
