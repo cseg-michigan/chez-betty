@@ -96,3 +96,15 @@ function update_new_balance () {
 	new_balance = format_price(start + amount);
 	$("#new_balance").html(new_balance);
 }
+
+function request_delete_success (data) {
+	if (data.status == "success") {
+		$("#request-" + data.request_id).remove();
+	} else {
+		alert_error("Could not remove request.");
+	}
+}
+
+function request_delete_fail (data) {
+	alert_error("Could not remove request.");
+}

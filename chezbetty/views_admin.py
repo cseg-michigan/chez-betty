@@ -21,6 +21,7 @@ from .models.event import Event
 from .models import event as __event
 from .models.vendor import Vendor
 from .models.item_vendor import ItemVendor
+from .models.request import Request
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -477,7 +478,7 @@ def admin_item_edit_submit(request):
                     val = request.POST[key]
 
                 setattr(item, field, val)
-        
+
         DBSession.flush()
         request.session.flash('Item updated successfully.', 'success')
         return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
@@ -748,7 +749,7 @@ def admin_btc_reconcile_submit(request):
         request.session.flash('Converted Bitcoins to USD', 'success')
     except:
         request.session.flash('Error converting bitcoins', 'error')
-    
+
     return HTTPFound(location=request.route_url('admin_index'))
 
 
@@ -823,6 +824,28 @@ def admin_shopping_list(request):
     vendors.append(misc_vendor)
 
     return {'vendors': vendors, 'items': l}
+
+
+@view_config(route_name='admin_requests',
+             renderer='templates/admin/requests.jinja2',
+             permission='admin')
+def admin_requests(request):
+    requests = Request.all()
+    return {'requests': requests}
+
+
+@view_config(route_name='admin_requests_delete',
+             renderer='json',
+             permission='admin')
+def admin_requests_delete(request):
+    try:
+        request_id = int(request.matchdict['request_id'])
+        request = Request.from_id(request_id)
+        request.enabled = False
+        return {'status':     'success',
+                'request_id': request_id}
+    except:
+        return {'status': 'error'}
 
 
 @view_config(route_name='login',

@@ -1,0 +1,36 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'requests' %}
+{% block title %}Requests{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Requests</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<table class="table">
+
+  <thead>
+    <tr>
+      <th style="width: 15%;">Date</th>
+      <th>Request</th>
+      <th style="width: 5%;">Delete</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    {% for request in requests|reverse %}
+    <tr id="request-{{ request.id }}" class="request-row">
+      <td>{{ request.timestamp|pretty_date|safe }}</td>
+      <td>{{ request.request }}</td>
+      <td><button type="button" id="btn-delete-request-{{ request.id }}" class="btn btn-danger request-delete">X</button></td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+{% endblock %}

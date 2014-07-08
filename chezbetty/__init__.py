@@ -39,8 +39,10 @@ def main(global_config, **settings):
 
     config.add_route('about', '/about')
 
-    config.add_route('items', '/items')
-    config.add_route('item',  '/item/{barcode}/json')
+    config.add_route('items',            '/items')
+    config.add_route('item',             '/item/{barcode}/json')
+    config.add_route('item_request',     '/item/request')
+    config.add_route('item_request_new', '/item/request/new')
 
     config.add_route('shame', '/shame')
     config.add_route('user',  '/user/{umid}')
@@ -56,6 +58,7 @@ def main(global_config, **settings):
 
     config.add_route('event',      '/event/{event_id}')
     config.add_route('event_undo', '/event/undo/{umid}/{event_id}')
+
 
     # ADMIN
     config.add_route('admin_index',     '/admin')
@@ -101,12 +104,15 @@ def main(global_config, **settings):
     config.add_route('admin_btc_reconcile_submit', '/admin/btc/reconcile/submit')
 
     config.add_route('admin_transactions', '/admin/transactions')
-    config.add_route('admin_event',       '/admin/event/{event_id}')
+    config.add_route('admin_event',        '/admin/event/{event_id}')
 
     config.add_route('admin_password_edit',        '/admin/password/edit')
     config.add_route('admin_password_edit_submit', '/admin/password/edit/submit')
 
     config.add_route('admin_shopping_list', '/admin/shopping')
+
+    config.add_route('admin_requests',        '/admin/requests')
+    config.add_route('admin_requests_delete', '/admin/request/delete/{request_id}')
 
 
     config.add_route('login',  '/login')

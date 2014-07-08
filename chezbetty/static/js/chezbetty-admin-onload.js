@@ -169,6 +169,16 @@ $("#restock-button").click(function () {
 	}
 });
 
+$(".request-delete").click(function () {
+	var request_id = $(this).attr("id").split("-")[3];
+
+	$.ajax({
+		url: "/admin/request/delete/" + request_id,
+		success: request_delete_success,
+		error: request_delete_fail
+	});
+})
+
 
 
 //
@@ -178,7 +188,7 @@ var serialized_form_clean;
 var clicked_submit = false;
 
 // When the page load we get the values serialize
-serialized_form_clean = $("form").serialize(); 
+serialized_form_clean = $("form").serialize();
 
 // Before we leave the page we now compare between the new form values and the orignal
 window.onbeforeunload = function (e) {

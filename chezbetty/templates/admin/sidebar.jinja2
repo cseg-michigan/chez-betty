@@ -40,6 +40,12 @@
   <li {% if active_page == 'adjustmen' %}class="active"{% endif %}><a href="/admin/cash/adjustment">Adjustment</a></li>
 </ul>
 {% endif %}
+{% if request.has_permission("admin") %}
+<ul class="nav nav-sidebar">
+  <li><span>View Requests</span></li>
+  <li {% if active_page == 'requests' %}class="active"{% endif %}><a href="/admin/requests">Requests</a></li>
+</ul>
+{% endif %}
 <ul class="nav nav-sidebar">
   <li><span>Administrative</span></li>
   {% if request.has_permission("admin") %}

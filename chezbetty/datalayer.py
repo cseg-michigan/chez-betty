@@ -2,6 +2,7 @@ from .models.model import *
 from .models import event
 from .models import transaction
 from .models import account
+from .models import request
 
 # Call this to remove an event from chez betty. Only works with cash deposits
 def undo_event(e):
@@ -31,6 +32,15 @@ def undo_event(e):
     DBSession.delete(e)
 
     return line_items
+
+
+# Call this to make a new item request
+def new_request(user, request_text):
+    r = request.Request(user, request_text)
+    DBSession.add(r)
+    DBSession.flush()
+    return r
+
 
 # Call this to let a user purchase items
 def purchase(user, items):

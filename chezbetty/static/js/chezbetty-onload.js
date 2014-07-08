@@ -129,3 +129,7 @@ $(".faq-q").click(function() {
 	$(this).next().toggle("fast");
 });
 
+$(".keyboard-wanted").keyboard({
+  layout : 'qwerty'
+});
+
