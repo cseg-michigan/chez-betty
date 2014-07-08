@@ -48,6 +48,16 @@ class Bitcoin(object):
 
 
     @staticmethod
+    def noauth_req(url):
+        try:
+            opener = urllib.request.build_opener()
+            res_s = opener.open(urllib.request.Request(url,
+                None, {'Content-Type': 'application/json'})).read()
+            return json.loads(str(res_s, 'utf-8'))
+        except urllib.error.HTTPError as e:
+            raise BTCException("Could not load HTTP")
+
+    @staticmethod
     def get_new_address(umid, auth_key, cb_url='http://{}/bitcoin/deposit'):
 
         cb_url = cb_url.format(Bitcoin.HOSTNAME)
@@ -69,6 +79,19 @@ class Bitcoin(object):
     def get_balance():
         obj = Bitcoin.req("https://coinbase.com/api/v1/account/balance")
         return Decimal(obj['amount'])
+
+    @staticmethod
+    def get_tx_by_hash(txid):
+        return Bitcoin.noauth_req("https://blockchain.info/rawtx/%s" % txid)
+
+    @staticmethod
+    def get_block_height():
+        return Bitcoin.noauth_req("https://blockchain.info/latestblock")["height"]
+
+    # | separated list (e.g. "14YD3or6jXZowg8PV5VfZo9jmer8TQZHFg|1AZiKMapdu2KibenF67FHFgNbxL9sG2jt5")
+    @staticmethod
+    def get_tx_from_addrs(addrs):
+        return Bitcoin.noauth_req("https://blockchain.info/multiaddr?active=%s" % addrs )
 
     @staticmethod
     # Returns the amount in USD that the bitcoins were exchanged for
