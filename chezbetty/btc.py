@@ -48,12 +48,12 @@ class Bitcoin(object):
 
 
     @staticmethod
-    def get_new_address(umid="", cb_url='http://{}/bitcoin/deposit', guid='chezbetty'):
+    def get_new_address(umid, auth_key, cb_url='http://{}/bitcoin/deposit'):
 
         cb_url = cb_url.format(Bitcoin.HOSTNAME)
 
         obj = Bitcoin.req("https://coinbase.com/api/v1/account/generate_receive_address",
-                      '{"address": {"callback_url": "%s/%s", "label": "%s"}' % (cb_url, umid, guid))
+                      '{"address": {"callback_url": "%s/%s/%s", "label": "%s"}' % (cb_url, umid, auth_key, umid))
 
         if not(obj['success']):
             raise BTCException("Could not get address: %s" % res)

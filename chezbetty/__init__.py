@@ -53,7 +53,7 @@ def main(global_config, **settings):
     config.add_route('deposit_new', '/deposit/new')
     config.add_route('deposit',     '/deposit/{umid}')
 
-    config.add_route('btc_deposit', '/bitcoin/deposit/{guid}')
+    config.add_route('btc_deposit', '/bitcoin/deposit/{umid}/{auth_key}')
     config.add_route('btc_check',   '/bitcoin/check/{addr}')
 
     config.add_route('event',      '/event/{event_id}')

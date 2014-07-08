@@ -19,11 +19,13 @@ from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
 from .models.announcement import Announcement
+from .models.btcdeposit import BtcPendingDeposit
 
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
+import binascii
 
 class DepositException(Exception):
     pass
@@ -132,8 +134,13 @@ def deposit(request):
         user = User.from_umid(request.matchdict['umid'])
 
         try:
-            btc_addr = Bitcoin.get_new_address(user.umid)
+            auth_key = binascii.b2a_hex(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
+            btc_addr = Bitcoin.get_new_address(user.umid, auth_key)
             btc_html = render('templates/btc.jinja2', {'addr': btc_addr})
+
+            e = BtcPendingDeposit(user, auth_key, btc_addr)
+            DBSession.add(e)
+            DBSession.flush()
         except BTCException as e:
             btc_html = ""
 
@@ -315,13 +322,25 @@ def purchase_new(request):
 @view_config(route_name='btc_deposit', request_method='POST', renderer='json')
 def btc_deposit(request):
 
-    user = User.from_umid(request.matchdict['guid'])
+    user = User.from_umid(request.matchdict['umid'])
+    auth_key = request.matchdict['auth_key']
 
     addr       = request.json_body['address']
     amount_btc = request.json_body['amount']
     txid       = request.json_body['transaction']['id']
     created_at = request.json_body['transaction']['created_at']
     txhash     = request.json_body['transaction']['hash']
+
+    try:
+        pending = BtcPendingDeposit.from_auth_key(auth_key)
+    except NoResultFound as e:
+        print("No result for auth_key %s" % auth_key)
+        return
+
+
+    if (pending.user_id != user.id or pending.address != addr):
+        print("Mismatch of BtcPendingDeposit userid or address: (%d/%d), (%s/%s)" % (pending.user_id, user.id, pending.address, addr))
+        return
 
     #try:
     usd_per_btc = Bitcoin.get_spot_price()

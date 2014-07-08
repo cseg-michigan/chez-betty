@@ -67,7 +67,7 @@ class LDAPLookup(object):
         return self.__lookup("entityid", umid)
 
     def lookup_uniqname(self, uniqname):
-        return self.__lookup("uid", umid)
+        return self.__lookup("uid", uniqname)
 
 
 class User(Account):
