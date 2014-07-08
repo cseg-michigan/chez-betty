@@ -23,6 +23,7 @@ from .models.vendor import Vendor
 from .models.item_vendor import ItemVendor
 from .models.request import Request
 from .models.announcement import Announcement
+from .models.btcdeposit import BtcPendingDeposit
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -737,7 +738,65 @@ def admin_btc_reconcile(request):
                "usd": 0.0}
     btcbox = CashAccount.from_name("btcbox")
 
-    return {'btc': btc, 'btcbox': btcbox}
+    deposits = DBSession.query(BTCDeposit).order_by(desc(BTCDeposit.id)).all()
+    cur_height = Bitcoin.get_block_height()
+
+    transactions = []
+    txhashes = {}
+    for d in deposits:
+        txhash = d.btctransaction
+        btc_tx = Bitcoin.get_tx_by_hash(txhash)
+        confirmations = (cur_height - btc_tx["block_height"] + 1) if "block_height" in btc_tx else 0
+
+        true_amount = Decimal(0) # satoshis
+        for output in btc_tx['out']:
+            if output['addr'] == d.address and output['type'] == 0:
+                true_amount += Decimal(output['value'])
+
+        true_amount /= 100000000  # bitcoins
+
+        txhashes[txhash] = True
+
+        transactions.append({'deposit' : d,
+                      'mbtc' : round(d.amount_btc*1000, 2),
+                      'true_amount' : true_amount,
+                      'true_amount_mbtc' : round(true_amount*1000, 2),
+                      'confirmations': confirmations})
+
+
+    missed_deposits = []
+    pending = DBSession.query(BtcPendingDeposit).order_by(desc(BtcPendingDeposit.id)).all()
+    addrs = []
+    for pend in pending:
+        addrs.append(pend.address)
+
+    res = Bitcoin.get_tx_from_addrs('|'.join(addrs))
+    for tx in res['txs']:
+        confirmations = (cur_height - tx['block_height'] + 1) if 'block_height' in tx else 0
+        txhash = tx['hash']
+        if txhash not in txhashes:
+            # we found a btc deposit on the blockchain we didn't get a callback for!
+
+            amount = Decimal(0)
+            for output in tx['out']:
+                if output['addr'] in addrs and output['type'] == 0:
+                    addr = output['addr']
+                    amount += Decimal(output['value'])
+
+            amount /= 100000000
+
+            pending_deposit = DBSession.query(BtcPendingDeposit).filter(BtcPendingDeposit.address==addr).one()
+
+            user = User.from_id(pending_deposit.user_id)  # from_id?
+            missed_deposits.append({'txhash': txhash,
+                                    'address': addr,
+                                    'amount_btc' : amount,
+                                    'amount_mbtc' : round(amount*1000, 2),
+                                    'amount_usd' : amount * Bitcoin.get_spot_price(),
+                                    'confirmations' : confirmations,
+                                    'user': user})
+
+    return {'btc': btc, 'btcbox': btcbox, 'deposits': deposits, 'transactions': transactions, 'missed' : missed_deposits}
 
 
 @view_config(route_name='admin_btc_reconcile_submit',
@@ -886,7 +945,6 @@ def admin_announcements_edit_submit(request):
 
     request.session.flash('Announcements updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_announcements_edit'))
-
 
 @view_config(route_name='login',
              renderer='templates/login.jinja2')

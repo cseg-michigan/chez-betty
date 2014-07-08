@@ -8,20 +8,112 @@
 
 
 {% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Coinbase</h3>
+      </div>
+      <div class="panel-body">
+        <form role="form" action="/admin/btc/reconcile/submit" method="post">
+          <table class="table">
+            <tr>
+              <td>Bitcoins in Account</td>
+              <td>{{ btc.btc }} BTC</td>
+            </tr>
+            <tr>
+              <td>Predicted Value</td>
+              <td>{{ btc.usd|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Expected</td>
+              <td>{{ btcbox.balance|format_currency|safe }}</td>
+            </tr>
+            <tr>
+                <td><button type="submit" class="btn btn-success">Convert Bitcoins</button></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-<form role="form" action="/admin/btc/reconcile/submit" method="post">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Bitcoin Deposits</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Address</th>
+              <th>TxHash</th>
+              <th>User</th>
+              <th>Confirms</th>
+              <th>Amount (mBTC)</th>
+              <th class="right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in transactions %}
+            <tr>
+              <td>{{ t.deposit.id }}</td>
+              <td>{{ t.deposit.address }}</td>
+              <td>{{ t.deposit.btctransaction }}</td>
+              <td>{{ t.deposit.to_account_virt.name if t.deposit.to_account_virt else "n/a" }}</td>
+              <td>{{ t.confirmations }}</td>
+              <td>{{ t.true_amount_mbtc }}</td>
+              <td class="right">{{ t.deposit.amount|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+    </div>
+  </div>
 
-  <dl class="dl-horizontal">
-    <dt>Bitcoins in Account</dt>
-    <dd>{{ btc.btc }}</dd>
-    <dt>Predicted Value</dt>
-    <dd>{{ btc.usd|format_currency|safe }}</dd>
-    <dt>Expected</dt>
-    <dd>{{ btcbox.balance|format_currency|safe }}</dd>
-  </dl>
+</div>
 
-  <button type="submit" class="btn btn-success">Convert Bitcoins</button>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Missed Bitcoin Deposits</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Address</th>
+              <th>TxHash</th>
+              <th>User</th>
+              <th>Confirms</th>
+              <th>Amount (mBTC)</th>
+              <th class="right">Est. Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in missed %}
+            <tr>
+              <td>{{ t.address }}</td>
+              <td>{{ t.txhash }}</td>
+              <td>{{ t.user.name }}</td>
+              <td>{{ t.confirmations }}</td>
+              <td>{{ t.amount_mbtc }}</td>
+              <td class="right">{{ t.amount_usd|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+    </div>
+  </div>
 
-</form>
+</div>
+
 
 {% endblock %}
