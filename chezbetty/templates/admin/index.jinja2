@@ -224,14 +224,14 @@
           <thead>
             <tr>
               <th>Item</th>
-              <th>Quantity Sold</th>
+              <th class="right">Quantity Sold</th>
             </tr>
           </thead>
           <tbody>
             {% for item in best_selling_items %}
             <tr>
               <td>{{ item.name }}</td>
-              <td>{{ item.quantity }}</td>
+              <td class="right">{{ item.quantity }}</td>
             </tr>
             {% endfor %}
           </tbody>
