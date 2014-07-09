@@ -33,8 +33,9 @@ from .btc import Bitcoin, BTCException
 
 # Used for generating barcodes
 from reportlab.graphics.barcode import code39
+from reportlab.graphics.barcode import code93
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import mm
+from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
 import threading
@@ -507,22 +508,45 @@ def admin_item_barcode_pdf(request):
 
     c = canvas.Canvas(fname, pagesize=letter)
 
-    x = 1 * mm
-    y = 285 * mm
-    x1 = 6.4 * mm
+    barcode_height = .250*inch
 
-    for code in [item.barcode]*77:
-        barcode = code39.Extended39(code)
-        barcode.drawOn(c, x, y)
-        x1 = x + 6.4 * mm
-        y = y - 5 * mm
-        c.drawString(x1, y, code)
-        x = x
-        y = y - 10 * mm
+    x_margin = 0.27 * inch
+    y_margin = 0.485 * inch
 
-        if int(y) == 0:
-            x = x + 50 * mm
-            y = 285 * mm
+    x_interlabel = 0.12 * inch
+    y_interlabel = 0
+
+    x_label = 1.5 * inch
+    y_label = 1 * inch
+
+    label_padding = 0.1 * inch
+
+    x = x_margin
+    y = letter[1] - y_margin
+
+    # Don't know why I need this, but it makes it work
+    x_hack = 0.2 * inch
+
+    for x_ind in range(5):
+        for y_ind in range(10):
+            x_off = x + x_ind * (x_label + x_interlabel) + label_padding - x_hack
+            y_off = y - y_ind * (y_label + y_interlabel) - barcode_height - label_padding
+
+            print("x_off {} ({}) y_off {} ({})".format(x_off, x_off / inch, y_off, y_off / inch))
+
+            barcode = code93.Extended93(item.barcode)
+            print(barcode.minWidth())
+            print(barcode.minWidth() / inch)
+            barcode.drawOn(c, x_off, y_off)
+
+            x_text = x_off + 6.4 * mm
+            y_text = y_off - 5 * mm
+            c.setFont("Helvetica", 12)
+            c.drawString(x_text, y_text, item.barcode)
+
+            y_text = y_text - 5 * mm
+            c.setFont("Helvetica", 8)
+            c.drawString(x_text, y_text, item.name)
 
     c.showPage()
     c.save()
