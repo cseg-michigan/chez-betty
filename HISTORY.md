@@ -1,0 +1,16 @@
+History of Chez Betty
+=====================
+
+- July 10, 2014: One of the coolers from the Foo Bar is brought up to the
+grad lounge and becomes cold storage for Chez Betty drinks.
+- July 8, 2014: Chez Betty is installed in 2817 BBB. After a Costco run, adding
+the first batch of items, stocking the shelves, and getting Internet to
+the touchscreen and Beagle Bone Black, Betty is alive at 11 PM.
+- June 27-29, 2014: 4901 BBB becomes the Chez Betty development office.
+- May 2014: After months of procrastination, Brad, Zakir, and Pat decided to set
+aside a weekend and build Chez Betty.
+- Summer 2013: A video chat with Tristen Halderson at UCSD reveals that Chez
+Betty is definitely worth doing. However, it is clear we are going to have to
+build our own system.
+- Summer 2013: Brad Campbell, Meghan Clark, Zakir Durumeric, Pat Pannuto decide
+"Hey, if UCSD has Chez Bob, we should have Chez Betty."
