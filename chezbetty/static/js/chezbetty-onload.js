@@ -133,3 +133,29 @@ $(".keyboard-wanted").keyboard({
   layout : 'qwerty'
 });
 
+var scrollStep = 100;
+
+$("#scrollTop").bind("click", function(event) {
+  event.preventDefault();
+  $("#scrollMe").animate({
+    scrollTop: "= 0px"
+  });
+});
+$("#scrollUp").bind("click", function(event) {
+  event.preventDefault();
+  $("#scrollMe").animate({
+    scrollTop: "-=" + scrollStep + "px"
+  });
+});
+$("#scrollDown").bind("click", function(event) {
+  event.preventDefault();
+  $("#scrollMe").animate({
+    scrollTop: "+=" + scrollStep + "px"
+  });
+});
+$("#scrollBot").bind("click", function(event) {
+  event.preventDefault();
+  $("#scrollMe").animate({
+    scrollTop: "+=" + $("#scrollMe").height() + "px"
+  });
+});

@@ -2,42 +2,61 @@
 {% block title %}Items{% endblock %}
 {% block header %}Items at Chez Betty{% endblock %}
 
-
-
 {% block content %}
 
-<div class="top-button">
-  <a class="btn btn-default btn-lg" href="/">Home</a>
-  <a class="btn btn-default btn-lg" href="/item/request">Request an Item</a>
-</div>
+<p class="lead">All that Betty has to offer.</p>
+<p>Generally, Betty will automatically re-order items as she begins to run low
+on them. Items with consistent poor sales will be moved out of rotation. If
+Betty stops selling something you would like back, feel free to
+<a href="/item/request">request it's return</a>.</p>
+
+<hr />
 
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Items</h3>
   </div>
   <div class="panel-body">
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th class="item-stock" style="width: 15%">In Stock</th>
-          <th class="item-cost" style="width: 15%">Wholesale Cost</th>
-          <th class="item-price" style="width: 15%">Price</th>
-        </tr>
-      </thead>
+    <div class="row">
+      <div class="col-lg-2">
+        <div class="top-button">
+          <a class="btn btn-default btn-lg btn-block" href="/">Home</a>
+          <a class="btn btn-default btn-lg btn-block" href="/item/request">Request an Item</a>
+          <hr />
+          <h4>Scroll Controls:</h4>
+          <a id="scrollTop"  class="btn btn-info btn-lg btn-block" href="#">Top</a>
+          <a id="scrollUp"   class="btn btn-info btn-lg btn-block" href="#">Up</a>
+          <a id="scrollDown" class="btn btn-info btn-lg btn-block" href="#">Down</a>
+          <a id="scrollBot"  class="btn btn-info btn-lg btn-block" href="#">Bottom</a>
+        </div>
+      </div>
+      <div class="col-lg-10">
+        <div id="scrollMe" class="tabel-responsive" style="height: 800px; overflow: auto;">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th class="item-stock" style="width: 15%">In Stock</th>
+                <th class="item-cost" style="width: 15%">Wholesale Cost</th>
+                <th class="item-price" style="width: 15%">Price</th>
+              </tr>
+            </thead>
 
-      <tbody>
-      {% for item in items %}
-        <tr>
-          <td class="item-name">{{ item.name }}</td>
-          <td class="item-stock">{{ item.in_stock }}</td>
-          <td class="item-cost">{{ item.wholesale|format_currency|safe }}</td>
-          <td class="item-price">{{ item.price|format_currency|safe }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
+            <tbody>
+            {% for item in items %}
+              <tr>
+                <td class="item-name">{{ item.name }}</td>
+                <td class="item-stock">{{ item.in_stock }}</td>
+                <td class="item-cost">{{ item.wholesale|format_currency|safe }}</td>
+                <td class="item-price">{{ item.price|format_currency|safe }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
 
-    </table>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
