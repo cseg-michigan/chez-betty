@@ -307,7 +307,59 @@
             {% for sbd in sold_by_day|reverse %}
             <tr>
               <td>{{ sbd.day }}</td>
-              <td class="right">{{ sbd.quantity }}</td>
+              <td class="right">{{ sbd.total }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Virtual Revenue By Day</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th class="right">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for vrbd in virt_revenue_by_day|reverse %}
+            <tr>
+              <td>{{ vrbd.day }}</td>
+              <td class="right">{{ vrbd.total|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Deposits By Day</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th class="right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dpd in deposits_by_day|reverse %}
+            <tr>
+              <td>{{ dpd.day }}</td>
+              <td class="right">{{ dpd.total|format_currency|safe }}</td>
             </tr>
             {% endfor %}
           </tbody>

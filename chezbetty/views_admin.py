@@ -16,7 +16,7 @@ from .models.model import *
 from .models import user as __user
 from .models.user import User
 from .models.item import Item
-from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
+from .models.transaction import Transaction, Deposit, BTCDeposit, PurchaseLineItem
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
 from .models import event as __event
@@ -120,7 +120,9 @@ def admin_index(request):
                "mbtc": None,
                "usd": None}
 
-    sold_by_day = PurchaseLineItem.by_day()
+    sold_by_day         = PurchaseLineItem.quantity_by_period('day')
+    virt_revenue_by_day = PurchaseLineItem.virtual_revenue_by_period('day')
+    deposits_by_day     = Deposit.deposits_by_period('day')
 
     return dict(events=events,
                 items_low_stock=items_low_stock,
@@ -142,7 +144,9 @@ def admin_index(request):
                 withdrawal=withdrawal,
                 inventory=inventory,
                 best_selling_items=bsi,
-                sold_by_day=sold_by_day)
+                sold_by_day=sold_by_day,
+                virt_revenue_by_day=virt_revenue_by_day,
+                deposits_by_day=deposits_by_day)
 
 
 @view_config(route_name='admin_demo',

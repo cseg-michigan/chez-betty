@@ -1,7 +1,6 @@
 import datetime
 from decimal import Decimal
 import decimal
-import itertools
 from sqlalchemy import (
     Column,
     Index,

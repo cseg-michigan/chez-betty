@@ -165,6 +165,13 @@ class Deposit(Transaction):
         cashbox_c = account.get_cash_account("cashbox")
         Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
 
+    @classmethod
+    def deposits_by_period(cls, period):
+        r = DBSession.query(cls.amount.label('summable'), event.Event.timestamp)\
+                     .join(event.Event)\
+                     .order_by(event.Event.timestamp).all()
+        return utility.group(r, period)
+
 
 class BTCDeposit(Deposit):
     __mapper_args__ = {'polymorphic_identity': 'btcdeposit'}
@@ -297,18 +304,20 @@ class PurchaseLineItem(SubTransaction):
         self.price = price
 
     @classmethod
-    def by_day(cls):
-        r = DBSession.query(cls.quantity, event.Event.timestamp)\
+    def quantity_by_period(cls, period):
+        r = DBSession.query(cls.quantity.label('summable'), event.Event.timestamp)\
                      .join(Transaction)\
                      .join(event.Event)\
                      .order_by(event.Event.timestamp).all()
-        quantities = []
-        for (day, items) in itertools.groupby(r, lambda i: i.timestamp.date()):
-            q = 0
-            for item in items:
-                q += item.quantity
-            quantities.append({'day': day, 'quantity': q})
-        return quantities
+        return utility.group(r, period)
+
+    @classmethod
+    def virtual_revenue_by_period(cls, period):
+        r = DBSession.query(cls.amount.label('summable'), event.Event.timestamp)\
+                     .join(Transaction)\
+                     .join(event.Event)\
+                     .order_by(event.Event.timestamp).all()
+        return utility.group(r, period)
 
 
 @property
