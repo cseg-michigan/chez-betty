@@ -296,6 +296,12 @@ class PurchaseLineItem(SubTransaction):
         SubTransaction.__init__(self, transaction, amount, item.id, quantity, wholesale)
         self.price = price
 
+@property
+def __number_sold(self):
+    return object_session(self).query(func.sum(PurchaseLineItem.quantity).label('c'))\
+                               .filter(PurchaseLineItem.item_id==self.id).one().c
+item.Item.number_sold = __number_sold
+
 
 class RestockLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'restocklineitem'}

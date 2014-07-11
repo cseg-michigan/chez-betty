@@ -23,6 +23,7 @@
           <th>Item Wholesale</th>
           <th>Markup</th>
           <th>Stock</th>
+          <th>Num Sold</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -59,6 +60,7 @@
           <td class="{{ wholesale_class }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td id="item-markup-{{ item.id }}" class="item-markup right">{{ markup }}%</td>
           <td>{{ item.in_stock }}</td>
+          <td>{{ item.number_sold }}</td>
           <td class="item-actions">
             <button type="button" id="btn-disable-item-{{ item.id }}" class="btn btn-danger" {% if item.enabled == False %}style="display:none;"{% endif %}>X</button>
             <button type="button" id="btn-enable-item-{{ item.id }}" class="btn btn-success" {% if item.enabled == True %}style="display:none;"{% endif %}>+</button>
