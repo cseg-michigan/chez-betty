@@ -30,7 +30,9 @@ class Item(Versioned, Base):
 
     @classmethod
     def all(cls):
-        return DBSession.query(cls).filter(cls.enabled).all()
+        return DBSession.query(cls)\
+                        .filter(cls.enabled)\
+                        .order_by(cls.name).all()
 
     @classmethod
     def count(cls):
