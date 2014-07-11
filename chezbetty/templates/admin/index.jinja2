@@ -254,8 +254,6 @@
           <thead>
             <tr>
               <th></th>
-              <th>Event ID</th>
-              <th>ID</th>
               <th>Timestamp</th>
               <th>Type</th>
               <th>From Account:</th>
@@ -271,9 +269,7 @@
             <tr>
               {% if loop.index == 1 %}
               <td rowspan="{{ e.transactions|count }}"><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
-              <td rowspan="{{ e.transactions|count }}">{{ e.id }}</td>
               {% endif %}
-              <td>{{ t.id }}</td>
               <td>{{ e.timestamp|pretty_date|safe }}</td>
               <td>{{ t.type }}</td>
               <td>{{ t.fr_account_virt.name if t.fr_account_virt else "n/a" }}</td>
