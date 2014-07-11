@@ -31,7 +31,7 @@ function alert_error (error_str) {
 // Callback when adding an item to the cart succeeds
 function add_item_success (data) {
 	if (data.status == "unknown_barcode") {
-		console.log("Could not find that item.");
+		alert_error("Could not find that item.");
 	} else {
 		// Make sure this item isn't already on the list
 		if ($("#restock-item-" + data.id).length == 0) {
@@ -44,7 +44,7 @@ function add_item_success (data) {
 
 // Callback when adding to cart fails.
 function add_item_fail () {
-	console.log("Could not find that item.");
+	alert_error("AJAX lookup failed.");
 }
 
 function add_item (barcode) {
