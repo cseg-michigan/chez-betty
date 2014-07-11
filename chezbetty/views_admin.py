@@ -120,6 +120,8 @@ def admin_index(request):
                "mbtc": None,
                "usd": None}
 
+    sold_by_day = PurchaseLineItem.by_day()
+
     return dict(events=events,
                 items_low_stock=items_low_stock,
                 users_shame=users_shame,
@@ -139,7 +141,8 @@ def admin_index(request):
                 donation=donation,
                 withdrawal=withdrawal,
                 inventory=inventory,
-                best_selling_items=bsi)
+                best_selling_items=bsi,
+                sold_by_day=sold_by_day)
 
 
 @view_config(route_name='admin_demo',

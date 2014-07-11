@@ -288,5 +288,35 @@
 
 </div>
 
+<div class="row">
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Items Sold By Day</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th class="right">Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sbd in sold_by_day|reverse %}
+            <tr>
+              <td>{{ sbd.day }}</td>
+              <td class="right">{{ sbd.quantity }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+    </div>
+  </div>
+
+</div>
+
 
 {% endblock %}

@@ -296,6 +296,21 @@ class PurchaseLineItem(SubTransaction):
         SubTransaction.__init__(self, transaction, amount, item.id, quantity, wholesale)
         self.price = price
 
+    @classmethod
+    def by_day(cls):
+        r = DBSession.query(cls.quantity, event.Event.timestamp)\
+                     .join(Transaction)\
+                     .join(event.Event)\
+                     .order_by(event.Event.timestamp).all()
+        quantities = []
+        for (day, items) in itertools.groupby(r, lambda i: i.timestamp.date()):
+            q = 0
+            for item in items:
+                q += item.quantity
+            quantities.append({'day': day, 'quantity': q})
+        return quantities
+
+
 @property
 def __number_sold(self):
     return object_session(self).query(func.sum(PurchaseLineItem.quantity).label('c'))\
