@@ -52,6 +52,18 @@ def add_global(event):
     with demo_lock:
         event.rendering_val['demo'] = demo
 
+# Add counts to all rendered pages for the sidebar
+@subscriber(BeforeRender)
+def add_counts(event):
+    count = {}
+    count['items']        = Item.count()
+    count['vendors']      = Vendor.count()
+    count['users']        = User.count()
+    count['transactions'] = Transaction.count()
+    count['requests']     = Request.count()
+    event.rendering_val['counts'] = count
+
+
 ###
 ### Admin
 ###

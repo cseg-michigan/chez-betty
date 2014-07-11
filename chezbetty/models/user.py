@@ -122,6 +122,10 @@ class User(Account):
     def all(cls):
         return DBSession.query(cls).filter(cls.enabled).all()
 
+    @classmethod
+    def count(cls):
+        return DBSession.query(func.count(cls.id).label('c')).one().c
+
     def __make_salt(self):
         return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
 

@@ -16,10 +16,13 @@ class Request(Base):
 
     @classmethod
     def from_id(cls, id):
-        e = DBSession.query(cls).filter(cls.id == id).one()
-        return e
+        return DBSession.query(cls).filter(cls.id == id).one()
 
     @classmethod
     def all(cls):
-        e = DBSession.query(cls).filter(cls.enabled).all()
-        return e
+        return DBSession.query(cls).filter(cls.enabled).all()
+
+    @classmethod
+    def count(cls):
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.enabled).one().c

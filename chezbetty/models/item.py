@@ -32,6 +32,11 @@ class Item(Versioned, Base):
     def all(cls):
         return DBSession.query(cls).filter(cls.enabled).all()
 
+    @classmethod
+    def count(cls):
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.enabled).one().c
+
     def __str__(self):
         return "<Item (%s)>" % self.name
 

@@ -121,6 +121,14 @@ class Transaction(Base):
                                  cls.to_account_virt_id==account_obj.id))\
                      .filter(cls.type==trans_type).one()
 
+    @classmethod
+    def count(cls, trans_type=None):
+        if not trans_type:
+            return DBSession.query(func.count(cls.id).label('c')).one().c
+        else:
+            return DBSession.query(func.count(cls.id).label('c'))\
+                            .filter(cls.type==trans_type).one().c
+
 
 @property
 def __transactions(self):
