@@ -7,9 +7,11 @@ grad lounge and becomes cold storage for Chez Betty drinks.
 the first batch of items, stocking the shelves, and getting Internet to
 the touchscreen and Beagle Bone Black, Betty is alive at 11 PM.
 - June 27-29, 2014: 4901 BBB becomes the Chez Betty development office.
+- June 20, 2014: Zakir and Brad buy all of the hardware that will become Betty.
 - May 2014: After months of procrastination, Brad, Zakir, and Pat decided to set
-aside a weekend and build Chez Betty.
-- Summer 2013: A video chat with Tristen Halderson at UCSD reveals that Chez
+aside a weekend and build Chez Betty. Pat creates an account with ITS for LDAP
+access, but nothing else happens for a while.
+- Summer 2013: A video chat with Tristan Halvorson at UCSD reveals that Chez
 Betty is definitely worth doing. However, it is clear we are going to have to
 build our own system.
 - Summer 2013: Brad Campbell, Meghan Clark, Zakir Durumeric, Pat Pannuto decide
