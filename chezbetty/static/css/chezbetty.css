@@ -138,6 +138,60 @@ h1 {
 
 /* Deposit */
 
-.deposit-type-col {
-	border-right: 1px solid #ccc;
+.wrapper {
+	position: relative;
 }
+
+.line {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 1px;
+	background: #ccc;
+	z-index: 1;
+}
+
+.wordwrapper {
+	text-align: center;
+	vertical-align: middle;
+	height: 35px;
+	width:40px;
+	position: absolute;
+	right: 68%;
+	top: 50%;
+	margin-top: -20px;
+	margin-left: -8px;
+	z-index: 2;
+}
+
+.wordwrapper-first-third {
+	left: 32.2%;
+}
+
+.wordwrapper-second-third {
+	left: 66.5%;
+}
+
+.word {
+	color: #ccc;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	padding: 3px;
+	font: bold 12px arial,sans-serif;
+	background: #fff;
+	font-size: 20px;
+}
+
+.line-first-third {
+	left: 33%;
+}
+
+.line-second-third {
+	left: 67.5%;
+}
+
+.deposit-type-col h3 {
+	text-align: center;
+	font-weight: bold;
+}
+

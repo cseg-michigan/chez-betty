@@ -14,11 +14,11 @@
   </div>
   <div class="panel-body">
 
-    <div class="row">
+    <div class="row wrapper">
       <div class="col-md-4 deposit-type-col">
         <div class="row">
           <div class="col-md-12">
-            <p>Please enter the amount you placed in the box here.</p>
+            <h3>Cash</h3>
             {% include "keypad.jinja2" %}
           </div>
         </div>
@@ -29,11 +29,32 @@
         </div>
       </div>
 
+
+
+      <div class="line line-first-third"></div>
+      <div class="wordwrapper wordwrapper-first-third">
+        <div class="word">or</div>
+      </div>
+
+
       <div class="col-md-4 deposit-type-col">
+        <h3>Bitcoin</h3>
         {{ btc|safe }}
       </div>
-    </div>
 
+
+      <div class="line line-second-third"></div>
+      <div class="wordwrapper wordwrapper-second-third">
+        <div class="word">or</div>
+      </div>
+
+      <div class="col-md-4 deposit-type-col">
+        <h3>Credit Card</h3>
+        <p style="text-align:center;"">Coming soon.</p>
+      </div>
+
+
+    </div>
   </div>
 </div>
 
