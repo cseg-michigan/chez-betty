@@ -32,9 +32,9 @@
 <div id="front-demo" class="col-md-12 buttons">
   <div class="well">
     <h3>Demo Mode:</h3>
-    <a class="btn btn-default btn-huge btn-bordered" href="/purchase/11519022">Login as Brad</a>
-    <a class="btn btn-default btn-huge btn-bordered" href="/purchase/64880621">Login as Pat</a>
-    <a class="btn btn-default btn-huge btn-bordered" href="/purchase/95951361">Login as Zakir</a>
+    {% for admin in admins %}
+    <a class="btn btn-default btn-huge btn-bordered" href="/purchase/{{ admin.umid }}">Login as {{ admin.name }}</a>
+    {% endfor %}
   </div>
 </div>
 {% endif %}

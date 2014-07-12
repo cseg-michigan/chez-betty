@@ -38,20 +38,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
-import threading
-demo_lock = threading.Lock()
-demo = False
-
 ###
 ### Global Attributes (passed to every template)
 ###   - n.b. This really is global, it will pick up views routes too
 ###
-@subscriber(BeforeRender)
-def add_global(event):
-    assert(event.rendering_val.get('demo') is None)
-    with demo_lock:
-        event.rendering_val['demo'] = demo
-
 # Add counts to all rendered pages for the sidebar
 @subscriber(BeforeRender)
 def add_counts(event):
@@ -150,17 +140,13 @@ def admin_index(request):
 
 
 @view_config(route_name='admin_demo',
-             renderer='json',
              permission='admin')
 def admin_demo(request):
-    global demo_lock
-    global demo
-    with demo_lock:
-        if request.matchdict['state'].lower() == 'true':
-            demo = True
-        else:
-            demo = False
-        return {}
+    if request.matchdict['state'].lower() == 'true':
+        request.response.set_cookie('demo', '1')
+    else:
+        request.response.set_cookie('demo', '0')
+    return request.response
 
 
 @view_config(route_name='admin_keyboard',

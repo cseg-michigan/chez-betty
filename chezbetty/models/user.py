@@ -126,6 +126,12 @@ class User(Account):
     def count(cls):
         return DBSession.query(func.count(cls.id).label('c')).one().c
 
+    @classmethod
+    def get_admins(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled)\
+                        .filter(cls.role=='administrator').all()
+
     def __make_salt(self):
         return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
 

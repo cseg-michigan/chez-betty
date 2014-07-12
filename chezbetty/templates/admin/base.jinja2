@@ -46,6 +46,12 @@
     {% endif %}
   </script>
 
+  {% if "demo" in request.cookies and request.cookies["demo"]|int %}
+    {% set demo = True %}
+  {% else %}
+    {% set demo = False %}
+  {% endif %}
+
 
   {% set active_page = active_page|default('index') -%}
   {% include 'navbar.jinja2' %}

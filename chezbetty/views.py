@@ -41,7 +41,14 @@ def index(request):
     announcements = Announcement.all()
     for announcement in announcements:
         request.session.flash(announcement.announcement, 'info')
-    return {}
+
+    # For the demo mode
+    if 'demo' in request.cookies and request.cookies['demo'] == '1':
+        admins = User.get_admins()
+    else:
+        admins = []
+
+    return {'admins': admins}
 
 
 @view_config(route_name='about', renderer='templates/about.jinja2')
