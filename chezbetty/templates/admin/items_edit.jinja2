@@ -13,7 +13,7 @@
 
   <div id="edit-items">
 
-    <table class="table">
+    <table class="table sortable">
 
       <thead>
         <tr>
@@ -21,7 +21,7 @@
           <th>Name</th>
           <th>Item Price</th>
           <th>Item Wholesale</th>
-          <th>Markup</th>
+          <th class="right">Markup</th>
           <th>Stock</th>
           <th>Num Sold</th>
           <th>Actions</th>
@@ -58,7 +58,7 @@
           <td>{{ item.name }}</td>
           <td class="{{ price_class }}"><input type="text" class="form-control numeric" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price|round(2) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td class="{{ wholesale_class }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
-          <td id="item-markup-{{ item.id }}" class="item-markup right">{{ markup }}%</td>
+          <td id="item-markup-{{ item.id }}" class="item-markup right" data-value="{{ markup }}">{{ markup }}%</td>
           <td>{{ item.in_stock }}</td>
           <td>{{ item.number_sold }}</td>
           <td class="item-actions">

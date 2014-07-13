@@ -138,6 +138,7 @@ $("#edit-items").on("input", "input:text",  function () {
 
 	var markup = (((price/wholesale) - 1.0) * 100.0).toFixed(2);
 	$("#item-markup-"+id).text(markup + "%");
+	$("#item-markup-"+id).attr("data-value", markup);
 });
 
 $("#restock-table").on("input", "input:text",  function () {
@@ -192,11 +193,12 @@ var serialized_form_clean;
 var clicked_submit = false;
 
 // When the page load we get the values serialize
-serialized_form_clean = $("form").serialize();
+serialized_form_clean = $("form").serialize().split("&").sort().join("&");
 
 // Before we leave the page we now compare between the new form values and the orignal
 window.onbeforeunload = function (e) {
-    var serialized_form_dirty = $("form").serialize();
+	console.log(serialized_form_clean);
+    var serialized_form_dirty = $("form").serialize().split("&").sort().join("&");
     if (serialized_form_clean != serialized_form_dirty && !clicked_submit) {
         return "You are about to leave a page where you have not saved the data.";
     }

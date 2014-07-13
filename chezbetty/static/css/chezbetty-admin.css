@@ -141,3 +141,11 @@ tfoot {
 tfoot tr td {
   border-top: 2px solid #ddd !important;
 }
+
+.sortable th.right {
+  padding-right: 20px;
+}
+
+
+
+
