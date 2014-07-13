@@ -106,6 +106,7 @@ def main(global_config, **settings):
 
     config.add_route('admin_transactions', '/admin/transactions')
     config.add_route('admin_event',        '/admin/event/{event_id}')
+    config.add_route('admin_event_undo',   '/admin/event/undo/{event_id}')
 
     config.add_route('admin_password_edit',        '/admin/password/edit')
     config.add_route('admin_password_edit_submit', '/admin/password/edit/submit')

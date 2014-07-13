@@ -892,7 +892,11 @@ def admin_transactions(request):
 def admin_event(request):
     try:
         e = Event.from_id(int(request.matchdict['event_id']))
-        return {'event': e}
+        if datalayer.can_undo_event(e):
+            undo = '/admin/event/undo/{}'.format(e.id)
+            return {'event': e, 'undo_url': undo}
+        else:
+            return {'event': e}
     except ValueError:
         request.session.flash('Invalid event ID', 'error')
         return HTTPFound(location=request.route_url('admin_transactions'))
@@ -900,6 +904,30 @@ def admin_event(request):
         request.session.flash('Could not find event ID#{}'\
             .format(request.matchdict['event_id']), 'error')
         return HTTPFound(location=request.route_url('admin_transactions'))
+
+@view_config(route_name='admin_event_undo', permission='manage')
+def admin_event_undo(request):
+    # Lookup the transaction that the user wants to undo
+    try:
+        event = Event.from_id(request.matchdict['event_id'])
+    except:
+        request.session.flash('Error: Could not find transaction to undo.', 'error')
+        return HTTPFound(location=request.route_url('admin_transactions'))
+
+    for transaction in event.transactions:
+
+        # Make sure transaction is a deposit (no user check since admin doing)
+        if transaction.type not in ('deposit', 'purchase'):
+            request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
+            return HTTPFound(location=request.route_url('admin_transactions'))
+
+    # If the checks pass, actually revert the transaction
+    try:
+        line_items = datalayer.undo_event(event)
+        request.session.flash('Transaction successfully reverted.', 'success')
+    except:
+        request.session.flash('Error: Failed to undo transaction.', 'error')
+    return HTTPFound(location=request.route_url('admin_transactions'))
 
 
 @view_config(route_name='admin_password_edit',

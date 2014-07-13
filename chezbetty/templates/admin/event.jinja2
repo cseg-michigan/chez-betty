@@ -87,4 +87,8 @@
   </ul>
 </div>
 
+{% if undo_url %}
+<a class="btn btn-danger" href="{{ undo_url }}">Undo this Event</a>
+{% endif %}
+
 {% endblock %}

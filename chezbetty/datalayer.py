@@ -4,9 +4,12 @@ from .models import transaction
 from .models import account
 from .models import request
 
+def can_undo_event(e):
+    return(e.type=='deposit' or e.type=='purchase')
+
 # Call this to remove an event from chez betty. Only works with cash deposits
 def undo_event(e):
-    assert(e.type=='deposit' or e.type=='purchase')
+    assert(can_undo_event(e))
 
     line_items = {}
 
