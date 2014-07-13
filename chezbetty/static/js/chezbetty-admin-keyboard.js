@@ -2,7 +2,9 @@
 function attach_keypad () {
 	if (onscreen_keyboard) {
 		$("input:text, input:password, #login-uniqname").not(".numeric").keyboard({ 
-		  layout : 'qwerty'
+		  layout : 'qwerty',
+		  tabNavigation : true,
+		  enterNavigation : true,
 		});
 
 		$("input.numeric:text").keyboard({ 
