@@ -56,8 +56,8 @@
 
           <td><a href="/admin/item/edit/{{ item.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
           <td>{{ item.name }}</td>
-          <td class="{{ price_class }}"><input type="text" class="form-control numeric" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price|round(2) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
-          <td class="{{ wholesale_class }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="{{ price_class }}" data-value="{{ item.price|round(2) }}"><input type="text" class="form-control numeric" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price|round(2) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="{{ wholesale_class }}" data-value="{{ item.wholesale|round(4) }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td id="item-markup-{{ item.id }}" class="item-markup right" data-value="{{ markup }}">{{ markup }}%</td>
           <td>{{ item.in_stock }}</td>
           <td>{{ item.number_sold }}</td>
