@@ -1,6 +1,6 @@
 <tr id="restock-item-{{ item.id }}" class="restock-item">
   <input type="hidden" name="restock-salestax-{{ item.id }}" value="off">
-  <td class="item-name">{{ item.name }}</td>
+  <td class="item-name">{{ item|admin_item|safe }}</td>
   <td class="item-quantity"><input type="text" class="form-control numeric" id="restock-quantity-{{ item.id }}" name="restock-quantity-{{ item.id }}"></td>
   <td class="item-cost"><input type="text" class="form-control restock-cost numeric" id="restock-cost-{{ item.id }}" name="restock-cost-{{ item.id }}"></td>
   <td class="item-quantity"><input type="checkbox" class="restock-salestax" id="restock-salestax-{{ item.id }}" name="restock-salestax-{{ item.id }}" value="on"></td>

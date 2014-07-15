@@ -63,7 +63,7 @@
         {% for st in t.subtransactions %}
           <tr>
               <td>{{ st.id }}</td>
-              <td>{{ st.item.name }}</td>
+              <td>{{ st.item|admin_item|safe }}</td>
               {% if t.type == "purchase" %}
               <td class="right">{{ st.price|format_currency|safe }}</td>
               {% endif %}

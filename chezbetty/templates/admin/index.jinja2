@@ -204,7 +204,7 @@
           <tbody>
             {% for item in items_low_stock %}
             <tr>
-              <td>{{ item.name }}</td>
+              <td>{{ item|admin_item|safe }}</td>
               <td class="right">{{ item.in_stock }}</td>
             </tr>
             {% endfor %}
@@ -230,7 +230,7 @@
           <tbody>
             {% for item in best_selling_items %}
             <tr>
-              <td>{{ item.name }}</td>
+              <td>{{ item|admin_item|safe }}</td>
               <td class="right">{{ item.quantity }}</td>
             </tr>
             {% endfor %}

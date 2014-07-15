@@ -31,6 +31,7 @@ jinja2.filters =
     static_url = pyramid_jinja2.filters:static_url_filter
     format_currency = chezbetty.jinja2_filters:format_currency
     pretty_date = chezbetty.jinja2_filters:pretty_date
+    admin_item = chezbetty.jinja2_filters:admin_item
 
 auth.secret = aabbcc
 

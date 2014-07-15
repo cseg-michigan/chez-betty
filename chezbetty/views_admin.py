@@ -75,7 +75,7 @@ def admin_index(request):
                                .order_by(User.balance)\
                                .limit(5).all()
     users_balance   = DBSession.query(func.sum(User.balance).label("total_balance")).one()
-    bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item.name)\
+    bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item.name, Item.id)\
                                .join(Item)\
                                .join(Transaction)\
                                .filter(Transaction.type=='purchase')\
