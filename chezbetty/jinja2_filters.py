@@ -18,3 +18,9 @@ def admin_item(item):
 
 def admin_user(user):
 	return '<a href="/user/{}">{}</a>'.format(user.umid, user.name)
+
+def admin_account(account):
+	try:
+		return admin_user(account)
+	except AttributeError:
+		return '{}'.format(account.name)

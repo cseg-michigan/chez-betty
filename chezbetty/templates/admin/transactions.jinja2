@@ -35,10 +35,10 @@
         <td>{{ t.id }}</td>
         <td>{{ t.event.timestamp|pretty_date|safe }}</td>
         <td>{{ t.type }}</td>
-        <td>{{ t.fr_account_virt.name if t.fr_account_virt else "n/a" }}</td>
-        <td>{{ t.to_account_virt.name if t.to_account_virt else "n/a" }}</td>
-        <td>{{ t.fr_account_cash.name if t.fr_account_cash else "n/a" }}</td>
-        <td>{{ t.to_account_cash.name if t.to_account_cash else "n/a" }}</td>
+        <td>{{ t.fr_account_virt|admin_account|safe if t.fr_account_virt else "n/a" }}</td>
+        <td>{{ t.to_account_virt|admin_account|safe if t.to_account_virt else "n/a" }}</td>
+        <td>{{ t.fr_account_cash|admin_account|safe if t.fr_account_cash else "n/a" }}</td>
+        <td>{{ t.to_account_cash|admin_account|safe if t.to_account_cash else "n/a" }}</td>
         <td class="right">{{ t.amount|format_currency|safe }}</td>
     </tr>
   {% endfor %}

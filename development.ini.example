@@ -33,6 +33,7 @@ jinja2.filters =
     pretty_date = chezbetty.jinja2_filters:pretty_date
     admin_item = chezbetty.jinja2_filters:admin_item
     admin_user = chezbetty.jinja2_filters:admin_user
+    admin_account = chezbetty.jinja2_filters:admin_account
 
 auth.secret = aabbcc
 
