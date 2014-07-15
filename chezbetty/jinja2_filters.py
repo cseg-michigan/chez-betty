@@ -15,3 +15,6 @@ def pretty_date(datetime_obj):
 
 def admin_item(item):
 	return '<a href="/admin/item/edit/{}">{}</a>'.format(item.id, item.name)
+
+def admin_user(user):
+	return '<a href="/user/{}">{}</a>'.format(user.umid, user.name)
