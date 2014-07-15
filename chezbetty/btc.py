@@ -45,7 +45,7 @@ class Bitcoin(object):
 
         except urllib.error.HTTPError as e:
             raise BTCException("Could not load HTTP")
-        except urllib.error as e:
+        except urllib.error.URLError as e:
             raise BTCException("General urllib failure")
 
 
@@ -58,7 +58,7 @@ class Bitcoin(object):
             return json.loads(str(res_s, 'utf-8'))
         except urllib.error.HTTPError as e:
             raise BTCException("Could not load HTTP")
-        except urllib.error as e:
+        except urllib.error.URLError as e:
             raise BTCException("General urllib failure")
 
     @staticmethod
