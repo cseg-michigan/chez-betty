@@ -3,6 +3,7 @@ from .models import event
 from .models import transaction
 from .models import account
 from .models import request
+from .models.item import Item
 
 def can_undo_event(e):
     return(e.type=='deposit' or e.type=='purchase')
@@ -28,6 +29,7 @@ def undo_event(e):
 
         for s in t.subtransactions:
             line_items[s.item_id] = s.quantity
+            Item.from_id(s.item_id).in_stock += s.quantity
             DBSession.delete(s)
 
         DBSession.delete(t)
