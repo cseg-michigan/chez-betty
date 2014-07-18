@@ -30,7 +30,7 @@
 {% endif %}
 <ul class="nav nav-sidebar">
   <li><span>View Transactions</span></li>
-  <li {% if active_page == 'transactions' %}class="active"{% endif %}><a href="/admin/transactions">Transactions<span class="badge pull-right">{{ counts["transactions"] }}</span></a></li>
+  <li {% if active_page == 'transactions' %}class="active"{% endif %}><a href="/admin/events">Transactions<span class="badge pull-right">{{ counts["transactions"] }}</span></a></li>
 </ul>
 {% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">

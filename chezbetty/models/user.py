@@ -3,9 +3,8 @@ import hashlib
 import binascii
 import os
 from .model import *
-from .account import Account
-from .transaction import Transaction
-from .event import Event
+from . import account
+from . import event
 
 import ldap3
 
@@ -70,7 +69,7 @@ class LDAPLookup(object):
         return self.__lookup("uid", uniqname)
 
 
-class User(Account):
+class User(account.Account):
     __tablename__ = 'users'
     __mapper_args__ = {'polymorphic_identity': 'user'}
 
@@ -83,7 +82,8 @@ class User(Account):
     role      = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
                        nullable=False, default="user")
 
-    administrative_events = relationship(Event, backref="admin")
+    administrative_events = relationship(event.Event, foreign_keys=[event.Event.user_id], backref="admin")
+    events_deleted        = relationship(event.Event, foreign_keys=[event.Event.deleted_user_id], backref="deleted_user")
     __ldap = LDAPLookup()
 
     def __init__(self, uniqname, umid, name):

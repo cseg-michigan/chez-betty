@@ -240,10 +240,11 @@ def event_undo(request):
 
     # If the checks pass, actually revert the transaction
     try:
-        line_items = datalayer.undo_event(event)
+        line_items = datalayer.undo_event(event, user)
         request.session.flash('Transaction successfully reverted.', 'success')
     except:
         request.session.flash('Error: Failed to undo transaction.', 'error')
+        return HTTPFound(location=request.route_url('purchase', umid=user.umid))
     if event.type == 'deposit':
         return HTTPFound(location=request.route_url('user', umid=user.umid))
     elif event.type == 'purchase':

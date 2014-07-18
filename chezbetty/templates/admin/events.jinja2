@@ -6,6 +6,9 @@
 <h1 class="page-header">Transaction Ledger</h1>
 {% endblock %}
 
+{% block submenu %}
+{% include "events_menu.jinja2" %}
+{% endblock %}
 
 {% block content %}
 
@@ -25,7 +28,7 @@
     </tr>
   </thead>
   <tbody>
-  {% for e in events %}
+  {% for e in events|reverse %}
   {% for t in e.transactions|reverse %}
     <tr>
         {% if loop.index == 1 %}

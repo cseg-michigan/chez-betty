@@ -6,6 +6,12 @@
 <h1 class="page-header">View Event</h1>
 {% endblock %}
 
+{% block submenu %}
+
+        
+  {% set sub_active_page = sub_active_page|default('index') -%}
+{% include "events_menu.jinja2" %}
+{% endblock %}
 
 {% block content %}
 
@@ -18,6 +24,10 @@
       <dt>Type</dt><dd>{{ event.type }}</dd>
       {% if event.notes %}
       <dt>Notes</dt><dd>{{ event.notes }}</dd>
+      {% endif %}
+      {% if event.deleted %}
+      <dt>Status</dt><dd><span class="red">DELETED</span></dd>
+      <dt>Deleted By</dt><dd>{{ event.deleted_user.name }} on {{ event.deleted_timestamp|pretty_date|safe }}</dd>
       {% endif %}
     </dl>
   </div>
@@ -87,7 +97,7 @@
   </ul>
 </div>
 
-{% if undo_url %}
+{% if undo_url and event.deleted == False %}
 <a class="btn btn-danger" href="{{ undo_url }}">Undo this Event</a>
 {% endif %}
 

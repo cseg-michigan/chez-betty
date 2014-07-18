@@ -107,39 +107,54 @@ class Transaction(Base):
         if self.fr_acct_cash:
             self.fr_acct_cash.balance -= self.amount
 
+    # def __getattr__(self, name):
+    #     if name == 'deleted':
+    #         return self.event.deleted
+    #     else:
+    #         raise AttributeError
+
     @classmethod
     def from_id(cls, id):
-        t = DBSession.query(cls).filter(cls.id == id).one()
-        return t
+        return DBSession.query(cls)\
+                        .filter(cls.id == id).one()
 
     @classmethod
     def get_balance(cls, trans_type, account_obj):
         return DBSession.query(coalesce(func.sum(cls.amount), 0).label("balance"))\
+                     .join(event.Event)\
                      .filter(or_(cls.fr_account_cash_id==account_obj.id,
                                  cls.to_account_cash_id==account_obj.id,
                                  cls.fr_account_virt_id==account_obj.id,
                                  cls.to_account_virt_id==account_obj.id))\
-                     .filter(cls.type==trans_type).one()
+                     .filter(cls.type==trans_type)\
+                     .filter(event.Event.deleted==False).one()
 
     @classmethod
     def count(cls, trans_type=None):
         if not trans_type:
-            return DBSession.query(func.count(cls.id).label('c')).one().c
+            return DBSession.query(func.count(cls.id).label('c'))\
+                            .join(event.Event)\
+                            .filter(event.Event.deleted==False).one().c
         else:
             return DBSession.query(func.count(cls.id).label('c'))\
-                            .filter(cls.type==trans_type).one().c
+                            .join(event.Event)\
+                            .filter(cls.type==trans_type)\
+                            .filter(event.Event.deleted==False).one().c
 
 
 @property
 def __transactions(self):
     return object_session(self).query(Transaction)\
+            .join(event.Event)\
             .filter(or_(
                     Transaction.to_account_virt_id == self.id,
                     Transaction.fr_account_virt_id == self.id,
                     Transaction.to_account_cash_id == self.id,
-                    Transaction.fr_account_cash_id == self.id)).all()
+                    Transaction.fr_account_cash_id == self.id))\
+            .filter(event.Event.deleted==False).all()
 account.Account.transactions = __transactions
 
+# This is in a stupid place due to circular input problems
 @property
 def __events(self):
     return object_session(self).query(event.Event)\
@@ -148,9 +163,9 @@ def __events(self):
                     Transaction.to_account_virt_id == self.id,
                     Transaction.fr_account_virt_id == self.id,
                     Transaction.to_account_cash_id == self.id,
-                    Transaction.fr_account_cash_id == self.id)).all()
+                    Transaction.fr_account_cash_id == self.id))\
+            .filter(event.Event.deleted==False).all()
 account.Account.events = __events
-
 
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
@@ -195,8 +210,9 @@ class BTCDeposit(Deposit):
 
     @classmethod
     def from_address(cls, address):
-        t = DBSession.query(cls).filter(cls.address == address).one()
-        return t
+        return DBSession.query(cls)\
+                        .filter(cls.address == address)\
+                        .filter(cls.event.deleted==False).one()
 
 
 class Adjustment(Transaction):
@@ -295,6 +311,12 @@ class SubTransaction(Base):
         self.quantity = quantity
         self.wholesale = wholesale
 
+    def __getattr__(self, name):
+        if name == 'deleted':
+            return self.transaction.event.deleted
+        else:
+            raise AttributeError
+
 
 class PurchaseLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}
@@ -308,6 +330,7 @@ class PurchaseLineItem(SubTransaction):
         r = DBSession.query(cls.quantity.label('summable'), event.Event.timestamp)\
                      .join(Transaction)\
                      .join(event.Event)\
+                     .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp).all()
         return utility.group(r, period)
 
@@ -316,6 +339,7 @@ class PurchaseLineItem(SubTransaction):
         r = DBSession.query(cls.amount.label('summable'), event.Event.timestamp)\
                      .join(Transaction)\
                      .join(event.Event)\
+                     .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp).all()
         return utility.group(r, period)
 
@@ -323,7 +347,10 @@ class PurchaseLineItem(SubTransaction):
 @property
 def __number_sold(self):
     return object_session(self).query(func.sum(PurchaseLineItem.quantity).label('c'))\
-                               .filter(PurchaseLineItem.item_id==self.id).one().c
+                               .join(Transaction)\
+                               .join(event.Event)\
+                               .filter(PurchaseLineItem.item_id==self.id)\
+                               .filter(event.Event.deleted==False).one().c
 item.Item.number_sold = __number_sold
 
 

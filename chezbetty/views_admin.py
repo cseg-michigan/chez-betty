@@ -62,9 +62,7 @@ def add_counts(event):
              renderer='templates/admin/index.jinja2',
              permission='manage')
 def admin_index(request):
-    events          = DBSession.query(Event)\
-                               .order_by(desc(Event.id))\
-                               .limit(10).all()
+    events          = Event.some(10)
     items_low_stock = DBSession.query(Item)\
                                .filter(Item.enabled == True)\
                                .filter(Item.in_stock < 10)\
@@ -78,7 +76,9 @@ def admin_index(request):
     bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item.name, Item.id)\
                                .join(Item)\
                                .join(Transaction)\
+                               .join(Event)\
                                .filter(Transaction.type=='purchase')\
+                               .filter(Event.deleted==False)\
                                .group_by(Item.id)\
                                .order_by(desc('quantity'))\
                                .limit(5).all()
@@ -878,12 +878,20 @@ def admin_btc_reconcile_submit(request):
     return HTTPFound(location=request.route_url('admin_index'))
 
 
-@view_config(route_name='admin_transactions',
-             renderer='templates/admin/transactions.jinja2',
+@view_config(route_name='admin_events',
+             renderer='templates/admin/events.jinja2',
              permission='manage')
-def admin_transactions(request):
-    events = DBSession.query(Event).order_by(desc(Event.id)).all()
-    return {'events':events}
+def admin_events(request):
+    events = Event.all()
+    return {'events': events}
+
+
+@view_config(route_name='admin_events_deleted',
+             renderer='templates/admin/events_deleted.jinja2',
+             permission='admin')
+def admin_events_deleted(request):
+    events_deleted = Event.get_deleted()
+    return {'events': events_deleted}
 
 
 @view_config(route_name='admin_event',
@@ -899,35 +907,40 @@ def admin_event(request):
             return {'event': e}
     except ValueError:
         request.session.flash('Invalid event ID', 'error')
-        return HTTPFound(location=request.route_url('admin_transactions'))
+        return HTTPFound(location=request.route_url('admin_events'))
     except:
         request.session.flash('Could not find event ID#{}'\
             .format(request.matchdict['event_id']), 'error')
-        return HTTPFound(location=request.route_url('admin_transactions'))
+        return HTTPFound(location=request.route_url('admin_events'))
 
-@view_config(route_name='admin_event_undo', permission='manage')
+@view_config(route_name='admin_event_undo',
+             permission='admin')
 def admin_event_undo(request):
     # Lookup the transaction that the user wants to undo
     try:
         event = Event.from_id(request.matchdict['event_id'])
     except:
         request.session.flash('Error: Could not find transaction to undo.', 'error')
-        return HTTPFound(location=request.route_url('admin_transactions'))
+        return HTTPFound(location=request.route_url('admin_events'))
+
+    # Make sure its not already deleted
+    if event.deleted:
+        request.session.flash('Error: transaction already deleted', 'error')
+        return HTTPFound(location=request.route_url('admin_events'))
 
     for transaction in event.transactions:
-
         # Make sure transaction is a deposit (no user check since admin doing)
         if transaction.type not in ('deposit', 'purchase'):
             request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
-            return HTTPFound(location=request.route_url('admin_transactions'))
+            return HTTPFound(location=request.route_url('admin_events'))
 
     # If the checks pass, actually revert the transaction
     try:
-        line_items = datalayer.undo_event(event)
+        line_items = datalayer.undo_event(event, request.user)
         request.session.flash('Transaction successfully reverted.', 'success')
     except:
         request.session.flash('Error: Failed to undo transaction.', 'error')
-    return HTTPFound(location=request.route_url('admin_transactions'))
+    return HTTPFound(location=request.route_url('admin_events'))
 
 
 @view_config(route_name='admin_password_edit',

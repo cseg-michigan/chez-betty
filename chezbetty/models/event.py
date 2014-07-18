@@ -13,6 +13,10 @@ class Event(Base):
     user_id   = Column(Integer, ForeignKey("users.id"), nullable=False) # user that performed the event
     notes     = Column(Text)
 
+    deleted           = Column(Boolean, default=False, nullable=False)
+    deleted_timestamp = Column(DateTime, nullable=True)
+    deleted_user_id   = Column(Integer, ForeignKey("users.id"), nullable=True) # user that deleted the event
+
     type = Column(Enum("purchase", "deposit", "adjustment", "restock",
                        "inventory", "emptycashbox", "emptybitcoin", "reconcile",
                        "donation", "withdrawal",
@@ -24,11 +28,30 @@ class Event(Base):
         self.user_id = user.id
         self.notes = notes
 
+    def delete(self, user):
+        self.deleted = True
+        self.deleted_timestamp = datetime.datetime.utcnow()
+        self.deleted_user_id = user.id
+
     @classmethod
     def from_id(cls, id):
-        e = DBSession.query(cls).filter(cls.id == id).one()
-        return e
+        return DBSession.query(cls).filter(cls.id == id).one()
 
+    @classmethod
+    def all(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.deleted == False).all()
+
+    @classmethod
+    def some(cls, count):
+        return DBSession.query(cls)\
+                        .filter(cls.deleted == False)\
+                        .limit(count).all()
+
+    @classmethod
+    def get_deleted(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.deleted == True).all()
 
 class Purchase(Event):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}

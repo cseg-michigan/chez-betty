@@ -6,10 +6,15 @@ from .models import request
 from .models.item import Item
 
 def can_undo_event(e):
-    return(e.type=='deposit' or e.type=='purchase')
+    if e.type != 'deposit' and e.type != 'purchase':
+        return False
+    if e.deleted:
+        return False
+    return True
+
 
 # Call this to remove an event from chez betty. Only works with cash deposits
-def undo_event(e):
+def undo_event(e, user):
     assert(can_undo_event(e))
 
     line_items = {}
@@ -27,14 +32,14 @@ def undo_event(e):
         if t.fr_account_cash:
             t.fr_account_cash.balance += t.amount
 
+        # Re-add the stock to the items that were purchased
         for s in t.subtransactions:
             line_items[s.item_id] = s.quantity
             Item.from_id(s.item_id).in_stock += s.quantity
-            DBSession.delete(s)
 
-        DBSession.delete(t)
-
-    DBSession.delete(e)
+    # Just need to delete the event. All transactions will understand they
+    # were deleted as well.
+    e.delete(user)
 
     return line_items
 
