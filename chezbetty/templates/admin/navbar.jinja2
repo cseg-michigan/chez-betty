@@ -8,6 +8,9 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="#">Chez Betty Admin</a>
+      {% if request.debug %}
+      <a class="navbar-brand" href="#"><span class="red">DEBUG MODE</span></a>
+      {% endif %}
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">

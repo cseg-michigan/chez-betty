@@ -15,6 +15,14 @@ def main(global_config, **settings):
     config = Configurator(settings=settings,
                           root_factory="chezbetty.models.model.RootFactory")
 
+    def debug(request):
+        if 'debugging' in request.registry.settings:
+            if not int(request.registry.settings['debugging']):
+                return False
+        return True
+
+    config.add_request_method(debug, reify=True)
+
     LDAPLookup.PASSWORD = config.registry.settings["ldap.password"]
     LDAPLookup.USERNAME = config.registry.settings["ldap.username"]
     LDAPLookup.SERVER = config.registry.settings["ldap.server"]

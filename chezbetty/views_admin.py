@@ -40,6 +40,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
+
 ###
 ### Global Attributes (passed to every template)
 ###   - n.b. This really is global, it will pick up views routes too
