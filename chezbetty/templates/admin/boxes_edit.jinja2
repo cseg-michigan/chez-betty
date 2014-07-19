@@ -1,0 +1,57 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'boxes_edit' %}
+{% block title %}Edit Boxes{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Edit Boxes</h1>
+{% endblock %}
+
+{% block content %}
+
+<form role="form" action="/admin/boxes/edit/submit" method="post" id="form-edit-boxes">
+
+  <div id="edit-boxes">
+
+    <table class="table sortable">
+
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Box Wholesale</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for box in boxes %}
+
+        <tr id="box-{{ box.id }}" class="edit-box-row">
+
+          <td><a href="/admin/box/edit/{{ box.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+          <td>{{ box.name }}</td>
+          <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}" {% if box.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="box-actions">
+            <button type="button" id="btn-disable-box-{{ box.id }}" class="btn btn-danger" {% if box.enabled == False %}style="display:none;"{% endif %}>X</button>
+            <button type="button" id="btn-enable-box-{{ box.id }}" class="btn btn-success" {% if box.enabled == True %}style="display:none;"{% endif %}>+</button>
+          </td>
+          <input type="hidden" class="form-control" id="box-enabled-{{ box.id }}" name="box-enabled-{{ box.id }}" value="{{ box.enabled|int }}">
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+
+    <button type="submit" class="btn btn-success">Update boxes</button>
+
+  </div>
+
+</form>
+
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-noenter.js'|static_url}}"></script>
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
+{% endblock %}

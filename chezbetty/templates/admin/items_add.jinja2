@@ -1,15 +1,15 @@
 {% extends "base.jinja2" %}
-{% set active_page = 'items_add' %}
+{% set active_page = active_page|default('items_add') %}
 {% block title %}Add New Items{% endblock %}
 
 {% block top %}
 <h1 class="page-header">Add New Items</h1>
 {% endblock %}
 
-
+{% set post_url = post_url|default("/admin/items/add/submit") %}
 {% block content %}
 
-<form role="form" action="/admin/items/add/submit" method="post">
+<form role="form" action="{{ post_url }}" method="post">
 
   <table class="table">
 
@@ -31,10 +31,10 @@
 
   </table>
 
-  <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another Item</button>
+  <button type="button" id="btn-items-add-row" class="btn btn-success">Add Another {{ thing_type|default("Item") }}</button>
   <br />
   <br />
-  <button type="submit" class="btn btn-success">Add Items</button>
+  <button type="submit" class="btn btn-success">Add {{ thing_type_pl|default("Items") }}</button>
 
   <input type="hidden" id="new-items-number" name="new-items-number" value="{{ items['count'] }}">
 

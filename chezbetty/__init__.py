@@ -77,6 +77,13 @@ def main(global_config, **settings):
     config.add_route('admin_item_edit',         '/admin/item/edit/{item_id}')
     config.add_route('admin_item_barcode_pdf', '/admin/item/barcode/{item_id}.pdf')
 
+    config.add_route('admin_boxes_add',         '/admin/boxes/add')
+    config.add_route('admin_boxes_add_submit',  '/admin/boxes/add/submit')
+    config.add_route('admin_boxes_edit',        '/admin/boxes/edit')
+    config.add_route('admin_boxes_edit_submit', '/admin/boxes/edit/submit')
+    config.add_route('admin_box_edit_submit',   '/admin/box/edit/submit')
+    config.add_route('admin_box_edit',          '/admin/box/edit/{box_id}')
+
     config.add_route('admin_vendors_edit',        '/admin/vendors/edit')
     config.add_route('admin_vendors_edit_submit', '/admin/vendors/edit/submit')
 

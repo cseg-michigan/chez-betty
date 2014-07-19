@@ -1,0 +1,86 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'boxes_edit' %}
+{% block title %}Edit Box{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Edit Box</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/box/edit/submit" method="post" id="form-edit-box">
+  <input type="hidden" id="box-id" name="box-id" value="{{ box.id }}">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Box Details</div>
+    <div class="panel-body">
+      <dl class="dl-horizontal">
+        <dt>Name</dt>
+        <dd><input type="text" class="form-control" id="box-name" name="box-name" value="{{ box.name }}"></dd>
+
+        <dt>Barcode</dt>
+        <dd><input type="text" class="form-control" id="box-barcode" name="box-barcode" value="{{ box.barcode }}"></dd>
+
+        <dt>Wholesale</dt>
+        <dd><input type="text" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}"></dd>
+      </dl>
+    </div>
+
+    <ul class="list-group">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Sub Item</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {% for bi in box.items %}
+          {% if bi.enabled %}
+          <tr>
+
+            <td>{{ bi.item.name }} <input type="hidden" name="box-item-id-{{ bi.id}}" value="{{ bi.item_id }}"></td>
+            <td>
+              <input type="text" class="form-control" id="box-item-quantity-{{ bi.id }}" name="box-item-quantity-{{ bi.id }}" value="{{ bi.quantity }}">
+            </td>
+
+          </tr>
+          {% endif %}
+          {% endfor %}
+
+          {% if new_items %}
+          <tr>
+
+            <td>
+              <select class="form-control" id="box-item-id-new" name="box-item-id-new">
+                {% for item in new_items %}
+                <option value="{{ item.id }}">{{ item.name }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <input type="text" class="form-control" id="box-item-quantity-new" name="box-item-quantity-new">
+            </td>
+
+          </tr>
+          {% endif %}
+
+        </tbody>
+      </table>
+    </ul>
+  </div>
+
+  <button type="submit" class="btn btn-success">Update Box</button>
+
+</form>
+
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
+{% endblock %}

@@ -16,6 +16,8 @@ from .models.model import *
 from .models import user as __user
 from .models.user import User
 from .models.item import Item
+from .models.box import Box
+from .models.box_item import BoxItem
 from .models.transaction import Transaction, Deposit, BTCDeposit, PurchaseLineItem
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -47,6 +49,7 @@ from reportlab.pdfgen import canvas
 def add_counts(event):
     count = {}
     count['items']        = Item.count()
+    count['boxes']        = Box.count()
     count['vendors']      = Vendor.count()
     count['users']        = User.count()
     count['transactions'] = Transaction.count()
@@ -506,6 +509,7 @@ def admin_item_edit_submit(request):
         request.session.flash('Error processing item fields.', 'error')
         return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
 
+
 @view_config(route_name='admin_item_barcode_pdf', permission='manage')
 def admin_item_barcode_pdf(request):
     item = Item.from_id(request.matchdict['item_id'])
@@ -558,6 +562,218 @@ def admin_item_barcode_pdf(request):
 
     response = FileResponse(fname, request=request)
     return response
+
+
+@view_config(route_name='admin_boxes_add',
+             renderer='templates/admin/boxes_add.jinja2',
+             permission='manage')
+def admin_boxes_add(request):
+    if len(request.GET) == 0:
+        return {'items': {'count': 1,
+                          'name-0': '',
+                          'barcode-0': '',
+                         }}
+    else:
+        return {'items': request.GET}
+
+
+@view_config(route_name='admin_boxes_add_submit',
+             request_method='POST',
+             permission='manage')
+def admin_boxes_add_submit(request):
+    count = 0
+    error_items = []
+
+    # Iterate all the POST keys and find the ones that are item names
+    for key in request.POST:
+        if 'item-name-' in key:
+            id = int(key.split('-')[2])
+            stock = 0
+            wholesale = 0
+            price = 0
+            enabled = False
+
+            # Parse out the important fields looking for errors
+            try:
+                name = request.POST['item-name-{}'.format(id)]
+                barcode = request.POST['item-barcode-{}'.format(id)]
+
+                # Check that name and barcode are not blank. If name is blank
+                # treat this as an empty row and skip. If barcode is blank
+                # we will get a database error so send that back to the user.
+                if name == '':
+                    continue
+                if barcode == '':
+                    request.session.flash('Error adding item "{}". Barcode cannot be blank.'.format(name), 'error')
+                    error_items.append({
+                        'name': name, 'barcode': ''
+                    })
+                    continue
+
+                # Add the item to the DB
+                box = Box(name, barcode)
+                DBSession.add(box)
+                DBSession.flush()
+                count += 1
+            except:
+                if len(name):
+                    error_items.append({
+                            'name' : request.POST['item-name-{}'.format(id)],
+                            'barcode' : request.POST['item-barcode-{}'.format(id)]
+                            })
+                    request.session.flash('Error adding box: {}. Most likely a duplicate barcode.'.\
+                                    format(name), 'error')
+                # Otherwise this was probably a blank row; ignore.
+    if count:
+        request.session.flash('{} box{} added successfully.'.format(count, ['es',''][count==1]), 'success')
+    else:
+        request.session.flash('No boxes added.', 'error')
+    if len(error_items):
+        flat = {}
+        e_count = 0
+        for err in error_items:
+            for k,v in err.items():
+                flat['{}-{}'.format(k, e_count)] = v
+            e_count += 1
+        flat['count'] = len(error_items)
+        return HTTPFound(location=request.route_url('admin_boxes_add', _query=flat))
+    else:
+        return HTTPFound(location=request.route_url('admin_boxes_edit'))
+
+
+@view_config(route_name='admin_boxes_edit',
+             renderer='templates/admin/boxes_edit.jinja2',
+             permission='manage')
+def admin_boxes_edit(request):
+    boxes_active = Box.get_enabled()
+    boxes_inactive = Box.get_disabled()
+    boxes = boxes_active + boxes_inactive
+    return {'boxes': boxes}
+
+
+@view_config(route_name='admin_boxes_edit_submit',
+             request_method='POST',
+             permission='manage')
+def admin_boxes_edit_submit(request):
+    updated = set()
+    for key in request.POST:
+        try:
+            box = Box.from_id(int(key.split('-')[2]))
+        except:
+            request.session.flash('No box with ID {}.  Skipped.'.format(key.split('-')[2]), 'error')
+            continue
+        name = box.name
+        try:
+            field = key.split('-')[1]
+            if field == 'wholesale':
+                val = round(float(request.POST[key]), 2)
+            else:
+                val = request.POST[key]
+
+            setattr(box, field, val)
+            DBSession.flush()
+        except ValueError:
+            # Could not parse wholesale as float
+            request.session.flash('Error updating {}'.format(name), 'error')
+            continue
+        except:
+            DBSession.rollback()
+            request.session.flash('Error updating {} for {}.  Skipped.'.\
+                    format(key.split('-')[1], name), 'error')
+            continue
+        updated.add(box.id)
+    if len(updated):
+        count = len(updated)
+        #request.session.flash('{} box{} properties updated successfully.'.format(count, ['s',''][count==1]), 'success')
+        request.session.flash('boxes updated successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_boxes_edit'))
+
+
+@view_config(route_name='admin_box_edit',
+             renderer='templates/admin/box_edit.jinja2',
+             permission='manage')
+def admin_box_edit(request):
+    try:
+        box = Box.from_id(request.matchdict['box_id'])
+        items = Item.all()
+
+        # Don't display items that already have an item number in the add
+        # new item section
+        used_items = []
+        #if hasattr(box, 'items'):
+        for boxitem in box.items:
+            if boxitem.enabled:
+                used_items.append(boxitem.item_id)
+        new_items = []
+        for item in items:
+            if item.id not in used_items and item.enabled:
+                new_items.append(item)
+
+        return {'box': box, 'items': items, 'new_items': new_items}
+    except NoResultFound:
+        request.session.flash('Unable to find box {}'.format(request.matchdict['box_id']), 'error')
+        return HTTPFound(location=request.route_url('admin_boxes_edit'))
+
+
+@view_config(route_name='admin_box_edit_submit',
+             request_method='POST',
+             permission='manage')
+def admin_box_edit_submit(request):
+    try:
+        box = Box.from_id(int(request.POST['box-id']))
+
+        for key in request.POST:
+            fields = key.split('-')
+            if fields[1] == 'item' and fields[2] == 'id':
+                # Handle the sub item quantities
+                item_id  = int(request.POST['box-item-id-'+fields[3]])
+                quantity = request.POST['box-item-quantity-'+fields[3]]
+
+                for boxitem in box.items:
+                    # Update the BoxItem record.
+                    # If the item quantity blank, set the record to disabled
+                    # and do not update the quantity.
+                    if boxitem.item_id == item_id and boxitem.enabled:
+                        if quantity == '':
+                            boxitem.enabled = False
+                        else:
+                            boxitem.quantity = int(quantity)
+                        break
+                else:
+                    if quantity != '':
+                        # Add a new vendor to the item
+                        item = Item.from_id(item_id)
+                        box_item = BoxItem(box, item, quantity)
+                        DBSession.add(box_item)
+
+            else:
+                # Update the base item
+                field = fields[1]
+                if field == 'wholesale':
+                    val = round(float(request.POST[key]), 2)
+                elif field == 'quantity':
+                    val = int(request.POST[key])
+                else:
+                    val = request.POST[key]
+
+                setattr(box, field, val)
+
+        DBSession.flush()
+        request.session.flash('Box updated successfully.', 'success')
+        return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
+
+    except NoResultFound:
+        request.session.flash('Error when updating box.', 'error')
+        return HTTPFound(location=request.route_url('admin_boxes_edit'))
+
+    except ValueError:
+        request.session.flash('Error processing box fields.', 'error')
+        return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
+    
+    except:
+        request.session.flash('Error updating box.', 'error')
+        return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
+
 
 @view_config(route_name='admin_vendors_edit',
              renderer='templates/admin/vendors_edit.jinja2',

@@ -62,6 +62,10 @@ $(".edit-item-row").on("click", "button", function () {
 	toggle_enabled("item", $(this));
 });
 
+$(".edit-box-row").on("click", "button", function () {
+	toggle_enabled("box", $(this));
+});
+
 $(".edit-user-row").on("click", "button", function () {
 	toggle_enabled("user", $(this));
 });

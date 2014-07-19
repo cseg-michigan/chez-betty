@@ -1,0 +1,55 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'boxes' %}
+{% block title %}Edit Boxes{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Edit Boxes</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/boxes/edit/submit" method="post" id="form-edit-boxes">
+
+<div id="edit-boxes">
+
+  <table class="table">
+
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Barcode</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      {% for box in boxes %}
+      <tr id="box-{{ box.id }}" class="edit-box-row">
+
+        <td><a href="/admin/box/edit/{{ box.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+        <td>{{ box.name }}</td>
+        <td>{{ box.Barcode }}</td>
+
+      </tr>
+      {% endfor %}
+      
+      <tr>
+        Add new box:
+
+        <td></td>
+        <td><input type="text" class="form-control" id="box-name" name="box-name"></td>
+        <td><input type="text" class="form-control" id="box-barcode" name="box-barcode"></td>
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
+
+</form>
+
+{% endblock %}
