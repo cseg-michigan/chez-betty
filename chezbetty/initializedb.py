@@ -23,6 +23,7 @@ from models.announcement import Announcement
 from models.model import *
 from models.transaction import *
 from models.btcdeposit import BtcPendingDeposit
+from models.receipt import Receipt
 
 
 def usage(argv):

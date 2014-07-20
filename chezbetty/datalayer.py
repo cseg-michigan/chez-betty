@@ -3,6 +3,7 @@ from .models import event
 from .models import transaction
 from .models import account
 from .models import request
+from .models import receipt
 from .models.item import Item
 
 def can_undo_event(e):
@@ -272,3 +273,9 @@ def add_withdrawal(amount, notes, admin):
     t = transaction.Withdrawal(e, amount)
     DBSession.add(t)
     return t
+
+def upload_receipt(event, admin, rfile):
+    r = receipt.Receipt(event, admin, rfile)
+    DBSession.add(r)
+    DBSession.flush()
+    return r

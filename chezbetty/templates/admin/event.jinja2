@@ -7,9 +7,7 @@
 {% endblock %}
 
 {% block submenu %}
-
-        
-  {% set sub_active_page = sub_active_page|default('index') -%}
+{% set sub_active_page = sub_active_page|default('index') -%}
 {% include "events_menu.jinja2" %}
 {% endblock %}
 
@@ -29,6 +27,9 @@
       <dt>Status</dt><dd><span class="red">DELETED</span></dd>
       <dt>Deleted By</dt><dd>{{ event.deleted_user.name }} on {{ event.deleted_timestamp|pretty_date|safe }}</dd>
       {% endif %}
+      {% for receipt in event.receipts %}
+      <dt>Attachment {{ loop.index }}</dt><dd><a href="/admin/event/receipt/{{ receipt.id}}.pdf">event-receipt-{{ receipt.id }}.pdf</a></dd>
+      {% endfor %}
     </dl>
   </div>
 
@@ -96,6 +97,12 @@
     {% endfor %}
   </ul>
 </div>
+
+<form role="form" action="/admin/event/upload" method="post" enctype="multipart/form-data" id="form-upload-receipt">
+  <input type="hidden" name="event-id" value="{{ event.id }}">
+  <input type="file" name="event-receipt" accept="application/pdf">
+  <button type="submit" class="btn btn-success">Upload</button>
+</form>
 
 {% if undo_url and event.deleted == False %}
 <a class="btn btn-danger" href="{{ undo_url }}">Undo this Event</a>

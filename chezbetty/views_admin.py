@@ -27,6 +27,7 @@ from .models.item_vendor import ItemVendor
 from .models.request import Request
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
+from .models.receipt import Receipt
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -39,6 +40,8 @@ from reportlab.graphics.barcode import code93
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
+
+import uuid
 
 
 ###
@@ -1183,6 +1186,41 @@ def admin_event(request):
         request.session.flash('Could not find event ID#{}'\
             .format(request.matchdict['event_id']), 'error')
         return HTTPFound(location=request.route_url('admin_events'))
+
+
+@view_config(route_name='admin_event_upload',
+             permission='manage')
+def admin_event_upload(request):
+    try:
+        event = Event.from_id(int(request.POST['event-id']))
+        receipt = request.POST['event-receipt'].file.read()
+        datalayer.upload_receipt(event, request.user, receipt)
+        return HTTPFound(location=request.route_url('admin_event',
+                         event_id=int(request.POST['event-id'])))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error', 'error')
+        return HTTPFound(location=request.route_url('admin_events'))
+
+
+@view_config(route_name='admin_event_receipt',
+             permission='manage')
+def admin_event_receipt(request):
+    try:
+        receipt = Receipt.from_id(int(request.matchdict['receipt_id']))
+        fname = '/tmp/{}.pdf'.format(uuid.uuid4())
+        f = open(fname, 'wb')
+        f.write(receipt.receipt)
+        f.close()
+
+        return FileResponse(fname, request=request)
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error', 'error')
+        return HTTPFound(location=request.route_url('admin_events'))
+
 
 @view_config(route_name='admin_event_undo',
              permission='admin')
