@@ -24,3 +24,10 @@ class BoxItem(Base):
     @classmethod
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
+
+@property
+def __subitem_quantity(self):
+    return object_session(self).query(func.sum(BoxItem.quantity).label('c'))\
+            .filter(BoxItem.box_id==self.id)\
+            .filter(BoxItem.enabled).one().c
+box.Box.subitem_count = __subitem_quantity

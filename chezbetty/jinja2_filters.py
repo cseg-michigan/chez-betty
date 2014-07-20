@@ -1,4 +1,4 @@
-
+from .models import box
 def format_currency(value):
 	try:
 		p = float(value)
@@ -24,3 +24,7 @@ def admin_account(account):
 		return admin_user(account)
 	except AttributeError:
 		return '{}'.format(account.name)
+
+def make_link(obj):
+	if type(obj) is box.Box:
+		return '<a href="/admin/box/edit/{}">{}</a>'.format(obj.id, obj.name)

@@ -10,11 +10,37 @@
 {% block content %}
 
 <p>Scan items to add to stock.</p>
-<p>Quantity is the number of additional individual items you are adding.</p>
-<p>Wholesale cost is the total cost of all individual items excluding any sales tax. You may use a "/" if the products are in a variety pack or similar.<p>
 <p>Check the sales tax box if sales tax was charged on those items.</p>
 <p>Please enter the total amount of sales tax at the bottom as a sanity check.</p>
 
+<table class="table">
+  <tbody>
+    <tr>
+      <td style="width:50%;">
+        <select class="form-control" id="restock-manual-item-select">
+          {% for item in items %}
+          <option value="{{ item.barcode }}">{{ item.name }}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td>
+        <button type="button" id="restock-manual-item-button" class="btn btn-success restock-manual">Add Item</button>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <select class="form-control" id="restock-manual-box-select">
+          {% for box in boxes %}
+          <option value="{{ box.barcode }}">{{ box.name }}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td>
+        <button type="button" id="restock-manual-box-button" class="btn btn-success restock-manual">Add Box</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 <form role="form" action="/admin/restock/submit" method="post" id="restock-form">
 
@@ -23,9 +49,10 @@
     <thead>
       <tr>
         <th>Item</th>
-        <th style="width: 20%;">Quantity</th>
+        <th style="width: 10%;">Quantity</th>
         <th style="width: 20%;">Wholesale Cost</th>
-        <th style="width: 20%;">Sales Tax</th>
+        <th style="width: 20%;">Total Cost</th>
+        <th style="width: 10%;">Sales Tax</th>
       </tr>
     </thead>
 
@@ -34,11 +61,11 @@
 
     <tfoot>
       <tr>
-        <td colspan="3">Sales Tax</td>
+        <td colspan="4">Sales Tax</td>
         <td><input type="text" class="form-control numeric" id="restock-salestax" name="salestax"></td>
       </tr>
       <tr>
-        <td colspan="2">Total</td>
+        <td colspan="3">Total</td>
         <td colspan="2" id="restock-total">$0.00</td>
       </tr>
     </tfoot>

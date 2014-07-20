@@ -36,6 +36,7 @@ jinja2.filters =
     admin_item = chezbetty.jinja2_filters:admin_item
     admin_user = chezbetty.jinja2_filters:admin_user
     admin_account = chezbetty.jinja2_filters:admin_account
+    make_link = chezbetty.jinja2_filters:make_link
 
 auth.secret = aabbcc
 

@@ -169,20 +169,40 @@ def admin_keyboard(request):
 def admin_item_barcode_json(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])
-        status = 'success'
-        item_restock_html = render('templates/admin/restock_row.jinja2', {'item': item})
+        html = render('templates/admin/restock_row.jinja2', {'item': item})
         return {'status': 'success',
-                'data':   item_restock_html,
+                'type':   'item',
+                'data':   html,
                 'id':     item.id}
-    except:
-        return {'status': 'unknown_barcode'}
+    except NoResultFound:
+        try:
+            box = Box.from_barcode(request.matchdict['barcode'])
+            html = render('templates/admin/restock_row.jinja2', {'box': box})
+            return {'status': 'success',
+                    'type':   'box',
+                    'data':   html,
+                    'id':     box.id}
+        except NoResultFound:
+            return {'status': 'unknown_barcode'}
+        except Exception as e:
+            if request.debug:
+                raise(e)
+            else:
+                return {'status': 'error'}
+
+        
+    except Exception as e:
+        if request.debug:
+            raise(e)
+        else:
+            return {'status': 'error'}
 
 
 @view_config(route_name='admin_restock',
              renderer='templates/admin/restock.jinja2',
              permission='manage')
 def admin_restock(request):
-    return {}
+    return {'items': Item.all(), 'boxes': Box.all()}
 
 
 @view_config(route_name='admin_restock_submit',
@@ -190,47 +210,81 @@ def admin_restock(request):
              permission='manage')
 def admin_restock_submit(request):
     i = iter(request.POST)
-    items = {}
-    for salestax,quantity,cost in zip(i,i,i):
-        if not (quantity.split('-')[2] == cost.split('-')[2] == salestax.split('-')[2]):
+
+    # Array of (Item, quantity, total) tuples
+    items = []
+
+    # Add an item to the array or update its totals
+    def add_item(item, quantity, total):
+        for i in range(len(items)):
+            if items[i][0].id == item.id:
+                items[i][1] += quantity
+                items[i][2] += total
+                break
+        else:
+            items.append([item,quantity,total])
+
+    for salestax,quantity,cost,total in zip(i,i,i,i):
+        if not (quantity.split('-')[3] == cost.split('-')[3] == salestax.split('-')[3]):
             request.session.flash('Error: Malformed POST. Misaligned IDs.', 'error')
             DBSession.rollback()
             return HTTPFound(location=request.route_url('admin_restock'))
+
         try:
-            item = Item.from_id(int(quantity.split('-')[2]))
-        except:
-            request.session.flash('No item with id {} found. Skipped.'.\
-                    format(int(quantity.split('-')[2])), 'error')
-            continue
-        try:
+            fields = quantity.split('-')
+            obj_type = fields[1]
+            obj_id   = int(fields[3])
             quantity = int(request.POST[quantity])
-            if '/' in request.POST[cost]:
-                dividend, divisor = map(float, request.POST[cost].split('/'))
-                cost = dividend / divisor
+            total    = Decimal(request.POST[total])
+
+            if request.POST[salestax] == 'on':
+                total = (total * Decimal(1.06))
+
+            if obj_type == 'item':
+                item = Item.from_id(obj_id)
+                add_item(item, quantity, total)
+            elif obj_type == 'box':
+                box = Box.from_id(obj_id)
+                # Boxes should have a wholesale that can actually be purchased
+                box.wholesale = Decimal(round(total, 2))
+
+                # Cost for any one item
+                inv_cost = box.wholesale / box.subitem_count
+
+                # Add all the items in the box and figure out their wholesales
+                for itembox in box.items:
+                    subquantity = itembox.quantity * quantity
+                    subtotal    = (itembox.quantity * quantity) * inv_cost
+                    add_item(itembox.item, subquantity, subtotal)
+
             else:
-                cost = Decimal(request.POST[cost])
-        except ValueError:
-            request.session.flash('Non-numeric value for {}. Skipped.'.\
-                    format(item.name), 'error')
+                request.session.flash('Invalid item type', 'error')
+                continue
+
+        except (ValueError, decimal.InvalidOperation):
+            request.session.flash('Error parsing data for {}. Skipped.'.format(obj_id), 'error')
+            continue
+        except NoResultFound:
+            request.session.flash('No {} with id {} found. Skipped.'.format(obj_type, obj_id), 'error')
             continue
         except ZeroDivisionError:
-            request.session.flash('Really? Dividing by 0? Item {} skipped.'.\
-                    format(item.name), 'error')
+            # Ignore this line
             continue
-        salestax = request.POST[salestax] == 'on'
-        if salestax:
-            wholesale = (cost * 1.06) / quantity
-        else:
-            wholesale = cost / quantity
+        except Exception as e:
+            if request.debug: raise(e)
+            request.session.flash('Error restocking item. Skipped.', 'error')
+            continue
 
-        item.wholesale = Decimal(round(wholesale, 4))
-
+    # Iterate the grouped items, update prices and wholesales, and then restock
+    restock_items = {}
+    for item,quantity,total in items:
+        item.wholesale = Decimal(round(total/quantity, 4))
+        # Make sure we aren't selling at a loss cause that would be dumb
         if item.price < item.wholesale:
             item.price = round(item.wholesale * Decimal(1.15), 2)
+        restock_items[item] = quantity
 
-        items[item] = quantity
-
-    datalayer.restock(items, request.user)
+    datalayer.restock(restock_items, request.user)
     request.session.flash('Restock complete.', 'success')
     return HTTPFound(location=request.route_url('admin_items_edit'))
 

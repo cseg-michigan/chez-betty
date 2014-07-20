@@ -145,12 +145,99 @@ $("#edit-items").on("input", "input:text",  function () {
 	$("#item-markup-"+id).attr("data-value", markup);
 });
 
+$(".restock-manual").on("click", function () {
+	var type = $(this).attr("id").split("-")[2];
+	add_item($("#restock-manual-"+type+"-select").val());
+});
+
 $("#restock-table").on("input", "input:text",  function () {
 	calculate_total();
 });
 
 $("#restock-table").on("click", "input:checkbox", function () {
 	calculate_total();
+});
+
+// When the per item cost changes, update the line item total
+$("#restock-table").on("input", ".restock-cost", function () {
+	// Get the cost and quantity fields
+	var cost = parseFloatZero($(this).val());
+
+	var fields = $(this).attr("id").split("-");
+	fields[2] = "quantity";
+	var quantity = parseInt($("#"+fields.join("-")).val());
+	if (isNaN(quantity)) quantity = 0;
+
+	// Calculate the new total and update it
+	total = (quantity*cost).toFixed(2);
+	fields[2] = "total";
+	total_obj = $("#"+fields.join("-"));
+	total_obj.val(total);
+
+	// Mark that the cost field was human updated and the total
+	// was autocalculated
+	$(this).attr("data-update-method", "human");
+	total_obj.attr("data-update-method", "auto");
+
+	// Make sure the total is up to date
+	calculate_total();
+});
+
+// When the item line total changes, update the per item cost
+$("#restock-table").on("input", ".restock-total", function () {
+	// Get the total and quantity fields
+	var total = parseFloatZero($(this).val());
+
+	var fields = $(this).attr("id").split("-");
+	fields[2] = "quantity";
+	var quantity = parseInt($("#"+fields.join("-")).val());
+	if (isNaN(quantity)) quantity = 0;
+
+	// Calculate the new total and update it
+	cost = (total/quantity).toFixed(2);
+	fields[2] = "cost";
+	cost_obj = $("#"+fields.join("-"));
+	cost_obj.val(cost);
+
+	// Mark that the cost field was auto updated and the total
+	// was human updated
+	$(this).attr("data-update-method", "human");
+	cost_obj.attr("data-update-method", "auto");
+
+	// Make sure the total is up to date
+	calculate_total();
+});
+
+function restock_update_total_quantity (obj) {
+	var quantity = parseInt(obj.val());
+	if (isNaN(quantity)) quantity = 0;
+
+	var fields = obj.attr("id").split("-");
+
+	fields[2] = "cost";
+	cost_obj = $("#"+fields.join("-"));
+	fields[2] = "total";
+	total_obj = $("#"+fields.join("-"));
+
+	if (total_obj.attr("data-update-method") == "human") {
+		// total was set, update cost
+		var total = parseFloatZero(total_obj.val())
+		var cost = (total/quantity).toFixed(2);
+		cost_obj.val(cost);
+	} else {
+		// Else do the probably more logical thing and update total
+		var cost = parseFloatZero(cost_obj.val())
+		var total = (cost*quantity).toFixed(2);
+		total_obj.val(total);
+	}
+
+	// Make sure the total is up to date
+	calculate_total();
+}
+
+// When the quantity changes, update the correct thing
+$("#restock-table").on("input", ".restock-quantity", function () {
+	restock_update_total_quantity($(this));
 });
 
 // Check that sales tax matches up
@@ -163,8 +250,8 @@ $("#restock-button").click(function () {
 	var calc_sales_tax = 0.0;
 	$(".restock-item").each(function (index) {
 		var id = $(this).attr("id").split("-")[2];
-		if ($("#restock-salestax-"+id+":checked").length > 0) {
-			var price = calculate_price($("#restock-cost-"+id).val());
+		if ($(this).find(".restock-salestax:checked").length > 0) {
+			var price = parseFloat($(this).find(".restock-total").val());
 			calc_sales_tax += 0.06*price;
 		}
 	});

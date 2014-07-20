@@ -21,6 +21,10 @@ class Box(Base):
         return DBSession.query(cls).filter(cls.id == id).one()
 
     @classmethod
+    def from_barcode(cls, barcode):
+        return DBSession.query(cls).filter(cls.barcode == barcode).one()
+
+    @classmethod
     def all(cls):
         return DBSession.query(cls)\
                         .filter(cls.enabled)\

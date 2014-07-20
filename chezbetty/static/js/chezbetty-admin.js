@@ -18,6 +18,12 @@ function full_strip_price (price_str) {
 	return price_str.replace(/^\s+|\s+$|\.|\$|\,/g, '');
 }
 
+function parseFloatZero (f) {
+	var ret = parseFloat(f);
+	if (isNaN(ret)) return 0.0;
+	return ret;
+}
+
 function alert_clear () {
 	$("#alerts").empty();
 }
@@ -30,14 +36,24 @@ function alert_error (error_str) {
 
 // Callback when adding an item to the cart succeeds
 function add_item_success (data) {
-	if (data.status == "unknown_barcode") {
-		alert_error("Could not find that item.");
+	if (data.status != "success") {
+		if (data.status == "unknown_barcode") {
+			alert_error("Could not find that item.");
+		} else {
+			alert_error("Error occurred.");
+		}
 	} else {
 		// Make sure this item isn't already on the list
-		if ($("#restock-item-" + data.id).length == 0) {
+		if ($("#restock-"+data.type+"-" + data.id).length == 0) {
 			// Add a new item
 			$("#restock-table tbody").append(data.data);
 			attach_keypad();
+		} else {
+			// Already have this item in the table
+			// Take another barcode scan as an increase in quantity
+			quantity_obj = $("#restock-"+data.type+"-quantity-" + data.id);
+			quantity_obj.val(parseInt(quantity_obj.val()) + 1);
+			restock_update_total_quantity(quantity_obj);
 		}
 	}
 }
@@ -56,28 +72,16 @@ function add_item (barcode) {
 	});
 }
 
-function calculate_price (price_str) {
-	divides = price_str.split("/");
-	if (divides.length > 1) {
-		price = parseFloat(divides[0]) / parseInt(divides[1]);
-	} else {
-		price = parseFloat(divides[0]);
-	}
-	if (isNaN(price)) {
-		price = 0.0;
-	}
-	return price;
-}
-
 // Function to add up the items in a cart to display the total.
 function calculate_total () {
 	total = 0.0;
-	$(".item-cost input").each(function (index) {
-		price = calculate_price($(this).val());
-		item_id = $(this).attr("id").split("-")[2];
+	$(".item-total input").each(function (index) {
+		var price = parseFloat($(this).val());
+		var fields = $(this).attr("id").split("-");
 
 		// Check if we should add sales tax
-		if ($("#restock-salestax-"+item_id+":checked").length == 1) {
+		fields[2] = "salestax";
+		if ($("#"+fields.join("-")+":checked").length == 1) {
 			price *= 1.06;
 		}
 

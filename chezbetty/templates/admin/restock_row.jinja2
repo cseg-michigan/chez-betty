@@ -1,7 +1,29 @@
+{% if item %}
 <tr id="restock-item-{{ item.id }}" class="restock-item">
-  <input type="hidden" name="restock-salestax-{{ item.id }}" value="off">
+  <input type="hidden" name="restock-item-salestax-{{ item.id }}" value="off">
   <td class="item-name">{{ item|admin_item|safe }}</td>
-  <td class="item-quantity"><input type="text" class="form-control numeric" id="restock-quantity-{{ item.id }}" name="restock-quantity-{{ item.id }}"></td>
-  <td class="item-cost"><input type="text" class="form-control restock-cost numeric" id="restock-cost-{{ item.id }}" name="restock-cost-{{ item.id }}"></td>
-  <td class="item-quantity"><input type="checkbox" class="restock-salestax" id="restock-salestax-{{ item.id }}" name="restock-salestax-{{ item.id }}" value="on"></td>
+  <td class="item-quantity"><input type="text" class="form-control restock-quantity numeric" id="restock-item-quantity-{{ item.id }}" name="restock-item-quantity-{{ item.id }}" value="1"></td>
+  <td class="item-cost"><input type="text" class="form-control restock-cost numeric" id="restock-item-cost-{{ item.id }}" name="restock-item-cost-{{ item.id }}"></td>
+  <td class="item-total"><input type="text" class="form-control restock-total numeric" id="restock-item-total-{{ item.id }}" name="restock-item-total-{{ item.id }}"></td>
+  <td class="item-salestax"><input type="checkbox" class="restock-salestax" id="restock-item-salestax-{{ item.id }}" name="restock-item-salestax-{{ item.id }}" value="on"></td>
 </tr>
+
+{% elif box %}
+<tr id="restock-box-{{ box.id }}" class="restock-box">
+  <input type="hidden" name="restock-box-salestax-{{ box.id }}" value="off">
+  <td class="box-name">
+    Box: {{ box|make_link|safe }}<br />
+    <dl class="dl-horizontal">
+      {% for boxitem in box.items %}
+      <dt>{{ boxitem.item.name }}</dt>
+      <dd>{{ boxitem.quantity }}</dd>
+      {% endfor %}
+    </dl>
+  </td>
+  <td class="box-quantity"><input type="text" class="form-control restock-quantity numeric" id="restock-box-quantity-{{ box.id }}" name="restock-box-quantity-{{ box.id }}" value="1"></td>
+  <td class="box-cost item-cost"><input type="text" class="form-control restock-cost numeric" id="restock-box-cost-{{ box.id }}" name="restock-box-cost-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
+  <td class="box-total item-total"><input type="text" class="form-control restock-total numeric" id="restock-box-total-{{ box.id }}" name="restock-box-total-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
+  <td class="box-salestax"><input type="checkbox" class="restock-salestax" id="restock-box-salestax-{{ box.id }}" name="restock-box-salestax-{{ box.id }}" value="on"></td>
+</tr>
+
+{% endif %}
