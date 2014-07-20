@@ -107,6 +107,10 @@ def admin_index(request):
     donation        = Transaction.get_balance("donation", account.get_cash_account("chezbetty"))
     withdrawal      = Transaction.get_balance("withdrawal", account.get_cash_account("chezbetty"))
 
+    cashbox_net = cashbox_found.balance - cashbox_lost.balance
+    btcbox_net = btcbox_found.balance - btcbox_lost.balance
+    chezbetty_net = chezbetty_found.balance - chezbetty_lost.balance
+
     try:
         btc_balance = Bitcoin.get_balance()
         btc = {"btc": btc_balance,
@@ -130,12 +134,9 @@ def admin_index(request):
                 chezbetty_cash=chezbetty_cash,
                 chezbetty=chezbetty,
                 btc_balance=btc,
-                cashbox_lost=cashbox_lost,
-                cashbox_found=cashbox_found,
-                btcbox_lost=btcbox_lost,
-                btcbox_found=btcbox_found,
-                chezbetty_lost=chezbetty_lost,
-                chezbetty_found=chezbetty_found,
+                cashbox_net=cashbox_net,
+                btcbox_net=btcbox_net,
+                chezbetty_net=chezbetty_net,
                 restock=restock,
                 donation=donation,
                 withdrawal=withdrawal,
