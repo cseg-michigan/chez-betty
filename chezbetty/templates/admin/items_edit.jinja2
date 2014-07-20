@@ -9,6 +9,9 @@
 
 {% block content %}
 
+{% set sort=request.GET["sort"]|default('name') %}
+{% set dir=request.GET["direction"]|default("asc") %}
+
 <form role="form" action="/admin/items/edit/submit" method="post" id="form-edit-items">
 
   <div id="edit-items">
@@ -18,12 +21,12 @@
       <thead>
         <tr>
           <th></th>
-          <th>Name</th>
-          <th>Item Price</th>
-          <th>Item Wholesale</th>
-          <th class="right">Markup</th>
-          <th>Stock</th>
-          <th>Num Sold</th>
+          <th {% if sort=="name" %}data-defaultsort="{{ dir }}"{% endif %}>Name</th>
+          <th {% if sort=="price" %}data-defaultsort="{{ dir }}"{% endif %}>Item Price</th>
+          <th {% if sort=="wholesale" %}data-defaultsort="{{ dir }}"{% endif %}>Item Wholesale</th>
+          <th {% if sort=="markup" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Markup</th>
+          <th {% if sort=="stock" %}data-defaultsort="{{ dir }}"{% endif %}>Stock</th>
+          <th {% if sort=="sold" %}data-defaultsort="{{ dir }}"{% endif %}>Num Sold</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -60,7 +63,7 @@
           <td class="{{ wholesale_class }}" data-value="{{ item.wholesale|round(4) }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
           <td id="item-markup-{{ item.id }}" class="item-markup right" data-value="{{ markup }}">{{ markup }}%</td>
           <td>{{ item.in_stock }}</td>
-          <td>{{ item.number_sold }}</td>
+          <td data-value="{{ item.number_sold|int }}">{{ item.number_sold }}</td>
           <td class="item-actions">
             <button type="button" id="btn-disable-item-{{ item.id }}" class="btn btn-danger" {% if item.enabled == False %}style="display:none;"{% endif %}>X</button>
             <button type="button" id="btn-enable-item-{{ item.id }}" class="btn btn-success" {% if item.enabled == True %}style="display:none;"{% endif %}>+</button>

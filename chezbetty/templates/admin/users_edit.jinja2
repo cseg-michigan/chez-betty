@@ -9,20 +9,22 @@
 
 {% block content %}
 
-<form role="form" action="/admin/users/edit/submit" method="post">
+{% set sort=request.GET["sort"]|default("name") %}
+{% set dir=request.GET["direction"]|default("asc") %}
 
+<form role="form" action="/admin/users/edit/submit" method="post">
 
   <table class="table sortable">
 
     <thead>
       <tr class="user-list-header">
         <th>&nbsp;</th>
-        <th>Name</th>
-        <th>uniqname</th>
-        <th>UMID</th>
-        <th>Role</th>
-        <th class="right">Balance</th>
-        <th>Created Date</th>
+        <th {% if sort=="name" %}data-defaultsort="{{ dir }}"{% endif %}>Name</th>
+        <th {% if sort=="uniqname" %}data-defaultsort="{{ dir }}"{% endif %}>uniqname</th>
+        <th {% if sort=="umid" %}data-defaultsort="{{ dir }}"{% endif %}>UMID</th>
+        <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %}>Role</th>
+        <th {% if sort=="balance" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
+        <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -42,7 +44,7 @@
             {% endfor %}
           </select>
         </td>
-        <td class="right">{{ user.balance|format_currency|safe }}</td>
+        <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
         <td>{{ user.created_at|pretty_date|safe }}</td>
         <td class=" user-actions">
           <button type="button" id="btn-disable-user-{{ user.id }}" class="btn btn-danger" {% if user.enabled == False %}style="display:none;"{% endif %}>X</button>
