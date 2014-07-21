@@ -107,12 +107,6 @@ class Transaction(Base):
         if self.fr_acct_cash:
             self.fr_acct_cash.balance -= self.amount
 
-    # def __getattr__(self, name):
-    #     if name == 'deleted':
-    #         return self.event.deleted
-    #     else:
-    #         raise AttributeError
-
     @classmethod
     def from_id(cls, id):
         return DBSession.query(cls)\
@@ -316,6 +310,14 @@ class SubTransaction(Base):
             return self.transaction.event.deleted
         else:
             raise AttributeError
+
+    @classmethod
+    def all_item(cls, id):
+        return DBSession.query(cls)\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(cls.item_id == id)\
+                        .filter(event.Event.deleted==False).all()
 
 
 class PurchaseLineItem(SubTransaction):

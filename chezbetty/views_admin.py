@@ -18,7 +18,7 @@ from .models.user import User
 from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, BTCDeposit, PurchaseLineItem
+from .models.transaction import Transaction, Deposit, BTCDeposit, PurchaseLineItem, SubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
 from .models import event as __event
@@ -494,6 +494,7 @@ def admin_item_edit(request):
     try:
         item = Item.from_id(request.matchdict['item_id'])
         vendors = Vendor.all()
+        subtransactions = SubTransaction.all_item(item.id)
 
         # Don't display vendors that already have an item number in the add
         # new vendor item number section
@@ -506,9 +507,12 @@ def admin_item_edit(request):
             if vendor.id not in used_vendors and vendor.enabled:
                 new_vendors.append(vendor)
 
-        return {'item': item, 'vendors': vendors, 'new_vendors': new_vendors}
+        return {'item': item,
+                'vendors': vendors,
+                'new_vendors': new_vendors,
+                'subtransactions': subtransactions}
     except Exception as e:
-        print(e)
+        if request.debug: raise(e)
         request.session.flash('Unable to find item {}'.format(request.matchdict['item_id']), 'error')
         return HTTPFound(location=request.route_url('admin_items_edit'))
 

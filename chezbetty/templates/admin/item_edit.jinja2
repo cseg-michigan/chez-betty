@@ -79,15 +79,52 @@
         </tbody>
       </table>
     </ul>
+
+    <button type="submit" class="btn btn-success">Update Item</button>
+
   </div>
 
-  <hr />
-  <p>Barcodes are designed for sheets of 1.5&rdquo; &times; 1&rdquo; labels and will print 50 labels per sheet.</p>
-  <p>They have been tested with the <tt>OL1000WS</tt> labels from <a href="http://www.onlinelabels.com/Products/OL1000WS.htm">OnlineLabels.com</a>.</p>
-  <p style="color: red;">Remember to deselect any &ldquo;Fit to Page&rdquo; options in print settings!</p>
-  <a href="/admin/item/barcode/{{ item.id }}.pdf" class="btn btn-default">Print Barcodes for Item</a>
-  <hr />
-  <button type="submit" class="btn btn-success">Update Item</button>
+  <div class="panel panel-default">
+    <div class="panel-heading">Item History</div>
+    <div class="panel-body">
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for subtrans in subtransactions|reverse %}
+        <tr>
+          <td>{{ subtrans.transaction.event.timestamp|pretty_date|safe }}</td>
+          <td>{{ subtrans.transaction.type }}</td>
+          {% if subtrans.transaction.type == "inventory" %}
+          <td>{{ subtrans.quantity_counted }}</td>
+          {% else %}
+          <td>{{ subtrans.quantity }}</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Barcodes</div>
+    <div class="panel-body">
+      <p>Barcodes are designed for sheets of 1.5&rdquo; &times; 1&rdquo; labels and will print 50 labels per sheet.</p>
+      <p>They have been tested with the <tt>OL1000WS</tt> labels from <a href="http://www.onlinelabels.com/Products/OL1000WS.htm">OnlineLabels.com</a>.</p>
+      <p style="color: red;">Remember to deselect any &ldquo;Fit to Page&rdquo; options in print settings!</p>
+      <a href="/admin/item/barcode/{{ item.id }}.pdf" class="btn btn-default">Print Barcodes for Item</a>
+    </div>
+  </div>
+
 
 </form>
 
