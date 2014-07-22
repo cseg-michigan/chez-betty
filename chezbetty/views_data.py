@@ -171,12 +171,20 @@ def create_json(request, axes_func, desc):
         return {'x': x,
                 'y': y,
                 'num_days': num_days or 'all',
-                'desc': 'Items sold per day'}
+                'desc': desc}
     except ValueError:
         return {'status': 'error'}
     except Exception as e:
         if request.debug: raise(e)
         return {'status': 'error'}
+
+
+def create_dict(axes_func, num_days):
+    x,y = axes_func(num_days)
+    return {'x': x,
+            'y': y,
+            'num_days': num_days or 'all'}
+
 
 
 

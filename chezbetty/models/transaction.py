@@ -175,7 +175,7 @@ class Deposit(Transaction):
         Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
 
     @classmethod
-    def deposits_by_period(cls, period, start, end):
+    def deposits_by_period(cls, period, start=None, end=None):
         r = DBSession.query(cls.amount.label('summable'), event.Event.timestamp)\
                      .join(event.Event)\
                      .order_by(event.Event.timestamp)

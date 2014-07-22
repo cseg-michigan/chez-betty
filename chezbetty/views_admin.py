@@ -11,6 +11,8 @@ from sqlalchemy.sql import func
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import NoResultFound
 
+from . import views_data
+
 from .models import *
 from .models.model import *
 from .models import user as __user
@@ -146,7 +148,10 @@ def admin_index(request):
                 best_selling_items=bsi,
                 sold_by_day=sold_by_day,
                 virt_revenue_by_day=virt_revenue_by_day,
-                deposits_by_day=deposits_by_day)
+                deposits_by_day=deposits_by_day, 
+                graph_items_day=views_data.create_dict(views_data.admin_data_items_day, 30),
+                graph_sales_day=views_data.create_dict(views_data.admin_data_sales_day, 30),
+                graph_deposits_day=views_data.create_dict(views_data.admin_data_deposits_day, 30))
 
 
 @view_config(route_name='admin_demo',
