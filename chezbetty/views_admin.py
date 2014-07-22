@@ -44,6 +44,7 @@ from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
 import uuid
+import twitter
 
 
 ###
@@ -1380,6 +1381,25 @@ def admin_announcements_edit_submit(request):
                 announcement.announcement = props['text']
 
     request.session.flash('Announcements updated successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_announcements_edit'))
+
+
+@view_config(route_name='admin_tweet_submit',
+             request_method='POST',
+             permission='admin')
+def admin_tweet_submit(request):
+
+    message = request.POST['tweet']
+
+    twitterapi = twitter.api.Api(
+        consumer_key=request.registry.settings['twitter.api_key'],
+        consumer_secret=request.registry.settings['twitter.api_secret'],
+        access_token_key=request.registry.settings['twitter.access_token'],
+        access_token_secret=request.registry.settings['twitter.access_token_secret'])
+
+    twitterapi.PostUpdate(message)
+
+    request.session.flash('Tweeted successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_announcements_edit'))
 
 @view_config(route_name='login',

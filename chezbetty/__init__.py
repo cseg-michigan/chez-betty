@@ -136,6 +136,7 @@ def main(global_config, **settings):
 
     config.add_route('admin_announcements_edit',        '/admin/announcements/edit')
     config.add_route('admin_announcements_edit_submit', '/admin/announcements/edit/submit')
+    config.add_route('admin_tweet_submit',              '/admin/tweet/submit')
 
 
 

@@ -20,7 +20,8 @@ requires = [
     'waitress',
     'python3-ldap',
     'qrcode',
-    'reportlab'
+    'reportlab',
+    'twitter'
     ]
 
 setup(name='chezbetty',
