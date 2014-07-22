@@ -73,6 +73,53 @@
         </tbody>
       </table>
     </ul>
+
+    <ul class="list-group">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Vendor</th>
+            <th>Box Number</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {% for vb in box.vendors %}
+          {% if vb.enabled %}
+          <tr>
+
+            <td>{{ vb.vendor.name }} <input type="hidden" name="box-vendor-id-{{ vb.id}}" value="{{ vb.vendor_id }}"></td>
+            <td>
+              <input type="text" class="form-control" id="box-vendor-item_num-{{ vb.id }}" name="box-vendor-item_num-{{ vb.id }}" value="{{ vb.item_number }}">
+            </td>
+
+          </tr>
+          {% endif %}
+          {% endfor %}
+
+          {% if new_vendors %}
+          <tr>
+
+            <td>
+              <select class="form-control" id="box-vendor-id-new" name="box-vendor-id-new">
+                {% for vendor in new_vendors %}
+                <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <input type="text" class="form-control" id="box-vendor-item_num-new" name="box-vendor-item_num-new">
+            </td>
+
+          </tr>
+          {% endif %}
+
+        </tbody>
+      </table>
+    </ul>
   </div>
 
   <button type="submit" class="btn btn-success">Update Box</button>

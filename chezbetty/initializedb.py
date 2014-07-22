@@ -18,6 +18,7 @@ from models.vendor import Vendor
 from models.box import Box
 from models.request import Request
 from models.item_vendor import ItemVendor
+from models.box_vendor import BoxVendor
 from models.box_item import BoxItem
 from models.announcement import Announcement
 from models.model import *

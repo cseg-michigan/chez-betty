@@ -26,6 +26,7 @@ from .models.event import Event
 from .models import event as __event
 from .models.vendor import Vendor
 from .models.item_vendor import ItemVendor
+from .models.box_vendor import BoxVendor
 from .models.request import Request
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
@@ -785,7 +786,22 @@ def admin_box_edit(request):
             if item.id not in used_items and item.enabled:
                 new_items.append(item)
 
-        return {'box': box, 'items': items, 'new_items': new_items}
+        vendors = Vendor.all()
+        # Don't display vendors that already have an item number in the add
+        # new vendor item number section
+        used_vendors = []
+        for vendorbox in box.vendors:
+            if vendorbox.enabled:
+                used_vendors.append(vendorbox.vendor_id)
+        new_vendors = []
+        for vendor in vendors:
+            if vendor.id not in used_vendors and vendor.enabled:
+                new_vendors.append(vendor)
+
+        return {'box': box,
+                'items': items,
+                'new_items': new_items,
+                'new_vendors': new_vendors}
     except NoResultFound:
         request.session.flash('Unable to find Box {}'.format(request.matchdict['box_id']), 'error')
         return HTTPFound(location=request.route_url('admin_boxes_edit'))
@@ -825,6 +841,28 @@ def admin_box_edit_submit(request):
                         item = Item.from_id(item_id)
                         box_item = BoxItem(box, item, quantity)
                         DBSession.add(box_item)
+
+            elif fields[1] == 'vendor' and fields[2] == 'id':
+                # Handle the vendor item numbers
+                vendor_id = int(request.POST['box-vendor-id-'+fields[3]])
+                item_num  = request.POST['box-vendor-item_num-'+fields[3]]
+
+                for vendorbox in box.vendors:
+                    # Update the VendorItem record.
+                    # If the item num is blank, set the record to disabled
+                    # and do not update the item number.
+                    if vendorbox.vendor_id == vendor_id and vendorbox.enabled:
+                        if item_num == '':
+                            vendorbox.enabled = False
+                        else:
+                            vendorbox.item_number = item_num
+                        break
+                else:
+                    if item_num != '':
+                        # Add a new vendor to the item
+                        vendor = Vendor.from_id(vendor_id)
+                        box_vendor = BoxVendor(vendor, box, item_num)
+                        DBSession.add(box_vendor)
 
             else:
                 # Update the base item
