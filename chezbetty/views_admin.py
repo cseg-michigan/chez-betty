@@ -49,16 +49,18 @@ import uuid
 ###   - n.b. This really is global, it will pick up views routes too
 ###
 # Add counts to all rendered pages for the sidebar
+# Obviously don't need this for json requests
 @subscriber(BeforeRender)
 def add_counts(event):
-    count = {}
-    count['items']        = Item.count()
-    count['boxes']        = Box.count()
-    count['vendors']      = Vendor.count()
-    count['users']        = User.count()
-    count['transactions'] = Transaction.count()
-    count['requests']     = Request.count()
-    event.rendering_val['counts'] = count
+    if event['renderer_name'] != 'json':
+        count = {}
+        count['items']        = Item.count()
+        count['boxes']        = Box.count()
+        count['vendors']      = Vendor.count()
+        count['users']        = User.count()
+        count['transactions'] = Transaction.count()
+        count['requests']     = Request.count()
+        event.rendering_val['counts'] = count
 
 
 ###
@@ -568,7 +570,8 @@ def admin_item_edit_submit(request):
         request.session.flash('Error when updating product.', 'error')
         return HTTPFound(location=request.route_url('admin_items_edit'))
 
-    except:
+    except Exception as e:
+        if request.debug: raise(e)
         request.session.flash('Error processing item fields.', 'error')
         return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
 
@@ -774,8 +777,12 @@ def admin_box_edit(request):
 
         return {'box': box, 'items': items, 'new_items': new_items}
     except NoResultFound:
-        request.session.flash('Unable to find box {}'.format(request.matchdict['box_id']), 'error')
+        request.session.flash('Unable to find Box {}'.format(request.matchdict['box_id']), 'error')
         return HTTPFound(location=request.route_url('admin_boxes_edit'))
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error editing box', 'error')
+        return HTTPFound(location=request.route_url('admin_boxes_edit'))        
 
 
 @view_config(route_name='admin_box_edit_submit',

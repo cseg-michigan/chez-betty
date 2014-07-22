@@ -328,22 +328,30 @@ class PurchaseLineItem(SubTransaction):
         self.price = price
 
     @classmethod
-    def quantity_by_period(cls, period):
+    def quantity_by_period(cls, period, start=None, end=None):
         r = DBSession.query(cls.quantity.label('summable'), event.Event.timestamp)\
                      .join(Transaction)\
                      .join(event.Event)\
                      .filter(event.Event.deleted==False)\
-                     .order_by(event.Event.timestamp).all()
-        return utility.group(r, period)
+                     .order_by(event.Event.timestamp)
+        if start:
+            r = r.filter(event.Event.timestamp>start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+        return utility.group(r.all(), period)
 
     @classmethod
-    def virtual_revenue_by_period(cls, period):
+    def virtual_revenue_by_period(cls, period, start=None, end=None):
         r = DBSession.query(cls.amount.label('summable'), event.Event.timestamp)\
                      .join(Transaction)\
                      .join(event.Event)\
                      .filter(event.Event.deleted==False)\
-                     .order_by(event.Event.timestamp).all()
-        return utility.group(r, period)
+                     .order_by(event.Event.timestamp)
+        if start:
+            r = r.filter(event.Event.timestamp>start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+        return utility.group(r.all(), period)
 
 
 @property

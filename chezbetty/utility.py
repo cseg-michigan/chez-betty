@@ -1,3 +1,4 @@
+import datetime
 import itertools
 import qrcode
 import qrcode.image.svg
@@ -18,7 +19,7 @@ def string_to_qrcode(s):
 
 def group(rows, period='day'):
     if period == 'day':
-        group_function = lambda i: i.timestamp.date()
+        group_function = lambda i: i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).date()
 
     sums = []
     for (item_period, items) in itertools.groupby(rows, group_function):

@@ -138,11 +138,17 @@ def main(global_config, **settings):
     config.add_route('admin_announcements_edit_submit', '/admin/announcements/edit/submit')
 
 
+
+    config.add_route('admin_data_items_day_json', '/admin/data/items/day')
+    config.add_route('admin_data_sales_day_json', '/admin/data/sales/day')
+
+
     config.add_route('login',  '/login')
     config.add_route('logout', '/logout')
     config.add_request_method(get_user, "user", reify=True)
 
     config.scan(".views")
     config.scan(".views_admin")
+    config.scan(".views_data")
 
     return config.make_wsgi_app()
