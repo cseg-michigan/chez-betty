@@ -17,13 +17,30 @@ def string_to_qrcode(s):
     img.save('/dev/null')   # This is needed, I swear.
     return ET.tostring(img._img).decode('utf-8')
 
+class InvalidGroupPeriod(Exception):
+    pass
+
 def group(rows, period='day'):
+
+    def group_month(i):
+        dt = i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
+        return datetime.date(dt.year, dt.month, 1)
+    def group_year(i):
+        dt = i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
+        return datetime.date(dt.year, 1, 1)
+
     if period == 'day':
         group_function = lambda i: i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).date()
+    elif period == 'month':
+        group_function = group_month
+    elif period == 'year':
+        group_function = group_year
     elif period == 'day_each':
         group_function = lambda i: i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).weekday()
     elif period == 'hour_each':
         group_function = lambda i: i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).hour
+    else:
+        raise(InvalidGroupPeriod(period))
 
 
     if 'each' in period:
@@ -44,6 +61,6 @@ def group(rows, period='day'):
             total = 0
             for item in items:
                 total += item.summable
-            sums.append({period: item_period, 'total': total})
+            sums.append((item_period, total))
 
     return sums

@@ -149,9 +149,9 @@ def admin_index(request):
                 sold_by_day=sold_by_day,
                 virt_revenue_by_day=virt_revenue_by_day,
                 deposits_by_day=deposits_by_day, 
-                graph_items_day=views_data.create_dict(views_data.admin_data_items_day, 30),
-                graph_sales_day=views_data.create_dict(views_data.admin_data_sales_day, 30),
-                graph_deposits_day=views_data.create_dict(views_data.admin_data_deposits_day, 30))
+                graph_items_day=views_data.create_dict('items', 'day', 30),
+                graph_sales_day=views_data.create_dict('sales', 'day', 30),
+                graph_deposits_day=views_data.create_dict('deposits', 'day', 30))
 
 
 @view_config(route_name='admin_demo',

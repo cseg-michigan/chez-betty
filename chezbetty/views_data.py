@@ -42,6 +42,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
+from . import utility
+
 
 def get_start(days):
     if days:
@@ -57,63 +59,66 @@ def get_end():
     return datetime.date.today() + datetime.timedelta(days=1)
 
 
-def create_x_y_from_group(group, start, end, process_output=None, default=0):
+def create_x_y_from_group(group, start, end, period, process_output=lambda x: x, default=0):
     x = []
     y = []
 
+    if period == 'year':
+        dt = datetime.timedelta(days=365)
+        fmt_str = '{}'
+    elif period == 'month':
+        dt = datetime.timedelta(days=30)
+        fmt_str = '{}-{:02}'
+    elif period == 'day':
+        dt = datetime.timedelta(days=1)
+        fmt_str = '{}-{:02}-{:02}'
+
     # Apparently this is a copy operation
     if start == datetime.date.min:
-        day_ptr = group[0]['day']
+        ptr = group[0][0]
     else:
-        day_ptr = start
+        ptr = start
 
-    for g in group:
+    for d,total in group:
         # Fill in days with no data
-        while day_ptr < datetime.date(g['day'].year, g['day'].month, g['day'].day):
-            x.append('{}-{}-{}'.format(day_ptr.year, day_ptr.month, day_ptr.day))
+        while ptr < datetime.date(d.year, d.month, d.day):
+            x.append(fmt_str.format(ptr.year, ptr.month, ptr.day))
             y.append(default)
-            day_ptr += datetime.timedelta(days=1)
+            ptr += dt
 
-        x.append('{}-{}-{}'.format(g['day'].year, g['day'].month, g['day'].day))
-        if process_output:
-            t = process_output(g['total'])
-        else:
-            t = g['total']
-        y.append(t)
+        x.append(fmt_str.format(d.year, d.month, d.day))
+        y.append(process_output(total))
 
-        day_ptr += datetime.timedelta(days=1)
+        ptr += dt
 
     # Fill in the end
-    while day_ptr < end:
-        x.append('{}-{}-{}'.format(day_ptr.year, day_ptr.month, day_ptr.day))
+    while ptr < end:
+        x.append(fmt_str.format(ptr.year, ptr.month, ptr.day))
         y.append(default)
-        day_ptr += datetime.timedelta(days=1)
+        ptr += dt
     return x,y
 
 
-def admin_data_items_day_range(start, end):
-    sold_day = PurchaseLineItem.quantity_by_period('day', start=start, end=end)
-    return create_x_y_from_group(sold_day, start, end)
+# Get x,y for some data metric
+#
+# start:  datetime.datetime that all data must be at or after
+# end:    datetime.datetime that all data must be before
+# metric: 'items', 'sales', or 'deposits'
+# period: 'day', 'month', or 'year'
+def admin_data_period_range(start, end, metric, period):
+    if metric == 'items':
+        data = PurchaseLineItem.quantity_by_period(period, start=start, end=end)
+        return create_x_y_from_group(data, start, end, period)
+    elif metric == 'sales':
+        data = PurchaseLineItem.virtual_revenue_by_period(period, start=start, end=end)
+        return create_x_y_from_group(data, start, end, period, float, 0.0)
+    elif metric == 'deposits':
+        data = Deposit.deposits_by_period('day', start=start, end=end)
+        return create_x_y_from_group(data, start, end, period, float, 0.0)
 
-def admin_data_items_day(num_days):
-    return admin_data_items_day_range(get_start(num_days), get_end())
 
-
-def admin_data_sales_day_range(start, end):
-    sold_day = PurchaseLineItem.virtual_revenue_by_period('day', start=start, end=end)
-    return create_x_y_from_group(sold_day, start, end, float, 0.0)
-
-def admin_data_sales_day(num_days):
-    return admin_data_sales_day_range(get_start(num_days), get_end())
-
-
-def admin_data_deposits_day_range(start, end):
-    dep_day = Deposit.deposits_by_period('day', start=start, end=end)
-    return create_x_y_from_group(dep_day, start, end, float, 0.0)
-
-def admin_data_deposits_day(num_days):
-    return admin_data_deposits_day_range(get_start(num_days), get_end())
-
+def admin_data_period(num_days, metric, period):
+    return admin_data_period_range(get_start(num_days), get_end(), metric, period)
 
 
 ###
@@ -144,43 +149,56 @@ def create_x_y_from_group_each(group, mapping, start, end, process_output=lambda
     return x,y
 
 
-def admin_data_items_day_each_range(start, end):
-    sold_day = PurchaseLineItem.quantity_by_period('day_each', start=start, end=end)
-    return create_x_y_from_group_each(sold_day, day_each_mapping, start, end)
+# Get data about each something. So each weekday, or each hour
+#
+# metric: 'items'
+# each:   'day_each' or 'hour_each'
+def admin_data_each_range(start, end, metric, each):
+    if each == 'day_each':
+        mapping = day_each_mapping
+    elif each == 'hour_each':
+        mapping = hour_each_mapping
 
-def admin_data_items_day_each(num_days):
-    return admin_data_items_day_each_range(get_start(num_days), get_end())
-
-
-def admin_data_items_hour_each_range(start, end):
-    sold_day = PurchaseLineItem.quantity_by_period('hour_each', start=start, end=end)
-    return create_x_y_from_group_each(sold_day, hour_each_mapping, start, end)
-
-def admin_data_items_hour_each(num_days):
-    return admin_data_items_hour_each_range(get_start(num_days), get_end())
-
+    if metric == 'items':
+        data = PurchaseLineItem.quantity_by_period(each, start=start, end=end)
+        return create_x_y_from_group_each(data, mapping, start, end)
 
 
-def create_json(request, axes_func, desc):
+def admin_data_each(num_days, metric, each):
+    return admin_data_each_range(get_start(num_days), get_end(), metric, each)
+
+
+
+def create_json(request, metric, period, desc):
     try:
         if 'days' in request.GET:
             num_days = int(request.GET['days'])
         else:
             num_days = 0
-        x,y = axes_func(num_days)
+        if 'each' in period:
+            x,y = admin_data_each(num_days, metric, period)
+        else:
+            x,y = admin_data_period(num_days, metric, period)
         return {'x': x,
                 'y': y,
                 'num_days': num_days or 'all',
                 'desc': desc}
     except ValueError:
         return {'status': 'error'}
+    except utility.InvalidGroupPeriod as e:
+        return {'status': 'error',
+                'message': 'Invalid period for grouping data: {}'.format(e)}
     except Exception as e:
         if request.debug: raise(e)
         return {'status': 'error'}
 
 
-def create_dict(axes_func, num_days):
-    x,y = axes_func(num_days)
+def create_dict(metric, period, num_days):
+    print(period)
+    if 'each' in period:
+        x,y = admin_data_each(num_days, metric, period)
+    else:
+        x,y = admin_data_period(num_days, metric, period)
     return {'x': x,
             'y': y,
             'num_days': num_days or 'all'}
@@ -188,39 +206,36 @@ def create_dict(axes_func, num_days):
 
 
 
-@view_config(route_name='admin_data_items_day_json',
+@view_config(route_name='admin_data_items_json',
              renderer='json',
              permission='manage')
-def admin_data_items_day_json(request):
-    return create_json(request, admin_data_items_day, 'Items sold per day')
+def admin_data_items_json(request):
+    return create_json(request, 'items', request.matchdict['period'], 'Items sold per day')
 
 
-@view_config(route_name='admin_data_sales_day_json',
+@view_config(route_name='admin_data_sales_json',
              renderer='json',
              permission='manage')
-def admin_data_sales_day_json(request):
-    return create_json(request, admin_data_sales_day, 'Sales per day')
+def admin_data_sales_json(request):
+    return create_json(request, 'sales', request.matchdict['period'], 'Sales per day')
 
 
-@view_config(route_name='admin_data_deposits_day_json',
+@view_config(route_name='admin_data_deposits_json',
              renderer='json',
              permission='manage')
-def admin_data_deposits_day_json(request):
-    return create_json(request, admin_data_deposits_day, 'Deposits per day')
-
-
-
+def admin_data_deposits_json(request):
+    return create_json(request, 'deposits', request.matchdict['period'], 'Deposits per day')
 
 
 @view_config(route_name='admin_data_items_day_each_json',
              renderer='json',
              permission='manage')
 def admin_data_items_day_each_json(request):
-    return create_json(request, admin_data_items_day_each, 'Items sold on each day')
+    return create_json(request, 'items', 'day_each', 'Items sold on each day')
 
 @view_config(route_name='admin_data_items_hour_each_json',
              renderer='json',
              permission='manage')
 def admin_data_items_hour_each_json(request):
-    return create_json(request, admin_data_items_hour_each, 'Items sold in each hour')
+    return create_json(request, 'items', 'hour_each', 'Items sold in each hour')
 

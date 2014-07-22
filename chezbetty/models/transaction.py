@@ -180,7 +180,7 @@ class Deposit(Transaction):
                      .join(event.Event)\
                      .order_by(event.Event.timestamp)
         if start:
-            r = r.filter(event.Event.timestamp>start)
+            r = r.filter(event.Event.timestamp>=start)
         if end:
             r = r.filter(event.Event.timestamp<end)
         return utility.group(r.all(), period)
@@ -339,7 +339,7 @@ class PurchaseLineItem(SubTransaction):
                      .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp)
         if start:
-            r = r.filter(event.Event.timestamp>start)
+            r = r.filter(event.Event.timestamp>=start)
         if end:
             r = r.filter(event.Event.timestamp<end)
         return utility.group(r.all(), period)
@@ -352,7 +352,7 @@ class PurchaseLineItem(SubTransaction):
                      .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp)
         if start:
-            r = r.filter(event.Event.timestamp>start)
+            r = r.filter(event.Event.timestamp>=start)
         if end:
             r = r.filter(event.Event.timestamp<end)
         return utility.group(r.all(), period)
