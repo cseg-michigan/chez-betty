@@ -22,23 +22,29 @@ class InvalidGroupPeriod(Exception):
 
 def group(rows, period='day'):
 
+    def fix_timezone(i):
+        return i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
     def group_month(i):
-        dt = i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
+        dt = fix_timezone(i)
         return datetime.date(dt.year, dt.month, 1)
     def group_year(i):
-        dt = i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
+        dt = fix_timezone(i)
         return datetime.date(dt.year, 1, 1)
 
     if period == 'day':
-        group_function = lambda i: i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).date()
+        group_function = lambda i: fix_timezone(i).date()
     elif period == 'month':
         group_function = group_month
     elif period == 'year':
         group_function = group_year
+    elif period == 'month_each':
+        group_function = lambda i: fix_timezone(i).month
     elif period == 'day_each':
-        group_function = lambda i: i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).weekday()
+        group_function = lambda i: fix_timezone(i).day
+    elif period == 'weekday_each':
+        group_function = lambda i: fix_timezone(i).weekday()
     elif period == 'hour_each':
-        group_function = lambda i: i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).hour
+        group_function = lambda i: fix_timezone(i).hour
     else:
         raise(InvalidGroupPeriod(period))
 

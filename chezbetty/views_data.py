@@ -125,9 +125,13 @@ def admin_data_period(num_days, metric, period):
 ### "Each" functions. So "monday", "tuesday", etc. instead of 2014-07-21
 ###
 
-day_each_mapping = [(6, 'Sunday'), (0, 'Monday'), (1, 'Tuesday'),
-                    (2, 'Wednesday'), (3, 'Thursday'), (4, 'Friday'),
-                    (5, 'Saturday')]
+month_each_mapping = [(i, datetime.date(2000,i,1).strftime('%m')) for i in range(1,13)]
+
+day_each_mapping = [(i, '{:02}'.format(i)) for i in range(0,31)]
+
+weekday_each_mapping = [(6, 'Sunday'), (0, 'Monday'), (1, 'Tuesday'),
+                        (2, 'Wednesday'), (3, 'Thursday'), (4, 'Friday'),
+                        (5, 'Saturday')]
 
 hour_each_mapping = [(i, '{0:02}:00-{0:02}:59'.format(i)) for i in range(0,24)]
 
@@ -154,8 +158,12 @@ def create_x_y_from_group_each(group, mapping, start, end, process_output=lambda
 # metric: 'items'
 # each:   'day_each' or 'hour_each'
 def admin_data_each_range(start, end, metric, each):
-    if each == 'day_each':
+    if each == 'month_each':
+        mapping = month_each_mapping
+    elif each == 'day_each':
         mapping = day_each_mapping
+    elif each == 'weekday_each':
+        mapping = weekday_each_mapping
     elif each == 'hour_each':
         mapping = hour_each_mapping
 
@@ -169,7 +177,7 @@ def admin_data_each(num_days, metric, each):
 
 
 
-def create_json(request, metric, period, desc):
+def create_json(request, metric, period):
     try:
         if 'days' in request.GET:
             num_days = int(request.GET['days'])
@@ -181,8 +189,7 @@ def create_json(request, metric, period, desc):
             x,y = admin_data_period(num_days, metric, period)
         return {'x': x,
                 'y': y,
-                'num_days': num_days or 'all',
-                'desc': desc}
+                'num_days': num_days or 'all'}
     except ValueError:
         return {'status': 'error'}
     except utility.InvalidGroupPeriod as e:
@@ -210,32 +217,27 @@ def create_dict(metric, period, num_days):
              renderer='json',
              permission='manage')
 def admin_data_items_json(request):
-    return create_json(request, 'items', request.matchdict['period'], 'Items sold per day')
+    return create_json(request, 'items', request.matchdict['period'])
 
 
 @view_config(route_name='admin_data_sales_json',
              renderer='json',
              permission='manage')
 def admin_data_sales_json(request):
-    return create_json(request, 'sales', request.matchdict['period'], 'Sales per day')
+    return create_json(request, 'sales', request.matchdict['period'])
 
 
 @view_config(route_name='admin_data_deposits_json',
              renderer='json',
              permission='manage')
 def admin_data_deposits_json(request):
-    return create_json(request, 'deposits', request.matchdict['period'], 'Deposits per day')
+    return create_json(request, 'deposits', request.matchdict['period'])
 
 
-@view_config(route_name='admin_data_items_day_each_json',
+@view_config(route_name='admin_data_items_each_json',
              renderer='json',
              permission='manage')
-def admin_data_items_day_each_json(request):
-    return create_json(request, 'items', 'day_each', 'Items sold on each day')
+def admin_data_items_each_json(request):
+    return create_json(request, 'items', request.matchdict['period']+'_each')
 
-@view_config(route_name='admin_data_items_hour_each_json',
-             renderer='json',
-             permission='manage')
-def admin_data_items_hour_each_json(request):
-    return create_json(request, 'items', 'hour_each', 'Items sold in each hour')
 
