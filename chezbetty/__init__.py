@@ -139,8 +139,12 @@ def main(global_config, **settings):
 
 
 
-    config.add_route('admin_data_items_day_json', '/admin/data/items/day')
-    config.add_route('admin_data_sales_day_json', '/admin/data/sales/day')
+    config.add_route('admin_data_items_day_json',    '/admin/data/items/day')
+    config.add_route('admin_data_sales_day_json',    '/admin/data/sales/day')
+    config.add_route('admin_data_deposits_day_json', '/admin/data/deposits/day')
+
+    config.add_route('admin_data_items_day_each_json', '/admin/data/items/day/each')
+    config.add_route('admin_data_items_hour_each_json', '/admin/data/items/hour/each')
 
 
     config.add_route('login',  '/login')
