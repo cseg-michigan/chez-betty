@@ -8,7 +8,7 @@ from pyramid.response import FileResponse
 from pyramid.view import view_config, forbidden_view_config
 
 from sqlalchemy.sql import func
-from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from . import views_data
@@ -574,6 +574,10 @@ def admin_item_edit_submit(request):
     except NoResultFound:
         request.session.flash('Error when updating product.', 'error')
         return HTTPFound(location=request.route_url('admin_items_edit'))
+
+    except IntegrityError:
+        request.session.flash('Error updating item. Probably conflicting barcodes.', 'error')
+        return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
 
     except Exception as e:
         if request.debug: raise(e)
