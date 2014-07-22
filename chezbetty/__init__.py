@@ -145,6 +145,8 @@ def main(global_config, **settings):
     config.add_route('admin_data_deposits_json', '/admin/data/deposits/{period}')
 
     config.add_route('admin_data_items_each_json', '/admin/data/items/{period}/each')
+    config.add_route('admin_data_sales_each_json', '/admin/data/sales/{period}/each')
+    config.add_route('admin_data_deposits_each_json', '/admin/data/deposits/{period}/each')
 
 
     config.add_route('login',  '/login')

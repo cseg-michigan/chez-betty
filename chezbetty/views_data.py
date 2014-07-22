@@ -44,6 +44,8 @@ from reportlab.pdfgen import canvas
 
 from . import utility
 
+class InvalidMetric(Exception):
+    pass
 
 def get_start(days):
     if days:
@@ -115,6 +117,8 @@ def admin_data_period_range(start, end, metric, period):
     elif metric == 'deposits':
         data = Deposit.deposits_by_period('day', start=start, end=end)
         return create_x_y_from_group(data, start, end, period, float, 0.0)
+    else:
+        raise(InvalidMetric(metric))
 
 
 def admin_data_period(num_days, metric, period):
@@ -155,7 +159,7 @@ def create_x_y_from_group_each(group, mapping, start, end, process_output=lambda
 
 # Get data about each something. So each weekday, or each hour
 #
-# metric: 'items'
+# metric: 'items', 'sales', or 'deposits'
 # each:   'day_each' or 'hour_each'
 def admin_data_each_range(start, end, metric, each):
     if each == 'month_each':
@@ -170,6 +174,14 @@ def admin_data_each_range(start, end, metric, each):
     if metric == 'items':
         data = PurchaseLineItem.quantity_by_period(each, start=start, end=end)
         return create_x_y_from_group_each(data, mapping, start, end)
+    elif metric == 'sales':
+        data = PurchaseLineItem.virtual_revenue_by_period(each, start=start, end=end)
+        return create_x_y_from_group_each(data, mapping, start, end, float, 0.0)
+    elif metric == 'deposits':
+        data = Deposit.deposits_by_period(each, start=start, end=end)
+        return create_x_y_from_group_each(data, mapping, start, end, float, 0.0)
+    else:
+        raise(InvalidMetric(metric))
 
 
 def admin_data_each(num_days, metric, each):
@@ -195,6 +207,9 @@ def create_json(request, metric, period):
     except utility.InvalidGroupPeriod as e:
         return {'status': 'error',
                 'message': 'Invalid period for grouping data: {}'.format(e)}
+    except InvalidMetric as e:
+        return {'status': 'error',
+                'message': 'Invalid metric for requesting data: {}'.format(e)}
     except Exception as e:
         if request.debug: raise(e)
         return {'status': 'error'}
@@ -239,5 +254,19 @@ def admin_data_deposits_json(request):
              permission='manage')
 def admin_data_items_each_json(request):
     return create_json(request, 'items', request.matchdict['period']+'_each')
+
+
+@view_config(route_name='admin_data_sales_each_json',
+             renderer='json',
+             permission='manage')
+def admin_data_sales_each_json(request):
+    return create_json(request, 'sales', request.matchdict['period']+'_each')
+
+
+@view_config(route_name='admin_data_deposits_each_json',
+             renderer='json',
+             permission='manage')
+def admin_data_deposits_each_json(request):
+    return create_json(request, 'deposits', request.matchdict['period']+'_each')
 
 
