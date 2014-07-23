@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
 {% set active_page = 'items_edit' %}
 {% block title %}Edit Item{% endblock %}
 
@@ -91,6 +92,7 @@
     <table class="table table-striped">
       <thead>
         <tr>
+          <th></th>
           <th>Date</th>
           <th>Type</th>
           <th>Quantity</th>
@@ -100,6 +102,7 @@
       <tbody>
         {% for subtrans in subtransactions|reverse %}
         <tr>
+          <td>{{ button.event(subtrans.transaction.event.id) }}</td>
           <td>{{ subtrans.transaction.event.timestamp|pretty_date|safe }}</td>
           <td>{{ subtrans.transaction.type }}</td>
           {% if subtrans.transaction.type == "inventory" %}
