@@ -137,7 +137,7 @@ def admin_data_period(num_days, metric, period):
 ### "Each" functions. So "monday", "tuesday", etc. instead of 2014-07-21
 ###
 
-month_each_mapping = [(i, datetime.date(2000,i,1).strftime('%m')) for i in range(1,13)]
+month_each_mapping = [(i, datetime.date(2000,i,1).strftime('%B')) for i in range(1,13)]
 
 day_each_mapping = [(i, '{:02}'.format(i)) for i in range(0,31)]
 
