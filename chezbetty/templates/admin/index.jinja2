@@ -255,7 +255,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for e in events %}
+            {% for e in events|reverse %}
             {% for t in e.transactions|reverse %}
             <tr>
               {% if loop.index == 1 %}

@@ -215,7 +215,7 @@ def admin_item_barcode_json(request):
              renderer='templates/admin/restock.jinja2',
              permission='manage')
 def admin_restock(request):
-    return {'items': Item.all(), 'boxes': Box.all()}
+    return {'items': Item.all_force(), 'boxes': Box.all()}
 
 
 @view_config(route_name='admin_restock_submit',

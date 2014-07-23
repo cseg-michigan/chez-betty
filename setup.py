@@ -21,7 +21,8 @@ requires = [
     'python3-ldap',
     'qrcode',
     'reportlab',
-    'twitter'
+    'twitter',
+    'pytz'
     ]
 
 setup(name='chezbetty',

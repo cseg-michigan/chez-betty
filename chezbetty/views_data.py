@@ -43,9 +43,17 @@ from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
 from . import utility
+import pytz
 
 class InvalidMetric(Exception):
     pass
+
+# fix_timezone
+def ftz(i):
+    if type(i) is datetime.date:
+        i = datetime.datetime(i.year, i.month, i.day)
+    return i.replace(tzinfo=pytz.timezone('America/Detroit')).astimezone(tz=pytz.timezone('UTC'))
+
 
 def get_start(days):
     if days:
@@ -109,13 +117,13 @@ def create_x_y_from_group(group, start, end, period, process_output=lambda x: x,
 # period: 'day', 'month', or 'year'
 def admin_data_period_range(start, end, metric, period):
     if metric == 'items':
-        data = PurchaseLineItem.quantity_by_period(period, start=start, end=end)
+        data = PurchaseLineItem.quantity_by_period(period, start=ftz(start), end=ftz(end))
         return create_x_y_from_group(data, start, end, period)
     elif metric == 'sales':
-        data = PurchaseLineItem.virtual_revenue_by_period(period, start=start, end=end)
+        data = PurchaseLineItem.virtual_revenue_by_period(period, start=ftz(start), end=ftz(end))
         return create_x_y_from_group(data, start, end, period, float, 0.0)
     elif metric == 'deposits':
-        data = Deposit.deposits_by_period('day', start=start, end=end)
+        data = Deposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
         return create_x_y_from_group(data, start, end, period, float, 0.0)
     else:
         raise(InvalidMetric(metric))
@@ -172,13 +180,13 @@ def admin_data_each_range(start, end, metric, each):
         mapping = hour_each_mapping
 
     if metric == 'items':
-        data = PurchaseLineItem.quantity_by_period(each, start=start, end=end)
+        data = PurchaseLineItem.quantity_by_period(each, start=ftz(start), end=ftz(end))
         return create_x_y_from_group_each(data, mapping, start, end)
     elif metric == 'sales':
-        data = PurchaseLineItem.virtual_revenue_by_period(each, start=start, end=end)
+        data = PurchaseLineItem.virtual_revenue_by_period(each, start=ftz(start), end=ftz(end))
         return create_x_y_from_group_each(data, mapping, start, end, float, 0.0)
     elif metric == 'deposits':
-        data = Deposit.deposits_by_period(each, start=start, end=end)
+        data = Deposit.deposits_by_period(each, start=ftz(start), end=ftz(end))
         return create_x_y_from_group_each(data, mapping, start, end, float, 0.0)
     else:
         raise(InvalidMetric(metric))
