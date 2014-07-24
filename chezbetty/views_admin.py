@@ -1170,30 +1170,32 @@ def admin_btc_reconcile(request):
         addrs.append(pend.address)
 
     res = Bitcoin.get_tx_from_addrs('|'.join(addrs))
-    for tx in res['txs']:
-        confirmations = (cur_height - tx['block_height'] + 1) if 'block_height' in tx else 0
-        txhash = tx['hash']
-        if txhash not in txhashes:
-            # we found a btc deposit on the blockchain we didn't get a callback for!
+    if 'txs' in res:
+        for tx in res['txs']:
+            confirmations = (cur_height - tx['block_height'] + 1) if 'block_height' in tx else 0
+            txhash = tx['hash']
+            if txhash not in txhashes:
+                # we found a btc deposit on the blockchain we didn't get a callback for!
 
-            amount = Decimal(0)
-            for output in tx['out']:
-                if output['addr'] in addrs and output['type'] == 0:
-                    addr = output['addr']
-                    amount += Decimal(output['value'])
+                amount = Decimal(0)
+                addr = ''
+                for output in tx['out']:
+                    if output['addr'] in addrs and output['type'] == 0:
+                        addr = output['addr']
+                        amount += Decimal(output['value'])
 
-            amount /= 100000000
+                amount /= 100000000
 
-            pending_deposit = DBSession.query(BtcPendingDeposit).filter(BtcPendingDeposit.address==addr).one()
+                pending_deposit = DBSession.query(BtcPendingDeposit).filter(BtcPendingDeposit.address==addr).one()
 
-            user = User.from_id(pending_deposit.user_id)  # from_id?
-            missed_deposits.append({'txhash': txhash,
-                                    'address': addr,
-                                    'amount_btc' : amount,
-                                    'amount_mbtc' : round(amount*1000, 2),
-                                    'amount_usd' : amount * Bitcoin.get_spot_price(),
-                                    'confirmations' : confirmations,
-                                    'user': user})
+                user = User.from_id(pending_deposit.user_id)  # from_id?
+                missed_deposits.append({'txhash': txhash,
+                                        'address': addr,
+                                        'amount_btc' : amount,
+                                        'amount_mbtc' : round(amount*1000, 2),
+                                        'amount_usd' : amount * Bitcoin.get_spot_price(),
+                                        'confirmations' : confirmations,
+                                        'user': user})
 
     return {'btc': btc, 'btcbox': btcbox, 'deposits': deposits, 'transactions': transactions, 'missed' : missed_deposits}
 
