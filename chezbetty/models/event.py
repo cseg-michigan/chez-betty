@@ -46,6 +46,7 @@ class Event(Base):
     def some(cls, count):
         return DBSession.query(cls)\
                         .filter(cls.deleted == False)\
+                        .order_by(desc(cls.id))\
                         .limit(count).all()
 
     @classmethod

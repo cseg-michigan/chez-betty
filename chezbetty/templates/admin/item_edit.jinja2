@@ -94,6 +94,7 @@
         <tr>
           <th></th>
           <th>Date</th>
+          <th>User</th>
           <th>Type</th>
           <th>Quantity</th>
         </tr>
@@ -104,6 +105,7 @@
         <tr>
           <td>{{ button.event(subtrans.transaction.event.id) }}</td>
           <td>{{ subtrans.transaction.event.timestamp|pretty_date|safe }}</td>
+          <td>{{ subtrans.transaction.event.admin.name }}</td>
           <td>{{ subtrans.transaction.type }}</td>
           {% if subtrans.transaction.type == "inventory" %}
           <td>{{ subtrans.quantity_counted }}</td>
