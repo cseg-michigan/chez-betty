@@ -209,9 +209,9 @@ class BTCDeposit(Deposit):
 
     @classmethod
     def from_address(cls, address):
-        return DBSession.query(cls)\
+        return DBSession.query(cls).join(event.Event)\
                         .filter(cls.address == address)\
-                        .filter(cls.event.deleted==False).one()
+                        .filter(event.Event.deleted == False).one()
 
 
 class Adjustment(Transaction):
