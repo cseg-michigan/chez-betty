@@ -17,10 +17,10 @@
     </dl>
   </td>
   {% endif %}
-  <td class="quantity"><input type="text" class="form-control restock-quantity numeric" id="restock-quantity-X" name="restock-quantity-X" value="1"></td>
-  <td class="wholesale"><input type="text" class="form-control restock-cost numeric" id="restock-wholesale-X" name="restock-wholesale-X" value="{% if box %}{{ box.wholesale|round(2) }}{% endif %}"></td>
-  <td class="coupon"><input type="text" class="form-control restock-coupon numeric" id="restock-coupon-X" name="restock-coupon-X"></td>
-  <td class="total"><input type="text" class="form-control restock-total numeric" id="restock-total-X" name="restock-total-X" value="{% if box %}{{ box.wholesale|round(2) }}{% endif %}"></td>
-  <td class="salestax"><input type="checkbox" class="restock-salestax" id="restock-salestax-X" name="restock-salestax-X" value="on"></td>
-  <td class="bottledeposit"><input type="checkbox" class="restock-bottledeposit" id="restock-bottledeposit-X" name="restock-bottledeposit-X" value="on"></td>
+  <td class="quantity"><input type="text" class="form-control restock-quantity numeric" id="restock-quantity-X" name="restock-quantity-X" value="{% if line.quantity %}{{ line.quantity }}{% else %}1{% endif %}"></td>
+  <td class="wholesale"><input type="text" class="form-control restock-cost numeric" id="restock-wholesale-X" name="restock-wholesale-X" value="{% if line.wholesale %}{{ line.wholesale|round(2) }}{% elif box %}{{ box.wholesale|round(2) }}{% endif %}"></td>
+  <td class="coupon"><input type="text" class="form-control restock-coupon numeric" id="restock-coupon-X" name="restock-coupon-X" value="{% if line.coupon %}{{ line.coupon|round(2) }}{% endif %}"></td>
+  <td class="salestax"><input type="checkbox" class="restock-salestax" id="restock-salestax-X" name="restock-salestax-X" value="on" {% if line.salestax %}checked="checked"{% endif %}></td>
+  <td class="bottledeposit"><input type="checkbox" class="restock-bottledeposit" id="restock-bottledeposit-X" name="restock-bottledeposit-X" value="on" {% if line.btldeposit %}checked="checked"{% endif %}></td>
+  <td class="total"><input type="text" class="form-control restock-total numeric" id="restock-total-X" name="restock-total-X"></td>
 </tr>

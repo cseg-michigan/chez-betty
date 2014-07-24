@@ -5,6 +5,7 @@ from .models import account
 from .models import request
 from .models import receipt
 from .models.item import Item
+from .models.box import Box
 
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock':
@@ -22,8 +23,6 @@ def undo_event(e, user):
 
     for t in e.transactions:
 
-        assert(t.type=='deposit' or e.type=='purchase')
-
         if t.to_account_virt:
             t.to_account_virt.balance -= t.amount
         if t.fr_account_virt:
@@ -33,10 +32,30 @@ def undo_event(e, user):
         if t.fr_account_cash:
             t.fr_account_cash.balance += t.amount
 
-        # Re-add the stock to the items that were purchased
-        for s in t.subtransactions:
-            line_items[s.item_id] = s.quantity
-            Item.from_id(s.item_id).in_stock += s.quantity
+        if t.type == 'purchase':
+            # Re-add the stock to the items that were purchased
+            for s in t.subtransactions:
+                line_items[s.item_id] = s.quantity
+                Item.from_id(s.item_id).in_stock += s.quantity
+
+        elif t.type == 'restock':
+            # Add all of the boxes and items to the return list
+            # Also remove the stock this restock added to each item
+            for i,s in zip(range(len(t.subtransactions)), t.subtransactions):
+                if s.type == 'restocklineitem':
+                    item = Item.from_id(s.item_id)
+                    line_items[i] = '{},{},{},{},{},{},{}'.format(
+                        'item', s.item_id, s.quantity, s.wholesale,
+                        s.coupon_amount, s.sales_tax, s.bottle_deposit)
+                    item.in_stock -= s.quantity
+                elif s.type == 'restocklinebox':
+                    line_items[i] = '{},{},{},{},{},{},{}'.format(
+                        'box', s.box_id, s.quantity, s.wholesale,
+                        s.coupon_amount, s.sales_tax, s.bottle_deposit)
+                    for ss in s.subsubtransactions:
+                        item = Item.from_id(ss.item_id)
+                        item.in_stock -= ss.quantity
+
 
     # Just need to delete the event. All transactions will understand they
     # were deleted as well.

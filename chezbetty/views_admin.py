@@ -182,7 +182,7 @@ def admin_keyboard(request):
 def admin_item_barcode_json(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])
-        html = render('templates/admin/restock_row.jinja2', {'item': item})
+        html = render('templates/admin/restock_row.jinja2', {'item': item, 'line': {}})
         return {'status': 'success',
                 'type':   'item',
                 'data':   html,
@@ -190,7 +190,7 @@ def admin_item_barcode_json(request):
     except NoResultFound:
         try:
             box = Box.from_barcode(request.matchdict['barcode'])
-            html = render('templates/admin/restock_row.jinja2', {'box': box})
+            html = render('templates/admin/restock_row.jinja2', {'box': box, 'line': {}})
             return {'status': 'success',
                     'type':   'box',
                     'data':   html,
@@ -215,7 +215,35 @@ def admin_item_barcode_json(request):
              renderer='templates/admin/restock.jinja2',
              permission='manage')
 def admin_restock(request):
-    return {'items': Item.all_force(), 'boxes': Box.all()}
+    restock_items = ''
+    index = 0
+    if len(request.GET) != 0:
+        for index,packed_values in request.GET.items():
+            values = packed_values.split(',')
+            line_values = {}
+            line_type = values[0]
+            line_id = int(values[1])
+            line_values['quantity'] = int(values[2])
+            line_values['wholesale'] = float(values[3])
+            line_values['coupon'] = float(values[4])
+            line_values['salestax'] = values[5] == 'True'
+            line_values['btldeposit'] = values[6] == 'True'
+
+            if line_type == 'item':
+                item = Item.from_id(line_id)
+                box = None
+            elif line_type == 'box':
+                item = None
+                box = Box.from_id(line_id)
+
+            restock_line = render('templates/admin/restock_row.jinja2',
+                {'item': item, 'box': box, 'line': line_values})
+            restock_items += restock_line.replace('-X', '-{}'.format(index))
+
+    return {'items': Item.all_force(),
+            'boxes': Box.all(),
+            'restock_items': restock_items,
+            'restock_rows': int(index)+1}
 
 
 @view_config(route_name='admin_restock_submit',
@@ -1306,31 +1334,38 @@ def admin_event_receipt(request):
 @view_config(route_name='admin_event_undo',
              permission='admin')
 def admin_event_undo(request):
-    # Lookup the transaction that the user wants to undo
     try:
+        # Lookup the transaction that the user wants to undo
         event = Event.from_id(request.matchdict['event_id'])
-    except:
-        request.session.flash('Error: Could not find transaction to undo.', 'error')
-        return HTTPFound(location=request.route_url('admin_events'))
 
-    # Make sure its not already deleted
-    if event.deleted:
-        request.session.flash('Error: transaction already deleted', 'error')
-        return HTTPFound(location=request.route_url('admin_events'))
-
-    for transaction in event.transactions:
-        # Make sure transaction is a deposit (no user check since admin doing)
-        if transaction.type not in ('deposit', 'purchase'):
-            request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
+        # Make sure its not already deleted
+        if event.deleted:
+            request.session.flash('Error: transaction already deleted', 'error')
             return HTTPFound(location=request.route_url('admin_events'))
 
-    # If the checks pass, actually revert the transaction
-    try:
+        for transaction in event.transactions:
+            # Make sure transaction is a deposit (no user check since admin doing)
+            if transaction.type not in ('deposit', 'purchase', 'restock'):
+                request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
+                return HTTPFound(location=request.route_url('admin_events'))
+
+        # If the checks pass, actually revert the transaction
         line_items = datalayer.undo_event(event, request.user)
-        request.session.flash('Transaction successfully reverted.', 'success')
-    except:
+        request.session.flash('Event successfully reverted.', 'success')
+
+        if event.type == 'restock':
+            return HTTPFound(location=request.route_url('admin_restock', _query=line_items))
+        else:
+            return HTTPFound(location=request.route_url('admin_events'))
+
+    except NoResultFound:
+        request.session.flash('Error: Could not find event to undo.', 'error')
+        return HTTPFound(location=request.route_url('admin_events'))
+    except Exception as e:
+        if request.debug: raise(e)
         request.session.flash('Error: Failed to undo transaction.', 'error')
-    return HTTPFound(location=request.route_url('admin_events'))
+        return HTTPFound(location=request.route_url('admin_events'))
+    
 
 
 @view_config(route_name='admin_password_edit',

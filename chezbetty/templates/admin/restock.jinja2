@@ -53,13 +53,14 @@
         <th style="width: 5%;">Quantity</th>
         <th style="width: 15%;">Wholesale Cost</th>
         <th style="width: 15%;">Coupon Discount (Each)</th>
-        <th style="width: 15%;">Total Cost</th>
         <th style="width: 5%;">Sales Tax</th>
         <th style="width: 5%;">Bottle Deposit</th>
+        <th style="width: 15%;">Total Cost</th>
       </tr>
     </thead>
 
     <tbody>
+    {{ restock_items|safe }}
     </tbody>
 
     <tfoot>

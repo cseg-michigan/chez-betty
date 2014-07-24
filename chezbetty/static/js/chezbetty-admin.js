@@ -62,6 +62,7 @@ function add_item_success (data) {
 
 			$("#row-count").val(num_rows+1)
 			attach_keypad();
+			restock_update_line_total(num_rows);
 		} else {
 			// Already have this item in the table
 			// Take another barcode scan as an increase in quantity
