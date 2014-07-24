@@ -150,120 +150,15 @@ $(".restock-manual").on("click", function () {
 	add_item($("#restock-manual-"+type+"-select").val());
 });
 
-$("#restock-table").on("input", "input:text",  function () {
-	calculate_total();
-});
-
 $("#restock-table").on("click", "input:checkbox", function () {
-	calculate_total();
+	restock_update_line_total($(this).attr("id").split("-")[2]);
 });
 
 // When the per item cost changes, update the line item total
-$("#restock-table").on("input", ".restock-cost", function () {
-	// Get the cost and quantity fields
-	var cost = parseFloatZero($(this).val());
-
-	var fields = $(this).attr("id").split("-");
-	fields[2] = "quantity";
-	var quantity = parseInt($("#"+fields.join("-")).val());
-	if (isNaN(quantity)) quantity = 0;
-
-	// Calculate the new total and update it
-	total = (quantity*cost).toFixed(2);
-	fields[2] = "total";
-	total_obj = $("#"+fields.join("-"));
-	total_obj.val(total);
-
-	// Mark that the cost field was human updated and the total
-	// was autocalculated
-	$(this).attr("data-update-method", "human");
-	total_obj.attr("data-update-method", "auto");
-
-	// Make sure the total is up to date
-	calculate_total();
+$("#restock-table").on("input", "input:text", function () {
+	restock_update_line_total($(this).attr("id").split("-")[2]);
 });
 
-// When the item line total changes, update the per item cost
-$("#restock-table").on("input", ".restock-total", function () {
-	// Get the total and quantity fields
-	var total = parseFloatZero($(this).val());
-
-	var fields = $(this).attr("id").split("-");
-	fields[2] = "quantity";
-	var quantity = parseInt($("#"+fields.join("-")).val());
-	if (isNaN(quantity)) quantity = 0;
-
-	// Calculate the new total and update it
-	cost = (total/quantity).toFixed(2);
-	fields[2] = "cost";
-	cost_obj = $("#"+fields.join("-"));
-	cost_obj.val(cost);
-
-	// Mark that the cost field was auto updated and the total
-	// was human updated
-	$(this).attr("data-update-method", "human");
-	cost_obj.attr("data-update-method", "auto");
-
-	// Make sure the total is up to date
-	calculate_total();
-});
-
-function restock_update_total_quantity (obj) {
-	var quantity = parseInt(obj.val());
-	if (isNaN(quantity)) quantity = 0;
-
-	var fields = obj.attr("id").split("-");
-
-	fields[2] = "cost";
-	cost_obj = $("#"+fields.join("-"));
-	fields[2] = "total";
-	total_obj = $("#"+fields.join("-"));
-
-	if (total_obj.attr("data-update-method") == "human") {
-		// total was set, update cost
-		var total = parseFloatZero(total_obj.val())
-		var cost = (total/quantity).toFixed(2);
-		cost_obj.val(cost);
-	} else {
-		// Else do the probably more logical thing and update total
-		var cost = parseFloatZero(cost_obj.val())
-		var total = (cost*quantity).toFixed(2);
-		total_obj.val(total);
-	}
-
-	// Make sure the total is up to date
-	calculate_total();
-}
-
-// When the quantity changes, update the correct thing
-$("#restock-table").on("input", ".restock-quantity", function () {
-	restock_update_total_quantity($(this));
-});
-
-// Check that sales tax matches up
-$("#restock-button").click(function () {
-	var user_sales_tax = parseFloat(strip_price($("#restock-salestax").val()));
-	if (isNaN(user_sales_tax)) {
-		user_sales_tax = 0.0;
-	}
-
-	var calc_sales_tax = 0.0;
-	$(".restock-item").each(function (index) {
-		var id = $(this).attr("id").split("-")[2];
-		if ($(this).find(".restock-salestax:checked").length > 0) {
-			var price = parseFloat($(this).find(".restock-total").val());
-			calc_sales_tax += 0.06*price;
-		}
-	});
-
-	if (Math.abs(user_sales_tax - calc_sales_tax) >= 0.01) {
-		// Sales tax calculation is wrong. Something isn't rigth here.
-		alert_error("Sales tax calculation invalid. Did you forget something that was taxed?");
-	} else {
-		clicked_submit = true;
-		$("#restock-form").submit();
-	}
-});
 
 $(".request-delete").click(function () {
 	var request_id = $(this).attr("id").split("-")[3];

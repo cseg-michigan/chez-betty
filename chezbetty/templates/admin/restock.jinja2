@@ -11,7 +11,6 @@
 
 <p>Scan items to add to stock.</p>
 <p>Check the sales tax box if sales tax was charged on those items.</p>
-<p>Please enter the total amount of sales tax at the bottom as a sanity check.</p>
 
 <table class="table">
   <tbody>
@@ -44,15 +43,19 @@
 
 <form role="form" action="/admin/restock/submit" method="post" id="restock-form">
 
+  <input type="hidden" id="row-count" name="row-count" value="{{ restock_rows|default(0) }}">
+
   <table id="restock-table" class="table table-bordered">
 
     <thead>
       <tr>
         <th>Item</th>
-        <th style="width: 10%;">Quantity</th>
-        <th style="width: 20%;">Wholesale Cost</th>
-        <th style="width: 20%;">Total Cost</th>
-        <th style="width: 10%;">Sales Tax</th>
+        <th style="width: 5%;">Quantity</th>
+        <th style="width: 15%;">Wholesale Cost</th>
+        <th style="width: 15%;">Coupon Discount (Each)</th>
+        <th style="width: 15%;">Total Cost</th>
+        <th style="width: 5%;">Sales Tax</th>
+        <th style="width: 5%;">Bottle Deposit</th>
       </tr>
     </thead>
 
@@ -61,17 +64,13 @@
 
     <tfoot>
       <tr>
-        <td colspan="4">Sales Tax</td>
-        <td><input type="text" class="form-control numeric" id="restock-salestax" name="salestax"></td>
-      </tr>
-      <tr>
-        <td colspan="3">Total</td>
-        <td colspan="2" id="restock-total">$0.00</td>
+        <td colspan="4">Total</td>
+        <td colspan="3" id="restock-total">$0.00</td>
       </tr>
     </tfoot>
   </table>
 
-  <button type="button" id="restock-button" class="btn btn-success">Restock Items</button>
+  <button type="submit" id="restock-button" class="btn btn-success">Restock Items</button>
 
 </form>
 

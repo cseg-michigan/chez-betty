@@ -67,11 +67,52 @@
             {% else %}
             <th class="right">Quantity</th>
             {% endif %}
-            <th class="right">Amount</th>
+            {% if t.type == "restock" %}
+            <th class="right">Wholesale</td>
+            <th class="right">Coupon</td>
+            <th>Sales Tax</td>
+            <th>Bottle Deposit</td>
+            {% endif %}
+            <th class="right">Total</th>
           </tr>
         </thead>
         <tbody>
         {% for st in t.subtransactions %}
+          {% if st.type == "restocklinebox" %}
+          <tr>
+              <td>{{ st.id }}</td>
+              <td>
+                {{ st.box|make_link|safe }}
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>SubItem</th>
+                      <th>Total Quantity</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for sst in st.subsubtransactions %}
+                    <tr>
+                      <td>{{ sst.item|make_link|safe }}</td>
+                      <td>{{ sst.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+              </td>
+              <td class="right">{{ st.quantity }}</td>
+              <td class="right">{{ st.wholesale|round(2) }}</td>
+              <td class="right">{{ st.coupon_amount|round(2) }}</td>
+              <td>{% if st.sales_tax %}Y{% else %}N{% endif %}</td>
+              <td>{% if st.bottle_deposit %}Y{% else %}N{% endif %}</td>
+              <td class="right">{{ st.amount|format_currency|safe }}</td>
+          </tr>
+
+          {% else %}
+
           <tr>
               <td>{{ st.id }}</td>
               <td>{{ st.item|admin_item|safe }}</td>
@@ -84,8 +125,15 @@
               {% else %}
               <td class="right">{{ st.quantity }}</td>
               {% endif %}
+              {% if t.type == "restock" %}
+              <td class="right">{{ st.wholesale|round(2) }}</td>
+              <td class="right">{{ st.coupon_amount|round(2) }}</td>
+              <td>{% if st.sales_tax %}Y{% else %}N{% endif %}</td>
+              <td>{% if st.bottle_deposit %}Y{% else %}N{% endif %}</td>
+              {% endif %}
               <td class="right">{{ st.amount|format_currency|safe }}</td>
           </tr>
+          {% endif %}
         {% endfor %}
         </tbody>
       </table>
@@ -98,11 +146,16 @@
   </ul>
 </div>
 
-<form role="form" action="/admin/event/upload" method="post" enctype="multipart/form-data" id="form-upload-receipt">
-  <input type="hidden" name="event-id" value="{{ event.id }}">
-  <input type="file" name="event-receipt" accept="application/pdf">
-  <button type="submit" class="btn btn-success">Upload</button>
-</form>
+<div class="panel panel-default">
+  <div class="panel-heading">Upload Receipt</div>
+  <div class="panel-body">
+    <form role="form" action="/admin/event/upload" method="post" enctype="multipart/form-data" id="form-upload-receipt">
+      <input type="hidden" name="event-id" value="{{ event.id }}">
+      <input type="file" name="event-receipt" accept="application/pdf">
+      <button type="submit" class="btn btn-success">Upload</button>
+    </form>
+  </div>
+</div>
 
 {% if undo_url and event.deleted == False %}
 <a class="btn btn-danger" href="{{ undo_url }}">Undo this Event</a>

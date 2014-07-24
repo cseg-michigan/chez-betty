@@ -18,6 +18,12 @@ function full_strip_price (price_str) {
 	return price_str.replace(/^\s+|\s+$|\.|\$|\,/g, '');
 }
 
+function parseIntZero (i) {
+	var ret = parseInt(i);
+	if (isNaN(ret)) return 0;
+	return ret;
+}
+
 function parseFloatZero (f) {
 	var ret = parseFloat(f);
 	if (isNaN(ret)) return 0.0;
@@ -34,7 +40,7 @@ function alert_error (error_str) {
 	$("#alerts").html(html);
 }
 
-// Callback when adding an item to the cart succeeds
+// Callback when adding an item to the restock succeeds
 function add_item_success (data) {
 	if (data.status != "success") {
 		if (data.status == "unknown_barcode") {
@@ -44,16 +50,25 @@ function add_item_success (data) {
 		}
 	} else {
 		// Make sure this item isn't already on the list
-		if ($("#restock-"+data.type+"-" + data.id).length == 0) {
+		if ($(".restock-"+data.type+"-" + data.id).length == 0) {
 			// Add a new item
-			$("#restock-table tbody").append(data.data);
+
+			// Update the "-X" with a unique row number
+			num_rows = parseInt($("#row-count").val());
+			row = data.data.replace(/-X/g, "-"+num_rows);
+
+			// Add the row to the table
+			$("#restock-table tbody").append(row);
+
+			$("#row-count").val(num_rows+1)
 			attach_keypad();
 		} else {
 			// Already have this item in the table
 			// Take another barcode scan as an increase in quantity
-			quantity_obj = $("#restock-"+data.type+"-quantity-" + data.id);
+			row_obj = $(".restock-"+data.type+"-"+data.id+":last");
+			quantity_obj = row_obj.find(".quantity input");
 			quantity_obj.val(parseInt(quantity_obj.val()) + 1);
-			restock_update_total_quantity(quantity_obj);
+			restock_update_line_total(row_obj.attr("id").split("-")[1]);
 		}
 	}
 }
@@ -72,19 +87,35 @@ function add_item (barcode) {
 	});
 }
 
+function restock_update_line_total (row_id) {
+	var row_obj = $("#restock-"+row_id);
+	var quantity = parseIntZero($("#restock-quantity-"+row_id).val());
+	var wholesale = parseFloatZero($("#restock-wholesale-"+row_id).val());
+	var coupon = parseFloatZero($("#restock-coupon-"+row_id).val());
+	var salestax = $("#restock-salestax-"+row_id).prop("checked");
+	var btldep = $("#restock-bottledeposit-"+row_id).prop("checked");
+	var itemcount = parseInt($("#restock-itemcount-"+row_id).val());
+	var total_obj = $("#restock-total-"+row_id);
+
+	var total = quantity * (wholesale - coupon);
+	if (salestax) {
+		total *= 1.06
+	}
+	if (btldep) {
+		total += (0.10 * itemcount * quantity)
+	}
+
+	total_obj.val(total.toFixed(2));
+
+	// Make sure the total is up to date
+	calculate_total();
+}
+
 // Function to add up the items in a cart to display the total.
 function calculate_total () {
 	total = 0.0;
-	$(".item-total input").each(function (index) {
-		var price = parseFloat($(this).val());
-		var fields = $(this).attr("id").split("-");
-
-		// Check if we should add sales tax
-		fields[2] = "salestax";
-		if ($("#"+fields.join("-")+":checked").length == 1) {
-			price *= 1.06;
-		}
-
+	$(".restock-total").each(function (index) {
+		var price = parseFloatZero($(this).val());
 		total += price;
 	});
 

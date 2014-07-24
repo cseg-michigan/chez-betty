@@ -222,57 +222,74 @@ def admin_restock(request):
              request_method='POST',
              permission='manage')
 def admin_restock_submit(request):
-    i = iter(request.POST)
+    #i = iter(request.POST)
 
     # Array of (Item, quantity, total) tuples
-    items = []
+    items_for_pricing = []
 
     # Add an item to the array or update its totals
     def add_item(item, quantity, total):
-        for i in range(len(items)):
-            if items[i][0].id == item.id:
-                items[i][1] += quantity
-                items[i][2] += total
+        for i in range(len(items_for_pricing)):
+            if items_for_pricing[i][0].id == item.id:
+                items_for_pricing[i][1] += quantity
+                items_for_pricing[i][2] += total
                 break
         else:
-            items.append([item,quantity,total])
+            items_for_pricing.append([item,quantity,total])
 
-    for salestax,quantity,cost,total in zip(i,i,i,i):
-        if not (quantity.split('-')[3] == cost.split('-')[3] == salestax.split('-')[3]):
-            request.session.flash('Error: Malformed POST. Misaligned IDs.', 'error')
-            DBSession.rollback()
-            return HTTPFound(location=request.route_url('admin_restock'))
+    # Arrays to pass to datalayer
+    items = []
+    boxes = []
+
+    for key,val in request.POST.items():
 
         try:
-            fields = quantity.split('-')
-            obj_type = fields[1]
-            obj_id   = int(fields[3])
-            quantity = int(request.POST[quantity])
-            total    = Decimal(request.POST[total])
+            f = key.split('-')
 
-            if request.POST[salestax] == 'on':
-                total = (total * Decimal(1.06))
+            # Only look at the row when we get the id key
+            if len(f) >= 2 and f[1] == 'id':
 
-            if obj_type == 'item':
-                item = Item.from_id(obj_id)
-                add_item(item, quantity, total)
-            elif obj_type == 'box':
-                box = Box.from_id(obj_id)
-                # Boxes should have a wholesale that can actually be purchased
-                box.wholesale = Decimal(round(total, 2))
+                obj_type   = request.POST['-'.join([f[0], 'type', f[2]])]
+                obj_id     = request.POST['-'.join([f[0], 'id', f[2]])]
+                quantity   = int(request.POST['-'.join([f[0], 'quantity', f[2]])] or 0)
+                wholesale  = float(request.POST['-'.join([f[0], 'wholesale', f[2]])] or 0.0)
+                coupon     = float(request.POST['-'.join([f[0], 'coupon', f[2]])] or 0.0)
+                salestax   = request.POST['-'.join([f[0], 'salestax', f[2]])] == 'on'
+                btldeposit = request.POST['-'.join([f[0], 'bottledeposit', f[2]])] == 'on'
+                itemcount  = int(request.POST['-'.join([f[0], 'itemcount', f[2]])])
 
-                # Cost for any one item
-                inv_cost = box.wholesale / (box.subitem_count * quantity)
+                # Skip this row if quantity is 0
+                if quantity == 0:
+                    continue
 
-                # Add all the items in the box and figure out their wholesales
-                for itembox in box.items:
-                    subquantity = itembox.quantity * quantity
-                    subtotal    = (itembox.quantity * quantity) * inv_cost
-                    add_item(itembox.item, subquantity, subtotal)
+                # Calculate the total
+                total = quantity * (wholesale - coupon)
+                if salestax:
+                    total *= 1.06
+                if btldeposit:
+                    total += (0.10 * itemcount * quantity)
 
-            else:
-                request.session.flash('Invalid item type', 'error')
-                continue
+                # Create arrays of restocked items/boxes
+                if obj_type == 'item':
+                    item = Item.from_id(obj_id)
+                    add_item(item, quantity, total)
+                    items.append((item, quantity, total, wholesale, coupon, salestax, btldeposit))
+
+                elif obj_type == 'box':
+                    box = Box.from_id(obj_id)
+                    box.wholesale = wholesale
+
+                    inv_cost = total / (box.subitem_count * quantity)
+                    for itembox in box.items:
+                        subquantity = itembox.quantity * quantity
+                        subtotal    = subquantity * inv_cost
+                        add_item(itembox.item, subquantity, subtotal)
+
+                    boxes.append((box, quantity, total, wholesale, coupon, salestax, btldeposit))
+
+                else:
+                    # don't know this item/box/?? type
+                    continue
 
         except (ValueError, decimal.InvalidOperation):
             request.session.flash('Error parsing data for {}. Skipped.'.format(obj_id), 'error')
@@ -285,21 +302,23 @@ def admin_restock_submit(request):
             continue
         except Exception as e:
             if request.debug: raise(e)
-            request.session.flash('Error restocking item. Skipped.', 'error')
             continue
 
+
     # Iterate the grouped items, update prices and wholesales, and then restock
-    restock_items = {}
-    for item,quantity,total in items:
+    for item,quantity,total in items_for_pricing:
         item.wholesale = Decimal(round(total/quantity, 4))
         # Make sure we aren't selling at a loss cause that would be dumb
         if item.price < item.wholesale:
             item.price = round(item.wholesale * Decimal(1.15), 2)
-        restock_items[item] = quantity
 
-    datalayer.restock(restock_items, request.user)
+    if len(items) == 0 and len(boxes) == 0:
+        request.session.flash('Have to restock at least one item.', 'error')
+        return HTTPFound(location=request.route_url('admin_restock'))
+
+    e = datalayer.restock(items, boxes, request.user)
     request.session.flash('Restock complete.', 'success')
-    return HTTPFound(location=request.route_url('admin_items_edit'))
+    return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
 
 
 @view_config(route_name='admin_cash_reconcile',

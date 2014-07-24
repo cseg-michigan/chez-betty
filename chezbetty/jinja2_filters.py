@@ -1,4 +1,6 @@
 from .models import box
+from .models import item
+
 def format_currency(value):
 	try:
 		p = float(value)
@@ -28,3 +30,5 @@ def admin_account(account):
 def make_link(obj):
 	if type(obj) is box.Box:
 		return '<a href="/admin/box/edit/{}">{}</a>'.format(obj.id, obj.name)
+	elif type(obj) is item.Item:
+		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, obj.name)

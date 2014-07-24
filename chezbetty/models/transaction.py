@@ -2,6 +2,7 @@ from .model import *
 from . import account
 from . import event
 from . import item
+from . import box
 from chezbetty import utility
 
 
@@ -291,11 +292,16 @@ class SubTransaction(Base):
     transaction_id  = Column(Integer, ForeignKey("transactions.id"), nullable=False)
     amount          = Column(Numeric, nullable=False)
     type            = Column(Enum("purchaselineitem", "restocklineitem",
-                                  "inventorylineitem",
+                                  "restocklinebox", "inventorylineitem",
                                   name="subtransaction_type"), nullable=False)
-    item_id         = Column(Integer, ForeignKey("items.id"), nullable=False)
+    item_id         = Column(Integer, ForeignKey("items.id"), nullable=True)
     quantity        = Column(Integer, nullable=False)
     wholesale       = Column(Numeric, nullable=False)
+
+    # For restocks
+    coupon_amount   = Column(Numeric, nullable=True) # Amount of discount on the item
+    sales_tax       = Column(Boolean, nullable=True) # Whether sales tax was charged
+    bottle_deposit  = Column(Boolean, nullable=True) # Whether there was a bottle deposit
 
     transaction     = relationship(Transaction, backref="subtransactions", cascade="all")
     item            = relationship(item.Item, backref="subtransactions")
@@ -326,7 +332,7 @@ class SubTransaction(Base):
 
 class PurchaseLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}
-    price     = Column(Numeric)
+    price           = Column(Numeric)
     def __init__(self, transaction, amount, item, quantity, price, wholesale):
         SubTransaction.__init__(self, transaction, amount, item.id, quantity, wholesale)
         self.price = price
@@ -370,10 +376,44 @@ item.Item.number_sold = __number_sold
 
 class RestockLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'restocklineitem'}
-    def __init__(self, transaction, amount, item, quantity, wholesale):
+    def __init__(self,
+                 transaction,
+                 amount, 
+                 item,
+                 quantity,
+                 wholesale,
+                 coupon,
+                 sales_tax,
+                 bottle_deposit):
         SubTransaction.__init__(self, transaction, amount, item.id, quantity, wholesale)
+        self.coupon_amount = coupon
+        self.sales_tax = sales_tax
+        self.bottle_deposit = bottle_deposit
+
+
+class RestockLineBox(SubTransaction):
+    __mapper_args__ = {'polymorphic_identity': 'restocklinebox'}
+    box_id          = Column(Integer, ForeignKey("boxes.id"), nullable=True)
+
+    box             = relationship(box.Box, backref="subtransactions")
+
+    def __init__(self,
+                 transaction,
+                 amount, 
+                 box,
+                 quantity,
+                 wholesale,
+                 coupon,
+                 sales_tax,
+                 bottle_deposit):
+        self.transaction_id = transaction.id
+        self.amount = amount
+        self.box_id = box.id
         self.quantity = quantity
         self.wholesale = wholesale
+        self.coupon_amount = coupon
+        self.sales_tax = sales_tax
+        self.bottle_deposit = bottle_deposit
 
 
 class InventoryLineItem(SubTransaction):
@@ -384,6 +424,46 @@ class InventoryLineItem(SubTransaction):
     def __init__(self, transaction, amount, item, quantity_predicted, quantity_counted, wholesale):
         SubTransaction.__init__(self, transaction, amount, item.id, quantity_predicted, wholesale)
         self.quantity_counted = quantity_counted
+
+
+
+################################################################################
+## SUBSUB TRANSACTIONS
+################################################################################
+
+# This is for tracking which items were in which boxes when we restocked
+
+class SubSubTransaction(Base):
+    __tablename__      = "subsubtransactions"
+
+    id                 = Column(Integer, primary_key=True, nullable=False)
+    subtransaction_id  = Column(Integer, ForeignKey("subtransactions.id"), nullable=False)
+    type               = Column(Enum("restocklineboxitem",
+                                     name="subsubtransaction_type"), nullable=False)
+    item_id            = Column(Integer, ForeignKey("items.id"), nullable=True)
+    quantity           = Column(Integer, nullable=False)
+
+    subtransaction     = relationship(SubTransaction, backref="subsubtransactions", cascade="all")
+    item               = relationship(item.Item, backref="subsubtransactions")
+
+    __mapper_args__    = {'polymorphic_on': type}
+
+    def __init__(self, subtransaction, item_id, quantity):
+        self.subtransaction_id = subtransaction.id
+        self.item_id = item_id
+        self.quantity = quantity
+
+    def __getattr__(self, name):
+        if name == 'deleted':
+            return self.subtransaction.transaction.event.deleted
+        else:
+            raise AttributeError
+
+
+class RestockLineBoxItem(SubSubTransaction):
+    __mapper_args__ = {'polymorphic_identity': 'restocklineboxitem'}
+    def __init__(self, subtransaction, item, quantity):
+        SubSubTransaction.__init__(self, subtransaction, item.id, quantity)
 
 
 

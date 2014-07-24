@@ -70,14 +70,15 @@ def main(argv=sys.argv):
            5,
            True
         ))
-        DBSession.add(Item(
+        coke = Item(
             "Coke (12 oz)",
             "04963406",
             0.42,
             0.37,
             12,
             True
-        ))
+        )
+        DBSession.add(coke)
         # user = User(
         #    "zakir",
         #    "95951361",
@@ -114,6 +115,10 @@ def main(argv=sys.argv):
         account.get_cash_account("cashbox")
         account.get_cash_account("chezbetty")
         account.get_cash_account("btcbox")
+        coke_box = Box("Coke 32 pack", "123", 32.00)
+        DBSession.add(coke_box)
+        DBSession.flush()
+        DBSession.add(BoxItem(coke_box, coke, 32))
 
 if __name__ == "__main__":
     main()
