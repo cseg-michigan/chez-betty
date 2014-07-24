@@ -11,7 +11,10 @@
     labels: {{ x|safe }},
     datasets: [
         {
-            data: {{ y }}
+          strokeColor: "rgba(151,187,205,1)",
+          pointColor: "rgba(151,187,205,1)",
+          pointStrokeColor: "#fff",
+          data: {{ y }}
         }
     ]
   };
@@ -36,13 +39,13 @@
     pointDot : true,
 
     //Number - Radius of each point dot in pixels
-    pointDotRadius : 4,
+    pointDotRadius : 3,
 
     //Number - Pixel width of point dot stroke
     pointDotStrokeWidth : 1,
 
     //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-    pointHitDetectionRadius : 20,
+    pointHitDetectionRadius : 2,
 
     //Boolean - Whether to show a stroke for datasets
     datasetStroke : true,
@@ -51,7 +54,7 @@
     datasetStrokeWidth : 2,
 
     //Boolean - Whether to fill the dataset with a colour
-    //datasetFill : true,
+    datasetFill : false,
 
     //String - A legend template
 
