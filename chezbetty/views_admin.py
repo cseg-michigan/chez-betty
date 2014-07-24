@@ -262,7 +262,7 @@ def admin_restock_submit(request):
                 box.wholesale = Decimal(round(total, 2))
 
                 # Cost for any one item
-                inv_cost = box.wholesale / box.subitem_count
+                inv_cost = box.wholesale / (box.subitem_count * quantity)
 
                 # Add all the items in the box and figure out their wholesales
                 for itembox in box.items:
