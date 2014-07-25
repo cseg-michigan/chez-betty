@@ -114,6 +114,15 @@
           {% endif %}
         </tr>
         {% endfor %}
+        {% for sst in subsubtransactions|reverse %}
+        <tr>
+          <td>{{ button.event(sst.subtransaction.transaction.event.id) }}</td>
+          <td>{{ sst.subtransaction.transaction.event.timestamp|pretty_date|safe }}</td>
+          <td>{{ sst.subtransaction.transaction.event.admin.name }}</td>
+          <td>{{ sst.subtransaction.transaction.type }}</td>
+          <td>{{ sst.quantity }}</td>
+        </tr>
+        {% endfor %}
       </tbody>
     </table>
 
