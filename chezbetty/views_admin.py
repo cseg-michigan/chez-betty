@@ -20,7 +20,8 @@ from .models.user import User
 from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, BTCDeposit, PurchaseLineItem, SubTransaction
+from .models.transaction import Transaction, Deposit, BTCDeposit
+from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
 from .models import event as __event
@@ -150,10 +151,10 @@ def admin_index(request):
                 best_selling_items=bsi,
                 sold_by_day=sold_by_day,
                 virt_revenue_by_day=virt_revenue_by_day,
-                deposits_by_day=deposits_by_day, 
-                graph_items_day=views_data.create_dict('items', 'day', 30),
-                graph_sales_day=views_data.create_dict('sales', 'day', 30),
-                graph_deposits_day=views_data.create_dict('deposits', 'day', 30))
+                deposits_by_day=deposits_by_day,
+                graph_items_day=views_data.create_dict('items', 'day', 20),
+                graph_sales_day=views_data.create_dict('sales', 'day', 20),
+                graph_deposits_day=views_data.create_dict('deposits', 'day', 20))
 
 
 @view_config(route_name='admin_demo',
@@ -203,7 +204,7 @@ def admin_item_barcode_json(request):
             else:
                 return {'status': 'error'}
 
-        
+
     except Exception as e:
         if request.debug:
             raise(e)
@@ -551,6 +552,7 @@ def admin_item_edit(request):
         item = Item.from_id(request.matchdict['item_id'])
         vendors = Vendor.all()
         subtransactions = SubTransaction.all_item(item.id)
+        subsubtransactions = SubSubTransaction.all_item(item.id)
 
         # Don't display vendors that already have an item number in the add
         # new vendor item number section
@@ -566,7 +568,8 @@ def admin_item_edit(request):
         return {'item': item,
                 'vendors': vendors,
                 'new_vendors': new_vendors,
-                'subtransactions': subtransactions}
+                'subtransactions': subtransactions,
+                'subsubtransactions': subsubtransactions}
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Unable to find item {}'.format(request.matchdict['item_id']), 'error')
@@ -855,7 +858,7 @@ def admin_box_edit(request):
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Error editing box', 'error')
-        return HTTPFound(location=request.route_url('admin_boxes_edit'))        
+        return HTTPFound(location=request.route_url('admin_boxes_edit'))
 
 
 @view_config(route_name='admin_box_edit_submit',
@@ -934,7 +937,7 @@ def admin_box_edit_submit(request):
     except ValueError:
         request.session.flash('Error processing box fields.', 'error')
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
-    
+
     except:
         request.session.flash('Error updating box.', 'error')
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
@@ -1374,7 +1377,7 @@ def admin_event_undo(request):
         if request.debug: raise(e)
         request.session.flash('Error: Failed to undo transaction.', 'error')
         return HTTPFound(location=request.route_url('admin_events'))
-    
+
 
 
 @view_config(route_name='admin_password_edit',

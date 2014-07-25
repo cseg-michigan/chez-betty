@@ -378,7 +378,7 @@ class RestockLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'restocklineitem'}
     def __init__(self,
                  transaction,
-                 amount, 
+                 amount,
                  item,
                  quantity,
                  wholesale,
@@ -399,7 +399,7 @@ class RestockLineBox(SubTransaction):
 
     def __init__(self,
                  transaction,
-                 amount, 
+                 amount,
                  box,
                  quantity,
                  wholesale,
@@ -458,6 +458,15 @@ class SubSubTransaction(Base):
             return self.subtransaction.transaction.event.deleted
         else:
             raise AttributeError
+
+    @classmethod
+    def all_item(cls, id):
+        return DBSession.query(cls)\
+                        .join(SubTransaction)\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(cls.item_id == id)\
+                        .filter(event.Event.deleted==False).all()
 
 
 class RestockLineBoxItem(SubSubTransaction):
