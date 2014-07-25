@@ -1225,14 +1225,23 @@ def admin_btc_reconcile(request):
                 # we found a btc deposit on the blockchain we didn't get a callback for!
 
                 amount = Decimal(0)
-                addr = ''
+                addr = None
                 for output in tx['out']:
                     if output['addr'] in addrs and output['type'] == 0:
                         addr = output['addr']
                         amount += Decimal(output['value'])
 
+                if addr is None:
+                    # one of our pending addresses must have been a tx _input_;
+                    # this is just coinbase moving coins out from under us...
+                    # hopefully we can still redeem them though (!)
+                    # (cold storage? fractional reserve? theft? time will tell!)
+                    continue
+
+
                 amount /= 100000000
 
+                print("txhash=%s, addr=%s, txout:%s" % (txhash, addr, tx['out']))
                 pending_deposit = DBSession.query(BtcPendingDeposit).filter(BtcPendingDeposit.address==addr).one()
 
                 user = User.from_id(pending_deposit.user_id)  # from_id?
