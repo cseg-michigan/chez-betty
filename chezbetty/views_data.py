@@ -52,7 +52,7 @@ class InvalidMetric(Exception):
 def ftz(i):
     if type(i) is datetime.date:
         i = datetime.datetime(i.year, i.month, i.day)
-    return i.replace(tzinfo=pytz.timezone('America/Detroit')).astimezone(tz=pytz.timezone('UTC'))
+    return pytz.timezone('America/Detroit').localize(i).astimezone(tz=pytz.timezone('UTC'))
 
 
 def get_start(days):
