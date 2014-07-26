@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
 {% import "macro_graph.jinja2" as graph %}
 
 {% block title %}Home{% endblock %}
@@ -241,16 +242,16 @@
         <h3 class="panel-title">Recent Transactions</h3>
       </div>
       <div class="panel-body">
-        <table class="table table-condensed table-striped table-responsive">
+        <table class="table table-condensed table-striped table-responsive filterable">
           <thead>
             <tr>
               <th></th>
               <th>Timestamp</th>
-              <th>Type</th>
-              <th>From Account:</th>
-              <th>To Account:</th>
-              <th>From Account (Cash):</th>
-              <th>To Account (Cash):</th>
+              <th class="filterable-row">Type</th>
+              <th class="filterable-row">From Account:</th>
+              <th class="filterable-row">To Account:</th>
+              <th class="filterable-row">From Account (Cash):</th>
+              <th class="filterable-row">To Account (Cash):</th>
               <th class="right">Amount</th>
             </tr>
           </thead>
@@ -258,9 +259,7 @@
             {% for e in events %}
             {% for t in e.transactions|reverse %}
             <tr>
-              {% if loop.index == 1 %}
-              <td rowspan="{{ e.transactions|count }}"><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
-              {% endif %}
+              <td>{{ button.event(e.id) }}</td>
               <td>{{ e.timestamp|pretty_date|safe }}</td>
               <td>{{ t.type }}</td>
               <td>{{ t.fr_account_virt|admin_account|safe if t.fr_account_virt else "n/a" }}</td>

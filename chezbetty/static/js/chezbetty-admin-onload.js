@@ -170,6 +170,76 @@ $(".request-delete").click(function () {
 	});
 })
 
+// filterable tables
+$('.filterable').each(function (table_index) {
+
+	var table = $(this);
+
+	// Mark the original body as the one we are going to filter
+	table.find("tbody").addClass("filtered-body");
+
+	// Add the row of filter dropdowns
+	// jquery will auto create a tbody element in the wrong place,
+	// so we get in there first and do it correctly.
+	var tbody = $("<tbody></tbody>");
+	var tr = $('<tr class="filters"></tr>');
+	table.prepend(tbody);
+	tbody.append(tr);
+
+	// Build the dropdowns
+	$(this).find("th").each(function (th_index) {
+		var td = $("<td></td>").appendTo(tr);
+		if ($(this).hasClass("filterable-row")) {
+			var select = $('<select><option value=""></option></select>')
+				.appendTo(td)
+				.attr("xindex", th_index+1)
+				.on("change", function () {
+					var val = $(this).val();
+					xindex = $(this).attr("xindex");
+					val = $(this).val();
+
+					$(this).closest("table").find("tbody.filtered-body tr").show();
+
+					$(this).closest("table").find("tr.filters td").each(function (i) {
+						select = $(this).find("select");
+						if (select.length > 0) {
+							val = select.val();
+							if (val != "") {
+								$(this).closest("table").find("tbody.filtered-body tr:visible").each(function () {
+									td = $(this).find("td:nth-child("+(i+1)+")");
+									value = td.attr("data-value");
+									if (!value) {
+										value = td.text();
+									}
+									if (value == val) {
+										$(this).show();
+									} else {
+										$(this).hide();
+									}
+								});
+							}
+
+						}
+					})
+				});
+
+			var elements = [];
+			table.find("tbody.filtered-body tr td:nth-child("+(th_index+1)+")").each(function () {
+				value = $(this).attr("data-value");
+				if (!value) {
+					value = $(this).text();
+				}
+				if ($.inArray(value, elements) == -1) {
+					elements.push(value);
+					select.append('<option value="'+value+'">'+value+'</option>');
+				}
+			});
+
+		}
+
+	});
+});
+
 
 
 //
