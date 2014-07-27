@@ -357,9 +357,14 @@ def btc_deposit(request):
     #    print('Could not get exchange rate for addr %s txhash %s; failing...' % (addr, txhash))
     #    return {}
 
+    amount_usd = Decimal(amount_btc) * usd_per_btc
+
+    # round down to nearest cent
+    amount_usd = Decimal(int(amount_usd*100))/Decimal(100)
+
     ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%s/BTC"\
            % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
-    datalayer.bitcoin_deposit(user, Decimal(amount_btc) * usd_per_btc, txhash, addr, amount_btc)
+    datalayer.bitcoin_deposit(user, amount_usd, txhash, addr, amount_btc)
     print(ret)
 
     return {}
