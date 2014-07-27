@@ -44,6 +44,14 @@ development environment set up, do the following:
 
         python chezbetty/initializedb.py development.ini
 
+4. Install bower and bower-install
+
+        sudo npm install bower bower-install -g
+
+5. Get all css/js dependencies
+
+        bower-install --remove
+
 4. Run the webserver:
 
         bin/pserve development.ini
@@ -63,7 +71,7 @@ Usage
 =====
 
 View the client interface using
-  
+
     http://127.0.0.1:6543
 
 View the admin interface using

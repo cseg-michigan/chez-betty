@@ -1,0 +1,65 @@
+{
+  "name": "chezbetty",
+  "version": "1.2.0",
+  "homepage": "https://github.com/um-cseg/chez-betty",
+  "authors": [
+    "Brad",
+    "Zakir",
+    "Pat",
+    "Eric"
+  ],
+  "description": "Transaction manager for mini food co-op.",
+  "keywords": [
+    "betty"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "latest",
+    "Chart.js": "latest",
+    "bootstrap-sortable": "~1.9.0",
+    "bootstrap-switch": "~3.0.2",
+    "bootstrap": "~3.2.0",
+    "jquery-dateFormat": "~1.0.1",
+    "jquery-ui": "~1.11.0",
+    "keyboard": "~1.18.12",
+    "moment": "~2.7.0",
+    "spin.js": "~2.0.1"
+  },
+  "install": {
+    "path": {
+      "css": "chezbetty/static/css/lib",
+      "js": "chezbetty/static/js/lib",
+      "eot": "chezbetty/static/css/lib/fonts",
+      "svg": "chezbetty/static/css/lib/fonts",
+      "ttf": "chezbetty/static/css/lib/fonts",
+      "woff": "chezbetty/static/css/lib/fonts"
+    },
+    "sources": {
+      "jquery":             ["bower_components/jquery/dist/jquery.min.js"],
+      "jquery-ui":          ["bower_components/jquery-ui/jquery-ui.min.js",
+                             "bower_components/jquery-ui/themes/ui-lightness/jquery-ui.min.css"],
+      "jquery-dateFormat":  ["bower_components/jquery-dateFormat/dist/jquery-dateFormat.min.js"],
+      "bootstrap":          {"mapping": [{"bower_components/bootstrap/dist/js/bootstrap.min.js": "bootstrap.min.js"},
+                                         {"bower_components/bootstrap/dist/css/bootstrap.min.css": "bootstrap.min.css"},
+                                         {"bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.eot": "../glyphicons-halflings-regular.eot"},
+                                         {"bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.svg": "../glyphicons-halflings-regular.svg"},
+                                         {"bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf": "../glyphicons-halflings-regular.ttf"},
+                                         {"bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff": "../glyphicons-halflings-regular.woff"}]},
+      "bootstrap-sortable": ["bower_components/bootstrap-sortable/Scripts/bootstrap-sortable.js",
+                             "bower_components/bootstrap-sortable/Contents/bootstrap-sortable.css"],
+      "bootstrap-switch":   ["bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css",
+                             "bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"],
+      "keyboard":           ["bower_components/keyboard/js/jquery.keyboard.min.js",
+                             "bower_components/keyboard/css/keyboard.css"],
+      "Chart.js":           ["bower_components/Chart.js/Chart.min.js"]
+    },
+    "ignore": ["bower_components/bootstrap/less/bootstrap.less"]
+  }
+}
