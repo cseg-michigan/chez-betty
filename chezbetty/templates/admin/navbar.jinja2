@@ -1,4 +1,4 @@
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<div class="navbar navbar-inverse navbar-fixed-top" {% if request.debug %}style="background-color:#E8192F"{% endif %} role="navigation">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -9,7 +9,7 @@
       </button>
       <a class="navbar-brand" href="#">Chez Betty Admin</a>
       {% if request.debug %}
-      <a class="navbar-brand" href="#"><span class="red">DEBUG MODE</span></a>
+      <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE</span></a>
       {% endif %}
     </div>
     <div class="navbar-collapse collapse">

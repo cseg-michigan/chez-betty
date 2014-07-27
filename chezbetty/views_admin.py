@@ -20,7 +20,8 @@ from .models.user import User
 from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, BTCDeposit
+from .models.transaction import Transaction, Deposit, BTCDeposit, Purchase
+from .models.transaction import Inventory
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -128,6 +129,12 @@ def admin_index(request):
                "mbtc": None,
                "usd": None}
 
+    total_sales          = Purchase.total()
+    profit_on_sales      = PurchaseLineItem.profit_on_sales()
+    total_inventory_lost = Inventory.total()
+    total_cash_deposits  = Deposit.total()
+    total_btc_deposits   = BTCDeposit.total()
+
     sold_by_day         = PurchaseLineItem.quantity_by_period('day')
     virt_revenue_by_day = PurchaseLineItem.virtual_revenue_by_period('day')
     deposits_by_day     = Deposit.deposits_by_period('day')
@@ -149,6 +156,11 @@ def admin_index(request):
                 withdrawal=withdrawal,
                 inventory=inventory,
                 best_selling_items=bsi,
+                total_sales=total_sales,
+                profit_on_sales=profit_on_sales,
+                total_inventory_lost=total_inventory_lost,
+                total_cash_deposits=total_cash_deposits,
+                total_btc_deposits=total_btc_deposits,
                 sold_by_day=sold_by_day,
                 virt_revenue_by_day=virt_revenue_by_day,
                 deposits_by_day=deposits_by_day,
@@ -1321,7 +1333,7 @@ def admin_event_upload(request):
 
     except Exception as e:
         if request.debug: raise(e)
-        request.session.flash('Error', 'error')
+        request.session.flash('Error {}'.format(e), 'error')
         return HTTPFound(location=request.route_url('admin_events'))
 
 

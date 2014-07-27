@@ -136,6 +136,12 @@ class Transaction(Base):
                             .filter(cls.type==trans_type)\
                             .filter(event.Event.deleted==False).one().c
 
+    @classmethod
+    def total(cls):
+        return DBSession.query(func.sum(cls.amount).label('a'))\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).one().a
+
 
 @property
 def __transactions(self):
@@ -179,7 +185,8 @@ class Deposit(Transaction):
     def deposits_by_period(cls, period, start=None, end=None):
         r = DBSession.query(cls.amount.label('summable'), event.Event.timestamp)\
                      .join(event.Event)\
-                     .order_by(event.Event.timestamp)
+                     .order_by(event.Event.timestamp)\
+                     .filter(event.Event.deleted==False)
         if start:
             r = r.filter(event.Event.timestamp>=start)
         if end:
@@ -236,6 +243,11 @@ class Inventory(Transaction):
         chezbetty_v = account.get_virt_account("chezbetty")
         Transaction.__init__(self, event, chezbetty_v, None, None, None, Decimal(0.0))
 
+    @classmethod
+    def total_inventory_lost(cls):
+        return DBSession.query(func.sum(cls.amount).label('inv'))\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).one().inv
 
 class EmptyCashBox(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'emptycashbox'}
@@ -362,6 +374,13 @@ class PurchaseLineItem(SubTransaction):
         if end:
             r = r.filter(event.Event.timestamp<end)
         return utility.group(r.all(), period)
+
+    @classmethod
+    def profit_on_sales(cls):
+        return DBSession.query(func.sum(cls.amount-(cls.wholesale*cls.quantity)).label('p'))\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).one().p
 
 
 @property

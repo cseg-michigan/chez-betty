@@ -3,12 +3,28 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from sqlalchemy import engine_from_config
 
+# Import all models so they get auto created if they don't exist
+from .models import account
+from .models import announcement
+from .models import box
+from .models import box_item
+from .models import box_vendor
+from .models import btcdeposit
+from .models import event
+from .models import item
+from .models import item_vendor
+from .models import receipt
+from .models import request
+from .models import transaction
+from .models import user
+from .models import vendor
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
 
 def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
+    Base.metadata.create_all(engine)
     DBSession.configure(bind=engine)
 
     Base.metadata.bind = engine
