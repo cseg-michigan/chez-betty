@@ -21,6 +21,7 @@ from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
 from .models.transaction import Transaction, Deposit, BTCDeposit, Purchase
+from .models.transaction import Inventory
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -128,10 +129,11 @@ def admin_index(request):
                "mbtc": None,
                "usd": None}
 
-    total_sales         = Purchase.total_sales()
-    profit_on_sales     = PurchaseLineItem.profit_on_sales()
-    total_cash_deposits = Deposit.total_deposits()
-    total_btc_deposits  = BTCDeposit.total_deposits()
+    total_sales          = Purchase.total()
+    profit_on_sales      = PurchaseLineItem.profit_on_sales()
+    total_inventory_lost = Inventory.total()
+    total_cash_deposits  = Deposit.total()
+    total_btc_deposits   = BTCDeposit.total()
 
     sold_by_day         = PurchaseLineItem.quantity_by_period('day')
     virt_revenue_by_day = PurchaseLineItem.virtual_revenue_by_period('day')
@@ -156,6 +158,7 @@ def admin_index(request):
                 best_selling_items=bsi,
                 total_sales=total_sales,
                 profit_on_sales=profit_on_sales,
+                total_inventory_lost=total_inventory_lost,
                 total_cash_deposits=total_cash_deposits,
                 total_btc_deposits=total_btc_deposits,
                 sold_by_day=sold_by_day,
