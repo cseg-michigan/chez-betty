@@ -4,3 +4,4 @@ ALTER TABLE subtransactions ADD COLUMN coupon_amount numeric;
 ALTER TABLE subtransactions ADD COLUMN sales_tax boolean;
 ALTER TABLE subtransactions ADD COLUMN bottle_deposit boolean;
 ALTER TABLE subtransactions ALTER COLUMN item_id DROP NOT NULL;
+UPDATE subtransactions SET coupon_amount = 0.0;
