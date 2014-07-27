@@ -168,6 +168,11 @@ class Purchase(Transaction):
         chezbetty_v = account.get_virt_account("chezbetty")
         Transaction.__init__(self, event, user, chezbetty_v, None, None, Decimal(0.0))
 
+    @classmethod
+    def total_sales(cls):
+        return DBSession.query(func.sum(cls.amount).label('sales'))\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).one().sales
 
 class Deposit(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'deposit'}
@@ -179,12 +184,19 @@ class Deposit(Transaction):
     def deposits_by_period(cls, period, start=None, end=None):
         r = DBSession.query(cls.amount.label('summable'), event.Event.timestamp)\
                      .join(event.Event)\
-                     .order_by(event.Event.timestamp)
+                     .order_by(event.Event.timestamp)\
+                     .filter(event.Event.deleted==False)
         if start:
             r = r.filter(event.Event.timestamp>=start)
         if end:
             r = r.filter(event.Event.timestamp<end)
         return utility.group(r.all(), period)
+
+    @classmethod
+    def total_deposits(cls):
+        return DBSession.query(func.sum(cls.amount).label('deposits'))\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).one().deposits
 
 
 class BTCDeposit(Deposit):
@@ -212,6 +224,12 @@ class BTCDeposit(Deposit):
         return DBSession.query(cls).join(event.Event)\
                         .filter(cls.address == address)\
                         .filter(event.Event.deleted == False).one()
+
+    @classmethod
+    def total_deposits(cls):
+        return DBSession.query(func.sum(cls.amount).label('deposits'))\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).one().deposits
 
 
 class Adjustment(Transaction):
@@ -362,6 +380,13 @@ class PurchaseLineItem(SubTransaction):
         if end:
             r = r.filter(event.Event.timestamp<end)
         return utility.group(r.all(), period)
+
+    @classmethod
+    def profit_on_sales(cls):
+        return DBSession.query(func.sum(cls.amount-(cls.wholesale*cls.quantity)).label('p'))\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).one().p
 
 
 @property
