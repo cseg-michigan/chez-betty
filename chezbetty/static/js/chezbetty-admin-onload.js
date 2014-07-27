@@ -145,6 +145,11 @@ $("#edit-items").on("input", "input:text",  function () {
 	$("#item-markup-"+id).attr("data-value", markup);
 });
 
+$("#restock-table tbody tr").each(function () {
+	var row_id = $(this).attr("id").split("-")[1];
+	restock_update_line_total(row_id);
+});
+
 $(".restock-manual").on("click", function () {
 	var type = $(this).attr("id").split("-")[2];
 	add_item($("#restock-manual-"+type+"-select").val());
