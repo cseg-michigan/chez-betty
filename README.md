@@ -46,11 +46,11 @@ development environment set up, do the following:
 
 4. Install bower and bower-install
 
-        sudo npm install bower bower-install -g
+        sudo npm install bower bower-installer -g
 
 5. Get all css/js dependencies
 
-        bower-install --remove
+        bower-installer
 
 4. Run the webserver:
 
