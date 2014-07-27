@@ -193,6 +193,13 @@ class Deposit(Transaction):
             r = r.filter(event.Event.timestamp<end)
         return utility.group(r.all(), period)
 
+    @classmethod
+    def total(cls):
+        return DBSession.query(func.sum(cls.amount).label('a'))\
+                        .join(event.Event)\
+                        .filter(cls.type=='deposit')\
+                        .filter(event.Event.deleted==False).one().a
+
 
 class BTCDeposit(Deposit):
     __mapper_args__ = {'polymorphic_identity': 'btcdeposit'}
@@ -219,6 +226,13 @@ class BTCDeposit(Deposit):
         return DBSession.query(cls).join(event.Event)\
                         .filter(cls.address == address)\
                         .filter(event.Event.deleted == False).one()
+
+    @classmethod
+    def total(cls):
+        return DBSession.query(func.sum(cls.amount).label('a'))\
+                        .join(event.Event)\
+                        .filter(cls.type=='btcdeposit')\
+                        .filter(event.Event.deleted==False).one().a
 
 
 class Adjustment(Transaction):
