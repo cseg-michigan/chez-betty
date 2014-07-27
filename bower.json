@@ -30,7 +30,8 @@
     "jquery-ui": "~1.11.0",
     "keyboard": "~1.18.12",
     "moment": "~2.7.0",
-    "spin.js": "~2.0.1"
+    "spin.js": "~2.0.1",
+    "barcoder": "https://github.com/bradjc/node-barcoder.git#1.2.0"
   },
   "install": {
     "path": {
@@ -58,7 +59,8 @@
                              "bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"],
       "keyboard":           ["bower_components/keyboard/js/jquery.keyboard.min.js",
                              "bower_components/keyboard/css/keyboard.css"],
-      "Chart.js":           ["bower_components/Chart.js/Chart.min.js"]
+      "Chart.js":           ["bower_components/Chart.js/Chart.min.js"],
+      "barcoder":           ["bower_components/barcoder/lib/barcoder.js"]
     },
     "ignore": ["bower_components/bootstrap/less/bootstrap.less"]
   }

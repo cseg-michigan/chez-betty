@@ -113,6 +113,15 @@ $("#btn-items-add-row").click(function () {
 	attach_keypad();
 });
 
+$(".barcode-check").on("input", function () {
+	var validator = new Barcoder();
+	if (validator.validate($(this).val()).isValid) {
+		$(this).css("backgroundColor", "#98FB98");
+	} else {
+		$(this).css("backgroundColor", "#FF9999");
+	}
+});
+
 $("#select-user").change(function () {
 	user_id = $("#select-user option:selected").val();
 	console.log(user_id);
