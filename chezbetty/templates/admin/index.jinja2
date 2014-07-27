@@ -101,10 +101,6 @@
               <td>Inventory (Price)</td>
               <td class="right">{{ inventory.price|format_currency|safe }}</td>
             </tr>
-            <tr>
-              <td>Proj. Profit</td>
-              <td class="right">{{ ((inventory.price - users_balance.total_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
-            </tr>
 
           </tbody>
         </table>
@@ -184,6 +180,10 @@
             <tr>
               <td>Total BTC Deposits</td>
               <td class="right">{{ total_btc_deposits|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Projected Profit</td>
+              <td class="right">{{ ((inventory.price - users_balance.total_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
             </tr>
           </tbody>
         </table>
