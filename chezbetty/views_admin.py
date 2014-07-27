@@ -1321,7 +1321,7 @@ def admin_event_upload(request):
 
     except Exception as e:
         if request.debug: raise(e)
-        request.session.flash('Error', 'error')
+        request.session.flash('Error {}'.format(e), 'error')
         return HTTPFound(location=request.route_url('admin_events'))
 
 
