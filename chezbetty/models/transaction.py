@@ -140,7 +140,7 @@ class Transaction(Base):
     def total(cls):
         return DBSession.query(func.sum(cls.amount).label('a'))\
                         .join(event.Event)\
-                        .filter(event.Event.deleted==False).one().a
+                        .filter(event.Event.deleted==False).one().a or 0.0
 
 
 @property
@@ -198,7 +198,7 @@ class Deposit(Transaction):
         return DBSession.query(func.sum(cls.amount).label('a'))\
                         .join(event.Event)\
                         .filter(cls.type=='deposit')\
-                        .filter(event.Event.deleted==False).one().a
+                        .filter(event.Event.deleted==False).one().a or 0.0
 
 
 class BTCDeposit(Deposit):
@@ -232,7 +232,7 @@ class BTCDeposit(Deposit):
         return DBSession.query(func.sum(cls.amount).label('a'))\
                         .join(event.Event)\
                         .filter(cls.type=='btcdeposit')\
-                        .filter(event.Event.deleted==False).one().a
+                        .filter(event.Event.deleted==False).one().a or 0.0
 
 
 class Adjustment(Transaction):
@@ -257,11 +257,6 @@ class Inventory(Transaction):
         chezbetty_v = account.get_virt_account("chezbetty")
         Transaction.__init__(self, event, chezbetty_v, None, None, None, Decimal(0.0))
 
-    @classmethod
-    def total_inventory_lost(cls):
-        return DBSession.query(func.sum(cls.amount).label('inv'))\
-                        .join(event.Event)\
-                        .filter(event.Event.deleted==False).one().inv
 
 class EmptyCashBox(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'emptycashbox'}
