@@ -40,7 +40,8 @@ class Event(Base):
     @classmethod
     def all(cls):
         return DBSession.query(cls)\
-                        .filter(cls.deleted == False).all()
+                        .filter(cls.deleted == False)\
+                        .order_by(cls.id).all()
 
     @classmethod
     def some(cls, count):
