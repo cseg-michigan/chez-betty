@@ -56,6 +56,27 @@ Betty stops selling something you would like back, feel free to
             </tbody>
 
           </table>
+
+          <h4>Discontinued Items:</h4>
+
+          <table class="table table-bordered table-striped sortable">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="width: 15%"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+            {% for item in disabled_items %}
+              <tr>
+                <td class="item-name">{{ item.name }}</td>
+                <td><a href="/item/request/by_id/{{ item.id }}" class="btn btn-default">Request Return</a></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+
+          </table>
         </div>
       </div>
     </div>
