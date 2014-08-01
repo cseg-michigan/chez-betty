@@ -389,7 +389,7 @@ class PurchaseLineItem(SubTransaction):
         return DBSession.query(func.sum(cls.amount-(cls.wholesale*cls.quantity)).label('p'))\
                         .join(Transaction)\
                         .join(event.Event)\
-                        .filter(event.Event.deleted==False).one().p
+                        .filter(event.Event.deleted==False).one().p or 0.0
 
 
 @property
