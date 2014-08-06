@@ -841,18 +841,17 @@ def admin_boxes_edit_submit(request):
 def admin_box_edit(request):
     try:
         box = Box.from_id(request.matchdict['box_id'])
-        items = Item.all()
+        items = Item.all_force()
 
         # Don't display items that already have an item number in the add
         # new item section
         used_items = []
-        #if hasattr(box, 'items'):
         for boxitem in box.items:
             if boxitem.enabled:
                 used_items.append(boxitem.item_id)
         new_items = []
         for item in items:
-            if item.id not in used_items and item.enabled:
+            if item.id not in used_items:
                 new_items.append(item)
 
         vendors = Vendor.all()
