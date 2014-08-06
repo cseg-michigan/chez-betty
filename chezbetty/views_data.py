@@ -63,7 +63,8 @@ def get_start(days):
         delta = datetime.timedelta(days=days)
         return now - delta
     else:
-        return datetime.date.min
+        # Offset the min by one day so timezone offsets are not an issue
+        return datetime.date.min + datetime.timedelta(days=1)
 
 def get_end():
     return datetime.date.today() + datetime.timedelta(days=1)
@@ -224,7 +225,6 @@ def create_json(request, metric, period):
 
 
 def create_dict(metric, period, num_days):
-    print(period)
     if 'each' in period:
         x,y = admin_data_each(num_days, metric, period)
     else:

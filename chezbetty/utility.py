@@ -53,11 +53,11 @@ def group(rows, period='day'):
         # If we are grouping in a very finite set of bins (like days of the
         # week), then use a hash map instead of a list as a return
         sums = {}
-        for (item_period, items) in itertools.groupby(rows, group_function):
-            total = 0
-            for item in items:
-                total += item.summable
-            sums[item_period] = total
+        for row in rows:
+            item_period = group_function(row)
+            if item_period not in sums:
+                sums[item_period] = 0
+            sums[item_period] += row.summable
 
     else:
         # If we are grouping in a long list of things (days over some range)
