@@ -404,7 +404,14 @@ def admin_cash_reconcile_success(request):
              permission='manage')
 def admin_inventory(request):
     items = DBSession.query(Item).order_by(Item.name).all()
-    return {'items': items}
+
+    undone_inventory = {}
+    if len(request.GET) != 0:
+        undone_inventory
+        for item_id,quantity_counted in request.GET.items():
+            undone_inventory[int(item_id)] = int(quantity_counted)
+
+    return {'items': items, 'undone_inventory': undone_inventory}
 
 
 @view_config(route_name='admin_inventory_submit',
@@ -1369,7 +1376,7 @@ def admin_event_undo(request):
 
         for transaction in event.transactions:
             # Make sure transaction is a deposit (no user check since admin doing)
-            if transaction.type not in ('deposit', 'purchase', 'restock'):
+            if transaction.type not in ('deposit', 'purchase', 'restock', 'inventory'):
                 request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
                 return HTTPFound(location=request.route_url('admin_events'))
 
@@ -1379,6 +1386,8 @@ def admin_event_undo(request):
 
         if event.type == 'restock':
             return HTTPFound(location=request.route_url('admin_restock', _query=line_items))
+        elif event.type == 'inventory':
+            return HTTPFound(location=request.route_url('admin_inventory', _query=line_items))
         else:
             return HTTPFound(location=request.route_url('admin_events'))
 
