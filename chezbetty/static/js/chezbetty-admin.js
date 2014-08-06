@@ -114,13 +114,19 @@ function restock_update_line_total (row_id) {
 
 // Function to add up the items in a cart to display the total.
 function calculate_total () {
-	total = 0.0;
-	$(".restock-total").each(function (index) {
-		var price = parseFloatZero($(this).val());
+	var total = 0.0;
+	var coupon_total = 0.0;
+
+	$(".restock").each(function (index) {
+		var price = parseFloatZero($(this).find(".restock-total").val());
 		total += price;
+		var coupon_price = parseFloatZero($(this).find(".restock-coupon").val());
+		var quantity = parseIntZero($(this).find(".restock-quantity").val());
+		coupon_total += (coupon_price * quantity);
 	});
 
 	$("#restock-total").html(format_price(total));
+	$("#restock-coupon-total").html(format_price(coupon_total));
 }
 
 function update_new_balance () {
