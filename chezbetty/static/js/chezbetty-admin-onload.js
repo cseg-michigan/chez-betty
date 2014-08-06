@@ -9,14 +9,24 @@ $(".date").each(function (index) {
 $(".admin-switch").bootstrapSwitch();
 $(".admin-switch").on('switchChange.bootstrapSwitch', function (event, state) {
 	var type = $(this).attr("id").split("-")[1];
+	if ($(this).hasClass('require-refresh')) {
+		success_fn = toggle_state_success_and_refresh;
+	} else {
+		success_fn = toggle_state_success;
+	}
 	$.ajax({
 		url: "/admin/" + type + "/" + state,
-		success: toggle_state_success,
+		success: success_fn,
 		error: toggle_state_fail
 	});
 });
 
 function toggle_state_success (data) {
+}
+
+function toggle_state_success_and_refresh (data) {
+	toggle_state_success(data);
+	location.reload();
 }
 
 function toggle_state_fail (data) {

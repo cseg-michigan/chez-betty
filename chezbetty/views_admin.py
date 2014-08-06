@@ -179,8 +179,7 @@ def admin_demo(request):
     return request.response
 
 
-@view_config(route_name='admin_keyboard',
-             permission='manage')
+@view_config(route_name='admin_keyboard')
 def admin_keyboard(request):
     if request.matchdict['state'].lower() == 'true':
         request.response.set_cookie('keyboard', '1')
