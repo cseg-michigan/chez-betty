@@ -348,6 +348,9 @@ def admin_restock_submit(request):
 
     # Iterate the grouped items, update prices and wholesales, and then restock
     for item,quantity,total in items_for_pricing:
+        if quantity == 0:
+            request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
+            continue
         item.wholesale = Decimal(round(total/quantity, 4))
         # Make sure we aren't selling at a loss cause that would be dumb
         if item.price < item.wholesale:
@@ -895,10 +898,10 @@ def admin_box_edit_submit(request):
 
                 for boxitem in box.items:
                     # Update the BoxItem record.
-                    # If the item quantity blank, set the record to disabled
-                    # and do not update the quantity.
+                    # If the item quantity is zero or blank, set the record to
+                    # disabled and do not update the quantity.
                     if boxitem.item_id == item_id and boxitem.enabled:
-                        if quantity == '':
+                        if quantity == '' or int(quantity) == 0:
                             boxitem.enabled = False
                         else:
                             boxitem.quantity = int(quantity)
