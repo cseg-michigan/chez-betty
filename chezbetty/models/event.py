@@ -53,7 +53,8 @@ class Event(Base):
     @classmethod
     def get_deleted(cls):
         return DBSession.query(cls)\
-                        .filter(cls.deleted == True).all()
+                        .filter(cls.deleted == True)\
+                        .order_by(cls.id).all()
 
 class Purchase(Event):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}

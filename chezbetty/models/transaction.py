@@ -348,7 +348,8 @@ class SubTransaction(Base):
                         .join(Transaction)\
                         .join(event.Event)\
                         .filter(cls.item_id == id)\
-                        .filter(event.Event.deleted==False).all()
+                        .filter(event.Event.deleted==False)\
+                        .order_by(cls.id).all()
 
 
 class PurchaseLineItem(SubTransaction):
