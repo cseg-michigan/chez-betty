@@ -108,6 +108,7 @@ def main(global_config, **settings):
     config.add_route('admin_boxes_edit_submit', '/admin/boxes/edit/submit')
     config.add_route('admin_box_edit_submit',   '/admin/box/edit/submit')
     config.add_route('admin_box_edit',          '/admin/box/edit/{box_id}')
+    config.add_route('admin_box_enable',        '/admin/box/enable/{id}/{state}')
 
     config.add_route('admin_vendors_edit',        '/admin/vendors/edit')
     config.add_route('admin_vendors_edit_submit', '/admin/vendors/edit/submit')

@@ -991,6 +991,16 @@ def admin_box_edit_submit(request):
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
 
 
+@view_config(route_name='admin_box_enable', permission='admin')
+def admin_box_enable(request):
+    box = Box.from_id(int(request.matchdict['id']))
+    if request.matchdict['state'].lower() == 'true':
+        box.enabled = True
+    else:
+        box.enabled = False
+    return request.response
+
+
 @view_config(route_name='admin_vendors_edit',
              renderer='templates/admin/vendors_edit.jinja2',
              permission='manage')
