@@ -54,6 +54,8 @@ function add_item_success (data) {
 		alert_error("That product is not currently for sale.");
 	} else if (data.status == "unknown_barcode") {
 		alert_error("Could not find that item.");
+	} else if (data.status == "scanned_box_with_multiple_items") {
+		alert_error("Cannot add that entire box to your order. Please scan an individual item.");
 	} else {
 
 		// First, if this is the first item hide the empty order row

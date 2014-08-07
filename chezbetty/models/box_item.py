@@ -35,3 +35,10 @@ def __subitem_quantity(self):
             .filter(BoxItem.box_id==self.id)\
             .filter(BoxItem.enabled).one().c
 box.Box.subitem_count = __subitem_quantity
+
+@property
+def __subitem_count(self):
+    return object_session(self).query(func.count(BoxItem.id).label('c'))\
+            .filter(BoxItem.box_id==self.id)\
+            .filter(BoxItem.enabled).one().c
+box.Box.subitem_number = __subitem_count

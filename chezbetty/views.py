@@ -15,6 +15,7 @@ from .models.model import *
 from .models import user as __user
 from .models.user import User
 from .models.item import Item
+from .models.box import Box
 from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -264,7 +265,20 @@ def item(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])
     except:
-        return {'status': 'unknown_barcode'}
+        # Could not find the item. Check to see if the user scanned a box
+        # instead. This could lead to two cases: a) the box only has 1 item in it
+        # in which case we just add that item to the cart. This likely occurred
+        # because the individual items do not have barcodes so we just use
+        # the box. b) The box has multiple items in it in which case we throw
+        # an error for now.
+        try:
+            box = Box.from_barcode(request.matchdict['barcode'])
+            if box.subitem_number == 1:
+                item = box.items[0].item
+            else:
+                return {'status': 'scanned_box_with_multiple_items'}
+        except:
+            return {'status': 'unknown_barcode'}
     if item.enabled:
         status = 'success'
     else:
