@@ -25,15 +25,15 @@
         <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
         <th {% if sort=="balance" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
         <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
-        <th>Actions</th>
+        <th>Enabled</th>
       </tr>
     </thead>
 
     <tbody>
       {% for user in users %}
-      <tr id="user-{{ user.id }}" class="edit-user-row">
+      <tr id="user-{{ user.id }}" class="edit-user-row {% if user.enabled == False %} disabled-row {% endif %}">
         <td><a href="/user/{{ user.umid }}"><span class="glyphicon glyphicon-user"></span></a></td>
-        <td data-value="{{ user.name }}"><input type="text" class="form-control" id="user-name-{{ user.id }}" name="user-name-{{ user.id }}" value="{{ user.name }}" {% if user.enabled == False %}disabled="disabled"{% endif %}></td>
+        <td data-value="{{ user.name }}"><input type="text" class="form-control" id="user-name-{{ user.id }}" name="user-name-{{ user.id }}" value="{{ user.name }}"></td>
         <td>{{ user.uniqname }}</td>
         <td>{{ user.umid }}</td>
         <td data-value="{{ user.role }}">
@@ -45,11 +45,9 @@
         </td>
         <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
         <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>
-        <td class=" user-actions">
-          <button type="button" id="btn-disable-user-{{ user.id }}" class="btn btn-danger" {% if user.enabled == False %}style="display:none;"{% endif %}>X</button>
-          <button type="button" id="btn-enable-user-{{ user.id }}" class="btn btn-success" {% if user.enabled == True %}style="display:none;"{% endif %}>+</button>
+        <td>
+          <input type="checkbox" id="admin-user-enable-{{ user.id }}" class="admin-switch toggle-disabled" {% if user.enabled == True %}checked="checked"{% endif %}>
         </td>
-        <input type="hidden" class="form-control" id="user-enabled-{{ user.id }}" name="user-enabled-{{ user.id }}" value="{{ user.enabled|int }}">
       </tr>
       {% endfor %}
     </tbody>

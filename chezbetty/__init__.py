@@ -124,6 +124,7 @@ def main(global_config, **settings):
     config.add_route('admin_users_email_all',          '/admin/users/email/all')
     config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
+    config.add_route('admin_user_enable',              '/admin/user/enable/{id}/{state}')
 
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',  '/admin/cash/reconcile/submit')

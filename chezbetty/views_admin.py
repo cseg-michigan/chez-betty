@@ -1121,6 +1121,16 @@ def admin_user_balance_edit_submit(request):
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
 
+@view_config(route_name='admin_user_enable', permission='admin')
+def admin_user_enable(request):
+    user = User.from_id(int(request.matchdict['id']))
+    if request.matchdict['state'].lower() == 'true':
+        user.enabled = True
+    else:
+        user.enabled = False
+    return request.response
+
+
 @view_config(route_name='admin_users_email',
              renderer='templates/admin/users_email.jinja2',
              permission='admin')
