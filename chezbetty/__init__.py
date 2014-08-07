@@ -100,7 +100,8 @@ def main(global_config, **settings):
     config.add_route('admin_items_edit_submit', '/admin/items/edit/submit')
     config.add_route('admin_item_edit_submit',  '/admin/item/edit/submit')
     config.add_route('admin_item_edit',         '/admin/item/edit/{item_id}')
-    config.add_route('admin_item_barcode_pdf', '/admin/item/barcode/{item_id}.pdf')
+    config.add_route('admin_item_barcode_pdf',  '/admin/item/barcode/{item_id}.pdf')
+    config.add_route('admin_item_enable',       '/admin/item/enable/{id}/{state}')
 
     config.add_route('admin_boxes_add',         '/admin/boxes/add')
     config.add_route('admin_boxes_add_submit',  '/admin/boxes/add/submit')

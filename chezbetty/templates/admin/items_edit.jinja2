@@ -27,7 +27,7 @@
           <th {% if sort=="markup" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Markup</th>
           <th {% if sort=="stock" %}data-defaultsort="{{ dir }}"{% endif %}>Stock</th>
           <th {% if sort=="sold" %}data-defaultsort="{{ dir }}"{% endif %}>Num Sold</th>
-          <th>Actions</th>
+          <th>Enabled</th>
         </tr>
       </thead>
 
@@ -55,20 +55,18 @@
           {% set markup = (((item.price / item.wholesale)|float - 1.0) * 100.0)|round(2) %}
         {% endif %}
 
-        <tr id="item-{{ item.id }}" class="edit-item-row">
+        <tr id="item-{{ item.id }}" class="edit-item-row {% if item.enabled == False %} disabled-row {% endif %}">
 
           <td><a href="/admin/item/edit/{{ item.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
           <td>{{ item|admin_item|safe }}</td>
-          <td class="{{ price_class }}" data-value="{{ item.price|round(2) }}"><input type="text" class="form-control numeric" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price|round(2) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
-          <td class="{{ wholesale_class }}" data-value="{{ item.wholesale|round(4) }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}" {% if item.enabled == False %}disabled="disabled"{% endif %}></td>
+          <td class="{{ price_class }}" data-value="{{ item.price|round(2) }}"><input type="text" class="form-control numeric" id="item-price-{{ item.id }}" name="item-price-{{ item.id }}" value="{{ item.price|round(2) }}"></td>
+          <td class="{{ wholesale_class }}" data-value="{{ item.wholesale|round(4) }}"><input type="text" class="form-control numeric" id="item-wholesale-{{ item.id }}" name="item-wholesale-{{ item.id }}" value="{{ item.wholesale|round(4) }}"></td>
           <td id="item-markup-{{ item.id }}" class="item-markup right" data-value="{{ markup }}">{{ markup }}%</td>
           <td>{{ item.in_stock }}</td>
           <td data-value="{{ item.number_sold|int }}">{{ item.number_sold }}</td>
-          <td class="item-actions">
-            <button type="button" id="btn-disable-item-{{ item.id }}" class="btn btn-danger" {% if item.enabled == False %}style="display:none;"{% endif %}>X</button>
-            <button type="button" id="btn-enable-item-{{ item.id }}" class="btn btn-success" {% if item.enabled == True %}style="display:none;"{% endif %}>+</button>
+          <td>
+            <input type="checkbox" id="admin-item-enable-{{ item.id }}" class="admin-switch toggle-disabled" {% if item.enabled == True %}checked="checked"{% endif %}>
           </td>
-          <input type="hidden" class="form-control" id="item-enabled-{{ item.id }}" name="item-enabled-{{ item.id }}" value="{{ item.enabled|int }}">
         </tr>
         {% endfor %}
       </tbody>

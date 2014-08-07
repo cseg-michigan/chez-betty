@@ -740,6 +740,16 @@ def admin_item_barcode_pdf(request):
     return response
 
 
+@view_config(route_name='admin_item_enable', permission='admin')
+def admin_item_enable(request):
+    item = Item.from_id(int(request.matchdict['id']))
+    if request.matchdict['state'].lower() == 'true':
+        item.enabled = True
+    else:
+        item.enabled = False
+    return request.response
+
+
 @view_config(route_name='admin_boxes_add',
              renderer='templates/admin/boxes_add.jinja2',
              permission='manage')
