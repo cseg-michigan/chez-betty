@@ -179,8 +179,7 @@ def admin_demo(request):
     return request.response
 
 
-@view_config(route_name='admin_keyboard',
-             permission='manage')
+@view_config(route_name='admin_keyboard')
 def admin_keyboard(request):
     if request.matchdict['state'].lower() == 'true':
         request.response.set_cookie('keyboard', '1')
@@ -348,6 +347,9 @@ def admin_restock_submit(request):
 
     # Iterate the grouped items, update prices and wholesales, and then restock
     for item,quantity,total in items_for_pricing:
+        if quantity == 0:
+            request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
+            continue
         item.wholesale = Decimal(round(total/quantity, 4))
         # Make sure we aren't selling at a loss cause that would be dumb
         if item.price < item.wholesale:
@@ -431,7 +433,14 @@ def admin_btc_reconcile_post(request):
              permission='manage')
 def admin_inventory(request):
     items = DBSession.query(Item).order_by(Item.name).all()
-    return {'items': items}
+
+    undone_inventory = {}
+    if len(request.GET) != 0:
+        undone_inventory
+        for item_id,quantity_counted in request.GET.items():
+            undone_inventory[int(item_id)] = int(quantity_counted)
+
+    return {'items': items, 'undone_inventory': undone_inventory}
 
 
 @view_config(route_name='admin_inventory_submit',
@@ -861,18 +870,17 @@ def admin_boxes_edit_submit(request):
 def admin_box_edit(request):
     try:
         box = Box.from_id(request.matchdict['box_id'])
-        items = Item.all()
+        items = Item.all_force()
 
         # Don't display items that already have an item number in the add
         # new item section
         used_items = []
-        #if hasattr(box, 'items'):
         for boxitem in box.items:
             if boxitem.enabled:
                 used_items.append(boxitem.item_id)
         new_items = []
         for item in items:
-            if item.id not in used_items and item.enabled:
+            if item.id not in used_items:
                 new_items.append(item)
 
         vendors = Vendor.all()
@@ -916,10 +924,10 @@ def admin_box_edit_submit(request):
 
                 for boxitem in box.items:
                     # Update the BoxItem record.
-                    # If the item quantity blank, set the record to disabled
-                    # and do not update the quantity.
+                    # If the item quantity is zero or blank, set the record to
+                    # disabled and do not update the quantity.
                     if boxitem.item_id == item_id and boxitem.enabled:
-                        if quantity == '':
+                        if quantity == '' or int(quantity) == 0:
                             boxitem.enabled = False
                         else:
                             boxitem.quantity = int(quantity)
@@ -1412,7 +1420,7 @@ def admin_event_undo(request):
 
         for transaction in event.transactions:
             # Make sure transaction is a deposit (no user check since admin doing)
-            if transaction.type not in ('deposit', 'purchase', 'restock'):
+            if transaction.type not in ('deposit', 'purchase', 'restock', 'inventory'):
                 request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
                 return HTTPFound(location=request.route_url('admin_events'))
 
@@ -1422,6 +1430,8 @@ def admin_event_undo(request):
 
         if event.type == 'restock':
             return HTTPFound(location=request.route_url('admin_restock', _query=line_items))
+        elif event.type == 'inventory':
+            return HTTPFound(location=request.route_url('admin_inventory', _query=line_items))
         else:
             return HTTPFound(location=request.route_url('admin_events'))
 

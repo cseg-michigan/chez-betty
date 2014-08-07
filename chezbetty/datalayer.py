@@ -8,7 +8,8 @@ from .models.item import Item
 from .models.box import Box
 
 def can_undo_event(e):
-    if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock':
+    if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
+       and e.type != 'inventory':
         return False
     if e.deleted:
         return False
@@ -56,6 +57,12 @@ def undo_event(e, user):
                         item = Item.from_id(ss.item_id)
                         item.in_stock -= ss.quantity
 
+        elif t.type == 'inventory':
+            # Change the stock of all the items by reversing the inventory count
+            for s in t.subtransactions:
+                quantity_diff = s.quantity - s.quantity_counted
+                s.item.in_stock += quantity_diff
+                line_items[s.item_id] = s.quantity_counted
 
     # Just need to delete the event. All transactions will understand they
     # were deleted as well.

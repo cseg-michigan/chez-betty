@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "jquery": "latest",
-    "Chart.js": "latest",
+    "Chart.js": "1.0.1-beta.3",
     "bootstrap-sortable": "~1.9.0",
     "bootstrap-switch": "~3.0.2",
     "bootstrap": "~3.2.0",

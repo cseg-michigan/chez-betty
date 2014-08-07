@@ -12,7 +12,11 @@ class BoxItem(Base):
 
     enabled     = Column(Boolean, default=True, nullable=False)
 
-    box         = relationship(box.Box, foreign_keys=[box_id,], backref="items")
+    box         = relationship(
+            box.Box,
+            primaryjoin="and_(BoxItem.box_id==Box.id, BoxItem.enabled==True)",
+            backref="items"
+            )
     item        = relationship(item.Item, foreign_keys=[item_id,], backref="boxes")
 
     def __init__(self, box, item, quantity, enabled=True):

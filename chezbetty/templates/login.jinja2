@@ -69,8 +69,13 @@ body {
 <p><a class="btn btn-default btn-lg" href="/">Home</a></p>
 
 
-  <p>If you are logging out on Chez Betty, you must login as the service account
-  so that the terminal is functional.</p>
+  <h4>If you are logging out on Chez Betty, you must login as the service account
+  so that the terminal is functional.</h4>
+
+  <div class="well">
+    <h4>Screen Keyboard</h4>
+    <input type="checkbox" id="admin-keyboard" class="admin-switch require-refresh" {% if keyboard %}checked="checked"{% endif %}></input>
+  </div>
 
   <form class="form-signin" role="form" method="post" action="/login">
     <input type="hidden" name="came_from" value="{{ came_from }}"/>
