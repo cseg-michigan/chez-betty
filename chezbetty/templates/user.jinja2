@@ -29,7 +29,7 @@
          #}
         {% if transaction.type == "purchase" %}
 
-        Purchase totaling {{ transaction.amount|format_currency|safe }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        Purchase totaling {{ transaction.amount }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
@@ -69,14 +69,14 @@
 
         {% elif transaction.type == "deposit" %}
 
-        Deposit of {{ transaction.amount|format_currency|safe }}
+        Deposit of {{ transaction.amount }}
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
 
         {% elif transaction.type == "adjustment" %}
 
-        Adjustment of {{ transaction.amount|format_currency|safe }} by {{ transaction.event.admin.name }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        Adjustment of {{ transaction.amount }} by {{ transaction.event.admin.name }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
@@ -85,7 +85,7 @@
 
         {% elif transaction.type == "btcdeposit" %}
 
-        BTC Deposit of {{ transaction.amount|format_currency|safe }} ({{ transaction.amount_btc|safe }} BTC) <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        BTC Deposit of {{ transaction.amount }} ({{ transaction.amount_btc|safe }} BTC) <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 

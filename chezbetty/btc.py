@@ -100,5 +100,6 @@ class Bitcoin(object):
     @staticmethod
     # Returns the amount in USD that the bitcoins were exchanged for
     def convert_all():
-        raise NotImplementedError()
+        return Bitcoin.get_balance()*Bitcoin.get_spot_price()*Decimal(0.99)
+        #raise NotImplementedError()
 

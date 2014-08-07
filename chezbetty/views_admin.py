@@ -238,7 +238,7 @@ def admin_restock(request):
             line_id = int(values[1])
             line_values['quantity'] = int(values[2])
             line_values['wholesale'] = float(values[3])
-            line_values['coupon'] = float(values[4])
+            line_values['coupon'] = float(values[4] if values[4] != 'None' else 0)
             line_values['salestax'] = values[5] == 'True'
             line_values['btldeposit'] = values[6] == 'True'
 
@@ -397,6 +397,33 @@ def admin_cash_reconcile_success(request):
     expected = float(request.GET['expected_amount'])
     difference = deposit - expected
     return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
+
+
+def admin_btc_reoncile(request):
+    return {}
+
+def admin_btc_reconcile_post(request):
+    try:
+        if request.POST['amount'] == '':
+            # We just got an empty string (and not 0)
+            request.session.flash('Error: must enter an amount in the  box amount', 'error')
+            return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+        amount = Decimal(request.POST['amount'])
+        expected_amount = datalayer.reconcile_cash(amount, request.user)
+
+        request.session.flash('Cash box recorded successfully', 'success')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
+            _query={'amount':amount, 'expected_amount':expected_amount}))
+
+    except decimal.InvalidOperation:
+        request.session.flash('Error: Bad value for cash box amount', 'error')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+
+
+
+
 
 
 @view_config(route_name='admin_inventory',
@@ -1199,6 +1226,12 @@ def admin_btc_reconcile(request):
                "usd": 0.0}
     btcbox = CashAccount.from_name("btcbox")
 
+    try:
+        request.GET.getone("verbose")
+        verbose = True
+    except KeyError:
+        verbose = False
+
     deposits = DBSession.query(BTCDeposit).order_by(desc(BTCDeposit.id)).all()
     cur_height = Bitcoin.get_block_height()
 
@@ -1206,15 +1239,19 @@ def admin_btc_reconcile(request):
     txhashes = {}
     for d in deposits:
         txhash = d.btctransaction
-        btc_tx = Bitcoin.get_tx_by_hash(txhash)
-        confirmations = (cur_height - btc_tx["block_height"] + 1) if "block_height" in btc_tx else 0
+        if (verbose):
+            btc_tx = Bitcoin.get_tx_by_hash(txhash)
+            confirmations = (cur_height - btc_tx["block_height"] + 1) if "block_height" in btc_tx else 0
 
-        true_amount = Decimal(0) # satoshis
-        for output in btc_tx['out']:
-            if output['addr'] == d.address and output['type'] == 0:
-                true_amount += Decimal(output['value'])
+            true_amount = Decimal(0) # satoshis
+            for output in btc_tx['out']:
+                if output['addr'] == d.address and output['type'] == 0:
+                    true_amount += Decimal(output['value'])
 
-        true_amount /= 100000000  # bitcoins
+            true_amount /= 100000000  # bitcoins
+        else:
+            true_amount = d.amount_btc
+            confirmations = '-'
 
         txhashes[txhash] = True
 
@@ -1230,6 +1267,10 @@ def admin_btc_reconcile(request):
     addrs = []
     for pend in pending:
         addrs.append(pend.address)
+
+
+    if not(verbose):
+        return {'btc': btc, 'btcbox': btcbox, 'deposits': deposits, 'transactions': transactions, 'missed' : missed_deposits}
 
     res = Bitcoin.get_tx_from_addrs('|'.join(addrs))
     if 'txs' in res:
@@ -1275,12 +1316,14 @@ def admin_btc_reconcile(request):
              request_method='POST',
              permission='admin')
 def admin_btc_reconcile_submit(request):
-    try:
-        bitcoin_usd = Bitcoin.convert_all()
-        datalayer.reconcile_bitcoins(bitcoin_usd, request.user)
-        request.session.flash('Converted Bitcoins to USD', 'success')
-    except:
-        request.session.flash('Error converting bitcoins', 'error')
+    #try:
+    bitcoin_amount = Bitcoin.get_balance()
+    bitcoin_usd = Bitcoin.convert_all()
+    datalayer.reconcile_bitcoins(bitcoin_usd, request.user)
+    request.session.flash('Converted %s Bitcoins to %s USD' % (bitcoin_amount, bitcoin_usd), 'success')
+    #except Exception as e:
+    #    print(e)
+        #request.session.flash('Error converting bitcoins', 'error')
 
     return HTTPFound(location=request.route_url('admin_index'))
 
