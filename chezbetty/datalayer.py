@@ -256,7 +256,7 @@ def reconcile_cash(amount, admin):
 
 
 # Call this when bitcoins are converted to USD
-def reconcile_bitcoins(amount, admin):
+def reconcile_bitcoins(amount, admin, expected_amount=None):
     assert(amount>0)
 
     e = event.EmptyBitcoin(admin)
@@ -264,7 +264,8 @@ def reconcile_bitcoins(amount, admin):
     DBSession.flush()
 
     btcbox_c = account.get_cash_account("btcbox")
-    expected_amount = btcbox_c.balance
+    if expected_amount == None:
+        expected_amount = btcbox_c.balance
     amount_missing = expected_amount - amount
 
     if amount_missing != 0.0:

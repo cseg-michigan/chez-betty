@@ -98,6 +98,16 @@ class Bitcoin(object):
         return Bitcoin.noauth_req("https://blockchain.info/multiaddr?active=%s" % addrs )
 
     @staticmethod
+    def convert(amount):
+        obj = Bitcoin.req("https://coinbase.com/api/v1/sells",
+                          '{"qty": %s}' % (amount))
+
+        if not(obj['success']):
+            raise BTCException("failure on BTC convert (%s)" % obj['errors'])
+
+        return Decimal(obj['transfer']['total']['amount'])
+
+    @staticmethod
     # Returns the amount in USD that the bitcoins were exchanged for
     def convert_all():
         return Bitcoin.get_balance()*Bitcoin.get_spot_price()*Decimal(0.99)

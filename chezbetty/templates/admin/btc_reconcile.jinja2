@@ -30,7 +30,11 @@
               <td>{{ btcbox.balance|format_currency|safe }}</td>
             </tr>
             <tr>
-                <td><button type="submit" class="btn btn-success">Convert Bitcoins</button></td>
+                <td><input type="text" name="amount_btc" value="{{ btc.btc }}" size="12"/> BTC</td>
+            </tr>
+            <tr>
+                <td><input type="text" name="amount_usd" size="12"> USD</td>
+                <td><button type="submit" class="btn btn-success">Record Bitcoin sale</button></td>
             </tr>
           </table>
         </form>

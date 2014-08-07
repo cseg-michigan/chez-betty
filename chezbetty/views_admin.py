@@ -48,6 +48,7 @@ from reportlab.pdfgen import canvas
 
 import uuid
 import twitter
+import math
 
 
 ###
@@ -1324,13 +1325,29 @@ def admin_btc_reconcile(request):
              request_method='POST',
              permission='admin')
 def admin_btc_reconcile_submit(request):
-    #try:
-    bitcoin_amount = Bitcoin.get_balance()
-    bitcoin_usd = Bitcoin.convert_all()
-    datalayer.reconcile_bitcoins(bitcoin_usd, request.user)
-    request.session.flash('Converted %s Bitcoins to %s USD' % (bitcoin_amount, bitcoin_usd), 'success')
-    #except Exception as e:
-    #    print(e)
+    try:
+        #bitcoin_amount = Bitcoin.get_balance()
+        btcbox = CashAccount.from_name("btcbox")
+        bitcoin_amount = Decimal(request.POST['amount_btc'])
+        usd_amount = Decimal(request.POST['amount_usd'])
+        bitcoin_available = Bitcoin.get_balance()
+
+        if (bitcoin_available < bitcoin_amount):
+            # Not enough BTC in coinbase
+            request.session.flash('Error: cannot convert %s BTC, only %s BTC in account' % (bitcoin_amount, bitcoin_available), 'error')
+            return HTTPFound(location=request.route_url('admin_btc_reconcile'))
+
+        #bitcoin_usd = Bitcoin.convert(bitcoin_amount)
+
+        # we are taking ((bitcoin_amount)/(bitcoin_available)) of our bitcoins;
+        # we should also expect bitcoin_usd to be that*btcbox.balance
+        expected_usd = Decimal(math.floor(100*((bitcoin_amount*btcbox.balance) / bitcoin_available))/100.0)
+
+        datalayer.reconcile_bitcoins(usd_amount, request.user, expected_amount=expected_usd)
+        request.session.flash('Converted %s Bitcoins to %s USD' % (bitcoin_amount, usd_amount), 'success')
+    except Exception as e:
+        raise e
+        #print(e)
         #request.session.flash('Error converting bitcoins', 'error')
 
     return HTTPFound(location=request.route_url('admin_index'))
