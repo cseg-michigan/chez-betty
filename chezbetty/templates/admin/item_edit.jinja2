@@ -139,6 +139,33 @@
     </div>
   </div>
 
+  <div class="panel panel-default">
+    <div class="panel-heading">Boxes the Item is in</div>
+    <div class="panel-body">
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Box</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for boxitem in item.boxes %}
+        <tr>
+          <td>{{ button.box(boxitem.box.id) }}</td>
+          <td>{{ boxitem.box.name }}</td>
+          <td>{{ boxitem.quantity }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    </div>
+  </div>
+
 
 </form>
 

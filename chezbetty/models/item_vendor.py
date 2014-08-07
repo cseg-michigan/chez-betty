@@ -12,8 +12,16 @@ class ItemVendor(Base):
 
     enabled     = Column(Boolean, default=True, nullable=False)
 
-    vendor      = relationship(vendor.Vendor, foreign_keys=[vendor_id,], backref="items")
-    item        = relationship(item.Item, foreign_keys=[item_id,], backref="vendors")
+    vendor      = relationship(
+                      vendor.Vendor,
+                      primaryjoin="and_(ItemVendor.vendor_id==Vendor.id, ItemVendor.enabled==True)",
+                      backref="items"
+                  )
+    item         = relationship(
+                      item.Item,
+                      primaryjoin="and_(ItemVendor.item_id==Item.id, ItemVendor.enabled==True)",
+                      backref="vendors"
+                  )
 
     def __init__(self, vendor, item, item_number, enabled=True):
         self.vendor_id   = vendor.id

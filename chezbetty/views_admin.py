@@ -607,8 +607,7 @@ def admin_item_edit(request):
         # new vendor item number section
         used_vendors = []
         for vendoritem in item.vendors:
-            if vendoritem.enabled:
-                used_vendors.append(vendoritem.vendor_id)
+            used_vendors.append(vendoritem.vendor_id)
         new_vendors = []
         for vendor in vendors:
             if vendor.id not in used_vendors and vendor.enabled:
@@ -887,8 +886,7 @@ def admin_box_edit(request):
         # new item section
         used_items = []
         for boxitem in box.items:
-            if boxitem.enabled:
-                used_items.append(boxitem.item_id)
+            used_items.append(boxitem.item_id)
         new_items = []
         for item in items:
             if item.id not in used_items:
@@ -899,8 +897,7 @@ def admin_box_edit(request):
         # new vendor item number section
         used_vendors = []
         for vendorbox in box.vendors:
-            if vendorbox.enabled:
-                used_vendors.append(vendorbox.vendor_id)
+            used_vendors.append(vendorbox.vendor_id)
         new_vendors = []
         for vendor in vendors:
             if vendor.id not in used_vendors and vendor.enabled:

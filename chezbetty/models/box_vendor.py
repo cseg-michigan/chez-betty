@@ -12,8 +12,17 @@ class BoxVendor(Base):
 
     enabled     = Column(Boolean, default=True, nullable=False)
 
-    vendor      = relationship(vendor.Vendor, foreign_keys=[vendor_id], backref="boxes")
-    box         = relationship(box.Box, foreign_keys=[box_id], backref="vendors")
+    vendor      = relationship(
+                      vendor.Vendor,
+                      primaryjoin="and_(BoxVendor.vendor_id==Vendor.id, BoxVendor.enabled==True)",
+                      backref="boxes"
+                  )
+    box         = relationship(
+                      box.Box,
+                      primaryjoin="and_(BoxVendor.box_id==Box.id, BoxVendor.enabled==True)",
+                      backref="vendors"
+                  )
+
 
     def __init__(self, vendor, box, item_number, enabled=True):
         self.vendor_id   = vendor.id
