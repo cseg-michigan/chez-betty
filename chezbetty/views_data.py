@@ -231,6 +231,8 @@ def create_dict(metric, period, num_days):
         x,y = admin_data_period(num_days, metric, period)
     return {'x': x,
             'y': y,
+            'avg': sum(y)/len(y),
+            'avg_hack': [sum(y)/len(y)]*len(y),
             'num_days': num_days or 'all'}
 
 

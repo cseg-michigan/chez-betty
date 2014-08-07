@@ -1,4 +1,4 @@
-{% macro create_graph_panel(x, y, title) %}
+{% macro create_graph_panel(x, y, avg_hack, title) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">{{ title }}</h3>
@@ -11,6 +11,9 @@
     labels: {{ x|safe }},
     datasets: [
         {
+          data: {{ avg_hack }},
+        },
+        {
           strokeColor: "rgba(151,187,205,1)",
           pointColor: "rgba(151,187,205,1)",
           pointStrokeColor: "#fff",
@@ -18,6 +21,22 @@
         }
     ]
   };
+  /*
+  Average line hack explained:
+    - Currently this graphing library only draws points+lines and requires all
+      lines to have the same number of points
+    - This makes drawing a second line (commented out below), not work
+    - Instead, we just put a point of the same value at each label
+
+  var avg_line = {
+    labels: ['{{ x[0] }}', '{{ x[-1] }}'],
+    datasets: [
+      {
+        data: [{{ avg }}, {{ avg }}],
+      }
+    ]
+  };
+  */
   var options = {
 
     ///Boolean - Whether grid lines are shown across the chart
@@ -67,7 +86,17 @@
 
   var ctx = document.getElementById("chart-{{ title|replace(" ", "") }}").getContext("2d");
   fitToContainer(document.getElementById("chart-{{ title|replace(" ", "") }}"));
-  var myLineChart = new Chart(ctx).Line(data, options);
+  var myChart = new Chart(ctx)
+  var myLineChart = myChart.Line(data, options);
+  /*
+     More average hack:
+
+     In my dreams, one could call Line multiple times to draw multiple lines.
+     This is not how this works, instead, both lines must be packed into one
+     call to Line()
+
+  var myAvgChart = myChart.Line(avg_line, options);
+  */
 </script>
     </div>
 </div>
