@@ -1332,10 +1332,16 @@ def admin_btc_reconcile_submit(request):
         usd_amount = Decimal(request.POST['amount_usd'])
         bitcoin_available = Bitcoin.get_balance()
 
-        if (bitcoin_available < bitcoin_amount):
+        #if (bitcoin_available < bitcoin_amount):
             # Not enough BTC in coinbase
-            request.session.flash('Error: cannot convert %s BTC, only %s BTC in account' % (bitcoin_amount, bitcoin_available), 'error')
-            return HTTPFound(location=request.route_url('admin_btc_reconcile'))
+            #request.session.flash('Error: cannot convert %s BTC, only %s BTC in account' % (bitcoin_amount, bitcoin_available), 'error')
+            #return HTTPFound(location=request.route_url('admin_btc_reconcile'))
+
+        # HACK: FIXME: what we really want here is the amount of bitcoins available in coinbase _before_ you did the sale
+        # this kind of works, but is racy with users that deposit more. Then the math will just be fucked.
+        # ultimate fix is to just use the coinbase sell api. I FUCKING WISH COINBASE HAD A WAY TO DO DEV ACCOUNTS!!!! WHAT ARE YOU GUYS
+        # EVEN DOING OVER THERE?!?!?!
+        bitcoin_available += bitcoin_amount
 
         #bitcoin_usd = Bitcoin.convert(bitcoin_amount)
 
