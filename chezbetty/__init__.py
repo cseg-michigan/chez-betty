@@ -111,6 +111,7 @@ def main(global_config, **settings):
 
     config.add_route('admin_vendors_edit',        '/admin/vendors/edit')
     config.add_route('admin_vendors_edit_submit', '/admin/vendors/edit/submit')
+    config.add_route('admin_vendor_enable', '/admin/vendor/enable/{id}/{state}')
 
     config.add_route('admin_inventory',        '/admin/inventory')
     config.add_route('admin_inventory_submit', '/admin/inventory/submit')

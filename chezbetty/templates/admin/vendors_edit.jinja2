@@ -18,27 +18,25 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Actions</th>
+          <th>Enable</th>
         </tr>
       </thead>
 
       <tbody>
 
         {% for vendor in vendors %}
-        <tr id="vendor-{{ vendor.id }}" class="edit-vendor-row">
-
-          <td><input type="text" class="form-control" id="vendor-name-{{ vendor.id }}" name="vendor-name-{{ vendor.id }}" value="{{ vendor.name }}" {% if vendor.enabled == False %}disabled="disabled"{% endif %}></td>
-          <td class="vendor-actions">
-            <button type="button" id="btn-disable-vendor-{{ vendor.id }}" class="btn btn-danger" {% if vendor.enabled == False %}style="display:none;"{% endif %}>X</button>
-            <button type="button" id="btn-enable-vendor-{{ vendor.id }}" class="btn btn-success" {% if vendor.enabled == True %}style="display:none;"{% endif %}>+</button>
+        <tr id="vendor-{{ vendor.id }}" class="edit-vendor-row {% if vendor.enabled == False %} disabled-row {% endif %}">
+          <td>
+            <input type="text" class="form-control" id="vendor-enable-{{ vendor.id }}" name="vendor-name-{{ vendor.id }}" value="{{ vendor.name }}">
           </td>
-          <input type="hidden" class="form-control" id="vendor-enabled-{{ vendor.id }}" name="vendor-enabled-{{ vendor.id }}" value="{{ vendor.enabled|int }}">
-
+          <td>
+            <input type="checkbox" id="admin-vendor-enable-{{ vendor.id }}" class="admin-switch toggle-disabled" {% if vendor.enabled == True %}checked="checked"{% endif %}>
+          </td>
         </tr>
         {% endfor %}
-        
+
         <tr>
-          <td><input type="text" class="form-control" id="vendor-name-new" name="vendor-name-new"</td>
+          <td><input type="text" class="form-control" id="vendor-name-new" name="vendor-name-new"></td>
           <td></td>
         </tr>
 

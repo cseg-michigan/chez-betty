@@ -150,6 +150,8 @@ tfoot tr td {
   color: red;
 }
 
-
+.disabled-row {
+	background-color: #eee;
+}
 
 

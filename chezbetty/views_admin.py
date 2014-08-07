@@ -1029,6 +1029,14 @@ def admin_vendors_edit_submit(request):
     request.session.flash('Vendors updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_vendors_edit'))
 
+@view_config(route_name='admin_vendor_enable', permission='admin')
+def admin_vendor_enable(request):
+    vendor = Vendor.from_id(int(request.matchdict['id']))
+    if request.matchdict['state'].lower() == 'true':
+        vendor.enabled = True
+    else:
+        vendor.enabled = False
+    return request.response
 
 @view_config(route_name='admin_users_edit',
              renderer='templates/admin/users_edit.jinja2',
