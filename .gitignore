@@ -12,3 +12,4 @@ include/
 lib/
 local
 sessions/
+bower_components/
