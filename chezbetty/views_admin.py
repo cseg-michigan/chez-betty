@@ -669,6 +669,8 @@ def admin_item_edit_submit(request):
                     val = round(float(request.POST[key]), 2)
                 elif field == 'wholesale':
                     val = round(float(request.POST[key]), 4)
+                elif field == 'barcode':
+                    val = request.POST[key] or None
                 else:
                     val = request.POST[key]
 
