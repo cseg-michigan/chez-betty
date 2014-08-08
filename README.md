@@ -54,7 +54,8 @@ development environment set up, do the following:
 
 4. Run the webserver:
 
-        bin/pserve development.ini
+        pserve development.ini
+        # n.b. pserve will be in your path if your virtualenv is active
 
 
 LDAP
