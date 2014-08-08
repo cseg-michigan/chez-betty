@@ -362,7 +362,7 @@ def admin_restock_submit(request):
 
     try:
         if request.POST['restock-date']:
-            restock_date = datetime.datetime.strptime(request.POST['restock-date'],
+            restock_date = datetime.datetime.strptime(request.POST['restock-date'].strip(),
                 '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
         else:
             restock_date = None
@@ -387,7 +387,7 @@ def admin_cash_reconcile(request):
         permission='manage')
 def admin_cash_reconcile_submit(request):
     try:
-        if request.POST['amount'] == '':
+        if request.POST['amount'].strip() == '':
             # We just got an empty string (and not 0)
             request.session.flash('Error: must enter a cash box amount', 'error')
             return HTTPFound(location=request.route_url('admin_cash_reconcile'))
@@ -418,7 +418,7 @@ def admin_btc_reoncile(request):
 
 def admin_btc_reconcile_post(request):
     try:
-        if request.POST['amount'] == '':
+        if request.POST['amount'].strip() == '':
             # We just got an empty string (and not 0)
             request.session.flash('Error: must enter an amount in the  box amount', 'error')
             return HTTPFound(location=request.route_url('admin_cash_reconcile'))
@@ -508,8 +508,8 @@ def admin_items_add_submit(request):
 
             # Parse out the important fields looking for errors
             try:
-                name = request.POST['item-name-{}'.format(id)]
-                barcode = request.POST['item-barcode-{}'.format(id)]
+                name = request.POST['item-name-{}'.format(id)].strip()
+                barcode = request.POST['item-barcode-{}'.format(id)].strip()
 
                 # Check that name and barcode are not blank. If name is blank
                 # treat this as an empty row and skip. If barcode is blank
@@ -524,12 +524,10 @@ def admin_items_add_submit(request):
                 DBSession.add(item)
                 DBSession.flush()
                 count += 1
-            except:
+            except Exception as e:
+                if request.debug: raise(e)
                 if len(name):
-                    error_items.append({
-                            'name' : request.POST['item-name-{}'.format(id)],
-                            'barcode' : request.POST['item-barcode-{}'.format(id)]
-                            })
+                    error_items.append({'name': name, 'barcode': barcode})
                     request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
                 # Otherwise this was probably a blank row; ignore.
@@ -579,7 +577,7 @@ def admin_items_edit_submit(request):
             elif field == 'wholesale':
                 val = round(float(request.POST[key]), 4)
             else:
-                val = request.POST[key]
+                val = request.POST[key].strip()
 
             setattr(item, field, val)
             DBSession.flush()
@@ -643,7 +641,7 @@ def admin_item_edit_submit(request):
             if fields[1] == 'vendor' and fields[2] == 'id':
                 # Handle the vendor item numbers
                 vendor_id = int(request.POST['item-vendor-id-'+fields[3]])
-                item_num  = request.POST['item-vendor-item_num-'+fields[3]]
+                item_num  = request.POST['item-vendor-item_num-'+fields[3]].strip()
 
                 for vendoritem in item.vendors:
                     # Update the VendorItem record.
@@ -670,9 +668,9 @@ def admin_item_edit_submit(request):
                 elif field == 'wholesale':
                     val = round(float(request.POST[key]), 4)
                 elif field == 'barcode':
-                    val = request.POST[key] or None
+                    val = request.POST[key].strip() or None
                 else:
-                    val = request.POST[key]
+                    val = request.POST[key].strip()
 
                 setattr(item, field, val)
 
@@ -789,8 +787,8 @@ def admin_boxes_add_submit(request):
 
             # Parse out the important fields looking for errors
             try:
-                name = request.POST['item-name-{}'.format(id)]
-                barcode = request.POST['item-barcode-{}'.format(id)]
+                name = request.POST['item-name-{}'.format(id)].strip()
+                barcode = request.POST['item-barcode-{}'.format(id)].strip()
 
                 # Check that name and barcode are not blank. If name is blank
                 # treat this as an empty row and skip. If barcode is blank
@@ -799,9 +797,7 @@ def admin_boxes_add_submit(request):
                     continue
                 if barcode == '':
                     request.session.flash('Error adding item "{}". Barcode cannot be blank.'.format(name), 'error')
-                    error_items.append({
-                        'name': name, 'barcode': ''
-                    })
+                    error_items.append({'name': name, 'barcode': ''})
                     continue
 
                 # Add the item to the DB
@@ -811,10 +807,7 @@ def admin_boxes_add_submit(request):
                 count += 1
             except:
                 if len(name):
-                    error_items.append({
-                            'name' : request.POST['item-name-{}'.format(id)],
-                            'barcode' : request.POST['item-barcode-{}'.format(id)]
-                            })
+                    error_items.append({'name': name, 'barcode': barcode})
                     request.session.flash('Error adding box: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
                 # Otherwise this was probably a blank row; ignore.
@@ -862,7 +855,7 @@ def admin_boxes_edit_submit(request):
             if field == 'wholesale':
                 val = round(float(request.POST[key]), 2)
             else:
-                val = request.POST[key]
+                val = request.POST[key].strip()
 
             setattr(box, field, val)
             DBSession.flush()
@@ -937,7 +930,7 @@ def admin_box_edit_submit(request):
             if fields[1] == 'item' and fields[2] == 'id':
                 # Handle the sub item quantities
                 item_id  = int(request.POST['box-item-id-'+fields[3]])
-                quantity = request.POST['box-item-quantity-'+fields[3]]
+                quantity = request.POST['box-item-quantity-'+fields[3]].strip()
 
                 for boxitem in box.items:
                     # Update the BoxItem record.
@@ -959,7 +952,7 @@ def admin_box_edit_submit(request):
             elif fields[1] == 'vendor' and fields[2] == 'id':
                 # Handle the vendor item numbers
                 vendor_id = int(request.POST['box-vendor-id-'+fields[3]])
-                item_num  = request.POST['box-vendor-item_num-'+fields[3]]
+                item_num  = request.POST['box-vendor-item_num-'+fields[3]].strip()
 
                 for vendorbox in box.vendors:
                     # Update the VendorItem record.
@@ -986,7 +979,7 @@ def admin_box_edit_submit(request):
                 elif field == 'quantity':
                     val = int(request.POST[key])
                 else:
-                    val = request.POST[key]
+                    val = request.POST[key].strip()
 
                 setattr(box, field, val)
 
@@ -1038,7 +1031,7 @@ def admin_vendors_edit_submit(request):
         fields = key.split('-')
         if fields[2] not in vendors:
             vendors[fields[2]] = {}
-        vendors[fields[2]][fields[1]] = request.POST[key]
+        vendors[fields[2]][fields[1]] = request.POST[key].strip()
 
     for vendor_id, vendor_props in vendors.items():
         if vendor_id == 'new':
@@ -1085,7 +1078,7 @@ def admin_users_edit_submit(request):
     for key in request.POST:
         user_id = int(key.split('-')[2])
         field = key.split('-')[1]
-        val = request.POST[key]
+        val = request.POST[key].strip()
 
         user = User.from_id(user_id)
 
@@ -1122,7 +1115,7 @@ def admin_user_balance_edit_submit(request):
     try:
         user = User.from_id(int(request.POST['user']))
         adjustment = Decimal(request.POST['amount'])
-        reason = request.POST['reason']
+        reason = request.POST['reason'].strip()
         datalayer.adjust_user_balance(user, adjustment, reason, request.user)
         request.session.flash('User account updated.', 'success')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
@@ -1602,7 +1595,7 @@ def admin_announcements_edit_submit(request):
         fields = key.split('-')
         if fields[2] not in announcements:
             announcements[fields[2]] = {}
-        announcements[fields[2]][fields[1]] = request.POST[key]
+        announcements[fields[2]][fields[1]] = request.POST[key].strip()
 
     for announcement_id, props in announcements.items():
         if announcement_id == 'new':
