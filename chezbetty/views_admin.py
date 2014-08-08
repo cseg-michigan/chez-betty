@@ -506,11 +506,7 @@ def admin_items_add_submit(request):
                 if name == '':
                     continue
                 if barcode == '':
-                    request.session.flash('Error adding item "{}". Barcode cannot be blank.'.format(name), 'error')
-                    error_items.append({
-                        'name': name, 'barcode': ''
-                    })
-                    continue
+                    barcode = None
 
                 # Add the item to the DB
                 item = Item(name, barcode, price, wholesale, stock, enabled)
