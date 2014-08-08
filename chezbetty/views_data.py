@@ -119,13 +119,16 @@ def create_x_y_from_group(group, start, end, period, process_output=lambda x: x,
 def admin_data_period_range(start, end, metric, period):
     if metric == 'items':
         data = PurchaseLineItem.quantity_by_period(period, start=ftz(start), end=ftz(end))
-        return create_x_y_from_group(data, start, end, period)
+        return zip(create_x_y_from_group(data, start, end, period))
     elif metric == 'sales':
         data = PurchaseLineItem.virtual_revenue_by_period(period, start=ftz(start), end=ftz(end))
-        return create_x_y_from_group(data, start, end, period, float, 0.0)
+        return zip(create_x_y_from_group(data, start, end, period, float, 0.0))
     elif metric == 'deposits':
-        data = Deposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
-        return create_x_y_from_group(data, start, end, period, float, 0.0)
+        agg,cash,btc = Deposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
+        agg  = create_x_y_from_group(agg,  start, end, period, float, 0.0)
+        cash = create_x_y_from_group(cash, start, end, period, float, 0.0)
+        btc  = create_x_y_from_group(btc,  start, end, period, float, 0.0)
+        return zip(agg, cash, btc)
     else:
         raise(InvalidMetric(metric))
 
@@ -182,13 +185,13 @@ def admin_data_each_range(start, end, metric, each):
 
     if metric == 'items':
         data = PurchaseLineItem.quantity_by_period(each, start=ftz(start), end=ftz(end))
-        return create_x_y_from_group_each(data, mapping, start, end)
+        return zip(create_x_y_from_group_each(data, mapping, start, end))
     elif metric == 'sales':
         data = PurchaseLineItem.virtual_revenue_by_period(each, start=ftz(start), end=ftz(end))
-        return create_x_y_from_group_each(data, mapping, start, end, float, 0.0)
+        return zip(create_x_y_from_group_each(data, mapping, start, end, float, 0.0))
     elif metric == 'deposits':
-        data = Deposit.deposits_by_period(each, start=ftz(start), end=ftz(end))
-        return create_x_y_from_group_each(data, mapping, start, end, float, 0.0)
+        agg,cash,btc = Deposit.deposits_by_period(each, start=ftz(start), end=ftz(end))
+        return zip(create_x_y_from_group_each(agg, mapping, start, end, float, 0.0))
     else:
         raise(InvalidMetric(metric))
 
@@ -226,13 +229,15 @@ def create_json(request, metric, period):
 
 def create_dict(metric, period, num_days):
     if 'each' in period:
-        x,y = admin_data_each(num_days, metric, period)
+        xs,ys = admin_data_each(num_days, metric, period)
     else:
-        x,y = admin_data_period(num_days, metric, period)
-    return {'x': x,
-            'y': y,
-            'avg': sum(y)/len(y),
-            'avg_hack': [sum(y)/len(y)]*len(y),
+        xs,ys = admin_data_period(num_days, metric, period)
+    print("xs: {}".format(xs))
+    print("ys: {}".format(ys))
+    return {'xs': xs,
+            'ys': ys,
+            'avg': [sum(y)/len(y) for y in ys],
+            'avg_hack': [[sum(y)/len(y)]*len(y) for y in ys],
             'num_days': num_days or 'all'}
 
 

@@ -191,7 +191,15 @@ class Deposit(Transaction):
             r = r.filter(event.Event.timestamp>=start)
         if end:
             r = r.filter(event.Event.timestamp<end)
-        return utility.group(r.all(), period)
+
+        cash = r.filter(cls.type=='deposit')
+        btc  = r.filter(cls.type=='btcdeposit')
+
+        return (
+                utility.group(r.all(), period),
+                utility.group(cash.all(), period),
+                utility.group(btc.all(), period)
+                )
 
     @classmethod
     def total(cls):

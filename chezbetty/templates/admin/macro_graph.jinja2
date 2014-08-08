@@ -1,4 +1,4 @@
-{% macro create_graph_panel(x, y, avg_hack, title) %}
+{% macro create_graph_panel(xs, ys, avg_hack, title) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">{{ title }}</h3>
@@ -7,18 +7,46 @@
     <canvas id="chart-{{ title|replace(" ", "") }}" height="400"></canvas>
 
 <script>
+  function* color_factory() {
+    var i = 0;
+    var colors = [
+      //"rgba(151,187,205,1)",
+      "rgba(56, 108, 176, 1)",  //"#386cb0",
+      "rgba(127, 201, 127, 1)", //"#7fc97f",
+      "rgba(240, 2, 127, 1)",   //"#f0027f",
+      "rgba(255, 255, 153, 1)", //"#ffff99",
+      "rgba(253, 192, 134, 1)", //"#fdc086",
+      "rgba(190, 174, 212, 1)", //"#beaed4",
+      ];
+    while(true) {
+      yield colors[i];
+      i = (i + 1) % colors.length;
+    }
+  }
+
+  var cf1 = color_factory();
+  var cf2 = color_factory();
+  var cf3 = color_factory();
+  var cf4 = color_factory();
   var data = {
-    labels: {{ x|safe }},
+    labels: {{ xs[0]|safe }},
     datasets: [
+        {% for avg in avg_hack %}
         {
-          data: {{ avg_hack }},
+          strokeColor: cf3.next().value.replace(/[^,]+(?=\))/, '0.5'),
+          pointColor:  "#fff",
+          pointStrokeColor: "#fff",
+          data: {{ avg }},
         },
+        {% endfor %}
+        {% for y in ys %}
         {
-          strokeColor: "rgba(151,187,205,1)",
-          pointColor: "rgba(151,187,205,1)",
+          strokeColor: cf1.next().value,
+          pointColor:  cf2.next().value,
           pointStrokeColor: "#fff",
           data: {{ y }}
-        }
+        },
+        {% endfor %}
     ]
   };
   /*
@@ -29,7 +57,7 @@
     - Instead, we just put a point of the same value at each label
 
   var avg_line = {
-    labels: ['{{ x[0] }}', '{{ x[-1] }}'],
+    labels: ['{{ xs[0] }}', '{{ xs[-1] }}'],
     datasets: [
       {
         data: [{{ avg }}, {{ avg }}],
