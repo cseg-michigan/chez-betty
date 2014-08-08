@@ -116,6 +116,11 @@ $("#btn-items-add-row").click(function () {
 			// Clear the value if there is text in the first row already
 			$(this).val("");
 		}
+		if (name_pieces[1] == 'barcode') {
+			$(this).on("input", barcode_check_fn);
+			// Since we clone the input, we need to trigger to clear its coloring
+			$(this).trigger("input");
+		}
 	});
 
 	// Add the new row to the page
@@ -127,14 +132,19 @@ $("#btn-items-add-row").click(function () {
 	attach_keypad();
 });
 
-$(".barcode-check").on("input", function () {
+barcode_check_fn = function () {
 	var validator = new Barcoder();
-	if (validator.validate($(this).val()).isValid) {
+	console.log($(this).val());
+	if ($(this).val() == '') {
+		$(this).css("backgroundColor", "inherit");
+	} else if (validator.validate($(this).val()).isValid) {
 		$(this).css("backgroundColor", "#98FB98");
 	} else {
 		$(this).css("backgroundColor", "#FF9999");
 	}
-});
+};
+
+$(".barcode-check").on("input", barcode_check_fn);
 
 $("#select-user").change(function () {
 	user_id = $("#select-user option:selected").val();
