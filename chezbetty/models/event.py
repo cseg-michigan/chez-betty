@@ -24,9 +24,10 @@ class Event(Base):
     __mapper_args__ = {'polymorphic_on': type}
 
 
-    def __init__(self, user, notes):
+    def __init__(self, user, notes, timestamp=None):
         self.user_id = user.id
         self.notes = notes
+        self.timestamp = timestamp or datetime.datetime.utcnow()
 
     def delete(self, user):
         self.deleted = True
@@ -78,8 +79,8 @@ class Adjustment(Event):
 
 class Restock(Event):
     __mapper_args__ = {'polymorphic_identity': 'restock'}
-    def __init__(self, admin):
-        Event.__init__(self, admin, None)
+    def __init__(self, admin, timestamp=None):
+        Event.__init__(self, admin, None, timestamp)
 
 
 class Inventory(Event):

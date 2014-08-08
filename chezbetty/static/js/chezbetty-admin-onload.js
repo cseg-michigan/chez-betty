@@ -178,6 +178,13 @@ $("#edit-items").on("input", "input:text",  function () {
 	$("#item-markup-"+id).attr("data-value", markup);
 });
 
+// RESTOCK
+
+$("#restock-date").datetimepicker({
+	format: "Y/m/d H:iO",
+	inline: true
+});
+
 $("#restock-table tbody tr").each(function () {
 	var row_id = $(this).attr("id").split("-")[1];
 	restock_update_line_total(row_id);

@@ -31,7 +31,8 @@
     "keyboard": "~1.18.12",
     "moment": "~2.7.0",
     "spin.js": "~2.0.1",
-    "barcoder": "https://github.com/bradjc/node-barcoder.git#1.2.0"
+    "barcoder": "https://github.com/bradjc/node-barcoder.git#1.2.0",
+    "datetimepicker": "latest"
   },
   "install": {
     "path": {
@@ -60,7 +61,9 @@
       "keyboard":           ["bower_components/keyboard/js/jquery.keyboard.min.js",
                              "bower_components/keyboard/css/keyboard.css"],
       "Chart.js":           ["bower_components/Chart.js/Chart.min.js"],
-      "barcoder":           ["bower_components/barcoder/lib/barcoder.js"]
+      "barcoder":           ["bower_components/barcoder/lib/barcoder.js"],
+      "datetimepicker":     ["bower_components/datetimepicker/jquery.datetimepicker.js",
+                             "bower_components/datetimepicker/jquery.datetimepicker.css"]
     },
     "ignore": ["bower_components/bootstrap/less/bootstrap.less"]
   }

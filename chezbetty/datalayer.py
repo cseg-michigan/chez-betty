@@ -149,8 +149,8 @@ def adjust_user_balance(user, adjustment, notes, admin):
 
 
 # Call this when an admin restocks chezbetty
-def restock(items, boxes, admin):
-    e = event.Restock(admin)
+def restock(items, boxes, admin, timestamp=None):
+    e = event.Restock(admin, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Restock(e)

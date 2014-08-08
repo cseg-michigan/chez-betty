@@ -49,6 +49,7 @@ from reportlab.pdfgen import canvas
 import uuid
 import twitter
 import math
+import pytz
 
 
 ###
@@ -263,7 +264,6 @@ def admin_restock(request):
              request_method='POST',
              permission='manage')
 def admin_restock_submit(request):
-    #i = iter(request.POST)
 
     # Array of (Item, quantity, total) tuples
     items_for_pricing = []
@@ -360,7 +360,18 @@ def admin_restock_submit(request):
         request.session.flash('Have to restock at least one item.', 'error')
         return HTTPFound(location=request.route_url('admin_restock'))
 
-    e = datalayer.restock(items, boxes, request.user)
+    try:
+        if request.POST['restock-date']:
+            restock_date = datetime.datetime.strptime(request.POST['restock-date'],
+                '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+        else:
+            restock_date = None
+    except Exception as e:
+        if request.debug: raise(e)
+        # Could not parse date
+        restock_date = None
+
+    e = datalayer.restock(items, boxes, request.user, restock_date)
     request.session.flash('Restock complete.', 'success')
     return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
 
