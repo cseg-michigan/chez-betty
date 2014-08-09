@@ -53,10 +53,9 @@
       {% if t.subtransactions %}
 
       <br/>
-      <table class="table table-condensed table-striped">
+      <table class="table table-condensed">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Item</th>
             {% if t.type == "purchase" %}
             <th class="right">Item Amount</th>
@@ -80,23 +79,15 @@
         {% for st in t.subtransactions %}
           {% if st.type == "restocklinebox" %}
           <tr>
-              <td>{{ st.id }}</td>
               <td>
                 {{ st.box|make_link|safe }}
 
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>SubItem</th>
-                      <th>Total Quantity</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
+                <table class="table table-bordered" style="margin:10px 0 10px 10px;">
+                  <tbody style="font-size:90%">
                     {% for sst in st.subsubtransactions %}
                     <tr>
+                      <td style="width:10%;">{{ sst.quantity }}</td>
                       <td>{{ sst.item|make_link|safe }}</td>
-                      <td>{{ sst.quantity }}</td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -114,7 +105,6 @@
           {% else %}
 
           <tr>
-              <td>{{ st.id }}</td>
               <td>{{ st.item|admin_item|safe }}</td>
               {% if t.type == "purchase" %}
               <td class="right">{{ st.price|format_currency|safe }}</td>

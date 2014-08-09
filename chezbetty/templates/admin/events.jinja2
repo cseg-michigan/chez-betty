@@ -16,8 +16,6 @@
   <thead>
     <tr>
       <th></th>
-      <th>Event ID</th>
-      <th>ID</th>
       <th>Timestamp</th>
       <th class="filterable-row">Type</th>
       <th class="filterable-row">From Account:</th>
@@ -31,11 +29,7 @@
   {% for e in events|reverse %}
   {% for t in e.transactions|reverse %}
     <tr>
-        {% if loop.index == 1 %}
-        <td rowspan="{{ e.transactions|count }}"><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
-        <td rowspan="{{ e.transactions|count }}">{{ e.id }}</td>
-        {% endif %}
-        <td>{{ t.id }}</td>
+        <td><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
         <td>{{ t.event.timestamp|pretty_date|safe }}</td>
         <td>{{ t.type }}</td>
         <td>{{ t.fr_account_virt|admin_account|safe if t.fr_account_virt else "n/a" }}</td>
