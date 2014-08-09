@@ -9,7 +9,7 @@
 
 {% block content %}
 
-{% set sort=request.GET["sort"]|default("name") %}
+{% set sort=request.GET["sort"]|default(None) %}
 {% set dir=request.GET["direction"]|default("asc") %}
 
 <form role="form" action="/admin/users/edit/submit" method="post">
