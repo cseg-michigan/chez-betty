@@ -37,12 +37,12 @@ class BoxItem(Base):
 def __subitem_quantity(self):
     return object_session(self).query(func.sum(BoxItem.quantity).label('c'))\
             .filter(BoxItem.box_id==self.id)\
-            .filter(BoxItem.enabled).one().c
+            .filter(BoxItem.enabled).one().c or 0
 box.Box.subitem_count = __subitem_quantity
 
 @property
 def __subitem_count(self):
     return object_session(self).query(func.count(BoxItem.id).label('c'))\
             .filter(BoxItem.box_id==self.id)\
-            .filter(BoxItem.enabled).one().c
+            .filter(BoxItem.enabled).one().c or 0
 box.Box.subitem_number = __subitem_count

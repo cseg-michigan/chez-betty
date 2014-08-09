@@ -858,10 +858,28 @@ def admin_boxes_add_submit(request):
              renderer='templates/admin/boxes_edit.jinja2',
              permission='manage')
 def admin_boxes_edit(request):
+    unpopulated_boxes = []
+    active_populated = []
+    inactive_populated = []
+
     boxes_active = Box.get_enabled()
     boxes_inactive = Box.get_disabled()
-    boxes = boxes_active + boxes_inactive
-    return {'boxes': boxes}
+
+    for box in boxes_active:
+        if box.subitem_count == 0:
+            print(box.name)
+            unpopulated_boxes.append(box)
+        else:
+            active_populated.append(box)
+
+    for box in boxes_inactive:
+        if box.subitem_count == 0:
+            unpopulated_boxes.append(box)
+        else:
+            inactive_populated.append(box)
+
+    boxes = active_populated + inactive_populated
+    return {'boxes': boxes, 'unpopulated': unpopulated_boxes}
 
 
 @view_config(route_name='admin_boxes_edit_submit',

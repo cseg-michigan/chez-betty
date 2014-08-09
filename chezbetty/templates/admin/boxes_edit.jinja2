@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
 {% set active_page = 'boxes_edit' %}
 {% block title %}Edit Boxes{% endblock %}
 
@@ -13,14 +14,49 @@
 
   <div id="edit-boxes">
 
+    {% if unpopulated %}
+    <h3>Unpopulated Boxes</h3>
+
     <table class="table sortable">
 
       <thead>
         <tr>
-          <th></th>
+          <th style="width: 5%"></th>
           <th>Name</th>
-          <th>Box Wholesale</th>
-          <th>Enable</th>
+          <th style="width: 20%">Box Wholesale</th>
+          <th style="width: 10%">Enable</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for box in unpopulated %}
+
+        <tr id="box-{{ box.id }}" class="edit-box-row {% if box.enabled == False %} disabled-row {% endif %}">
+
+          <td>{{ button.box(box.id) }}</td>
+          <td>{{ box.name }}</td>
+          <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
+          <td>
+            <input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+    {% endif %}
+
+    <h3>Boxes</h3>
+
+    <table class="table sortable">
+
+      <thead>
+        <tr>
+          <th style="width: 5%"></th>
+          <th>Name</th>
+          <th style="width: 20%">Box Wholesale</th>
+          <th style="width: 10%">Enable</th>
         </tr>
       </thead>
 
@@ -30,7 +66,7 @@
 
         <tr id="box-{{ box.id }}" class="edit-box-row {% if box.enabled == False %} disabled-row {% endif %}">
 
-          <td><a href="/admin/box/edit/{{ box.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
+          <td>{{ button.box(box.id) }}</td>
           <td>{{ box.name }}</td>
           <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
           <td>
