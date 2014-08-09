@@ -6,6 +6,8 @@ from .models import request
 from .models import receipt
 from .models.item import Item
 from .models.box import Box
+from .models import box_item
+from .models import item_vendor
 
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
@@ -69,6 +71,23 @@ def undo_event(e, user):
     e.delete(user)
 
     return line_items
+
+def can_delete_item(item):
+    if len(item.boxes) == 0 and\
+       len(item.vendors) == 0 and\
+       len(item.subtransactions) == 0 and\
+       len(item.subsubtransactions) == 0:
+       return True
+    return False
+
+def delete_item(item):
+    boxitems = DBSession.query(box_item.BoxItem).filter(box_item.BoxItem.item_id==item.id).all()
+    for bi in boxitems:
+        DBSession.delete(bi)
+    itemvendors = DBSession.query(item_vendor.ItemVendor).filter(item_vendor.ItemVendor.item_id==item.id).all()
+    for iv in itemvendors:
+        DBSession.delete(iv)
+    DBSession.delete(item)
 
 
 # Call this to make a new item request

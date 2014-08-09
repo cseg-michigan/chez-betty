@@ -630,7 +630,12 @@ def admin_item_edit(request):
             if vendor.id not in used_vendors and vendor.enabled:
                 new_vendors.append(vendor)
 
+        can_delete = False
+        if datalayer.can_delete_item(item):
+            can_delete = True
+
         return {'item': item,
+                'can_delete': can_delete,
                 'vendors': vendors,
                 'new_vendors': new_vendors,
                 'subtransactions': subtransactions,
@@ -766,6 +771,23 @@ def admin_item_enable(request):
     else:
         item.enabled = False
     return request.response
+
+
+@view_config(route_name='admin_item_delete', permission='admin')
+def admin_item_delete(request):
+    try:
+        item = Item.from_id(int(request.matchdict['item_id']))
+        if datalayer.can_delete_item(item):
+            datalayer.delete_item(item)
+            request.session.flash('Item has been deleted', 'success')
+            return HTTPFound(location=request.route_url('admin_items_edit'))
+        else:
+            request.session.flash('Item has dependencies. It cannot be deleted.', 'error')
+            return HTTPFound(location=request.route_url('admin_item_edit', item_id=item.id))
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error occurred while deleting item.', 'error')
+        return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
 @view_config(route_name='admin_boxes_add',

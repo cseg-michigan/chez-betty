@@ -173,6 +173,10 @@
 
 </form>
 
+{% if can_delete %}
+<a href="/admin/item/delete/{{ item.id }}" class="btn btn-danger">Permanently Delete this Item</a>
+{% endif %}
+
 {% endblock %}
 
 {% block onload %}

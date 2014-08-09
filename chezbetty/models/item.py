@@ -8,9 +8,9 @@ class Item(Versioned, Base):
     barcode   = Column(String(255), nullable=True, unique=True)
     price     = Column(Numeric, nullable=False)
     wholesale = Column(Numeric, nullable=False)
+    in_stock  = Column(Integer, nullable=False, default=0)
 
     enabled   = Column(Boolean, default=True, nullable=False)
-    in_stock  = Column(Integer, nullable=False, default=0)
 
     def __init__(self, name, barcode, price, wholesale, in_stock, enabled):
         self.name = name
