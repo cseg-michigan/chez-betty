@@ -4,7 +4,7 @@ class Box(Base):
     __tablename__ = 'boxes'
 
     id        = Column(Integer, primary_key=True, nullable=False)
-    name      = Column(String(255), nullable=False)
+    name      = Column(String(255), nullable=False, unique=True)
     barcode   = Column(String(255), nullable=True, unique=True)
     wholesale = Column(Numeric, nullable=False)
 
@@ -44,6 +44,16 @@ class Box(Base):
         return DBSession.query(cls)\
                         .filter(cls.enabled==False)\
                         .order_by(cls.name).all()
+
+    @classmethod
+    def exists_name(cls, name):
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.name == name).one().c > 0
+
+    @classmethod
+    def exists_barcode(cls, barcode):
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.barcode == barcode).one().c > 0
 
     def __str__(self):
         return '<Box ({})>'.format(self.name)

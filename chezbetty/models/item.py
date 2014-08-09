@@ -4,7 +4,7 @@ class Item(Versioned, Base):
     __tablename__ = 'items'
 
     id        = Column(Integer, primary_key=True, nullable=False)
-    name      = Column(String(255), nullable=False)
+    name      = Column(String(255), nullable=False, unique=True)
     barcode   = Column(String(255), nullable=True, unique=True)
     price     = Column(Numeric, nullable=False)
     wholesale = Column(Numeric, nullable=False)
@@ -43,6 +43,16 @@ class Item(Versioned, Base):
     def count(cls):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.enabled).one().c
+
+    @classmethod
+    def exists_name(cls, name):
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.name == name).one().c > 0
+
+    @classmethod
+    def exists_barcode(cls, barcode):
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.barcode == barcode).one().c > 0
 
     def __str__(self):
         return "<Item (%s)>" % self.name

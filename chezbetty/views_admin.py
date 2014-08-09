@@ -519,6 +519,18 @@ def admin_items_add_submit(request):
                 if barcode == '':
                     barcode = None
 
+                # Make sure the name and/or barcode doesn't already exist
+                if Item.exists_name(name):
+                    error_items.append({'name': name, 'barcode': barcode})
+                    request.session.flash('Error adding item: {}. Name exists.'.\
+                                    format(name), 'error')
+                    continue
+                if barcode and Item.exists_barcode(barcode):
+                    error_items.append({'name': name, 'barcode': barcode})
+                    request.session.flash('Error adding item: {}. Barcode exists.'.\
+                                    format(name), 'error')
+                    continue
+
                 # Add the item to the DB
                 item = Item(name, barcode, price, wholesale, stock, enabled)
                 DBSession.add(item)
@@ -798,6 +810,18 @@ def admin_boxes_add_submit(request):
                 if barcode == '':
                     request.session.flash('Error adding box "{}". Barcode cannot be blank.'.format(name), 'error')
                     error_items.append({'name': name, 'barcode': ''})
+                    continue
+
+                # Make sure the name and/or barcode doesn't already exist
+                if Box.exists_name(name):
+                    error_items.append({'name': name, 'barcode': barcode})
+                    request.session.flash('Error adding box: {}. Name exists.'.\
+                                    format(name), 'error')
+                    continue
+                if Box.exists_barcode(barcode):
+                    error_items.append({'name': name, 'barcode': barcode})
+                    request.session.flash('Error adding box: {}. Barcode exists.'.\
+                                    format(name), 'error')
                     continue
 
                 # Add the item to the DB
