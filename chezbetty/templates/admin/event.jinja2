@@ -95,7 +95,7 @@
 
               </td>
               <td class="right">{{ st.quantity }}</td>
-              <td class="right">{{ st.wholesale|round(2) }}</td>
+              <td class="right">{{ st.wholesale|round(4) }}</td>
               <td class="right">{% if (none == st.coupon_amount) %}0{% else %}{{ st.coupon_amount|round(2) }}{% endif %}</td>
               <td>{% if st.sales_tax %}Y{% else %}N{% endif %}</td>
               <td>{% if st.bottle_deposit %}Y{% else %}N{% endif %}</td>
@@ -116,7 +116,7 @@
               <td class="right">{{ st.quantity }}</td>
               {% endif %}
               {% if t.type == "restock" %}
-              <td class="right">{{ st.wholesale|round(2) }}</td>
+              <td class="right">{{ st.wholesale|round(4) }}</td>
               <td class="right">{% if (none == st.coupon_amount) %}0{% else %}{{ st.coupon_amount|round(2) }}{% endif %}</td>
               <td>{% if st.sales_tax %}Y{% else %}N{% endif %}</td>
               <td>{% if st.bottle_deposit %}Y{% else %}N{% endif %}</td>

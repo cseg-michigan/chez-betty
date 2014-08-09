@@ -168,7 +168,7 @@ def adjust_user_balance(user, adjustment, notes, admin):
 
 
 # Call this when an admin restocks chezbetty
-def restock(items, boxes, admin, timestamp=None):
+def restock(items, admin, timestamp=None):
     e = event.Restock(admin, timestamp)
     DBSession.add(e)
     DBSession.flush()
@@ -178,33 +178,35 @@ def restock(items, boxes, admin, timestamp=None):
     amount = Decimal(0.0)
 
     # Add all of the items as subtransactions
-    for item, quantity, total, wholesale, coupon, salestax, btldeposit in items:
-        # Add the stock to the item
-        item.in_stock += quantity
-        # Make sure the item is enabled (now that we have some in stock)
-        item.enabled = True
-        # Create a subtransaction to track that this item was added
-        rli = transaction.RestockLineItem(t, total, item, quantity, wholesale, coupon, salestax, btldeposit)
-        DBSession.add(rli)
-        amount += Decimal(total)
+    for thing, quantity, total, wholesale, coupon, salestax, btldeposit in items:
+        if type(thing) is Item:
+            item = thing
+            # Add the stock to the item
+            item.in_stock += quantity
+            # Make sure the item is enabled (now that we have some in stock)
+            item.enabled = True
+            # Create a subtransaction to track that this item was added
+            rli = transaction.RestockLineItem(t, total, item, quantity, wholesale, coupon, salestax, btldeposit)
+            DBSession.add(rli)
+            #amount += Decimal(total)
 
-    # Add all of the boxes as box subtransactions
-    for box, quantity, total, wholesale, coupon, salestax, btldeposit in boxes:
+        elif type(thing) is Box:
+            box = thing
 
-        # Create a subtransaction to record that the box was restocked
-        rlb = transaction.RestockLineBox(t, total, box, quantity, wholesale, coupon, salestax, btldeposit)
-        DBSession.add(rlb)
-        DBSession.flush()
+            # Create a subtransaction to record that the box was restocked
+            rlb = transaction.RestockLineBox(t, total, box, quantity, wholesale, coupon, salestax, btldeposit)
+            DBSession.add(rlb)
+            DBSession.flush()
 
-        # Iterate all the subitems and update the stock
-        for itembox in box.items:
-            subitem = itembox.item
-            subquantity = itembox.quantity * quantity
-            subitem.enabled = True
-            subitem.in_stock += subquantity
+            # Iterate all the subitems and update the stock
+            for itembox in box.items:
+                subitem = itembox.item
+                subquantity = itembox.quantity * quantity
+                subitem.enabled = True
+                subitem.in_stock += subquantity
 
-            rlbi = transaction.RestockLineBoxItem(rlb, subitem, subquantity)
-            DBSession.add(rlbi)
+                rlbi = transaction.RestockLineBoxItem(rlb, subitem, subquantity)
+                DBSession.add(rlbi)
 
         amount += Decimal(total)
 

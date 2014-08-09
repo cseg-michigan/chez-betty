@@ -280,7 +280,6 @@ def admin_restock_submit(request):
 
     # Arrays to pass to datalayer
     items = []
-    boxes = []
 
     for key,val in request.POST.items():
 
@@ -309,6 +308,7 @@ def admin_restock_submit(request):
                     total *= 1.06
                 if btldeposit:
                     total += (0.10 * itemcount * quantity)
+                total = round(total, 2)
 
                 # Create arrays of restocked items/boxes
                 if obj_type == 'item':
@@ -326,7 +326,7 @@ def admin_restock_submit(request):
                         subtotal    = subquantity * inv_cost
                         add_item(itembox.item, subquantity, subtotal)
 
-                    boxes.append((box, quantity, total, wholesale, coupon, salestax, btldeposit))
+                    items.append((box, quantity, total, wholesale, coupon, salestax, btldeposit))
 
                 else:
                     # don't know this item/box/?? type
@@ -356,7 +356,7 @@ def admin_restock_submit(request):
         if item.price < item.wholesale:
             item.price = round(item.wholesale * Decimal(1.15), 2)
 
-    if len(items) == 0 and len(boxes) == 0:
+    if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
         return HTTPFound(location=request.route_url('admin_restock'))
 
@@ -371,7 +371,7 @@ def admin_restock_submit(request):
         # Could not parse date
         restock_date = None
 
-    e = datalayer.restock(items, boxes, request.user, restock_date)
+    e = datalayer.restock(items, request.user, restock_date)
     request.session.flash('Restock complete.', 'success')
     return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
 
