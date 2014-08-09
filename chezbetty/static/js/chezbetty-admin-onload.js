@@ -168,7 +168,7 @@ $("#edit-items").click(function () {
 });
 
 // Update markup
-$("#edit-items").on("input", "input:text",  function () {
+$("#edit-items").on("input", "input:text", function () {
 	var id = $(this).attr("id").split("-")[2];
 	var price = parseFloat($("#item-price-"+id).val());
 	var wholesale = parseFloat($("#item-wholesale-"+id).val());
@@ -202,6 +202,93 @@ $("#restock-table").on("click", "input:checkbox", function () {
 // When the per item cost changes, update the line item total
 $("#restock-table").on("input", "input:text", function () {
 	restock_update_line_total($(this).attr("id").split("-")[2]);
+});
+
+
+// BOXES
+
+$("#new-box-table").on("input", "input:text", function () {
+	var base = $("#box-general-name").val();
+	var variants = $("#box-variants").val();
+	var volume = $("#box-volume").val();
+	var quantity = $("#box-quantity").val();
+
+	var name = base;
+	if (variants.length) {
+		name += " (" + variants + ")";
+	}
+	if (volume.length) {
+		name += " (" + volume.replace(/ /g, "") + ")";
+	}
+	if (quantity.length) {
+		name += " " + quantity + " Pack"
+	}
+	$("#box-name").val(name);
+});
+
+$(".box-subitem").on("input", "input:text", function () {
+	var row_id = $(this).attr("id").split("-")[2];
+	var base = $("#box-item-"+row_id+"-general").val();
+	var volume = $("#box-item-"+row_id+"-volume").val();
+
+	var name = base;
+	if (volume.length) {
+		name += " (" + volume.replace(/ /g, "") + ")";
+	}
+	$("#box-item-"+row_id+"-name").val(name);
+});
+
+$(".box-subitem").on("change", "select", function () {
+	var row_id = $(this).attr("id").split("-")[2];
+	var item_val = $(this).val();
+	if (item_val == "new") {
+		$("#box-item-"+row_id+"-new").show();
+	} else {
+		$("#box-item-"+row_id+"-new").hide();
+	}
+});
+
+$("#box-new-subitem").click(function () {
+	// Instead of counting each time, just keep the number of lines around
+	// in a hidden element.
+	var item_lines_count = parseInt($("#box-subitem-count").val());
+
+	// Copy row 0 to create a new row
+	container = $("#box-item-0").clone().attr("id", "new-item-"+item_lines_count);
+	container.find("*").each(function (index) {
+		// Update the ID to the next number
+		id = $(this).attr("id");
+		if (id) {
+			name_pieces = id.split("-");
+			name_pieces[name_pieces.length-2] = item_lines_count;
+			new_id = name_pieces.join("-");
+			$(this).attr("id", new_id);
+			$(this).attr("name", new_id);
+			if ($(this).is(":checkbox")) {
+				// Reset the checkmark so new products are enabled by default
+				$(this).prop("checked", "checked");
+			} else {
+				// Clear the value if there is text in the first row already
+				$(this).val("");
+			}
+			if (name_pieces[3] == 'barcode') {
+				$(this).on("input", barcode_check_fn);
+				// Since we clone the input, we need to trigger to clear its coloring
+				$(this).trigger("input");
+			}
+		}
+	});
+
+	// Add the new row to the page
+	$("#box-subitem-rows").append(container);
+
+	// Hide the new item fields by default
+	$("#box-item-"+item_lines_count+"-new").hide();
+
+	// Update the number of new items to be added
+	$("#box-subitem-count").val(item_lines_count+1);
+
+	attach_keypad();
 });
 
 

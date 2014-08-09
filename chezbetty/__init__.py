@@ -104,8 +104,8 @@ def main(global_config, **settings):
     config.add_route('admin_item_enable',       '/admin/item/enable/{id}/{state}')
     config.add_route('admin_item_delete',       '/admin/item/delete/{item_id}')
 
-    config.add_route('admin_boxes_add',         '/admin/boxes/add')
-    config.add_route('admin_boxes_add_submit',  '/admin/boxes/add/submit')
+    config.add_route('admin_box_add',           '/admin/box/add')
+    config.add_route('admin_box_add_submit',    '/admin/box/add/submit')
     config.add_route('admin_boxes_edit',        '/admin/boxes/edit')
     config.add_route('admin_boxes_edit_submit', '/admin/boxes/edit/submit')
     config.add_route('admin_box_edit_submit',   '/admin/box/edit/submit')

@@ -790,90 +790,128 @@ def admin_item_delete(request):
         return HTTPFound(location=request.route_url('admin_items_edit'))
 
 
-@view_config(route_name='admin_boxes_add',
+@view_config(route_name='admin_box_add',
              renderer='templates/admin/boxes_add.jinja2',
              permission='manage')
-def admin_boxes_add(request):
+def admin_box_add(request):
+    items = Item.all_force()
+
     if len(request.GET) == 0:
-        return {'items': {'count': 1,
-                          'name-0': '',
-                          'barcode-0': '',
-                         }}
+        fields = {'subitem_count': 1}
     else:
-        return {'items': request.GET}
+        fields = request.GET
+
+    return {'items': items, 'd': fields}
 
 
-@view_config(route_name='admin_boxes_add_submit',
+@view_config(route_name='admin_box_add_submit',
              request_method='POST',
              permission='manage')
-def admin_boxes_add_submit(request):
-    count = 0
-    error_items = []
+def admin_box_add_submit(request):
+    try:
+        error = False
+        items_empty_barcode = 0
 
-    # Iterate all the POST keys and find the ones that are item names
-    for key in request.POST:
-        if 'item-name-' in key:
-            id = int(key.split('-')[2])
-            stock = 0
-            wholesale = 0
-            price = 0
-            enabled = False
+        # Work on the box first
+        box_name     = request.POST['box-name'].strip()
+        box_barcode  = request.POST['box-barcode'].strip()
 
-            # Parse out the important fields looking for errors
-            try:
-                name = request.POST['item-name-{}'.format(id)].strip()
-                barcode = request.POST['item-barcode-{}'.format(id)].strip()
+        if box_name == '':
+            request.session.flash('Error adding box: must have name.', 'error')
+            error = True
+        elif Box.exists_name(box_name):
+            request.session.flash('Error adding box: name "{}" already exists.'.format(box_name), 'error')
+            error = True
+        if box_barcode == '':
+            request.session.flash('Error adding box: must have barcode.', 'error')
+            error = True
+        elif Box.exists_barcode(box_barcode):
+            request.session.flash('Error adding box: barcode "{}" already exists.'.format(box_barcode), 'error')
+            error = True           
 
-                # Check that name and barcode are not blank. If name is blank
-                # treat this as an empty row and skip. If barcode is blank
-                # we will get a database error so send that back to the user.
-                if name == '':
-                    continue
-                if barcode == '':
-                    request.session.flash('Error adding box "{}". Barcode cannot be blank.'.format(name), 'error')
-                    error_items.append({'name': name, 'barcode': ''})
-                    continue
+        # Now iterate over the subitems
+        items_to_add = []
 
-                # Make sure the name and/or barcode doesn't already exist
-                if Box.exists_name(name):
-                    error_items.append({'name': name, 'barcode': barcode})
-                    request.session.flash('Error adding box: {}. Name exists.'.\
-                                    format(name), 'error')
-                    continue
-                if Box.exists_barcode(barcode):
-                    error_items.append({'name': name, 'barcode': barcode})
-                    request.session.flash('Error adding box: {}. Barcode exists.'.\
-                                    format(name), 'error')
+        for key in request.POST:
+            kf = key.split('-')
+            if kf[0] == 'box' and kf[1] == 'item' and kf[3] == 'item':
+                # Found the select. We will use this to iterate through the
+                # lines
+                row_id = int(kf[2])
+                item_id = request.POST['box-item-{}-item'.format(row_id)]
+                if item_id == '':
+                    # This was a blank row that was skipped for some reason
                     continue
 
-                # Add the item to the DB
-                box = Box(name, barcode)
-                DBSession.add(box)
-                DBSession.flush()
-                count += 1
-            except:
-                if len(name):
-                    error_items.append({'name': name, 'barcode': barcode})
-                    request.session.flash('Error adding box: {}. Most likely a duplicate barcode.'.\
-                                    format(name), 'error')
-                # Otherwise this was probably a blank row; ignore.
-    if count:
-        request.session.flash('{} box{} added successfully.'.format(count, ['es',''][count==1]), 'success')
-    else:
-        request.session.flash('No boxes added.', 'error')
-    if len(error_items):
-        flat = {}
-        e_count = 0
-        for err in error_items:
-            for k,v in err.items():
-                flat['{}-{}'.format(k, e_count)] = v
-            e_count += 1
-        flat['count'] = len(error_items)
-        return HTTPFound(location=request.route_url('admin_boxes_add', _query=flat))
-    else:
-        if count == 1:
-            return HTTPFound(location=request.route_url('admin_box_edit', box_id=box.id))
-        return HTTPFound(location=request.route_url('admin_boxes_edit'))
+                quantity = request.POST['box-item-{}-quantity'.format(row_id)]
+                try:
+                    quantity = int(quantity)
+                except:
+                    request.session.flash('Error adding subitem: quantity must be numeric.', 'error')
+                    error = True
+
+                if item_id == 'new':
+                    # Need to add a new item for this box
+                    item_name     = request.POST['box-item-{}-name'.format(row_id)].strip()
+                    item_barcode  = request.POST['box-item-{}-barcode'.format(row_id)].strip()
+
+                    if item_barcode == '':
+                        items_empty_barcode += 1
+
+                    if Item.exists_name(item_name):
+                        request.session.flash('Error adding item: name "{}" already exists.'.format(item_name), 'error')
+                        items_to_add.append((Item.from_name(item_name), quantity))
+                    if item_barcode and Item.exists_barcode(item_barcode):
+                        request.session.flash('Error adding item: barcode "{}" already exists.'.format(item_barcode), 'error')
+                        items_to_add.append((Item.from_barcode(item_barcode), quantity))
+                    else:
+                        items_to_add.append(({'name': item_name,
+                                              'barcode': item_barcode}, quantity))
+                else:
+                    # Just add the specified item to the box
+                    item = Item.from_id(int(item_id))
+                    if item.barcode == '':
+                        items_empty_barcode += 1
+                    items_to_add.append((item, quantity))
+
+        if items_empty_barcode > 0 and len(items_to_add) > 1:
+            request.session.flash('Error adding box: If an item doesn\'t have a barcode there can only be one subitem in the box', 'error')
+            error = True
+
+        # At this point we have parsed all of the data from the web form
+        if error:
+            # Somewhere we encountered an error
+            # Need to refill the forms and tell the user that they messed up
+            err = {}
+            for k,v in request.POST.items():
+                err[k] = v
+            err['subitem_count'] = row_id + 1
+            return HTTPFound(location=request.route_url('admin_box_add', _query=err))
+
+        else:
+            # Need to create the box
+            box = Box(box_name, box_barcode)
+            DBSession.add(box)
+            DBSession.flush()
+
+            # Need to add items to the box
+            for item,quantity in items_to_add:
+                if type(item) is dict:
+                    # Need to add this item first
+                    item = Item(item['name'], item['barcode'], 0, 0, 0, False)
+                    DBSession.add(item)
+                    DBSession.flush()
+
+                box_item = BoxItem(box, item, quantity)
+                DBSession.add(box_item)
+
+            request.session.flash('Box "{}" added successfully.'.format(box_name), 'success')
+            return HTTPFound(location=request.route_url('admin_box_add'))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error occurred.', 'error')
+        return HTTPFound(location=request.route_url('admin_box_add'))
 
 
 @view_config(route_name='admin_boxes_edit',

@@ -154,4 +154,18 @@ tfoot tr td {
 	background-color: #eee;
 }
 
+.box-name-text {
+  background-color: #E7FEFF;
+}
+
+.box-category-text {
+  width: 20%;
+}
+
+.box-example-text {
+  width: 20%;
+  font-size: 90%;
+  color: #aaaaaa;
+}
+
 
