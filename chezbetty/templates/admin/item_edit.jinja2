@@ -30,7 +30,11 @@
         <dd><input type="text" class="form-control numeric" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale|round(4) }}"></dd>
 
         <dt>In Stock</dt>
-        <dd>{{ item.in_stock }}</dd>
+        <dd><input type="text" class="form-control numeric" disabled value="{{ item.in_stock }}"></input></dd>
+
+        <hr />
+        <dt>Enabled</dt>
+        <dd><input type="checkbox" id="admin-item-enable-{{ item.id }}" class="admin-switch toggle-disabled" {% if item.enabled == True %}checked="checked"{% endif %}></input></dd>
       </dl>
     </div>
 
@@ -156,7 +160,7 @@
         {% for boxitem in item.boxes %}
         <tr>
           <td>{{ button.box(boxitem.box.id) }}</td>
-          <td>{{ boxitem.box.name }}</td>
+          <td>{{ boxitem.box|admin_box|safe }}</td>
           <td>{{ boxitem.quantity }}</td>
         </tr>
         {% endfor %}

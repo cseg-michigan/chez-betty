@@ -15,6 +15,9 @@ def format_currency(value):
 def pretty_date(datetime_obj):
 	return '<span class="date">{}</span>'.format(datetime_obj.strftime('%m/%d/%Y %I:%M:%S %p UTC'))
 
+def admin_box(box):
+	return '<a href="/admin/box/edit/{}">{}</a>'.format(box.id, box.name)
+
 def admin_item(item):
 	return '<a href="/admin/item/edit/{}">{}</a>'.format(item.id, item.name)
 

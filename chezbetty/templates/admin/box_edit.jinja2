@@ -24,6 +24,10 @@
 
         <dt>Wholesale</dt>
         <dd><input type="text" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}"></dd>
+
+        <hr />
+        <dt>Enabled</dt>
+        <dd><input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}></input></dd>
       </dl>
     </div>
 

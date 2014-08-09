@@ -35,7 +35,7 @@
         <tr id="box-{{ box.id }}" class="edit-box-row {% if box.enabled == False %} disabled-row {% endif %}">
 
           <td>{{ button.box(box.id) }}</td>
-          <td>{{ box.name }}</td>
+          <td>{{ box|admin_box|safe }}</td>
           <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
           <td>
             <input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}>
@@ -67,7 +67,7 @@
         <tr id="box-{{ box.id }}" class="edit-box-row {% if box.enabled == False %} disabled-row {% endif %}">
 
           <td>{{ button.box(box.id) }}</td>
-          <td>{{ box.name }}</td>
+          <td>{{ box|admin_box|safe }}</td>
           <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
           <td>
             <input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}>
