@@ -796,7 +796,7 @@ def admin_boxes_add_submit(request):
                 if name == '':
                     continue
                 if barcode == '':
-                    request.session.flash('Error adding item "{}". Barcode cannot be blank.'.format(name), 'error')
+                    request.session.flash('Error adding box "{}". Barcode cannot be blank.'.format(name), 'error')
                     error_items.append({'name': name, 'barcode': ''})
                     continue
 

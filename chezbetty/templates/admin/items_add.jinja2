@@ -23,8 +23,8 @@
     <tbody id="new-items">
       {% for number in range(0, items['count']|int) %}
       <tr id="new-item-0" class="new-item">
-        <td><input type="text" class="form-control" id="item-name-{{ number }}" name="item-name-{{ number }}" value={{ items['name-'~number] }}></td>
-        <td><input type="text" class="form-control barcode-check" id="item-barcode-{{ number }}" name="item-barcode-{{ number }}" value={{ items['barcode-'~number] }}></td>
+        <td><input type="text" class="form-control" id="item-name-{{ number }}" name="item-name-{{ number }}" value="{{ items['name-'~number] }}"></td>
+        <td><input type="text" class="form-control barcode-check" id="item-barcode-{{ number }}" name="item-barcode-{{ number }}" value="{{ items['barcode-'~number] }}"></td>
       </tr>
       {% endfor %}
     </tbody>
