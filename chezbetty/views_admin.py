@@ -825,6 +825,8 @@ def admin_boxes_add_submit(request):
         flat['count'] = len(error_items)
         return HTTPFound(location=request.route_url('admin_boxes_add', _query=flat))
     else:
+        if count == 1:
+            return HTTPFound(location=request.route_url('admin_box_edit', box_id=box.id))
         return HTTPFound(location=request.route_url('admin_boxes_edit'))
 
 
