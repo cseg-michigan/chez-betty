@@ -23,7 +23,7 @@
     <tbody>
       {% for item in items %}
       <tr id="item-{{ item.id }}">
-        <td>{{ item|admin_item|safe }}</td>
+        <td>{{ item|make_link|safe }}</td>
         <td>{{ item.in_stock }}</td>
         <td><input type="text" class="form-control numeric" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value="{{ undone_inventory[item.id] }}"></td>
       </tr>

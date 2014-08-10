@@ -32,10 +32,10 @@
         <td><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
         <td>{{ t.event.timestamp|pretty_date|safe }}</td>
         <td>{{ t.type }}</td>
-        <td>{{ t.fr_account_virt|admin_account|safe if t.fr_account_virt else "n/a" }}</td>
-        <td>{{ t.to_account_virt|admin_account|safe if t.to_account_virt else "n/a" }}</td>
-        <td>{{ t.fr_account_cash|admin_account|safe if t.fr_account_cash else "n/a" }}</td>
-        <td>{{ t.to_account_cash|admin_account|safe if t.to_account_cash else "n/a" }}</td>
+        <td>{{ t.fr_account_virt|make_link|safe if t.fr_account_virt else "n/a" }}</td>
+        <td>{{ t.to_account_virt|make_link|safe if t.to_account_virt else "n/a" }}</td>
+        <td>{{ t.fr_account_cash|make_link|safe if t.fr_account_cash else "n/a" }}</td>
+        <td>{{ t.to_account_cash|make_link|safe if t.to_account_cash else "n/a" }}</td>
         <td class="right">{{ t.amount|format_currency|safe }}</td>
     </tr>
   {% endfor %}

@@ -1,5 +1,7 @@
 from .models import box
 from .models import item
+from .models import user
+from .models import account
 
 def format_currency(value):
 	try:
@@ -15,23 +17,12 @@ def format_currency(value):
 def pretty_date(datetime_obj):
 	return '<span class="date">{}</span>'.format(datetime_obj.strftime('%m/%d/%Y %I:%M:%S %p UTC'))
 
-def admin_box(box):
-	return '<a href="/admin/box/edit/{}">{}</a>'.format(box.id, box.name)
-
-def admin_item(item):
-	return '<a href="/admin/item/edit/{}">{}</a>'.format(item.id, item.name)
-
-def admin_user(user):
-	return '<a href="/user/{}">{}</a>'.format(user.umid, user.name)
-
-def admin_account(account):
-	try:
-		return admin_user(account)
-	except AttributeError:
-		return '{}'.format(account.name)
-
 def make_link(obj):
 	if type(obj) is box.Box:
 		return '<a href="/admin/box/edit/{}">{}</a>'.format(obj.id, obj.name)
 	elif type(obj) is item.Item:
 		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, obj.name)
+	elif type(obj) is user.User:
+		return '<a href="/user/{}">{}</a>'.format(obj.umid, obj.name)
+	else:
+		return obj.name

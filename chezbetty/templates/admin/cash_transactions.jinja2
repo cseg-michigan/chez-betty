@@ -53,8 +53,8 @@
         <td>{{ t.id }}</td>
         <td> <a href="/admin/transactions/{{ t.transaction_id }}">{{ t.transaction_id if t.transaction_id else ""}}</a></td>
         <td>{{ t.timestamp|pretty_date|safe }}</td>
-        <td>{{ t.from_account|admin_account|safe if t.from_account else "n/a" }}</td>
-        <td>{{ t.to_account|admin_account|safe if t.to_account else "n/a" }}</td>
+        <td>{{ t.from_account|make_link|safe if t.from_account else "n/a" }}</td>
+        <td>{{ t.to_account|make_link|safe if t.to_account else "n/a" }}</td>
         <td class="right">{{ t.amount|format_currency|safe }}</td>
     </tr>
   {% endfor %}

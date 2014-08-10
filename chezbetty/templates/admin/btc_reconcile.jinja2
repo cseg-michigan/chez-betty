@@ -105,7 +105,7 @@
             <tr>
               <td>{{ t.address }}</td>
               <td>{{ t.txhash }}</td>
-              <td>{{ t.user|admin_user|safe }}</td>
+              <td>{{ t.user|make_link|safe }}</td>
               <td>{{ t.confirmations }}</td>
               <td>{{ t.amount_mbtc }}</td>
               <td class="right">{{ t.amount_usd|format_currency|safe }}</td>

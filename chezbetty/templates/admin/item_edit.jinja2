@@ -160,7 +160,7 @@
         {% for boxitem in item.boxes %}
         <tr>
           <td>{{ button.box(boxitem.box.id) }}</td>
-          <td>{{ boxitem.box|admin_box|safe }}</td>
+          <td>{{ boxitem.box|make_link|safe }}</td>
           <td>{{ boxitem.quantity }}</td>
         </tr>
         {% endfor %}

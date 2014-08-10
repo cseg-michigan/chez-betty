@@ -90,7 +90,7 @@ def admin_index(request):
                                .order_by(User.balance)\
                                .limit(5).all()
     users_balance   = DBSession.query(func.sum(User.balance).label("total_balance")).one()
-    bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item.name, Item.id)\
+    bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item)\
                                .join(Item)\
                                .join(Transaction)\
                                .join(Event)\
@@ -827,7 +827,7 @@ def admin_box_add_submit(request):
             error = True
         elif Box.exists_barcode(box_barcode):
             request.session.flash('Error adding box: barcode "{}" already exists.'.format(box_barcode), 'error')
-            error = True           
+            error = True
 
         # Now iterate over the subitems
         items_to_add = []

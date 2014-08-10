@@ -27,7 +27,7 @@
   <tbody>
     {% for item in items[vendor.id] %}
     <tr>
-      <td>{{ item|admin_item|safe }}</td>
+      <td>{{ item|make_link|safe }}</td>
       {% if item.vendors %}
       {% for iv in item.vendors %}
       {% if iv.vendor_id == vendor.id %}

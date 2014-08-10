@@ -105,7 +105,7 @@
           {% else %}
 
           <tr>
-              <td>{{ st.item|admin_item|safe }}</td>
+              <td>{{ st.item|make_link|safe }}</td>
               {% if t.type == "purchase" %}
               <td class="right">{{ st.price|format_currency|safe }}</td>
               {% endif %}

@@ -210,7 +210,7 @@
           <tbody>
             {% for user in users_shame %}
             <tr>
-              <td>{{ user|admin_user|safe }}</td>
+              <td>{{ user|make_link|safe }}</td>
               <td class="right">{{ user.balance|format_currency|safe }}</td>
             </tr>
             {% endfor %}
@@ -237,7 +237,7 @@
           <tbody>
             {% for item in items_low_stock %}
             <tr>
-              <td>{{ item|admin_item|safe }}</td>
+              <td>{{ item|make_link|safe }}</td>
               <td class="right">{{ item.in_stock }}</td>
             </tr>
             {% endfor %}
@@ -263,7 +263,7 @@
           <tbody>
             {% for item in best_selling_items %}
             <tr>
-              <td>{{ item|admin_item|safe }}</td>
+              <td>{{ item[1]|make_link|safe }}</td>
               <td class="right">{{ item.quantity }}</td>
             </tr>
             {% endfor %}
@@ -304,10 +304,10 @@
               <td>{{ button.event(e.id) }}</td>
               <td>{{ e.timestamp|pretty_date|safe }}</td>
               <td>{{ t.type }}</td>
-              <td>{{ t.fr_account_virt|admin_account|safe if t.fr_account_virt else "n/a" }}</td>
-              <td>{{ t.to_account_virt|admin_account|safe if t.to_account_virt else "n/a" }}</td>
-              <td>{{ t.fr_account_cash|admin_account|safe if t.fr_account_cash else "n/a" }}</td>
-              <td>{{ t.to_account_cash|admin_account|safe if t.to_account_cash else "n/a" }}</td>
+              <td>{{ t.fr_account_virt|make_link|safe if t.fr_account_virt else "n/a" }}</td>
+              <td>{{ t.to_account_virt|make_link|safe if t.to_account_virt else "n/a" }}</td>
+              <td>{{ t.fr_account_cash|make_link|safe if t.fr_account_cash else "n/a" }}</td>
+              <td>{{ t.to_account_cash|make_link|safe if t.to_account_cash else "n/a" }}</td>
               <td class="right">{{ t.amount|format_currency|safe }}</td>
             </tr>
             {% endfor %}
