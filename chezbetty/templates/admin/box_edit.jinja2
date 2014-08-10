@@ -130,6 +130,12 @@
 
 </form>
 
+{% if can_delete %}
+<br />
+<br />
+<a href="/admin/box/delete/{{ box.id }}" class="btn btn-danger">Permanently Delete this Box</a>
+{% endif %}
+
 {% endblock %}
 
 {% block onload %}

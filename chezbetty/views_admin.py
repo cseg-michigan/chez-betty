@@ -1018,8 +1018,13 @@ def admin_box_edit(request):
             if vendor.id not in used_vendors and vendor.enabled:
                 new_vendors.append(vendor)
 
+        can_delete = False
+        if datalayer.can_delete_box(box):
+            can_delete = True
+
         return {'box': box,
                 'items': items,
+                'can_delete': can_delete,
                 'new_items': new_items,
                 'new_vendors': new_vendors}
     except NoResultFound:
@@ -1121,6 +1126,23 @@ def admin_box_enable(request):
     else:
         box.enabled = False
     return request.response
+
+
+@view_config(route_name='admin_box_delete', permission='admin')
+def admin_box_delete(request):
+    try:
+        box = Box.from_id(int(request.matchdict['box_id']))
+        if datalayer.can_delete_box(box):
+            datalayer.delete_box(box)
+            request.session.flash('Box has been deleted', 'success')
+            return HTTPFound(location=request.route_url('admin_boxes_edit'))
+        else:
+            request.session.flash('Box has dependencies. It cannot be deleted.', 'error')
+            return HTTPFound(location=request.route_url('admin_box_edit', box_id=box.id))
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error occurred while deleting box.', 'error')
+        return HTTPFound(location=request.route_url('admin_boxes_edit'))
 
 
 @view_config(route_name='admin_vendors_edit',
