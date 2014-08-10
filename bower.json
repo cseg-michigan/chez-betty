@@ -32,7 +32,8 @@
     "moment": "~2.7.0",
     "spin.js": "~2.0.1",
     "barcoder": "https://github.com/bradjc/node-barcoder.git#1.2.0",
-    "datetimepicker": "latest"
+    "datetimepicker": "latest",
+    "fgt-jquery-scannerdetection": "latest"
   },
   "install": {
     "path": {
@@ -63,7 +64,8 @@
       "Chart.js":           ["bower_components/Chart.js/Chart.min.js"],
       "barcoder":           ["bower_components/barcoder/lib/barcoder.js"],
       "datetimepicker":     ["bower_components/datetimepicker/jquery.datetimepicker.js",
-                             "bower_components/datetimepicker/jquery.datetimepicker.css"]
+                             "bower_components/datetimepicker/jquery.datetimepicker.css"],
+      "fgt-jquery-scannerdetection": ["bower_components/fgt-jquery-scannerdetection/jquery.scannerdetection.js"]
     },
     "ignore": ["bower_components/bootstrap/less/bootstrap.less"]
   }

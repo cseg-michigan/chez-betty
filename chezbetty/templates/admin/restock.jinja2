@@ -12,6 +12,8 @@
 <p>Scan items to add to stock.</p>
 <p>Check the sales tax box if sales tax was charged on those items.</p>
 
+<div id="scanner"></div>
+
 <table class="table">
   <tbody>
     <tr>
@@ -88,6 +90,7 @@
 {% endblock %}
 
 {% block onload %}
+<script src="{{'chezbetty:static/js/lib/fgt-jquery-scannerdetection/jquery.scannerdetection.js'|static_url}}"></script>
 <script src="{{'chezbetty:static/js/chezbetty-admin-item.js'|static_url}}"></script>
 <script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

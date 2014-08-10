@@ -301,6 +301,9 @@ def admin_restock_submit(request):
                 # Skip this row if quantity is 0
                 if quantity == 0:
                     continue
+                elif quantity > 5000:
+                    # Must be a typo
+                    raise ValueError
 
                 # Calculate the total
                 total = quantity * (wholesale - coupon)
@@ -371,9 +374,15 @@ def admin_restock_submit(request):
         # Could not parse date
         restock_date = None
 
-    e = datalayer.restock(items, request.user, restock_date)
-    request.session.flash('Restock complete.', 'success')
-    return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
+    try:
+        e = datalayer.restock(items, request.user, restock_date)
+        request.session.flash('Restock complete.', 'success')
+        return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Restock failed because some error occurred.', 'error')
+        return HTTPFound(location=request.route_url('admin_restock'))
+
 
 
 @view_config(route_name='admin_cash_reconcile',
