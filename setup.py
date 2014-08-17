@@ -23,7 +23,8 @@ requires = [
     'reportlab',
     'twitter',
     'pytz',
-    'psycopg2'
+    'psycopg2',
+    'alembic'
     ]
 
 setup(name='chezbetty',
