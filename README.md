@@ -46,6 +46,10 @@ development environment set up, do the following:
 
 4. Install bower and bower-install
 
+        # Note: Distro copies of node tend to fall behind really quickly.
+        # You are better off using a copy of node/npm installed directly:
+        # http://nodejs.org/
+        # https://github.com/npm/npm
         sudo npm install bower bower-installer -g
 
 5. Get all css/js dependencies
