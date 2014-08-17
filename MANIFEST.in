@@ -1,2 +1,2 @@
 include *.txt *.ini *.cfg *.rst
-recursive-include chezbetty chezbetty/static *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml *.jinja2
+recursive-include chezbetty chezbetty/static *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml *.jinja2 *.woff *.ttf *.svg
