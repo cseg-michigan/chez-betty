@@ -22,7 +22,8 @@ requires = [
     'qrcode',
     'reportlab',
     'twitter',
-    'pytz'
+    'pytz',
+    'psycopg2'
     ]
 
 setup(name='chezbetty',
