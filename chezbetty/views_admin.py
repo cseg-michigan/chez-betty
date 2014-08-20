@@ -907,7 +907,7 @@ def admin_box_add_submit(request):
             for item,quantity in items_to_add:
                 if type(item) is dict:
                     # Need to add this item first
-                    item = Item(item['name'], item['barcode'], 0, 0, 0, False)
+                    item = Item(item['name'], item['barcode'] or None, 0, 0, 0, False)
                     DBSession.add(item)
                     DBSession.flush()
 
