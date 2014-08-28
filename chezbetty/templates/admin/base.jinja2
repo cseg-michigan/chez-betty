@@ -28,7 +28,7 @@
 
   <script src="{{'chezbetty:static/js/chezbetty-admin.js'|static_url}}"></script>
 
-  <title>{% block title %}{% endblock %} | Chez Betty Admin</title>
+  <title>{% if request.debug %}[ DEBUG ]{% endif %} {% block title %}{% endblock %} | Chez Betty Admin</title>
   {% endblock %}
 
 </head>
