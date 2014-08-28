@@ -46,6 +46,7 @@
           <tr>
             <th>Vendor</th>
             <th>Product Num</th>
+            <th>Link</th>
           </tr>
         </thead>
 
@@ -59,7 +60,11 @@
             <td>
               <input type="text" class="form-control" id="item-vendor-item_num-{{ v.id }}" name="item-vendor-item_num-{{ v.id }}" value="{{ v.item_number }}">
             </td>
-
+            <td>
+              {% if v.vendor.name == "Costco" %}
+              <a href="http://www2.costco.com/Common/Search.aspx?whse=BD_823&topnav=bd&search={{ v.item_number }}&N=0&Ntt={{ v.item_number }}&cm_re=1_en-_-Top_Left_Nav-_-Top_search&lang=en-US">View on Costco</a>
+              {% endif %}
+            </td>
           </tr>
           {% endif %}
           {% endfor %}
