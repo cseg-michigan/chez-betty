@@ -168,6 +168,29 @@ def __events(self):
             .filter(event.Event.deleted==False).all()
 account.Account.events = __events
 
+# This is in a stupid place due to circular input problems
+@property
+def __total_deposit_amount(self):
+    return object_session(self).query(func.sum(Transaction.amount).label("total"))\
+            .join(event.Event)\
+            .filter(and_(
+                        Transaction.to_account_virt_id == self.id,
+                        or_(Transaction.type == 'deposit',
+                            Transaction.type == 'btcdeposit')))\
+            .filter(event.Event.deleted==False).one().total or 0.0
+account.Account.total_deposits = __total_deposit_amount
+
+# This is in a stupid place due to circular input problems
+@property
+def __total_purchase_amount(self):
+    return object_session(self).query(func.sum(Transaction.amount).label("total"))\
+            .join(event.Event)\
+            .filter(and_(
+                        Transaction.fr_account_virt_id == self.id,
+                        Transaction.type == 'purchase'))\
+            .filter(event.Event.deleted==False).one().total or 0.0
+account.Account.total_purchases = __total_purchase_amount
+
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
     def __init__(self, event, user):

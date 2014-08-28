@@ -408,7 +408,17 @@ def deposit_new(request):
         user = User.from_umid(request.POST['umid'])
         amount = Decimal(request.POST['amount'])
 
-        if amount > 20.0:
+        # Check if the deposit amount is too great.
+        # This if block could be tighter, but this is easier to understand
+        if amount > 100.0:
+            # Anything above 100 is blocked
+            raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
+
+        if amount < 100.0 and amount > 20.0 and (user.total_deposits < 10.0 or user.total_purchases < 10.0):
+            # If the deposit is between 20 and 100 and the user hasn't done much
+            # with betty. Block the deposit. We do allow deposits up to 100 for
+            # customers that have shown they know how to scan/purchase and
+            # deposit
             raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
 
         deposit = datalayer.deposit(user, amount)
