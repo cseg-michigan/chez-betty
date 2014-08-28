@@ -25,6 +25,10 @@ class Box(Base):
         return DBSession.query(cls).filter(cls.barcode == barcode).one()
 
     @classmethod
+    def from_barcode_fuzzy(cls, barcode):
+        return DBSession.query(cls).filter(cls.barcode.like('%{}%'.format(barcode))).all()
+
+    @classmethod
     def all(cls):
         return DBSession.query(cls)\
                         .filter(cls.enabled)\

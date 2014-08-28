@@ -225,6 +225,39 @@ def admin_item_barcode_json(request):
             return {'status': 'error'}
 
 
+@view_config(route_name='admin_item_search_json',
+             renderer='json',
+             permission='manage')
+def admin_item_search_json(request):
+    try:
+        boxes = Box.from_barcode_fuzzy(request.matchdict['search'])
+        items = Item.from_barcode_fuzzy(request.matchdict['search'])
+        box_vendors = BoxVendor.from_number_fuzzy(request.matchdict['search'])
+        item_vendors = ItemVendor.from_number_fuzzy(request.matchdict['search'])
+
+        ret = {'matches': []}
+
+        for b in boxes:
+            ret['matches'].append(('box', b.name, b.barcode))
+
+        for bv in box_vendors:
+            ret['matches'].append(('box', bv.box.name, bv.box.barcode))
+
+        for i in items:
+            ret['matches'].append(('item', i.name, i.barcode))
+
+        for iv in item_vendors:
+            ret['matches'].append(('item', iv.item.name, iv.item.barcode))
+
+        ret['status'] = 'success'
+
+        return ret
+
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error'}
+
+
 @view_config(route_name='admin_restock',
              renderer='templates/admin/restock.jinja2',
              permission='manage')

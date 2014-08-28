@@ -33,3 +33,7 @@ class BoxVendor(Base):
     @classmethod
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
+
+    @classmethod
+    def from_number_fuzzy(cls, number):
+        return DBSession.query(cls).filter(cls.item_number.like('%{}%'.format(number))).all()

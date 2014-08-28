@@ -28,7 +28,10 @@ class Item(Versioned, Base):
     def from_barcode(cls, barcode):
         return DBSession.query(cls).filter(cls.barcode == barcode).one()
 
-    
+    @classmethod
+    def from_barcode_fuzzy(cls, barcode):
+        return DBSession.query(cls).filter(cls.barcode.like('%{}%'.format(barcode))).all()
+
     @classmethod
     def from_name(cls, name):
         return DBSession.query(cls).filter(cls.name == name).one()

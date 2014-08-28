@@ -14,35 +14,6 @@
 
 <div id="scanner"></div>
 
-<table class="table">
-  <tbody>
-    <tr>
-      <td style="width:50%;">
-        <select class="form-control" id="restock-manual-item-select">
-          {% for item in items %}
-          <option value="{{ item.barcode }}">{{ item.name }}</option>
-          {% endfor %}
-        </select>
-      </td>
-      <td>
-        <button type="button" id="restock-manual-item-button" class="btn btn-success restock-manual">Add Item</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <select class="form-control" id="restock-manual-box-select">
-          {% for box in boxes %}
-          <option value="{{ box.barcode }}">{{ box.name }}</option>
-          {% endfor %}
-        </select>
-      </td>
-      <td>
-        <button type="button" id="restock-manual-box-button" class="btn btn-success restock-manual">Add Box</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
 <form role="form" action="/admin/restock/submit" method="post" id="restock-form">
 
   <input type="hidden" id="row-count" name="row-count" value="{{ restock_rows|default(0) }}">
@@ -77,6 +48,54 @@
       </tr>
     </tfoot>
   </table>
+
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <td style="width:50%;">
+          <select class="form-control" id="restock-manual-item-select">
+            {% for item in items %}
+            <option value="{{ item.barcode }}">{{ item.name }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>
+          <button type="button" id="restock-manual-item-button" class="btn btn-success restock-manual">Add Item</button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <select class="form-control" id="restock-manual-box-select">
+            {% for box in boxes %}
+            <option value="{{ box.barcode }}">{{ box.name }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td>
+          <button type="button" id="restock-manual-box-button" class="btn btn-success restock-manual">Add Box</button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" id="restock-manual-search-input" class="form-control">
+          <span id="restock-search-notice"></span>
+          <table id="restock-search-table">
+            <tr id="restock-search-row-0" class="restock-search-row" style="display:none;">
+              <td class="restock-search-row-name">Name</td>
+              <td>
+                <button type="button" id="restock-search-row-button-0" class="btn btn-default">Add</button>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <button type="button" id="restock-manual-search-button" class="btn btn-success restock-manual">Search Item</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 
   <div>
     Set custom time for this restock or leave blank to use current time:<br />

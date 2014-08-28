@@ -192,7 +192,11 @@ $("#restock-table tbody tr").each(function () {
 
 $(".restock-manual").on("click", function () {
 	var type = $(this).attr("id").split("-")[2];
-	add_item($("#restock-manual-"+type+"-select").val());
+	if (type == "item" || type == "box") {
+		add_item($("#restock-manual-"+type+"-select").val());
+	} else if (type == "search") {
+		search_item($("#restock-manual-"+type+"-input").val());
+	}
 });
 
 $("#restock-table").on("click", "input:checkbox", function () {
@@ -202,6 +206,12 @@ $("#restock-table").on("click", "input:checkbox", function () {
 // When the per item cost changes, update the line item total
 $("#restock-table").on("input", "input:text", function () {
 	restock_update_line_total($(this).attr("id").split("-")[2]);
+});
+
+// Add a searched for item to the restock table
+$("#restock-search-table").on("click", "button", function () {
+	var barcode = $(this).attr("data-item");
+	add_item(barcode);
 });
 
 

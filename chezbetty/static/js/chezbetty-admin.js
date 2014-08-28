@@ -88,6 +88,59 @@ function add_item (barcode) {
 	});
 }
 
+// Callback when adding an item to the restock succeeds
+function search_item_success (data) {
+	alert_clear();
+	$("#restock-search-notice").text("");
+	$(".restock-search-addedrows").remove();
+
+	if (data.status != "success") {
+		alert_error("Error occurred.");
+	} else {
+		if (data.matches.length == 0) {
+			// No matches tell user
+			$("#restock-search-notice").text("No matches found.");
+		} else if (data.matches.length == 1) {
+			// One match just add it
+			add_item(data.matches[0][2]);
+			$("#restock-search-notice").text("One match found. Added.");
+		} else {
+			for (i=0; i<data.matches.length; i++) {
+				new_row = $("#restock-search-row-0").clone().attr("id", "restock-search-row-"+(i+1));
+				new_row.find("button").each(function (index) {
+					start_id = $(this).attr("id");
+					splits = start_id.split("-");
+					splits[splits.length-1] = i+1;
+					new_id = splits.join("-");
+					$(this).attr("id", new_id);
+					$(this).attr("data-item", data.matches[i][2]);
+				});
+				new_row.find(".restock-search-row-name").each(function () {
+					$(this).text(data.matches[i][0] + ": " + data.matches[i][1]);
+				});
+				new_row.addClass("restock-search-addedrows");
+				new_row.show();
+
+				$("#restock-search-table").append(new_row);
+			}
+		}
+	}
+}
+
+// Callback when adding to cart fails.
+function search_item_fail () {
+	alert_error("AJAX lookup failed.");
+}
+
+function search_item (search_str) {
+	$.ajax({
+		dataType: "json",
+		url: "/admin/item/search/"+search_str+"/json",
+		success: search_item_success,
+		error: search_item_fail
+	});
+}
+
 function restock_update_line_total (row_id) {
 	var row_obj = $("#restock-"+row_id);
 	var quantity = parseIntZero($("#restock-quantity-"+row_id).val());
