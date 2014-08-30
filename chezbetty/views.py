@@ -31,6 +31,7 @@ import binascii
 class DepositException(Exception):
     pass
 
+
 ###
 ### HTML Pages
 ###

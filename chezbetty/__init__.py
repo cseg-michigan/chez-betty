@@ -1,6 +1,7 @@
 from pyramid.config import Configurator
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.httpexceptions import HTTPFound
 from sqlalchemy import engine_from_config
 
 # Import all models so they get auto created if they don't exist
@@ -21,6 +22,14 @@ from .models import vendor
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
+
+###
+### 404
+###
+
+def notfound(request):
+    request.session.flash('404: Could not find that page.', 'error')
+    return HTTPFound(location=request.route_url('index'))
 
 def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
@@ -176,6 +185,9 @@ def main(global_config, **settings):
     config.add_route('login',  '/login')
     config.add_route('logout', '/logout')
     config.add_request_method(get_user, "user", reify=True)
+
+    # 404 Page
+    config.add_view(notfound, context='pyramid.httpexceptions.HTTPNotFound')
 
     config.scan(".views")
     config.scan(".views_admin")
