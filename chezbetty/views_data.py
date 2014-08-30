@@ -232,8 +232,7 @@ def create_dict(metric, period, num_days):
         xs,ys = admin_data_each(num_days, metric, period)
     else:
         xs,ys = admin_data_period(num_days, metric, period)
-    print("xs: {}".format(xs))
-    print("ys: {}".format(ys))
+
     return {'xs': xs,
             'ys': ys,
             'avg': [sum(y)/len(y) for y in ys],
