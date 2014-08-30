@@ -13,3 +13,4 @@ lib/
 local
 sessions/
 bower_components/
+*backup*.sql
