@@ -423,6 +423,15 @@ class PurchaseLineItem(SubTransaction):
                         .join(event.Event)\
                         .filter(event.Event.deleted==False).one().p or 0.0
 
+    @classmethod
+    def item_sale_quantities(cls, item_id):
+        return DBSession.query(cls, event.Event)\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False)\
+                        .filter(cls.item_id==int(item_id))\
+                        .order_by(event.Event.timestamp).all()
+
 
 @property
 def __number_sold(self):

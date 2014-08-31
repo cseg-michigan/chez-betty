@@ -36,7 +36,6 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 
 // Click handler to submit a purchase.
 $("#btn-submit-purchase").click(function () {
-	console.log("submitting purchase");
 	$(this).blur();
 	alert_clear();
 
@@ -60,8 +59,6 @@ $("#btn-submit-purchase").click(function () {
 		alert_error("You must purchase at least one item.");
 		enable_button($(this));
 	} else {
-		console.log(purchase);
-
 		// Post the order to the server
 		$.ajax({
 			type: "POST",

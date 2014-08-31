@@ -24,7 +24,7 @@ function toggle_state_success (data) {
 	} else if ($(this).hasClass('toggle-disabled')) {
 		var type = $(this).attr("id").split('-')[1];
 		var id   = $(this).attr("id").split('-')[3];
-		console.log($(this).prop("checked"));
+
 		if ($(this).prop("checked")) {
 			$("#"+type+"-" + id).removeClass("disabled-row");
 		} else {
@@ -134,7 +134,7 @@ $("#btn-items-add-row").click(function () {
 
 barcode_check_fn = function () {
 	var validator = new Barcoder();
-	console.log($(this).val());
+
 	if ($(this).val() == '') {
 		$(this).css("backgroundColor", "inherit");
 	} else if (validator.validate($(this).val()).isValid) {
@@ -148,7 +148,6 @@ $(".barcode-check").on("input", barcode_check_fn);
 
 $("#select-user").change(function () {
 	user_id = $("#select-user option:selected").val();
-	console.log(user_id);
 
 	// Hide all current balances
 	$(".current-balance").hide();
@@ -395,7 +394,6 @@ serialized_form_clean = $("form").serialize().split("&").sort().join("&");
 
 // Before we leave the page we now compare between the new form values and the orignal
 window.onbeforeunload = function (e) {
-	console.log(serialized_form_clean);
     var serialized_form_dirty = $("form").serialize().split("&").sort().join("&");
     if (serialized_form_clean != serialized_form_dirty && !clicked_submit) {
         return "You are about to leave a page where you have not saved the data.";

@@ -1,5 +1,6 @@
 {% extends "base.jinja2" %}
 {% import "macro_buttons.jinja2" as button %}
+{% import "macro_graph.jinja2" as graph %}
 {% set active_page = 'items_edit' %}
 {% block title %}Edit Item{% endblock %}
 
@@ -177,6 +178,12 @@
 
 
 </form>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_timeseries_panel("/admin/data/item/sales/"~item.id, "Items sold over time") }}
+  </div>
+</div>
 
 {% if can_delete %}
 <a href="/admin/item/delete/{{ item.id }}" class="btn btn-danger">Permanently Delete this Item</a>

@@ -240,6 +240,21 @@ def create_dict(metric, period, num_days):
             'num_days': num_days or 'all'}
 
 
+def create_item_sales_json(request, item_id):
+    sales = PurchaseLineItem.item_sale_quantities(item_id)
+
+    individual = []
+    totals = []
+    total = 0
+    for s in sales:
+        tstamp = round(s[1].timestamp.replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        individual.append((tstamp, s[0].quantity))
+        total += s[0].quantity
+        totals.append((tstamp, total))
+
+    return {'individual': individual,
+            'sum': totals}
+
 
 
 @view_config(route_name='admin_data_items_json',
@@ -283,4 +298,11 @@ def admin_data_sales_each_json(request):
 def admin_data_deposits_each_json(request):
     return create_json(request, 'deposits', request.matchdict['period']+'_each')
 
+
+# All of the sale dates and quantities of a particular item
+@view_config(route_name='admin_data_item_sales_json',
+             renderer='json',
+             permission='manage')
+def admin_data_item_sales_json(request):
+    return create_item_sales_json(request, request.matchdict['item_id'])
 
