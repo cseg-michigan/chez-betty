@@ -782,56 +782,75 @@ def admin_item_edit_submit(request):
 
 @view_config(route_name='admin_item_barcode_pdf', permission='manage')
 def admin_item_barcode_pdf(request):
-    item = Item.from_id(request.matchdict['item_id'])
-    fname = '/tmp/{}.pdf'.format(item.id)
+    try:
+        item = Item.from_id(request.matchdict['item_id'])
+        fname = '/tmp/{}.pdf'.format(item.id)
 
-    c = canvas.Canvas(fname, pagesize=letter)
+        c = canvas.Canvas(fname, pagesize=letter)
 
-    barcode_height = .250*inch
+        barcode_height = .250*inch
 
-    x_margin = 0.27 * inch
-    y_margin = 0.485 * inch
+        x_margin = 0.27 * inch
+        y_margin = 0.485 * inch
 
-    x_interlabel = 0.12 * inch
-    y_interlabel = 0
+        x_interlabel = 0.12 * inch
+        y_interlabel = 0
 
-    x_label = 1.5 * inch
-    y_label = 1 * inch
+        x_label = 1.5 * inch
+        y_label = 1 * inch
 
-    label_padding = 0.1 * inch
+        label_padding = 0.1 * inch
 
-    x = x_margin
-    y = letter[1] - y_margin
+        x = x_margin
+        y = letter[1] - y_margin
 
-    # Don't know why I need this, but it makes it work
-    x_hack = 0.2 * inch
+        # Don't know why I need this, but it makes it work
+        x_hack = 0.2 * inch
 
-    for x_ind in range(5):
-        for y_ind in range(10):
-            x_off = x + x_ind * (x_label + x_interlabel) + label_padding - x_hack
-            y_off = y - y_ind * (y_label + y_interlabel) - barcode_height - label_padding
+        if item.barcode:
+            label_text = item.barcode
+        else:
+            for bi in item.boxes:
+                if len(bi.box.items) == 1:
+                    label_text = bi.box.barcode
+                    break
+            else:
+                request.session.flash('Cannot create barcodes. \
+                    This item has no barcode and none of the boxes it is in\
+                    only have one item.', 'error')
+                return HTTPFound(location=request.route_url('admin_item_edit', item_id=request.matchdict['item_id']))
 
-            print("x_off {} ({}) y_off {} ({})".format(x_off, x_off / inch, y_off, y_off / inch))
 
-            barcode = code93.Extended93(item.barcode)
-            print(barcode.minWidth())
-            print(barcode.minWidth() / inch)
-            barcode.drawOn(c, x_off, y_off)
+        for x_ind in range(5):
+            for y_ind in range(10):
+                x_off = x + x_ind * (x_label + x_interlabel) + label_padding - x_hack
+                y_off = y - y_ind * (y_label + y_interlabel) - barcode_height - label_padding
 
-            x_text = x_off + 6.4 * mm
-            y_text = y_off - 5 * mm
-            c.setFont("Helvetica", 12)
-            c.drawString(x_text, y_text, item.barcode)
+                print("x_off {} ({}) y_off {} ({})".format(x_off, x_off / inch, y_off, y_off / inch))
 
-            y_text = y_text - 5 * mm
-            c.setFont("Helvetica", 8)
-            c.drawString(x_text, y_text, item.name)
+                barcode = code93.Extended93(label_text)
+                print(barcode.minWidth())
+                print(barcode.minWidth() / inch)
+                barcode.drawOn(c, x_off, y_off)
 
-    c.showPage()
-    c.save()
+                x_text = x_off + 6.4 * mm
+                y_text = y_off - 5 * mm
+                c.setFont("Helvetica", 12)
+                c.drawString(x_text, y_text, label_text)
 
-    response = FileResponse(fname, request=request)
-    return response
+                y_text = y_text - 5 * mm
+                c.setFont("Helvetica", 8)
+                c.drawString(x_text, y_text, item.name)
+
+        c.showPage()
+        c.save()
+
+        response = FileResponse(fname, request=request)
+        return response
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error occurred while creating barcodes.', 'error')
+        return HTTPFound(location=request.route_url('admin_item_edit', item_id=request.matchdict['item_id']))
 
 
 @view_config(route_name='admin_item_enable', permission='admin')
