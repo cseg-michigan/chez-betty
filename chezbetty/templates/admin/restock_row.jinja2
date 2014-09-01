@@ -5,7 +5,15 @@
   <input type="hidden" name="restock-bottledeposit-X" value="off">
   <input type="hidden" id="restock-itemcount-X" name="restock-itemcount-X" value="{% if item %}1{% elif box %}{{ box.subitem_count }}{% endif %}">
   {% if item %}
-  <td class="name">{{ item|make_link|safe }}</td>
+  <td class="name">
+    {{ item|make_link|safe }}
+    <dl class="dl-horizontal">
+      <dt>Barcode</dt><dd>{{ item.barcode }}</dd>
+      {% for iv in item.vendors %}
+      <dt>{{ iv.vendor.name }}</dt><dd>{{ iv.item_number }}</dd>
+      {% endfor %}
+    </dl>
+  </td>
   {% elif box %}
   <td class="box-name">
     Box: {{ box|make_link|safe }}<br />
@@ -13,6 +21,12 @@
       {% for boxitem in box.items %}
       <dt>{{ boxitem.item.name }}</dt>
       <dd>{{ boxitem.quantity }}</dd>
+      {% endfor %}
+    </dl>
+    <dl class="dl-horizontal">
+      <dt>Barcode</dt><dd>{{ box.barcode }}</dd>
+      {% for bv in box.vendors %}
+      <dt>{{ bv.vendor.name }}</dt><dd>{{ bv.item_number }}</dd>
       {% endfor %}
     </dl>
   </td>
