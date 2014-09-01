@@ -89,7 +89,9 @@ def admin_index(request):
                                .filter(User.balance < 0)\
                                .order_by(User.balance)\
                                .limit(5).all()
-    users_balance   = DBSession.query(func.sum(User.balance).label("total_balance")).one()
+    users_balance   = User.get_users_total()
+    held_for_users  = User.get_amount_held()
+    owed_by_users   = User.get_amount_owed()
     bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item)\
                                .join(Item)\
                                .join(Transaction)\
@@ -173,6 +175,8 @@ def admin_index(request):
                 items_low_stock=items_low_stock,
                 users_shame=users_shame,
                 users_balance=users_balance,
+                held_for_users=held_for_users,
+                owed_by_users=owed_by_users,
                 cashbox=cashbox,
                 btcbox=btcbox,
                 chezbetty_cash=chezbetty_cash,

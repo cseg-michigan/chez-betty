@@ -37,7 +37,11 @@
                 </tr>
                 <tr>
                   <td>Users</td>
-                  <td class="right">{{ users_balance.total_balance|format_currency|safe }}</td>
+                  <td class="right">{{ users_balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Users Owe</td>
+                  <td class="right">{{ owed_by_users|format_currency|safe }}</td>
                 </tr>
               </tbody>
             </table>
@@ -61,6 +65,10 @@
                 <tr>
                   <td>Bitcoin Box</td>
                   <td class="right">{{ btcbox.balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Users Cash</td>
+                  <td class="right">{{ held_for_users|format_currency|safe }}</td>
                 </tr>
               </tbody>
             </table>
@@ -183,7 +191,7 @@
             </tr>
             <tr>
               <td>Projected Profit</td>
-              <td class="right">{{ ((inventory.price - users_balance.total_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
+              <td class="right">{{ ((inventory.price - users_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
             </tr>
           </tbody>
         </table>
@@ -282,13 +290,13 @@
           <thead>
             <tr>
               <th>User</th>
-              <th class="right">Balance</th>
+              <th class="right" style="width:20%;">Balance</th>
             </tr>
           </thead>
           <tbody>
             {% for user in users_shame %}
             <tr>
-              <td>{{ user|make_link|safe }}</td>
+              <td>{{ user|make_link(33)|safe }}</td>
               <td class="right">{{ user.balance|format_currency|safe }}</td>
             </tr>
             {% endfor %}
@@ -309,13 +317,13 @@
           <thead>
             <tr>
               <th>Item</th>
-              <th class="right">In Stock</th>
+              <th class="right" style="width:20%;">Stock</th>
             </tr>
           </thead>
           <tbody>
             {% for item in items_low_stock %}
             <tr>
-              <td>{{ item|make_link|safe }}</td>
+              <td>{{ item|make_link(33)|safe }}</td>
               <td class="right">{{ item.in_stock }}</td>
             </tr>
             {% endfor %}
@@ -335,13 +343,13 @@
           <thead>
             <tr>
               <th>Item</th>
-              <th class="right">Quantity Sold</th>
+              <th class="right" style="width:20%;">Sold</th>
             </tr>
           </thead>
           <tbody>
             {% for item in best_selling_items %}
             <tr>
-              <td>{{ item[1]|make_link|safe }}</td>
+              <td>{{ item[1]|make_link(33)|safe }}</td>
               <td class="right">{{ item.quantity }}</td>
             </tr>
             {% endfor %}

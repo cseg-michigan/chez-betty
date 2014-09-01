@@ -132,6 +132,26 @@ class User(account.Account):
                         .filter(cls.enabled)\
                         .filter(cls.role=='administrator').all()
 
+    @classmethod
+    def get_users_total(cls):
+        return DBSession.query(func.sum(User.balance).label("total_balance"))\
+                        .one().total_balance or 0.0
+
+    # Sum the total amount of money in user accounts that we are holding for
+    # users. This is different from just getting the total because it doesn't
+    # count users with negative balances
+    @classmethod
+    def get_amount_held(cls):
+        return DBSession.query(func.sum(User.balance).label("total_balance"))\
+                        .filter(User.balance>0)\
+                        .one().total_balance or 0.0
+
+    @classmethod
+    def get_amount_owed(cls):
+        return DBSession.query(func.sum(User.balance).label("total_balance"))\
+                        .filter(User.balance<0)\
+                        .one().total_balance or 0.0
+
     def __make_salt(self):
         return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
 
