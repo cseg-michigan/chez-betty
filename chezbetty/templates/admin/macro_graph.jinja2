@@ -244,3 +244,43 @@
     </div>
 </div>
 {% endmacro %}
+
+{% macro create_cumulative_timeseries_panel(url, title) %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ title }}</h3>
+  </div>
+  <div class="panel-body">
+    <div id="chart-{{ title|replace(" ", "") }}" style="width:100%; height:400px;"></canvas>
+
+<script>
+  $(function () {
+    $.getJSON("{{ url }}", function (data) {
+
+        // create the chart
+        $('#chart-{{ title|replace(" ", "") }}').highcharts('StockChart', {
+            chart: {
+                alignTicks: true
+            },
+
+            rangeSelector: {
+                inputEnabled: $('#chart-{{ title|replace(" ", "") }}').width() > 480,
+                selected: 1
+            },
+
+            series: [{
+                type: 'line',
+                name: 'Total',
+                data: data,
+            }],
+
+            xAxis: {
+                ordinal: false
+            }
+        });
+    });
+});
+</script>
+    </div>
+</div>
+{% endmacro %}

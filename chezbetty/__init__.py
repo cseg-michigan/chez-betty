@@ -185,6 +185,8 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_item_sales_json', '/admin/data/item/sales/{item_id}')
 
+    config.add_route('admin_data_users_totals_json', '/admin/data/users/totals')
+
 
     config.add_route('login',  '/login')
     config.add_route('logout', '/logout')

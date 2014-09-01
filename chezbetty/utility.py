@@ -70,3 +70,22 @@ def group(rows, period='day'):
             sums.append((item_period, total))
 
     return sums
+
+# Returns an array of tuples where the first item in the tuple is a millisecond
+# timestamp and the second item is the total number of things so far.
+def timeseries_cumulative(rows):
+    total = 0
+    out = []
+
+    for r in rows:
+        if len(r) == 1:
+            total += 1
+        else:
+            total += r[1]
+        t = round(r[0].replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        out.append((t, total))
+
+    return out
+
+
+

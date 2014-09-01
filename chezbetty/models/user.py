@@ -5,6 +5,7 @@ import os
 from .model import *
 from . import account
 from . import event
+from chezbetty import utility
 
 import ldap3
 
@@ -151,6 +152,13 @@ class User(account.Account):
         return DBSession.query(func.sum(User.balance).label("total_balance"))\
                         .filter(User.balance<0)\
                         .one().total_balance or 0.0
+
+    @classmethod
+    def get_user_count_cumulative(cls):
+        rows = DBSession.query(cls.created_at)\
+                        .order_by(cls.created_at)\
+                        .all()
+        return utility.timeseries_cumulative(rows)
 
     def __make_salt(self):
         return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")

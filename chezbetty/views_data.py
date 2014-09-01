@@ -325,3 +325,11 @@ def admin_data_deposits_each_json(request):
 def admin_data_item_sales_json(request):
     return create_item_sales_json(request, request.matchdict['item_id'])
 
+
+# Timestamps and the number of total users
+@view_config(route_name='admin_data_users_totals_json',
+             renderer='json',
+             permission='manage')
+def admin_data_users_totals_json(request):
+    return User.get_user_count_cumulative()
+
