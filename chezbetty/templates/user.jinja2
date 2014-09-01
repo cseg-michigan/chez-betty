@@ -29,7 +29,7 @@
          #}
         {% if transaction.type == "purchase" %}
 
-        Purchase totaling {{ transaction.amount }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        Purchase totaling {{ transaction.amount|format_currency|safe }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
@@ -67,9 +67,9 @@
         </div>
 
 
-        {% elif transaction.type == "deposit" %}
+        {% elif transaction.type == "cashdeposit" %}
 
-        Deposit of {{ transaction.amount }}
+        Deposit of {{ transaction.amount|format_currency|safe }}
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 

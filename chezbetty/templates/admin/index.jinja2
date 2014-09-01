@@ -190,6 +190,84 @@
       </div>
     </div>
   </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Year-to-Date</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>YTD Sales</td>
+              <td class="right">{{ ytd_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Profit on Sales</td>
+              <td class="right">{{ ytd_profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Inventory Lost</td>
+              <td class="right">{{ ytd_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total Deposits</td>
+              <td class="right">{{ ytd_dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total Cash Deposits</td>
+              <td class="right">{{ ytd_dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total BTC Deposits</td>
+              <td class="right">{{ ytd_dep_btc|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Month-to-Date</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>MTD Sales</td>
+              <td class="right">{{ mtd_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Profit on Sales</td>
+              <td class="right">{{ mtd_profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Inventory Lost</td>
+              <td class="right">{{ mtd_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total Deposits</td>
+              <td class="right">{{ mtd_dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total Cash Deposits</td>
+              <td class="right">{{ mtd_dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total BTC Deposits</td>
+              <td class="right">{{ mtd_dep_btc|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  
 </div>
 
 

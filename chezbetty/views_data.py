@@ -18,7 +18,7 @@ from .models.user import User
 from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, BTCDeposit
+from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit
 from .models.transaction import PurchaseLineItem, SubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -124,11 +124,14 @@ def admin_data_period_range(start, end, metric, period):
         data = PurchaseLineItem.virtual_revenue_by_period(period, start=ftz(start), end=ftz(end))
         return zip(create_x_y_from_group(data, start, end, period, float, 0.0))
     elif metric == 'deposits':
-        agg,cash,btc = Deposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
-        agg  = create_x_y_from_group(agg,  start, end, period, float, 0.0)
-        cash = create_x_y_from_group(cash, start, end, period, float, 0.0)
-        btc  = create_x_y_from_group(btc,  start, end, period, float, 0.0)
-        return zip(agg, cash, btc)
+        data = Deposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
+        return zip(create_x_y_from_group(data,  start, end, period, float, 0.0))
+    elif metric == 'deposits_cash':
+        data = CashDeposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
+        return zip(create_x_y_from_group(data,  start, end, period, float, 0.0))
+    elif metric == 'deposits_btc':
+        data = BTCDeposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
+        return zip(create_x_y_from_group(data,  start, end, period, float, 0.0))
     else:
         raise(InvalidMetric(metric))
 
@@ -190,8 +193,8 @@ def admin_data_each_range(start, end, metric, each):
         data = PurchaseLineItem.virtual_revenue_by_period(each, start=ftz(start), end=ftz(end))
         return zip(create_x_y_from_group_each(data, mapping, start, end, float, 0.0))
     elif metric == 'deposits':
-        agg,cash,btc = Deposit.deposits_by_period(each, start=ftz(start), end=ftz(end))
-        return zip(create_x_y_from_group_each(agg, mapping, start, end, float, 0.0))
+        data = Deposit.deposits_by_period(each, start=ftz(start), end=ftz(end))
+        return zip(create_x_y_from_group_each(data, mapping, start, end, float, 0.0))
     else:
         raise(InvalidMetric(metric))
 
@@ -227,6 +230,20 @@ def create_json(request, metric, period):
         return {'status': 'error'}
 
 
+def create_dict_to_date(metric, period):
+    now = datetime.date.today()
+
+    if period == 'month':
+        start = datetime.date(now.year, now.month, 1)
+    elif period == 'year':
+        start = datetime.date(now.year, 1, 1)
+
+    xs,ys = admin_data_period_range(start, get_end(), metric, period)
+
+    return {'xs': xs,
+            'ys': ys}
+
+
 def create_dict(metric, period, num_days):
     if 'each' in period:
         xs,ys = admin_data_each(num_days, metric, period)
@@ -240,6 +257,8 @@ def create_dict(metric, period, num_days):
             'num_days': num_days or 'all'}
 
 
+# Get a list of timestamps and the number of a particular item that was sold
+# at that time.
 def create_item_sales_json(request, item_id):
     sales = PurchaseLineItem.item_sale_quantities(item_id)
 

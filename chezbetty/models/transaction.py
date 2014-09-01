@@ -21,7 +21,8 @@ class Transaction(Base):
 
                                         # Virtual Transaction Meaning     # Cash Transaction Meaning  # Notes required?
     type = Column(Enum("purchase",      # user_account -> chezbetty.        None
-                       "deposit",       # null         -> user_account.     null      -> cashbox.
+                       "deposit",
+                       "cashdeposit",   # null         -> user_account.     null      -> cashbox.
                        "btcdeposit",    # null         -> user_account      null      -> btcbox
                        "adjustment",    # chezbetty   <-> user              None                            Yes
                        "restock",       # chezbetty    -> null              chezbetty -> null
@@ -137,10 +138,17 @@ class Transaction(Base):
                             .filter(event.Event.deleted==False).one().c
 
     @classmethod
-    def total(cls):
-        return DBSession.query(func.sum(cls.amount).label('a'))\
+    def total(cls, start=None, end=None):
+        r = DBSession.query(func.sum(cls.amount).label('a'))\
                         .join(event.Event)\
-                        .filter(event.Event.deleted==False).one().a or 0.0
+                        .filter(event.Event.deleted==False)
+
+        if start:
+            r = r.filter(event.Event.timestamp>=start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+
+        return r.one().a or 0.0
 
 
 @property
@@ -200,9 +208,6 @@ class Purchase(Transaction):
 
 class Deposit(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'deposit'}
-    def __init__(self, event, user, amount):
-        cashbox_c = account.get_cash_account("cashbox")
-        Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
 
     @classmethod
     def deposits_by_period(cls, period, start=None, end=None):
@@ -215,21 +220,14 @@ class Deposit(Transaction):
         if end:
             r = r.filter(event.Event.timestamp<end)
 
-        cash = r.filter(cls.type=='deposit')
-        btc  = r.filter(cls.type=='btcdeposit')
+        return utility.group(r.all(), period)
 
-        return (
-                utility.group(r.all(), period),
-                utility.group(cash.all(), period),
-                utility.group(btc.all(), period)
-                )
 
-    @classmethod
-    def total(cls):
-        return DBSession.query(func.sum(cls.amount).label('a'))\
-                        .join(event.Event)\
-                        .filter(cls.type=='deposit')\
-                        .filter(event.Event.deleted==False).one().a or 0.0
+class CashDeposit(Deposit):
+    __mapper_args__ = {'polymorphic_identity': 'cashdeposit'}
+    def __init__(self, event, user, amount):
+        cashbox_c = account.get_cash_account("cashbox")
+        Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
 
 
 class BTCDeposit(Deposit):
@@ -257,13 +255,6 @@ class BTCDeposit(Deposit):
         return DBSession.query(cls).join(event.Event)\
                         .filter(cls.address == address)\
                         .filter(event.Event.deleted == False).one()
-
-    @classmethod
-    def total(cls):
-        return DBSession.query(func.sum(cls.amount).label('a'))\
-                        .join(event.Event)\
-                        .filter(cls.type=='btcdeposit')\
-                        .filter(event.Event.deleted==False).one().a or 0.0
 
 
 class Adjustment(Transaction):
@@ -417,11 +408,17 @@ class PurchaseLineItem(SubTransaction):
         return utility.group(r.all(), period)
 
     @classmethod
-    def profit_on_sales(cls):
-        return DBSession.query(func.sum(cls.amount-(cls.wholesale*cls.quantity)).label('p'))\
+    def profit_on_sales(cls, start=None, end=None):
+        r = DBSession.query(func.sum(cls.amount-(cls.wholesale*cls.quantity)).label('p'))\
                         .join(Transaction)\
                         .join(event.Event)\
-                        .filter(event.Event.deleted==False).one().p or 0.0
+                        .filter(event.Event.deleted==False)
+        if start:
+            r = r.filter(event.Event.timestamp>=start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+
+        return r.one().p or 0.0
 
     @classmethod
     def item_sale_quantities(cls, item_id):

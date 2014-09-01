@@ -20,7 +20,7 @@
         <dd>{{ prev_balance|format_currency|safe }}</dd>
 
         <dt>Deposit</dt>
-        {% if deposit.type == "deposit" %}
+        {% if deposit.type == "cashdeposit" %}
             <dd>{{ deposit.amount|format_currency|safe }}</dd>
         {% elif deposit.type == "btcdeposit" %}
             <dd>{{ deposit.amount_btc }} BTC ({{ deposit.amount|format_currency|safe }})</dd>
@@ -40,7 +40,7 @@
   </div>
 </div>
 
-{% if deposit.type == "deposit" %}
+{% if deposit.type == "cashdeposit" %}
 <a class="btn btn-danger" href="/event/undo/{{ user.umid }}/{{ event.id }}">If this was a mistake, touch here to undo this transaction.</a>
 {% endif %}
 

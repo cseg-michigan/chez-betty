@@ -148,7 +148,7 @@ def deposit(user, amount):
     e = event.Deposit(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Deposit(e, user, amount)
+    t = transaction.CashDeposit(e, user, amount)
     DBSession.add(t)
     return dict(prev=prev,
                 new=user.balance,

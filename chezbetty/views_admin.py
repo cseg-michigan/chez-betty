@@ -20,7 +20,7 @@ from .models.user import User
 from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, BTCDeposit, Purchase
+from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
 from .models.transaction import Inventory
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
@@ -134,12 +134,40 @@ def admin_index(request):
     total_sales          = Purchase.total()
     profit_on_sales      = PurchaseLineItem.profit_on_sales()
     total_inventory_lost = Inventory.total()
-    total_cash_deposits  = Deposit.total()
+    total_cash_deposits  = CashDeposit.total()
     total_btc_deposits   = BTCDeposit.total()
 
-    sold_by_day         = PurchaseLineItem.quantity_by_period('day')
-    virt_revenue_by_day = PurchaseLineItem.virtual_revenue_by_period('day')
-    deposits_by_day     = Deposit.deposits_by_period('day')
+
+    now = datetime.date.today()
+
+    ytd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+
+    mtd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+
+
+    graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
+    graph_deposits_day_cash  = views_data.create_dict('deposits_cash', 'day', 21)
+    graph_deposits_day_btc   = views_data.create_dict('deposits_btc', 'day', 21)
+    graph_deposits_day = {'xs': [graph_deposits_day_total['xs'][0],
+                                 graph_deposits_day_cash['xs'][0], 
+                                 graph_deposits_day_btc['xs'][0]],
+                          'ys': [graph_deposits_day_total['ys'][0],
+                                 graph_deposits_day_cash['ys'][0], 
+                                 graph_deposits_day_btc['ys'][0]],
+                          'avg_hack': [graph_deposits_day_total['avg_hack'][0],
+                                 graph_deposits_day_cash['avg_hack'][0], 
+                                 graph_deposits_day_btc['avg_hack'][0]]}
+
 
     return dict(events=events,
                 items_low_stock=items_low_stock,
@@ -163,12 +191,21 @@ def admin_index(request):
                 total_inventory_lost=total_inventory_lost,
                 total_cash_deposits=total_cash_deposits,
                 total_btc_deposits=total_btc_deposits,
-                sold_by_day=sold_by_day,
-                virt_revenue_by_day=virt_revenue_by_day,
-                deposits_by_day=deposits_by_day,
-                graph_items_day=views_data.create_dict('items', 'day', 20),
-                graph_sales_day=views_data.create_dict('sales', 'day', 20),
-                graph_deposits_day=views_data.create_dict('deposits', 'day', 20))
+                ytd_sales=ytd_sales,
+                ytd_profit=ytd_profit,
+                ytd_lost=ytd_lost,
+                ytd_dep=ytd_dep,
+                ytd_dep_cash=ytd_dep_cash,
+                ytd_dep_btc=ytd_dep_btc,
+                mtd_sales=mtd_sales,
+                mtd_profit=mtd_profit,
+                mtd_lost=mtd_lost,
+                mtd_dep=mtd_dep,
+                mtd_dep_cash=mtd_dep_cash,
+                mtd_dep_btc=mtd_dep_btc,
+                graph_items_day=views_data.create_dict('items', 'day', 21),
+                graph_sales_day=views_data.create_dict('sales', 'day', 21),
+                graph_deposits_day=graph_deposits_day)
 
 
 @view_config(route_name='admin_demo',
@@ -1709,7 +1746,7 @@ def admin_event_undo(request):
 
         for transaction in event.transactions:
             # Make sure transaction is a deposit (no user check since admin doing)
-            if transaction.type not in ('deposit', 'purchase', 'restock', 'inventory'):
+            if transaction.type not in ('cashdeposit', 'purchase', 'restock', 'inventory'):
                 request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
                 return HTTPFound(location=request.route_url('admin_events'))
 

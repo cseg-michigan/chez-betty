@@ -217,6 +217,10 @@ def event(request):
     except NoResultFound as e:
         # TODO: add generic failure page
         pass
+    except Exception as e:
+        if request.debug: raise(e)
+        return HTTPFound(location=request.route_url('index'))
+
 
 @view_config(route_name='event_undo', permission='service')
 def event_undo(request):
@@ -231,14 +235,14 @@ def event_undo(request):
 
         # Make sure transaction is a deposit, the only one the user is allowed
         # to undo
-        if transaction.type not in ('deposit', 'purchase'):
+        if transaction.type not in ('cashdeposit', 'purchase'):
             request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
         # Make sure that the user who is requesting the deposit was the one who
         # actually placed the deposit.
         try:
-            if transaction.type == 'deposit':
+            if transaction.type == 'cashdeposit':
                 user = User.from_id(transaction.to_account_virt_id)
             elif transaction.type == 'purchase':
                 user = User.from_id(transaction.fr_account_virt_id)
