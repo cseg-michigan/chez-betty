@@ -25,6 +25,14 @@
         <dt>Wholesale</dt>
         <dd><input type="text" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}"></dd>
 
+        <dt>Sales Tax</dt>
+        <input type="hidden" name="box-sales_tax" value="off">
+        <dd><input type="checkbox" id="box-sales_tax" name="box-sales_tax" {% if box.sales_tax == True %}checked="checked"{% endif %}></input></dd>
+
+        <dt>Bottle Deposit</dt>
+        <input type="hidden" name="box-bottle_dep" value="off">
+        <dd><input type="checkbox" id="box-bottle_dep" name="box-bottle_dep" {% if box.bottle_dep == True %}checked="checked"{% endif %}></input></dd>
+
         <hr />
         <dt>Enabled</dt>
         <dd><input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}></input></dd>

@@ -524,12 +524,9 @@ def admin_inventory_submit(request):
              permission='manage')
 def admin_items_add(request):
     if len(request.GET) == 0:
-        return {'items': {'count': 1,
-                          'name-0': '',
-                          'barcode-0': '',
-                         }}
+        return {'d': {'item_count': 1}}
     else:
-        return {'items': request.GET}
+        return {'d': request.GET}
 
 
 @view_config(route_name='admin_items_add_submit',
@@ -541,8 +538,9 @@ def admin_items_add_submit(request):
 
     # Iterate all the POST keys and find the ones that are item names
     for key in request.POST:
-        if 'item-name-' in key:
-            id = int(key.split('-')[2])
+        kf = key.split('-')
+        if len(kf) == 3 and kf[0] == 'item' and kf[2] == 'name':
+            id = int(kf[1])
             stock = 0
             wholesale = 0
             price = 0
@@ -550,8 +548,12 @@ def admin_items_add_submit(request):
 
             # Parse out the important fields looking for errors
             try:
-                name = request.POST['item-name-{}'.format(id)].strip()
-                barcode = request.POST['item-barcode-{}'.format(id)].strip()
+                name = request.POST['item-{}-name'.format(id)].strip()
+                name_general = request.POST['item-{}-general'.format(id)].strip()
+                name_volume = request.POST['item-{}-volume'.format(id)].strip()
+                barcode = request.POST['item-{}-barcode'.format(id)].strip()
+                sales_tax = request.POST['item-{}-salestax'.format(id)].strip() == 'on'
+                bottle_dep = request.POST['item-{}-bottledep'.format(id)].strip() == 'on'
 
                 # Check that name and barcode are not blank. If name is blank
                 # treat this as an empty row and skip. If barcode is blank
@@ -559,29 +561,52 @@ def admin_items_add_submit(request):
                 if name == '':
                     continue
                 if barcode == '':
-                    barcode = None
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
+                    request.session.flash('Error adding item: {}. No barcode.'.\
+                                    format(name), 'error')
+                    continue
 
                 # Make sure the name and/or barcode doesn't already exist
                 if Item.exists_name(name):
-                    error_items.append({'name': name, 'barcode': barcode})
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
                     request.session.flash('Error adding item: {}. Name exists.'.\
                                     format(name), 'error')
                     continue
                 if barcode and Item.exists_barcode(barcode):
-                    error_items.append({'name': name, 'barcode': barcode})
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
                     request.session.flash('Error adding item: {}. Barcode exists.'.\
                                     format(name), 'error')
                     continue
 
                 # Add the item to the DB
-                item = Item(name, barcode, price, wholesale, stock, enabled)
+                item = Item(name, barcode, price, wholesale, sales_tax, bottle_dep, stock, enabled)
                 DBSession.add(item)
                 DBSession.flush()
                 count += 1
             except Exception as e:
                 if request.debug: raise(e)
                 if len(name):
-                    error_items.append({'name': name, 'barcode': barcode})
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
                     request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
                 # Otherwise this was probably a blank row; ignore.
@@ -594,9 +619,9 @@ def admin_items_add_submit(request):
         e_count = 0
         for err in error_items:
             for k,v in err.items():
-                flat['{}-{}'.format(k, e_count)] = v
+                flat['item-{}-{}'.format(e_count, k)] = v
             e_count += 1
-        flat['count'] = len(error_items)
+        flat['item_count'] = len(error_items)
         return HTTPFound(location=request.route_url('admin_items_add', _query=flat))
     else:
         return HTTPFound(location=request.route_url('admin_items_edit'))
@@ -630,6 +655,10 @@ def admin_items_edit_submit(request):
                 val = round(float(request.POST[key]), 2)
             elif field == 'wholesale':
                 val = round(float(request.POST[key]), 4)
+            elif field == 'sales_tax':
+                val = request.POST[key] == 'on'
+            elif field == 'bottle_dep':
+                val = request.POST[key] == 'on'
             else:
                 val = request.POST[key].strip()
 
@@ -855,8 +884,10 @@ def admin_box_add_submit(request):
         items_empty_barcode = 0
 
         # Work on the box first
-        box_name     = request.POST['box-name'].strip()
-        box_barcode  = request.POST['box-barcode'].strip()
+        box_name      = request.POST['box-name'].strip()
+        box_barcode   = request.POST['box-barcode'].strip()
+        box_salestax  = request.POST['box-sales_tax'] == 'on'
+        box_bottledep = request.POST['box-bottle_dep'] == 'on'
 
         if box_name == '':
             request.session.flash('Error adding box: must have name.', 'error')
@@ -932,7 +963,7 @@ def admin_box_add_submit(request):
 
         else:
             # Need to create the box
-            box = Box(box_name, box_barcode)
+            box = Box(box_name, box_barcode, box_bottledep, box_salestax)
             DBSession.add(box)
             DBSession.flush()
 
@@ -940,7 +971,14 @@ def admin_box_add_submit(request):
             for item,quantity in items_to_add:
                 if type(item) is dict:
                     # Need to add this item first
-                    item = Item(item['name'], item['barcode'] or None, 0, 0, 0, False)
+                    item = Item(name=item['name'],
+                                barcode=item['barcode'] or None,
+                                price=0,
+                                wholesale=0,
+                                sales_tax=box_salestax,
+                                bottle_dep=box_bottledep,
+                                in_stock=0,
+                                enabled=False)
                     DBSession.add(item)
                     DBSession.flush()
 
@@ -1129,6 +1167,10 @@ def admin_box_edit_submit(request):
                     val = round(float(request.POST[key]), 2)
                 elif field == 'quantity':
                     val = int(request.POST[key])
+                elif field == 'sales_tax':
+                    val = request.POST[key] == 'on'
+                elif field == 'bottle_dep':
+                    val = request.POST[key] == 'on'
                 else:
                     val = request.POST[key].strip()
 

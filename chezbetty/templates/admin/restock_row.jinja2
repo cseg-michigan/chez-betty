@@ -20,7 +20,7 @@
   <td class="quantity"><input type="text" class="form-control restock-quantity numeric" id="restock-quantity-X" name="restock-quantity-X" value="{% if line.quantity %}{{ line.quantity }}{% else %}1{% endif %}"></td>
   <td class="wholesale"><input type="text" class="form-control restock-cost numeric" id="restock-wholesale-X" name="restock-wholesale-X" value="{% if line.wholesale %}{{ line.wholesale|round(4) }}{% elif item %}{{ item.wholesale|round(4) }}{% elif box %}{{ box.wholesale|round(4) }}{% endif %}"></td>
   <td class="coupon"><input type="text" class="form-control restock-coupon numeric" id="restock-coupon-X" name="restock-coupon-X" value="{% if line.coupon %}{{ line.coupon|round(2) }}{% endif %}"></td>
-  <td class="salestax"><input type="checkbox" class="restock-salestax" id="restock-salestax-X" name="restock-salestax-X" value="on" {% if line.salestax %}checked="checked"{% endif %}></td>
-  <td class="bottledeposit"><input type="checkbox" class="restock-bottledeposit" id="restock-bottledeposit-X" name="restock-bottledeposit-X" value="on" {% if line.btldeposit %}checked="checked"{% endif %}></td>
+  <td class="salestax"><input type="checkbox" class="restock-salestax" id="restock-salestax-X" name="restock-salestax-X" value="on" {% if line.salestax or (box and box.sales_tax) or (item and item.sales_tax) %}checked="checked"{% endif %}></td>
+  <td class="bottledeposit"><input type="checkbox" class="restock-bottledeposit" id="restock-bottledeposit-X" name="restock-bottledeposit-X" value="on" {% if line.btldeposit or (box and box.bottle_dep) or (item and item.bottle_dep) %}checked="checked"{% endif %}></td>
   <td class="total"><input type="text" class="form-control restock-total numeric" id="restock-total-X" name="restock-total-X"></td>
 </tr>

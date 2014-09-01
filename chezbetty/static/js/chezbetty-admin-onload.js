@@ -72,6 +72,49 @@ function toggle_enabled (type, btn) {
 	}
 }
 
+// ITEMS
+
+$("#new-item").click(function () {
+	// Instead of counting each time, just keep the number of lines around
+	// in a hidden element.
+	var item_lines_count = parseInt($("#item-count").val());
+
+	// Copy row 0 to create a new row
+	container = $("#item-0").clone().attr("id", "item-"+item_lines_count);
+	container.find("*").each(function (index) {
+		// Update the ID to the next number
+		id = $(this).attr("name");
+		if (id) {
+			name_pieces = id.split("-");
+			name_pieces[name_pieces.length-2] = item_lines_count;
+			new_id = name_pieces.join("-");
+			$(this).attr("id", "box-" + new_id);
+			$(this).attr("name", new_id);
+			if ($(this).is(":checkbox")) {
+				// Clear checkmarks
+				$(this).prop("checked", "");
+			} else {
+				// Clear the value if there is text in the first row already
+				$(this).val("");
+			}
+			if (name_pieces[3] == 'barcode') {
+				$(this).on("input", barcode_check_fn);
+				// Since we clone the input, we need to trigger to clear its coloring
+				$(this).trigger("input");
+			}
+		}
+	});
+
+	// Add the new row to the page
+	$("#newitem-rows").append(container);
+
+	// Update the number of new items to be added
+	$("#item-count").val(item_lines_count+1);
+
+	attach_keypad();
+});
+
+
 $(".edit-item-row").on("click", "button", function () {
 	toggle_enabled("item", $(this));
 });
@@ -235,7 +278,7 @@ $("#new-box-table").on("input", "input:text", function () {
 	$("#box-name").val(name);
 });
 
-$(".box-subitem").on("input", "input:text", function () {
+$(".box-subitem, #newitems").on("input", "input:text", function () {
 	var row_id = $(this).attr("id").split("-")[2];
 	var base = $("#box-item-"+row_id+"-general").val();
 	var volume = $("#box-item-"+row_id+"-volume").val();

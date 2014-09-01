@@ -33,6 +33,14 @@
         <dt>In Stock</dt>
         <dd><input type="text" class="form-control numeric" disabled value="{{ item.in_stock }}"></input></dd>
 
+        <dt>Sales Tax</dt>
+        <input type="hidden" name="item-sales_tax" value="off">
+        <dd><input type="checkbox" id="item-sales_tax" name="item-sales_tax" {% if item.sales_tax == True %}checked="checked"{% endif %}></input></dd>
+
+        <dt>Bottle Deposit</dt>
+        <input type="hidden" name="item-bottle_dep" value="off">
+        <dd><input type="checkbox" id="item-bottle_dep" name="item-bottle_dep" {% if item.bottle_dep == True %}checked="checked"{% endif %}></input></dd>
+
         <hr />
         <dt>Enabled</dt>
         <dd><input type="checkbox" id="admin-item-enable-{{ item.id }}" class="admin-switch toggle-disabled" {% if item.enabled == True %}checked="checked"{% endif %}></input></dd>

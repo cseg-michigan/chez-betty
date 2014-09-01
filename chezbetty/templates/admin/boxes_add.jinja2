@@ -44,6 +44,22 @@
       <td></td>
       <td><input type="text" class="form-control barcode-check" id="box-barcode" name="box-barcode" value="{{ d['box-barcode'] }}"></td>
     </tr>
+    <tr>
+      <td>Sales Tax</td>
+      <td></td>
+      <td>
+        <input type="hidden" name="box-sales_tax" value="off">
+        <input type="checkbox" class="form-control" id="box-sales_tax" name="box-sales_tax" {% if d['box-sales_tax'] == "on" %}checked="checked"{% endif %}>
+      </td>
+    </tr>
+    <tr>
+      <td>Bottle Deposit</td>
+      <td></td>
+      <td>
+        <input type="hidden" name="box-bottle_dep" value="off">
+        <input type="checkbox" class="form-control" id="box-bottle_dep" name="box-bottle_dep" {% if d['box-bottle_dep'] == "on" %}checked="checked"{% endif %}>
+      </td>
+    </tr>
   </tbody>
 </table>
 
