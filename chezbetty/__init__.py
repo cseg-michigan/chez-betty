@@ -78,20 +78,22 @@ def main(global_config, **settings):
     config.add_route('item_request_new', '/item/request/new')
     config.add_route('item_request_by_id', '/item/request/by_id/{id}')
 
-    config.add_route('shame', '/shame')
-    config.add_route('user',  '/user/{umid}')
+    config.add_route('shame',        '/shame')
+    config.add_route('user',         '/user/{umid}')
 
     config.add_route('purchase_new', '/purchase/new')
     config.add_route('purchase',     '/purchase/{umid}')
 
-    config.add_route('deposit_new', '/deposit/new')
-    config.add_route('deposit',     '/deposit/{umid}')
+    config.add_route('deposit_new',         '/deposit/new')
+    config.add_route('deposit',             '/deposit/{umid}')
+    config.add_route('deposit_edit',        '/deposit/edit/{umid}/{event_id}')
+    config.add_route('deposit_edit_submit', '/deposit/edit/submit')
 
-    config.add_route('btc_deposit', '/bitcoin/deposit/{umid}/{auth_key}')
-    config.add_route('btc_check',   '/bitcoin/check/{addr}')
+    config.add_route('btc_deposit',  '/bitcoin/deposit/{umid}/{auth_key}')
+    config.add_route('btc_check',    '/bitcoin/check/{addr}')
 
-    config.add_route('event',      '/event/{event_id}')
-    config.add_route('event_undo', '/event/undo/{umid}/{event_id}')
+    config.add_route('event',        '/event/{event_id}')
+    config.add_route('event_undo',   '/event/undo/{umid}/{event_id}')
 
 
     # ADMIN

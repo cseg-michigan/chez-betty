@@ -183,7 +183,7 @@ def __total_deposit_amount(self):
             .join(event.Event)\
             .filter(and_(
                         Transaction.to_account_virt_id == self.id,
-                        or_(Transaction.type == 'deposit',
+                        or_(Transaction.type == 'cashdeposit',
                             Transaction.type == 'btcdeposit')))\
             .filter(event.Event.deleted==False).one().total or 0.0
 account.Account.total_deposits = __total_deposit_amount

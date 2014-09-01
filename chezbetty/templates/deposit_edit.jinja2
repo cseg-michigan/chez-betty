@@ -1,0 +1,40 @@
+{% extends "base.jinja2" %}
+{% block title %}Edit Deposit{% endblock %}
+{% block header %}Edit Deposit{% endblock %}
+
+
+{% block content %}
+
+{% set page = 'deposit' %}
+{% include "user_info.jinja2" %}
+
+{% set keypad_val = old_deposit.amount %}
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">New Deposit Amount</h3>
+  </div>
+  <div class="panel-body">
+
+    <div id="event_id" class="hidden">{{ old_event.id }}</div>
+
+    <div class="row wrapper">
+      <div class="col-md-2"></div>
+      <div class="col-md-4">
+        {% include "keypad.jinja2" %}
+      </div>
+      <div class="col-md-4" style="padding-top:80px;">
+        <button type="button" id="btn-edit-deposit" class="btn btn-success btn-lg btn-full-width">Edit Deposit</button>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <a id="btn-delete-deposit" class="btn btn-danger btn-lg btn-full-width" href="/event/undo/{{ user.umid }}/{{ old_event.id }}" style="padding-top:38px;">Delete Deposit</a>
+      </div>
+      <div class="col-md-2"></div>
+  </div>
+</div>
+
+{% endblock %}

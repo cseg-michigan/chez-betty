@@ -170,6 +170,33 @@ def deposit(request):
         return HTTPFound(location=request.route_url('index'))
 
 
+@view_config(route_name='deposit_edit',
+             renderer='templates/deposit_edit.jinja2',
+             permission='service')
+def deposit_edit(request):
+    try:
+        user = User.from_umid(request.matchdict['umid'])
+        event = Event.from_id(request.matchdict['event_id'])
+
+        if event.type != 'deposit' or event.transactions[0].type != 'cashdeposit':
+            request.session.flash('Can only edit a cash deposit.', 'error')
+            return HTTPFound(location=request.route_url('index'))
+
+        return {'user': user,
+                'old_event': event,
+                'old_deposit': event.transactions[0]}
+
+    except __user.InvalidUserException as e:
+        request.session.flash('Invalid User ID.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+
+
 @view_config(route_name='event', permission='service')
 def event(request):
 
@@ -257,10 +284,14 @@ def event_undo(request):
     # If the checks pass, actually revert the transaction
     try:
         line_items = datalayer.undo_event(event, user)
-        request.session.flash('Transaction successfully reverted.', 'success')
+        if event.type == 'deposit':
+            request.session.flash('Deposit successfully undone.', 'success')
+        elif event.type == 'purchase':
+            request.session.flash('Purchase undone. Please edit it as needed.', 'success')
     except:
         request.session.flash('Error: Failed to undo transaction.', 'error')
         return HTTPFound(location=request.route_url('purchase', umid=user.umid))
+
     if event.type == 'deposit':
         return HTTPFound(location=request.route_url('user', umid=user.umid))
     elif event.type == 'purchase':
@@ -414,7 +445,10 @@ def btc_check(request):
         return {}
 
 
-@view_config(route_name='deposit_new', request_method='POST', renderer='json', permission='service')
+@view_config(route_name='deposit_new',
+             request_method='POST',
+             renderer='json',
+             permission='service')
 def deposit_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
@@ -441,11 +475,51 @@ def deposit_new(request):
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid user error. Please try again.', 'error')
-        return {'redirect_url': '/'}
+        return {'error': 'Error finding user.',
+                'redirect_url': '/'}
 
     except ValueError as e:
         return {'error': 'Error understanding deposit amount.'}
 
     except DepositException as e:
         return {'error': str(e)}
+
+
+@view_config(route_name='deposit_edit_submit',
+             request_method='POST',
+             renderer='json',
+             permission='service')
+def deposit_edit_submit(request):
+    try:
+        user = User.from_umid(request.POST['umid'])
+        amount = Decimal(request.POST['amount'])
+        old_event = Event.from_id(request.POST['old_event_id'])
+
+        if old_event.type != 'deposit' or \
+           old_event.transactions[0].type != 'cashdeposit' or \
+           old_event.transactions[0].to_account_virt_id != user.id:
+           # Something went wrong, can't undo this deposit
+           raise DepositException('Cannot undo that deposit')
+
+        new_deposit = deposit_new(request)
+
+        if 'error' in new_deposit and new_deposit['error'] != 'success':
+            # Error occurred, do not delete old event
+            return new_deposit
+
+        # Now undo old deposit
+        datalayer.undo_event(old_event, user)
+
+        return new_deposit
+
+    except __user.InvalidUserException as e:
+        request.session.flash('Invalid user error. Please try again.', 'error')
+        return {'redirect_url': '/'}
+
+    except DepositException as e:
+        return {'error': str(e)}
+
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'error': 'Error.'}
 
