@@ -62,11 +62,18 @@ def about(request):
 def items(request):
     items = DBSession.query(Item)\
                      .filter(Item.enabled==True)\
+                     .filter(Item.in_stock>0)\
+                     .order_by(Item.name).all()
+    out_of_stock_items = DBSession.query(Item)\
+                     .filter(Item.enabled==True)\
+                     .filter(Item.in_stock==0)\
                      .order_by(Item.name).all()
     disabled_items = DBSession.query(Item)\
                      .filter(Item.enabled==False)\
                      .order_by(Item.name).all()
-    return {'items': items, 'disabled_items': disabled_items}
+    return {'items': items,
+            'out_of_stock_items': out_of_stock_items,
+            'disabled_items': disabled_items}
 
 
 @view_config(route_name='item_request', renderer='templates/item_request.jinja2')
