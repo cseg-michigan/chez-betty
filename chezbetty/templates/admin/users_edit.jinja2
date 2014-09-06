@@ -1,5 +1,5 @@
 {% extends "base.jinja2" %}
-{% set active_page = 'user_edit' %}
+{% set active_page = 'users' %}
 {% block title %}Edit Users{% endblock %}
 
 {% block top %}
@@ -20,8 +20,6 @@
       <tr class="user-list-header">
         <th>&nbsp;</th>
         <th {% if sort=="name" %}data-defaultsort="{{ dir }}"{% endif %}>Name</th>
-        <th {% if sort=="uniqname" %}data-defaultsort="{{ dir }}"{% endif %}>uniqname</th>
-        <th {% if sort=="umid" %}data-defaultsort="{{ dir }}"{% endif %}>UMID</th>
         <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
         <th {% if sort=="balance" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
         <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
@@ -32,10 +30,8 @@
     <tbody>
       {% for user in users %}
       <tr id="user-{{ user.id }}" class="edit-user-row {% if user.enabled == False %} disabled-row {% endif %}">
-        <td><a href="/user/{{ user.umid }}"><span class="glyphicon glyphicon-user"></span></a></td>
+        <td><a href="/admin/user/{{ user.id }}"><span class="glyphicon glyphicon-user"></span></a></td>
         <td data-value="{{ user.name }}"><input type="text" class="form-control" id="user-name-{{ user.id }}" name="user-name-{{ user.id }}" value="{{ user.name }}"></td>
-        <td>{{ user.uniqname }}</td>
-        <td>{{ user.umid }}</td>
         <td data-value="{{ user.role }}">
           <select class="form-control" id="user-role-{{ user.id }}" name="user-role-{{ user.id }}">
             {% for role in roles %}

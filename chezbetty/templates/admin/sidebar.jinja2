@@ -25,7 +25,7 @@
 {% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
   <li><span>Manage Users</span></li>
-  <li {% if active_page == 'users_edit' %}class="active"{% endif %}><a href="/admin/users/edit">Edit Users<span class="badge pull-right">{{ counts["users"] }}</span></a></li>
+  <li {% if active_page == 'users' %}class="active"{% endif %}><a href="/admin/users/edit">Edit Users<span class="badge pull-right">{{ counts["users"] }}</span></a></li>
   <li {% if active_page == 'user_balance_edit' %}class="active"{% endif %}><a href="/admin/user/balance/edit">Edit User Balance</a></li>
   <li {% if active_page == 'users_email' %}class="active"{% endif %}><a href="/admin/users/email">Email Users</a></li>
 </ul>

@@ -161,13 +161,13 @@ def admin_index(request):
     graph_deposits_day_cash  = views_data.create_dict('deposits_cash', 'day', 21)
     graph_deposits_day_btc   = views_data.create_dict('deposits_btc', 'day', 21)
     graph_deposits_day = {'xs': [graph_deposits_day_total['xs'][0],
-                                 graph_deposits_day_cash['xs'][0], 
+                                 graph_deposits_day_cash['xs'][0],
                                  graph_deposits_day_btc['xs'][0]],
                           'ys': [graph_deposits_day_total['ys'][0],
-                                 graph_deposits_day_cash['ys'][0], 
+                                 graph_deposits_day_cash['ys'][0],
                                  graph_deposits_day_btc['ys'][0]],
                           'avg_hack': [graph_deposits_day_total['avg_hack'][0],
-                                 graph_deposits_day_cash['avg_hack'][0], 
+                                 graph_deposits_day_cash['avg_hack'][0],
                                  graph_deposits_day_btc['avg_hack'][0]]}
 
 
@@ -1368,6 +1368,19 @@ def admin_users_edit_submit(request):
         setattr(user, field, val)
     request.session.flash('Users updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_users_edit'))
+
+
+@view_config(route_name='admin_user',
+             renderer='templates/admin/user.jinja2',
+             permission='admin')
+def admin_user(request):
+    try:
+        user = User.from_id(request.matchdict['user_id'])
+        return {'user': user}
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Invalid user?', 'error')
+        return HTTPFound(location=request.route_url('admin_index'))
 
 
 @view_config(route_name='admin_user_balance_edit',
