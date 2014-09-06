@@ -373,6 +373,13 @@ class SubTransaction(Base):
                         .filter(event.Event.deleted==False)\
                         .order_by(cls.id).all()
 
+    @classmethod
+    def all(cls):
+        return DBSession.query(cls)\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(event.Event.deleted==False).all()
+
 
 class PurchaseLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}
@@ -430,14 +437,15 @@ class PurchaseLineItem(SubTransaction):
                         .order_by(event.Event.timestamp).all()
 
 
-@property
-def __number_sold(self):
-    return object_session(self).query(func.sum(PurchaseLineItem.quantity).label('c'))\
-                               .join(Transaction)\
-                               .join(event.Event)\
-                               .filter(PurchaseLineItem.item_id==self.id)\
-                               .filter(event.Event.deleted==False).one().c
-item.Item.number_sold = __number_sold
+# This is slowww:
+# @property
+# def __number_sold(self):
+#     return object_session(self).query(func.sum(PurchaseLineItem.quantity).label('c'))\
+#                                .join(Transaction)\
+#                                .join(event.Event)\
+#                                .filter(PurchaseLineItem.item_id==self.id)\
+#                                .filter(event.Event.deleted==False).one().c
+# item.Item.number_sold = __number_sold
 
 
 class RestockLineItem(SubTransaction):

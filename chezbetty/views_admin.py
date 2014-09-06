@@ -672,9 +672,28 @@ def admin_items_add_submit(request):
              renderer='templates/admin/items_edit.jinja2',
              permission='manage')
 def admin_items_edit(request):
-    items_active = DBSession.query(Item).filter_by(enabled=True).order_by(Item.name).all()
-    items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
+    items_active = DBSession.query(Item)\
+                            .filter_by(enabled=True)\
+                            .order_by(Item.name).all()
+    items_inactive = DBSession.query(Item)\
+                              .filter_by(enabled=False)\
+                              .order_by(Item.name).all()
     items = items_active + items_inactive
+
+    # Calculate the number sold here (much faster)
+    purchased_items = PurchaseLineItem.all()
+    purchased_quantities = {}
+    for pi in purchased_items:
+        if pi.item_id not in purchased_quantities:
+            purchased_quantities[pi.item_id] = 0
+        purchased_quantities[pi.item_id] += pi.quantity
+
+    for item in items:
+        if item.id in purchased_quantities:
+            item.number_sold = purchased_quantities[item.id]
+        else:
+            item.number_sold = None
+
     return {'items': items}
 
 
