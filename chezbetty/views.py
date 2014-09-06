@@ -360,7 +360,10 @@ def item_request_by_id(request):
     request.session.flash('Request for {} added successfully'.format(item.name), 'success')
     return HTTPFound(location=request.route_url('index'))
 
-@view_config(route_name='purchase_new', request_method='POST', renderer='json', permission='service')
+@view_config(route_name='purchase_new',
+             request_method='POST',
+             renderer='json',
+             permission='service')
 def purchase_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
