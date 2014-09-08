@@ -390,15 +390,28 @@ def admin_restock_submit(request):
                 # Create arrays of restocked items/boxes
                 if obj_type == 'item':
                     item = Item.from_id(obj_id)
+
+                    # Set properties based on how it was restocked
+                    item.bottle_dep = btldeposit
+                    item.sales_tax = salestax
+
                     add_item(item, quantity, total)
                     items.append((item, quantity, total, wholesale, coupon, salestax, btldeposit))
 
                 elif obj_type == 'box':
                     box = Box.from_id(obj_id)
+
+                    # Set properties from restock
                     box.wholesale = wholesale
+                    box.bottle_dep = btldeposit
+                    box.sales_tax = salestax
 
                     inv_cost = total / (box.subitem_count * quantity)
                     for itembox in box.items:
+                        # Set subitem properties too
+                        itembox.item.bottle_dep = btldeposit
+                        itembox.item.sales_tax = salestax
+
                         subquantity = itembox.quantity * quantity
                         subtotal    = subquantity * inv_cost
                         add_item(itembox.item, subquantity, subtotal)
@@ -429,9 +442,8 @@ def admin_restock_submit(request):
             request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
             continue
         item.wholesale = Decimal(round(total/quantity, 4))
-        # Make sure we aren't selling at a loss cause that would be dumb
-        if item.price < item.wholesale:
-            item.price = round(item.wholesale * Decimal(1.15), 2)
+        # Set the item price
+        item.price = round(item.wholesale * Decimal(1.15), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
