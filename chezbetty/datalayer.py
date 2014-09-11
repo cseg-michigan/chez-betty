@@ -258,7 +258,7 @@ def reconcile_items(items, admin):
 
 # Call this when the cash box gets emptied
 def reconcile_cash(amount, admin):
-    assert(amount>0)
+    assert(amount>=0)
 
     e = event.EmptyCashBox(admin)
     DBSession.add(e)
@@ -292,6 +292,19 @@ def reconcile_cash(amount, admin):
     DBSession.add(t2)
     return expected_amount
 
+
+# Call this to move money from the cash box to the bank, but without necessarily
+# emptying the cash box.
+def cashbox_to_bank(amount, admin):
+    assert(amount>=0)
+
+    e = event.EmptyCashBox(admin)
+    DBSession.add(e)
+    DBSession.flush()
+
+    t = transaction.EmptyCashBox(e, amount)
+    DBSession.add(t)
+    
 
 # Call this when bitcoins are converted to USD
 def reconcile_bitcoins(amount, admin, expected_amount=None):

@@ -488,14 +488,28 @@ def admin_cash_reconcile_submit(request):
             return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
         amount = Decimal(request.POST['amount'])
-        expected_amount = datalayer.reconcile_cash(amount, request.user)
 
-        request.session.flash('Cash box recorded successfully', 'success')
-        return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
-            _query={'amount':amount, 'expected_amount':expected_amount}))
+        if request.POST['cash-box-reconcile'] == 'on':
+            # Make the cashbox total to 0
+            expected_amount = datalayer.reconcile_cash(amount, request.user)
+
+            request.session.flash('Cash box recorded successfully', 'success')
+            return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
+                _query={'amount':amount, 'expected_amount':expected_amount}))
+        else:
+            # Just move some of the money
+            datalayer.cashbox_to_bank(amount, request.user)
+
+            request.session.flash('Moved ${:,.2f} from the cash box to the bank'.format(amount), 'success')
+            return HTTPFound(location=request.route_url('admin_index'))        
 
     except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for cash box amount', 'error')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error occurred', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
 
@@ -505,7 +519,9 @@ def admin_cash_reconcile_success(request):
     deposit = float(request.GET['amount'])
     expected = float(request.GET['expected_amount'])
     difference = deposit - expected
-    return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
+    return {'cash': {'deposit': deposit,
+                     'expected': expected,
+                     'difference': difference}}
 
 
 def admin_btc_reoncile(request):
