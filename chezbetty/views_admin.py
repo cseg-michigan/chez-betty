@@ -716,11 +716,27 @@ def admin_items_edit(request):
             purchased_quantities[pi.item_id] = 0
         purchased_quantities[pi.item_id] += pi.quantity
 
+    # Get the sale speed
+    sale_speeds = views_data.item_sale_speed(30)
+
     for item in items:
         if item.id in purchased_quantities:
             item.number_sold = purchased_quantities[item.id]
         else:
             item.number_sold = None
+
+        if item.id in sale_speeds:
+            speed = sale_speeds[item.id]
+
+            item.sale_speed_thirty_days = speed
+
+            if speed > 0:
+                item.days_until_out = item.in_stock / sale_speeds[item.id]
+            else:
+                item.days_until_out = None
+        else:
+            item.sale_speed_thirty_days = 0
+            item.days_until_out = None
 
     return {'items': items}
 

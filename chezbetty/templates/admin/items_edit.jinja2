@@ -27,6 +27,8 @@
           <th {% if sort=="markup" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Markup</th>
           <th {% if sort=="stock" %}data-defaultsort="{{ dir }}"{% endif %}>Stock</th>
           <th {% if sort=="sold" %}data-defaultsort="{{ dir }}"{% endif %}>Num Sold</th>
+          <th {% if sort=="salespeed" %}data-defaultsort="{{ dir }}"{% endif %}>Sale Speed</th>
+          <th {% if sort=="daysuntilout" %}data-defaultsort="{{ dir }}"{% endif %}>Days Until Out</th>
           <th>Enabled</th>
         </tr>
       </thead>
@@ -64,6 +66,8 @@
           <td id="item-markup-{{ item.id }}" class="item-markup right" data-value="{{ markup }}">{{ markup }}%</td>
           <td>{{ item.in_stock }}</td>
           <td data-value="{{ item.number_sold|int }}">{{ item.number_sold }}</td>
+          <td>{{ item.sale_speed_thirty_days|float|round(3) }}</td>
+          <td>{{ item.days_until_out|int }}</td>
           <td>
             <input type="checkbox" id="admin-item-enable-{{ item.id }}" class="admin-switch toggle-disabled" {% if item.enabled == True %}checked="checked"{% endif %}>
           </td>

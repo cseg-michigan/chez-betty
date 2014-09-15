@@ -274,6 +274,94 @@ def create_item_sales_json(request, item_id):
     return {'individual': individual,
             'sum': totals}
 
+#######
+### Calculate the speed of sale for all items
+
+# We are going to do this over all time and over the last 30 days
+
+# Returns a dict of {item_num -> {number of days -> sale speed}}
+def item_sale_speed(num_days):
+    # First we need to figure out when each item was in stock and when it wasn't.
+    # I don't know what the best way to do this is. I think the easiest way is
+    # to look at the in_stock column in the item_history table and figure it
+    # out from there.
+
+    # Start by getting all item change events for the last thirty days
+    data = {}
+
+    data_onsale = {}
+
+    start = get_start(num_days)
+    start_datetime = datetime.datetime(start.year, start.month, start.day)
+
+    start_padding = get_start(num_days*3)
+    start_str = start_padding.strftime('%Y-%m-%d 0:0')
+    items = DBSession.execute("SELECT * FROM items_history\
+                               WHERE item_changed_at>'{}'\
+                               ORDER BY item_changed_at ASC".format(start_str))
+    
+    # Calculate the number of days in the interval the item was in stock
+    for item in items:
+
+        status = item.in_stock>0
+
+        if item.id not in data_onsale:
+            data_onsale[item.id] = {'days_on_sale': 0, 
+                                    'date_in_stock': None,
+                                    'num_sold': 0}
+
+        if item.item_changed_at < start_datetime:
+            # We need to figure out if the item started in stock at the
+            # beginning of the time period.
+            if status == True:
+                data_onsale[item.id]['date_in_stock'] = start_datetime
+            else:
+                data_onsale[item.id]['date_in_stock'] = None
+
+        elif (status == True) and (data_onsale[item.id]['date_in_stock'] == None):
+            # item is in stock now and wasn't before
+            data_onsale[item.id]['date_in_stock'] = item.item_changed_at
+
+        elif (status == False) and (data_onsale[item.id]['date_in_stock'] != None):
+            # Item is now out of stock
+
+            # calculate time difference
+            tdelta = item.item_changed_at - data_onsale[item.id]['date_in_stock']
+            data_onsale[item.id]['days_on_sale'] += tdelta.days
+            print('{}: {}'.format(item.id, tdelta))
+
+            data_onsale[item.id]['date_in_stock'] = None
+
+    for item_id,item_data in data_onsale.items():
+        if item_data['date_in_stock'] != None:
+            tdelta = datetime.datetime.now() - item_data['date_in_stock']
+            item_data['days_on_sale'] += tdelta.days
+            print('{}: {}'.format(item_id, tdelta.days))
+
+
+    # Calculate the number of items sold during the period
+    purchases = DBSession.query(PurchaseLineItem)\
+                         .join(Transaction)\
+                         .join(Event)\
+                         .filter(Event.deleted==False)\
+                         .filter(Event.timestamp>start)
+    for purchase in purchases:
+        item_id = purchase.item_id
+        quantity = purchase.quantity
+        data_onsale[item_id]['num_sold'] += quantity
+
+
+    # Calculate rate, finally
+    for itemid,item_data in data_onsale.items():
+        if item_data['days_on_sale'] == 0:
+            data[itemid] = 0
+            continue
+        data[itemid] = item_data['num_sold'] / item_data['days_on_sale']
+
+
+    return data
+
+
 
 
 @view_config(route_name='admin_data_items_json',
@@ -332,4 +420,13 @@ def admin_data_item_sales_json(request):
              permission='manage')
 def admin_data_users_totals_json(request):
     return User.get_user_count_cumulative()
+
+
+
+
+@view_config(route_name='admin_data_speed_items',
+             renderer='json',
+             permission='manage')
+def admin_data_speed_items(request):
+    return item_sale_speed(30)
 

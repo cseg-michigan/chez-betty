@@ -188,6 +188,8 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_users_totals_json', '/admin/data/users/totals')
 
+    config.add_route('admin_data_speed_items', '/admin/data/speed/items')
+
 
     config.add_route('login',  '/login')
     config.add_route('logout', '/logout')
