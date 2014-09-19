@@ -21,6 +21,7 @@ from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
+from .models.pool import Pool
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -298,6 +299,27 @@ def event_undo(request):
         return HTTPFound(location=request.route_url('purchase', umid=user.umid, _query=line_items))
     else:
         assert(False and "Should not be able to get here?")
+
+
+@view_config(route_name='pools',
+             renderer='templates/pool.jinja2',
+             permission='service')
+def pools(request):
+    try:
+        user = User.from_umid(request.matchdict['umid'])
+
+        my_pools = Pool.all_by_owner(user)
+        their_pools = user.pools
+
+        return {'user': user,
+                'my_pools': my_pools}
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error finding user.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+
 
 ###
 ### JSON Requests

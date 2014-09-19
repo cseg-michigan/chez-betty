@@ -10,3 +10,5 @@ UPDATE transactions set type='cashdeposit' where type='deposit';
 
 ALTER TABLE announcements ADD COLUMN deleted BOOLEAN NOT NULL default FALSE;
 ALTER TABLE requests ADD COLUMN deleted BOOLEAN NOT NULL default FALSE;
+
+ALTER TYPE account_type ADD VALUE 'pool';

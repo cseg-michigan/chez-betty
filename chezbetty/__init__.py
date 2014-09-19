@@ -19,6 +19,8 @@ from .models import request
 from .models import transaction
 from .models import user
 from .models import vendor
+from .models import pool
+from .models import pool_user
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
@@ -71,6 +73,7 @@ def main(global_config, **settings):
     config.add_route('index', '/')
 
     config.add_route('about', '/about')
+    config.add_route('shame', '/shame')
 
     config.add_route('items',            '/items')
     config.add_route('item',             '/item/{barcode}/json')
@@ -78,7 +81,6 @@ def main(global_config, **settings):
     config.add_route('item_request_new', '/item/request/new')
     config.add_route('item_request_by_id', '/item/request/by_id/{id}')
 
-    config.add_route('shame',        '/shame')
     config.add_route('user',         '/user/{umid}')
 
     config.add_route('purchase_new', '/purchase/new')
@@ -94,6 +96,8 @@ def main(global_config, **settings):
 
     config.add_route('event',        '/event/{event_id}')
     config.add_route('event_undo',   '/event/undo/{umid}/{event_id}')
+
+    config.add_route('pools',        '/pools/{umid}')
 
 
     # ADMIN
