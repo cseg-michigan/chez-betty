@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
 {% set active_page = 'announcements' %}
 {% block title %}Edit Announcements{% endblock %}
 
@@ -17,7 +18,8 @@
     <thead>
       <tr>
         <th>Announcement</th>
-        <th style="width: 15%;">Date</th>
+        <th style="width: 20%;">Date</th>
+        <th style="width: 10%;">On/Off</th>
         <th style="width:  5%;">Delete</th>
       </tr>
     </thead>
@@ -25,14 +27,11 @@
     <tbody>
 
       {% for announcement in announcements %}
-      <tr id="announcement-{{ announcement.id }}" class="edit-announcement-row">
+      <tr id="announcement-{{ announcement.id }}" class="edit-announcement-row {% if announcement.enabled == False %}disabled-row{% endif %}">
         <td><input type="text" class="form-control" id="announcement-text-{{ announcement.id }}" name="announcement-text-{{ announcement.id }}" value="{{ announcement.announcement }}"></td>
         <td>{{ announcement.timestamp|pretty_date|safe }}</td>
-        <td>
-          <button type="button" id="btn-disable-announcement-{{ announcement.id }}" class="btn btn-danger" >X</button>
-          <button type="button" id="btn-enable-announcement-{{ announcement.id }}" class="btn btn-success" style="display:none;">+</button>
-        </td>
-        <input type="hidden" class="form-control" id="announcement-enabled-{{ announcement.id }}" name="announcement-enabled-{{ announcement.id }}" value="{{ announcement.enabled|int }}">
+        <td>{{ button.onoff_switch("announcement", "enabled", announcement.id, announcement.enabled) }}</td>
+        <td>{{ button.delete("announcement", "deleted", announcement.id) }}</td>
       </tr>
       {% endfor %}
 

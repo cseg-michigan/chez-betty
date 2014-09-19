@@ -40,7 +40,7 @@ class DepositException(Exception):
 
 @view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
-    announcements = Announcement.all()
+    announcements = Announcement.all_enabled()
     for announcement in announcements:
         request.session.flash(announcement.announcement, 'info')
 

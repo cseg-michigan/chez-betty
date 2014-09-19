@@ -75,6 +75,37 @@ def add_counts(event):
 ### Admin
 ###
 
+@view_config(route_name='admin_ajax_bool', permission='admin')
+def admin_ajax_bool(request):
+    obj_str = request.matchdict['object']
+    obj_id  = int(request.matchdict['id'])
+    obj_field = request.matchdict['field']
+    obj_state = request.matchdict['state'].lower() == 'true'
+
+    if obj_str == 'item':
+        obj = Item.from_id(obj_id)
+    elif obj_str == 'announcement':
+        obj = Announcement.from_id(obj_id)
+    elif obj_str == 'box':
+        obj = Box.from_id(obj_id)
+    elif obj_str == 'vendor':
+        obj = Vendor.from_id(obj_id)
+    elif obj_str == 'user':
+        obj = User.from_id(obj_id)
+    elif obj_str == 'request':
+        obj = Request.from_id(obj_id)
+    else:
+        # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+
+    setattr(obj, obj_field, obj_state)
+
+    DBSession.flush()
+
+    return request.response
+
 @view_config(route_name='admin_index',
              renderer='templates/admin/index.jinja2',
              permission='manage')
@@ -957,16 +988,6 @@ def admin_item_barcode_pdf(request):
         return HTTPFound(location=request.route_url('admin_item_edit', item_id=request.matchdict['item_id']))
 
 
-@view_config(route_name='admin_item_enable', permission='admin')
-def admin_item_enable(request):
-    item = Item.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        item.enabled = True
-    else:
-        item.enabled = False
-    return request.response
-
-
 @view_config(route_name='admin_item_delete', permission='admin')
 def admin_item_delete(request):
     try:
@@ -1316,16 +1337,6 @@ def admin_box_edit_submit(request):
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
 
 
-@view_config(route_name='admin_box_enable', permission='admin')
-def admin_box_enable(request):
-    box = Box.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        box.enabled = True
-    else:
-        box.enabled = False
-    return request.response
-
-
 @view_config(route_name='admin_box_delete', permission='admin')
 def admin_box_delete(request):
     try:
@@ -1381,14 +1392,6 @@ def admin_vendors_edit_submit(request):
     request.session.flash('Vendors updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_vendors_edit'))
 
-@view_config(route_name='admin_vendor_enable', permission='admin')
-def admin_vendor_enable(request):
-    vendor = Vendor.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        vendor.enabled = True
-    else:
-        vendor.enabled = False
-    return request.response
 
 @view_config(route_name='admin_users_edit',
              renderer='templates/admin/users_edit.jinja2',
@@ -1474,16 +1477,6 @@ def admin_user_balance_edit_submit(request):
     except event.NotesMissingException:
         request.session.flash('Must include a reason', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
-
-
-@view_config(route_name='admin_user_enable', permission='admin')
-def admin_user_enable(request):
-    user = User.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        user.enabled = True
-    else:
-        user.enabled = False
-    return request.response
 
 
 @view_config(route_name='admin_users_email',
@@ -1908,20 +1901,6 @@ def admin_requests(request):
     return {'requests': requests}
 
 
-@view_config(route_name='admin_requests_delete',
-             renderer='json',
-             permission='admin')
-def admin_requests_delete(request):
-    try:
-        request_id = int(request.matchdict['request_id'])
-        request = Request.from_id(request_id)
-        request.enabled = False
-        return {'status':     'success',
-                'request_id': request_id}
-    except:
-        return {'status': 'error'}
-
-
 @view_config(route_name='admin_announcements_edit',
              renderer='templates/admin/announcements_edit.jinja2',
              permission='admin')
@@ -1952,10 +1931,7 @@ def admin_announcements_edit_submit(request):
             DBSession.add(announcement)
         else:
             announcement = Announcement.from_id(int(announcement_id))
-            if not int(props['enabled']):
-                announcement.enabled = False
-            else:
-                announcement.announcement = props['text']
+            announcement.announcement = props['text']
 
     request.session.flash('Announcements updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_announcements_edit'))

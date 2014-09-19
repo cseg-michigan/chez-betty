@@ -43,7 +43,7 @@
 
         <hr />
         <dt>Enabled</dt>
-        <dd><input type="checkbox" id="admin-item-enable-{{ item.id }}" class="admin-switch toggle-disabled" {% if item.enabled == True %}checked="checked"{% endif %}></input></dd>
+        <dd>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</dd>
       </dl>
     </div>
 

@@ -101,6 +101,8 @@ def main(global_config, **settings):
     config.add_route('admin_demo',      '/admin/demo/{state}')
     config.add_route('admin_keyboard',  '/admin/keyboard/{state}')
 
+    config.add_route('admin_ajax_bool',  '/admin/ajax/bool/{object}/{id}/{field}/{state}')
+
     config.add_route('admin_item_barcode_json', '/admin/item/{barcode}/json')
     config.add_route('admin_item_search_json',  '/admin/item/search/{search}/json')
     config.add_route('admin_restock',           '/admin/restock')
@@ -113,7 +115,6 @@ def main(global_config, **settings):
     config.add_route('admin_item_edit_submit',  '/admin/item/edit/submit')
     config.add_route('admin_item_edit',         '/admin/item/edit/{item_id}')
     config.add_route('admin_item_barcode_pdf',  '/admin/item/barcode/{item_id}.pdf')
-    config.add_route('admin_item_enable',       '/admin/item/enable/{id}/{state}')
     config.add_route('admin_item_delete',       '/admin/item/delete/{item_id}')
 
     config.add_route('admin_box_add',           '/admin/box/add')
@@ -122,12 +123,10 @@ def main(global_config, **settings):
     config.add_route('admin_boxes_edit_submit', '/admin/boxes/edit/submit')
     config.add_route('admin_box_edit_submit',   '/admin/box/edit/submit')
     config.add_route('admin_box_edit',          '/admin/box/edit/{box_id}')
-    config.add_route('admin_box_enable',        '/admin/box/enable/{id}/{state}')
     config.add_route('admin_box_delete',        '/admin/box/delete/{box_id}')
 
     config.add_route('admin_vendors_edit',        '/admin/vendors/edit')
     config.add_route('admin_vendors_edit_submit', '/admin/vendors/edit/submit')
-    config.add_route('admin_vendor_enable', '/admin/vendor/enable/{id}/{state}')
 
     config.add_route('admin_inventory',        '/admin/inventory')
     config.add_route('admin_inventory_submit', '/admin/inventory/submit')
@@ -140,7 +139,6 @@ def main(global_config, **settings):
     config.add_route('admin_user',                     '/admin/user/{user_id}')
     config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
-    config.add_route('admin_user_enable',              '/admin/user/enable/{id}/{state}')
 
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',  '/admin/cash/reconcile/submit')
@@ -165,10 +163,9 @@ def main(global_config, **settings):
     config.add_route('admin_password_edit',        '/admin/password/edit')
     config.add_route('admin_password_edit_submit', '/admin/password/edit/submit')
 
-    config.add_route('admin_shopping_list', '/admin/shopping')
+    config.add_route('admin_shopping_list',   '/admin/shopping')
 
     config.add_route('admin_requests',        '/admin/requests')
-    config.add_route('admin_requests_delete', '/admin/request/delete/{request_id}')
 
     config.add_route('admin_announcements_edit',        '/admin/announcements/edit')
     config.add_route('admin_announcements_edit_submit', '/admin/announcements/edit/submit')

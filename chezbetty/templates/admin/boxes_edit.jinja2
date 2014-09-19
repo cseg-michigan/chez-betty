@@ -32,14 +32,12 @@
 
         {% for box in unpopulated %}
 
-        <tr id="box-{{ box.id }}" class="edit-box-row {% if box.enabled == False %} disabled-row {% endif %}">
+        <tr id="box-{{ box.id }}" class="edit-box-row {% if box.enabled == False %}disabled-row{% endif %}">
 
           <td>{{ button.box(box.id) }}</td>
           <td>{{ box|make_link|safe }}</td>
           <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
-          <td>
-            <input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}>
-          </td>
+          <td>{{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -69,9 +67,7 @@
           <td>{{ button.box(box.id) }}</td>
           <td>{{ box|make_link|safe }}</td>
           <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
-          <td>
-            <input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}>
-          </td>
+          <td>{{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}</td>
         </tr>
         {% endfor %}
       </tbody>

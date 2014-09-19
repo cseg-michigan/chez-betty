@@ -29,9 +29,7 @@
           <td>
             <input type="text" class="form-control" id="vendor-enable-{{ vendor.id }}" name="vendor-name-{{ vendor.id }}" value="{{ vendor.name }}">
           </td>
-          <td>
-            <input type="checkbox" id="admin-vendor-enable-{{ vendor.id }}" class="admin-switch toggle-disabled" {% if vendor.enabled == True %}checked="checked"{% endif %}>
-          </td>
+          <td>{{ button.onoff_switch("vendor", "enabled", vendor.id, vendor.enabled) }}</td>
         </tr>
         {% endfor %}
 

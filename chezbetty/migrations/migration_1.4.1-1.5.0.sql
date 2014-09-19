@@ -7,3 +7,6 @@ ALTER TABLE items_history ADD COLUMN bottle_dep BOOLEAN NOT NULL default FALSE;
 
 ALTER TYPE transaction_type ADD VALUE 'cashdeposit';
 UPDATE transactions set type='cashdeposit' where type='deposit';
+
+ALTER TABLE announcements ADD COLUMN deleted BOOLEAN NOT NULL default FALSE;
+ALTER TABLE requests ADD COLUMN deleted BOOLEAN NOT NULL default FALSE;

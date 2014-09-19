@@ -7,29 +7,42 @@ $(".date").each(function (index) {
 
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
 $(".admin-switch").bootstrapSwitch();
-$(".admin-switch").on('switchChange.bootstrapSwitch', function (event, state) {
-	var url = $(this).attr("id").replace(/-/g, '/');
-	ajax_url = "/" + url + "/" + state;
+
+function ajax_bool (js_obj, object, field, id, status) {
+	var url = "/admin/ajax/bool/"+object+"/"+id+"/"+field+"/"+status;
 	$.ajax({
-		url: ajax_url,
-		context: this,
+		url: url,
+		context: js_obj,
 		success: toggle_state_success,
 		error: toggle_state_fail
 	});
+}
+
+$(".ajax-bool-switch").on('switchChange.bootstrapSwitch', function (event, state) {
+	var fields = $(this).attr("id").split("-");
+	ajax_bool($(this), fields[2], fields[3], fields[4], state);
+});
+
+$(".ajax-bool-btn").on('click', function () {
+	var fields = $(this).attr("id").split("-");
+	ajax_bool($(this), fields[2], fields[3], fields[4], fields[5]);
 });
 
 function toggle_state_success (data) {
+	var parent = $("#"+$(this).attr("data-parent"))
+
 	if ($(this).hasClass('require-refresh')) {
 		location.reload();
-	} else if ($(this).hasClass('toggle-disabled')) {
-		var type = $(this).attr("id").split('-')[1];
-		var id   = $(this).attr("id").split('-')[3];
 
+	} else if ($(this).hasClass('toggle-disabled')) {
 		if ($(this).prop("checked")) {
-			$("#"+type+"-" + id).removeClass("disabled-row");
+			parent.removeClass("disabled-row");
 		} else {
-			$("#"+type+"-" + id).addClass("disabled-row");
+			parent.addClass("disabled-row");
 		}
+
+	} else if ($(this).hasClass("delete-entry")) {
+		parent.hide();
 	}
 }
 

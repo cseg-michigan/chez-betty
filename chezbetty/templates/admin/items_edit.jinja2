@@ -68,9 +68,7 @@
           <td data-value="{{ item.number_sold|int }}">{{ item.number_sold }}</td>
           <td>{{ item.sale_speed_thirty_days|float|round(3) }}</td>
           <td>{{ item.days_until_out|int }}</td>
-          <td>
-            <input type="checkbox" id="admin-item-enable-{{ item.id }}" class="admin-switch toggle-disabled" {% if item.enabled == True %}checked="checked"{% endif %}>
-          </td>
+          <td>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</td>
         </tr>
         {% endfor %}
       </tbody>

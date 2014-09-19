@@ -35,7 +35,7 @@
 
         <hr />
         <dt>Enabled</dt>
-        <dd><input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}></input></dd>
+        <dd>{{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}</dd>
       </dl>
     </div>
 
