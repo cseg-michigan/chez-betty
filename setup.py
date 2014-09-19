@@ -2,6 +2,8 @@ import os
 
 from setuptools import setup, find_packages
 
+import version
+
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
@@ -27,7 +29,7 @@ requires = [
     ]
 
 setup(name='chezbetty',
-      version='0.0',
+      version=version.getVersion(),
       description='chezbetty',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

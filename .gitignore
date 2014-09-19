@@ -14,3 +14,4 @@ local
 sessions/
 bower_components/
 *backup*.sql
+RELEASE-VERSION
