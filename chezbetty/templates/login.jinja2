@@ -5,16 +5,9 @@
 
 <style>
 body {
-  padding-top: 40px;
-  padding-bottom: 40px;
   background-color: #eee;
 }
 
-.form-signin {
-  max-width: 330px;
-  padding: 15px;
-  margin: 0 auto;
-}
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
   margin-bottom: 10px;
@@ -56,20 +49,27 @@ body {
 
 <div class="container">
 
-<p><a class="btn btn-default btn-lg" href="/">Home</a></p>
+  <div class="col-md-4"></div>
 
+  <div class="col-md-4">
 
-  <h4>If you are logging out on Chez Betty, you must login as the service account
-  so that the terminal is functional.</h4>
+    <p><a class="btn btn-default btn-lg" href="/">Home</a></p>
 
-  <form class="form-signin" role="form" method="post" action="/login">
-    <input type="hidden" name="came_from" value="{{ came_from }}"/>
-    <h2 class="form-signin-heading">Please sign in</h2>
-    <span class="label label-danger">{{ message[0] }}</span>
-    <input name="login" type="login" id="login-uniqname" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
-    <input name="password" type="password" id="login-password" class="form-control" placeholder="password" required value = "{{ password }}">
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-  </form>
+    <h4>If you are logging out on Chez Betty, you must login as the service account
+    so that the terminal is functional.</h4>
+
+    <form class="form-signin" role="form" method="post" action="/login">
+      <input type="hidden" name="came_from" value="{{ came_from }}"/>
+      <h2 class="form-signin-heading">Please sign in</h2>
+      <span class="label label-danger">{{ message[0] }}</span>
+      <input name="login" type="login" id="login-uniqname" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
+      <input name="password" type="password" id="login-password" class="form-control" placeholder="password" required value = "{{ password }}">
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+  </div>
+
+  <div class="col-md-4"></div>
 
 </div>
 
