@@ -102,8 +102,6 @@ def main(global_config, **settings):
 
     # ADMIN
     config.add_route('admin_index',     '/admin')
-    config.add_route('admin_demo',      '/admin/demo/{state}')
-    config.add_route('admin_keyboard',  '/admin/keyboard/{state}')
 
     config.add_route('admin_ajax_bool',  '/admin/ajax/bool/{object}/{id}/{field}/{state}')
 

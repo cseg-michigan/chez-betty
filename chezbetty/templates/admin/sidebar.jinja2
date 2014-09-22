@@ -1,3 +1,4 @@
+{% import "macro_buttons.jinja2" as button %}
 <ul class="nav nav-sidebar">
   <li {% if active_page == 'index' %}class="active"{% endif %}><a href="/admin">Index</a></li>
 </ul>
@@ -52,8 +53,7 @@
 <ul class="nav nav-sidebar">
   <li><span>Administrative</span></li>
   {% if request.has_permission("admin") %}
-  <li><a href="#">Demo Mode<div style="float: right;"><input type="checkbox" id="admin-demo" class="admin-switch" {% if demo %}checked="checked"{% endif %}></input></div></a></li>
+  <li><a href="#">Demo Mode<div style="float: right;">{{ button.onoff_switch("cookie", "demo", 0, demo) }}</div></a></li>
   {% endif %}
-  <li><a href="#">Screen Keyboard<div style="float: right;"><input type="checkbox" id="admin-keyboard" class="admin-switch require-refresh" {% if keyboard %}checked="checked"{% endif %}></input></div></a></li>
   <li {% if active_page == 'password_edit' %}class="active"{% endif %}><a href="/admin/password/edit">Edit Password</a></li>
 </ul>

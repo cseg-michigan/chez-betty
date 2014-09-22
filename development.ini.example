@@ -22,6 +22,7 @@ sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 chezbetty.default_password = chezbetty
 chezbetty.host = chezbetty.com
 chezbetty.email = chezbetty@chezbetty.com
+chezbetty.ipaddr = 111.222.333.444
 
 ldap.server = ldap.domain.com
 ldap.password = abc123

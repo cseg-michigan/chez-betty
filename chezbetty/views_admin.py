@@ -70,6 +70,12 @@ def add_counts(event):
         count['requests']     = Request.count()
         event.rendering_val['counts'] = count
 
+@subscriber(BeforeRender)
+def is_terminal(event):
+    if event['request'].remote_addr == event['request'].registry.settings['chezbetty.ipaddr']:
+        event['request'].is_terminal = True
+    else:
+        event['request'].is_terminal = False
 
 ###
 ### Admin
@@ -94,6 +100,10 @@ def admin_ajax_bool(request):
         obj = User.from_id(obj_id)
     elif obj_str == 'request':
         obj = Request.from_id(obj_id)
+    elif obj_str == 'cookie':
+        # Set a cookie instead of change a property
+        request.response.set_cookie(obj_field, '1' if obj_state else '0')
+        return request.response
     else:
         # Return an error, object type not recognized
         request.response.status = 502
@@ -241,25 +251,6 @@ def admin_index(request):
                 graph_items_day=views_data.create_dict('items', 'day', 21),
                 graph_sales_day=views_data.create_dict('sales', 'day', 21),
                 graph_deposits_day=graph_deposits_day)
-
-
-@view_config(route_name='admin_demo',
-             permission='admin')
-def admin_demo(request):
-    if request.matchdict['state'].lower() == 'true':
-        request.response.set_cookie('demo', '1')
-    else:
-        request.response.set_cookie('demo', '0')
-    return request.response
-
-
-@view_config(route_name='admin_keyboard')
-def admin_keyboard(request):
-    if request.matchdict['state'].lower() == 'true':
-        request.response.set_cookie('keyboard', '1')
-    else:
-        request.response.set_cookie('keyboard', '0')
-    return request.response
 
 
 @view_config(route_name='admin_item_barcode_json',
@@ -532,7 +523,7 @@ def admin_cash_reconcile_submit(request):
             datalayer.cashbox_to_bank(amount, request.user)
 
             request.session.flash('Moved ${:,.2f} from the cash box to the bank'.format(amount), 'success')
-            return HTTPFound(location=request.route_url('admin_index'))        
+            return HTTPFound(location=request.route_url('admin_index'))
 
     except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for cash box amount', 'error')
