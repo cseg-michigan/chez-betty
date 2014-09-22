@@ -72,10 +72,14 @@ def add_counts(event):
 
 @subscriber(BeforeRender)
 def is_terminal(event):
-    if event['request'].remote_addr == event['request'].registry.settings['chezbetty.ipaddr']:
-        event['request'].is_terminal = True
-    else:
-        event['request'].is_terminal = False
+    try:
+        if event['request'].remote_addr == event['request'].registry.settings['chezbetty.ipaddr']:
+            event['request'].is_terminal = True
+        else:
+            event['request'].is_terminal = False
+    except Exception as e:
+        if 'request' in event and event['request']:
+            event['request'].is_terminal = False
 
 ###
 ### Admin
@@ -293,8 +297,8 @@ def admin_item_barcode_json(request):
              permission='manage')
 def admin_item_search_json(request):
     try:
-        boxes = Box.from_barcode_fuzzy(request.matchdict['search'])
-        items = Item.from_barcode_fuzzy(request.matchdict['search'])
+        boxes = Box.from_fuzzy(request.matchdict['search'])
+        items = Item.from_fuzzy(request.matchdict['search'])
         box_vendors = BoxVendor.from_number_fuzzy(request.matchdict['search'])
         item_vendors = ItemVendor.from_number_fuzzy(request.matchdict['search'])
 
