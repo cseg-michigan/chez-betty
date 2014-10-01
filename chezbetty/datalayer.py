@@ -241,8 +241,8 @@ def reconcile_items(items, admin):
     DBSession.flush()
     total_amount_missing = Decimal(0.0)
     for item, quantity in items.items():
-        if item.in_stock == quantity:
-            continue
+        # Record the restock line item even if the number hasn't changed.
+        # This lets us track when we have counted items.
         quantity_missing = item.in_stock - quantity
         line_amount = quantity_missing * item.wholesale
         ili = transaction.InventoryLineItem(t, line_amount, item, item.in_stock,

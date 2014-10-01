@@ -596,22 +596,29 @@ def admin_inventory(request):
              request_method='POST',
              permission='manage')
 def admin_inventory_submit(request):
-    items = {}
-    for key in request.POST:
-        item = Item.from_id(key.split('-')[2])
-        try:
-            items[item] = int(request.POST[key])
-        except ValueError:
-            pass
-    t = datalayer.reconcile_items(items, request.user)
-    request.session.flash('Inventory Reconciled', 'success')
-    if t.amount < 0:
-        request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
-    elif t.amount == 0:
-        request.session.flash('Chez Betty was spot on.', 'success')
-    else:
-        request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
-    return HTTPFound(location=request.route_url('admin_inventory'))
+    try:
+        items = {}
+        for key in request.POST:
+            try:
+                # Parse quantity first so we don't have to find the item if
+                # we aren't recording an inventory.
+                new_quantity = int(request.POST[key])
+                item = Item.from_id(key.split('-')[2])
+                items[item] = new_quantity
+            except ValueError:
+                pass
+        t = datalayer.reconcile_items(items, request.user)
+        request.session.flash('Inventory Reconciled', 'success')
+        if t.amount < 0:
+            request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
+        elif t.amount == 0:
+            request.session.flash('Chez Betty was spot on.', 'success')
+        else:
+            request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
+        return HTTPFound(location=request.route_url('admin_inventory'))
+    except Exception as e:
+        if request.debug: raise(e)
+        return HTTPFound(location=request.route_url('admin_index'))
 
 
 @view_config(route_name='admin_items_add',
