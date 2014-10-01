@@ -1031,7 +1031,9 @@ def admin_box_add(request):
     else:
         fields = request.GET
 
-    return {'items': items, 'd': fields}
+    return {'items': items,
+            'vendors': Vendor.all(),
+            'd': fields}
 
 
 @view_config(route_name='admin_box_add_submit',
@@ -1047,6 +1049,8 @@ def admin_box_add_submit(request):
         box_barcode   = request.POST['box-barcode'].strip()
         box_salestax  = request.POST['box-sales_tax'] == 'on'
         box_bottledep = request.POST['box-bottle_dep'] == 'on'
+        box_vendor    = int(request.POST['box-vendor'])
+        box_itemnum   = request.POST['box-vendor-item_num'].strip()
 
         if box_name == '':
             request.session.flash('Error adding box: must have name.', 'error')
@@ -1143,6 +1147,12 @@ def admin_box_add_submit(request):
 
                 box_item = BoxItem(box, item, quantity)
                 DBSession.add(box_item)
+
+            if box_itemnum != '':
+                # Add a new vendor to the item
+                vendor = Vendor.from_id(box_vendor)
+                box_vendor = BoxVendor(vendor, box, box_itemnum)
+                DBSession.add(box_vendor)
 
             request.session.flash('Box "{}" added successfully.'.format(box_name), 'success')
             return HTTPFound(location=request.route_url('admin_box_add'))
