@@ -71,6 +71,10 @@ class Item(Versioned, Base):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.barcode == barcode).one().c > 0
 
+    @classmethod
+    def total_inventory_wholesale(cls):
+        return DBSession.query(func.sum(cls.wholesale).label('c')).one().c or 0
+
     def __str__(self):
         return "<Item (%s)>" % self.name
 

@@ -755,6 +755,9 @@ def admin_items_edit(request):
     # Get the sale speed
     sale_speeds = views_data.item_sale_speed(30)
 
+    # Get the total amount of inventory we have
+    inventory_total = Item.total_inventory_wholesale()
+
     for item in items:
         if item.id in purchased_quantities:
             item.number_sold = purchased_quantities[item.id]
@@ -778,6 +781,8 @@ def admin_items_edit(request):
         else:
             item.sale_speed_thirty_days = 0
             item.days_until_out = None
+
+        item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
     return {'items': items}
 
