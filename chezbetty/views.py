@@ -153,6 +153,12 @@ def deposit(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
 
+        # Record the deposit limit so we can show the user
+        if user.total_deposits > 10.0 and user.total_purchases > 10.0:
+            user.deposit_limit = 100.0
+        else:
+            user.deposit_limit = 20.0
+
         try:
             auth_key = binascii.b2a_hex(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
             btc_addr = Bitcoin.get_new_address(user.umid, auth_key)
