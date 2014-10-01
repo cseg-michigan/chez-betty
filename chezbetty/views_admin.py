@@ -21,7 +21,7 @@ from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
 from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
-from .models.transaction import Inventory
+from .models.transaction import Inventory, InventoryLineItem
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -572,11 +572,6 @@ def admin_btc_reconcile_post(request):
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
 
-
-
-
-
-
 @view_config(route_name='admin_inventory',
              renderer='templates/admin/inventory.jinja2',
              permission='manage')
@@ -749,6 +744,14 @@ def admin_items_edit(request):
             purchased_quantities[pi.item_id] = 0
         purchased_quantities[pi.item_id] += pi.quantity
 
+    # Calculate the number lost here (much faster)
+    lost_items = InventoryLineItem.all()
+    lost_quantities = {}
+    for li in lost_items:
+        if li.item_id not in lost_quantities:
+            lost_quantities[li.item_id] = 0
+        lost_quantities[li.item_id] += (li.quantity - li.quantity_counted)
+
     # Get the sale speed
     sale_speeds = views_data.item_sale_speed(30)
 
@@ -757,6 +760,11 @@ def admin_items_edit(request):
             item.number_sold = purchased_quantities[item.id]
         else:
             item.number_sold = None
+
+        if item.id in lost_quantities:
+            item.number_lost = lost_quantities[item.id]
+        else:
+            item.number_lost = None
 
         if item.id in sale_speeds:
             speed = sale_speeds[item.id]

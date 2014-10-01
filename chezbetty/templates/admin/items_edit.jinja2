@@ -29,6 +29,7 @@
           <th {% if sort=="sold" %}data-defaultsort="{{ dir }}"{% endif %}>Num Sold</th>
           <th {% if sort=="salespeed" %}data-defaultsort="{{ dir }}"{% endif %}>Sale Speed</th>
           <th {% if sort=="daysuntilout" %}data-defaultsort="{{ dir }}"{% endif %}>Days Until Out</th>
+          <th {% if sort=="lost" %}data-defaultsort="{{ dir }}"{% endif %}>Num Lost</th>
           <th>Enabled</th>
         </tr>
       </thead>
@@ -68,6 +69,7 @@
           <td data-value="{{ item.number_sold|int }}">{{ item.number_sold }}</td>
           <td>{{ item.sale_speed_thirty_days|float|round(3) }}</td>
           <td>{{ item.days_until_out|int }}</td>
+          <td>{{ item.number_lost|int }}</td>
           <td>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</td>
         </tr>
         {% endfor %}
