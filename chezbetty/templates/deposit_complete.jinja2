@@ -15,33 +15,43 @@
 
     <div id="transaction-{{ deposit.id }}">
 
+      {% if deposit.type == "btcdeposit" %}
       <dl class="dl-horizontal">
         <dt>Old Balance</dt>
         <dd>{{ prev_balance|format_currency|safe }}</dd>
 
         <dt>Deposit</dt>
-        {% if deposit.type == "deposit" %}
-            <dd>{{ deposit.amount|format_currency|safe }}</dd>
-        {% elif deposit.type == "btcdeposit" %}
-            <dd>{{ deposit.amount_btc }} BTC ({{ deposit.amount|format_currency|safe }})</dd>
-        {% endif %}
+        <dd>{{ deposit.amount_btc }} BTC ({{ deposit.amount|format_currency|safe }})</dd>
 
         <dt>New Balance</dt>
         <dd>{{ user.balance|format_currency|safe }}</dd>
 
-        {% if deposit.type == "btcdeposit" %}
-            <dt>Transaction</dt>
-            <dd>{{ deposit.img|safe }}<br/>{{ deposit.btctransaction }}</dd>
-        {% endif %}
+        <dt>Transaction</dt>
+        <dd>{{ deposit.img|safe }}<br/>{{ deposit.btctransaction }}</dd>
       </dl>
+      
+      {% elif deposit.type == "cashdeposit" %}
+      <div class="deposit-cash">
+        <span class="deposit-thankyou">Thank you!</span>
+        <p class="deposit-info">
+          You successfully deposited <span class="deposit-amount">{{ deposit.amount|format_currency|safe }}</span>
+          into your account.
+        </p>
+
+        <a class="btn btn-primary btn-huge" href="/deposit/edit/{{ user.umid }}/{{ event.id }}">
+          Edit this Deposit
+        </a>
+      </div>
+
+      {% endif %}
 
     </div>
 
   </div>
 </div>
 
-{% if deposit.type == "deposit" %}
-<a class="btn btn-danger" href="/event/undo/{{ user.umid }}/{{ event.id }}">If this was a mistake, touch here to undo this transaction.</a>
-{% endif %}
+{% endblock %}
 
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
 {% endblock %}

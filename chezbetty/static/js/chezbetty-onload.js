@@ -3,6 +3,7 @@
  *
  */
 
+
 $(".date").each(function (index) {
 	d = new Date($(this).text());
 	s = $.format.date(d, "MMM d, yyyy") + " at " + $.format.date(d, "h:mm a");
@@ -36,7 +37,6 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 
 // Click handler to submit a purchase.
 $("#btn-submit-purchase").click(function () {
-	console.log("submitting purchase");
 	$(this).blur();
 	alert_clear();
 
@@ -60,8 +60,6 @@ $("#btn-submit-purchase").click(function () {
 		alert_error("You must purchase at least one item.");
 		enable_button($(this));
 	} else {
-		console.log(purchase);
-
 		// Post the order to the server
 		$.ajax({
 			type: "POST",
@@ -89,6 +87,29 @@ $("#btn-submit-deposit").click(function () {
 	$.ajax({
 		type: "POST",
 		url: "/deposit/new",
+		data: deposit,
+		success: deposit_success,
+		error: deposit_error,
+		dataType: "json"
+	});
+});
+
+// Click handler to submit a deposit.
+$("#btn-edit-deposit").click(function () {
+	$(this).blur();
+	alert_clear();
+
+	disable_button($(this));
+
+	deposit = {};
+	deposit.umid = $("#user-umid").text();
+	deposit.amount = strip_price($("#keypad-total").text());
+	deposit.old_event_id = $("#event_id").text();
+
+	// Post the deposit to the server
+	$.ajax({
+		type: "POST",
+		url: "/deposit/edit/submit",
 		data: deposit,
 		success: deposit_success,
 		error: deposit_error,
@@ -128,6 +149,17 @@ $(".btn-trans-showhide").click(function () {
 $(".faq-q").click(function() {
 	$(this).next().toggle("fast");
 });
+
+
+//
+// Pools
+//
+
+
+
+
+
+
 
 $(".keyboard-wanted").keyboard({
   layout : 'qwerty',

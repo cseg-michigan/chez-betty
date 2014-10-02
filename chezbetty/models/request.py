@@ -8,6 +8,7 @@ class Request(Base):
     user_id   = Column(Integer, ForeignKey("users.id"), nullable=True) # user that made the request
     request   = Column(Text)
     enabled   = Column(Boolean, default=True, nullable=False)
+    deleted   = Column(Boolean, default=False, nullable=False)
 
     def __init__(self, user, request):
         if user:
@@ -20,7 +21,7 @@ class Request(Base):
 
     @classmethod
     def all(cls):
-        return DBSession.query(cls).filter(cls.enabled).all()
+        return DBSession.query(cls).filter(cls.deleted==False).all()
 
     @classmethod
     def count(cls):

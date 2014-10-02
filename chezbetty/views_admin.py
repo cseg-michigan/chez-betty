@@ -20,8 +20,8 @@ from .models.user import User
 from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, BTCDeposit, Purchase
-from .models.transaction import Inventory
+from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
+from .models.transaction import Inventory, InventoryLineItem
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -70,10 +70,55 @@ def add_counts(event):
         count['requests']     = Request.count()
         event.rendering_val['counts'] = count
 
+@subscriber(BeforeRender)
+def is_terminal(event):
+    try:
+        if event['request'].remote_addr == event['request'].registry.settings['chezbetty.ipaddr']:
+            event['request'].is_terminal = True
+        else:
+            event['request'].is_terminal = False
+    except Exception as e:
+        if 'request' in event and event['request']:
+            event['request'].is_terminal = False
 
 ###
 ### Admin
 ###
+
+@view_config(route_name='admin_ajax_bool', permission='admin')
+def admin_ajax_bool(request):
+    obj_str = request.matchdict['object']
+    obj_id  = int(request.matchdict['id'])
+    obj_field = request.matchdict['field']
+    obj_state = request.matchdict['state'].lower() == 'true'
+
+    if obj_str == 'item':
+        obj = Item.from_id(obj_id)
+    elif obj_str == 'announcement':
+        obj = Announcement.from_id(obj_id)
+    elif obj_str == 'box':
+        obj = Box.from_id(obj_id)
+    elif obj_str == 'vendor':
+        obj = Vendor.from_id(obj_id)
+    elif obj_str == 'user':
+        obj = User.from_id(obj_id)
+    elif obj_str == 'request':
+        obj = Request.from_id(obj_id)
+    elif obj_str == 'cookie':
+        # Set a cookie instead of change a property
+        request.response.set_cookie(obj_field, '1' if obj_state else '0')
+        return request.response
+    else:
+        # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+
+    setattr(obj, obj_field, obj_state)
+
+    DBSession.flush()
+
+    return request.response
 
 @view_config(route_name='admin_index',
              renderer='templates/admin/index.jinja2',
@@ -89,7 +134,9 @@ def admin_index(request):
                                .filter(User.balance < 0)\
                                .order_by(User.balance)\
                                .limit(5).all()
-    users_balance   = DBSession.query(func.sum(User.balance).label("total_balance")).one()
+    users_balance   = User.get_users_total()
+    held_for_users  = User.get_amount_held()
+    owed_by_users   = User.get_amount_owed()
     bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item)\
                                .join(Item)\
                                .join(Transaction)\
@@ -134,17 +181,47 @@ def admin_index(request):
     total_sales          = Purchase.total()
     profit_on_sales      = PurchaseLineItem.profit_on_sales()
     total_inventory_lost = Inventory.total()
-    total_cash_deposits  = Deposit.total()
+    total_cash_deposits  = CashDeposit.total()
     total_btc_deposits   = BTCDeposit.total()
 
-    sold_by_day         = PurchaseLineItem.quantity_by_period('day')
-    virt_revenue_by_day = PurchaseLineItem.virtual_revenue_by_period('day')
-    deposits_by_day     = Deposit.deposits_by_period('day')
+
+    now = datetime.date.today()
+
+    ytd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+
+    mtd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+
+
+    graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
+    graph_deposits_day_cash  = views_data.create_dict('deposits_cash', 'day', 21)
+    graph_deposits_day_btc   = views_data.create_dict('deposits_btc', 'day', 21)
+    graph_deposits_day = {'xs': [graph_deposits_day_total['xs'][0],
+                                 graph_deposits_day_cash['xs'][0],
+                                 graph_deposits_day_btc['xs'][0]],
+                          'ys': [graph_deposits_day_total['ys'][0],
+                                 graph_deposits_day_cash['ys'][0],
+                                 graph_deposits_day_btc['ys'][0]],
+                          'avg_hack': [graph_deposits_day_total['avg_hack'][0],
+                                 graph_deposits_day_cash['avg_hack'][0],
+                                 graph_deposits_day_btc['avg_hack'][0]]}
+
 
     return dict(events=events,
                 items_low_stock=items_low_stock,
                 users_shame=users_shame,
                 users_balance=users_balance,
+                held_for_users=held_for_users,
+                owed_by_users=owed_by_users,
                 cashbox=cashbox,
                 btcbox=btcbox,
                 chezbetty_cash=chezbetty_cash,
@@ -163,31 +240,21 @@ def admin_index(request):
                 total_inventory_lost=total_inventory_lost,
                 total_cash_deposits=total_cash_deposits,
                 total_btc_deposits=total_btc_deposits,
-                sold_by_day=sold_by_day,
-                virt_revenue_by_day=virt_revenue_by_day,
-                deposits_by_day=deposits_by_day,
-                graph_items_day=views_data.create_dict('items', 'day', 20),
-                graph_sales_day=views_data.create_dict('sales', 'day', 20),
-                graph_deposits_day=views_data.create_dict('deposits', 'day', 20))
-
-
-@view_config(route_name='admin_demo',
-             permission='admin')
-def admin_demo(request):
-    if request.matchdict['state'].lower() == 'true':
-        request.response.set_cookie('demo', '1')
-    else:
-        request.response.set_cookie('demo', '0')
-    return request.response
-
-
-@view_config(route_name='admin_keyboard')
-def admin_keyboard(request):
-    if request.matchdict['state'].lower() == 'true':
-        request.response.set_cookie('keyboard', '1')
-    else:
-        request.response.set_cookie('keyboard', '0')
-    return request.response
+                ytd_sales=ytd_sales,
+                ytd_profit=ytd_profit,
+                ytd_lost=ytd_lost,
+                ytd_dep=ytd_dep,
+                ytd_dep_cash=ytd_dep_cash,
+                ytd_dep_btc=ytd_dep_btc,
+                mtd_sales=mtd_sales,
+                mtd_profit=mtd_profit,
+                mtd_lost=mtd_lost,
+                mtd_dep=mtd_dep,
+                mtd_dep_cash=mtd_dep_cash,
+                mtd_dep_btc=mtd_dep_btc,
+                graph_items_day=views_data.create_dict('items', 'day', 21),
+                graph_sales_day=views_data.create_dict('sales', 'day', 21),
+                graph_deposits_day=graph_deposits_day)
 
 
 @view_config(route_name='admin_item_barcode_json',
@@ -223,6 +290,39 @@ def admin_item_barcode_json(request):
             raise(e)
         else:
             return {'status': 'error'}
+
+
+@view_config(route_name='admin_item_search_json',
+             renderer='json',
+             permission='manage')
+def admin_item_search_json(request):
+    try:
+        boxes = Box.from_fuzzy(request.matchdict['search'])
+        items = Item.from_fuzzy(request.matchdict['search'])
+        box_vendors = BoxVendor.from_number_fuzzy(request.matchdict['search'])
+        item_vendors = ItemVendor.from_number_fuzzy(request.matchdict['search'])
+
+        ret = {'matches': []}
+
+        for b in boxes:
+            ret['matches'].append(('box', b.name, b.barcode))
+
+        for bv in box_vendors:
+            ret['matches'].append(('box', bv.box.name, bv.box.barcode))
+
+        for i in items:
+            ret['matches'].append(('item', i.name, i.barcode))
+
+        for iv in item_vendors:
+            ret['matches'].append(('item', iv.item.name, iv.item.barcode))
+
+        ret['status'] = 'success'
+
+        return ret
+
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error'}
 
 
 @view_config(route_name='admin_restock',
@@ -316,15 +416,28 @@ def admin_restock_submit(request):
                 # Create arrays of restocked items/boxes
                 if obj_type == 'item':
                     item = Item.from_id(obj_id)
+
+                    # Set properties based on how it was restocked
+                    item.bottle_dep = btldeposit
+                    item.sales_tax = salestax
+
                     add_item(item, quantity, total)
                     items.append((item, quantity, total, wholesale, coupon, salestax, btldeposit))
 
                 elif obj_type == 'box':
                     box = Box.from_id(obj_id)
+
+                    # Set properties from restock
                     box.wholesale = wholesale
+                    box.bottle_dep = btldeposit
+                    box.sales_tax = salestax
 
                     inv_cost = total / (box.subitem_count * quantity)
                     for itembox in box.items:
+                        # Set subitem properties too
+                        itembox.item.bottle_dep = btldeposit
+                        itembox.item.sales_tax = salestax
+
                         subquantity = itembox.quantity * quantity
                         subtotal    = subquantity * inv_cost
                         add_item(itembox.item, subquantity, subtotal)
@@ -355,9 +468,8 @@ def admin_restock_submit(request):
             request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
             continue
         item.wholesale = Decimal(round(total/quantity, 4))
-        # Make sure we aren't selling at a loss cause that would be dumb
-        if item.price < item.wholesale:
-            item.price = round(item.wholesale * Decimal(1.15), 2)
+        # Set the item price
+        item.price = round(item.wholesale * Decimal(1.15), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
@@ -402,14 +514,28 @@ def admin_cash_reconcile_submit(request):
             return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
         amount = Decimal(request.POST['amount'])
-        expected_amount = datalayer.reconcile_cash(amount, request.user)
 
-        request.session.flash('Cash box recorded successfully', 'success')
-        return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
-            _query={'amount':amount, 'expected_amount':expected_amount}))
+        if request.POST['cash-box-reconcile'] == 'on':
+            # Make the cashbox total to 0
+            expected_amount = datalayer.reconcile_cash(amount, request.user)
+
+            request.session.flash('Cash box recorded successfully', 'success')
+            return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
+                _query={'amount':amount, 'expected_amount':expected_amount}))
+        else:
+            # Just move some of the money
+            datalayer.cashbox_to_bank(amount, request.user)
+
+            request.session.flash('Moved ${:,.2f} from the cash box to the bank'.format(amount), 'success')
+            return HTTPFound(location=request.route_url('admin_index'))
 
     except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for cash box amount', 'error')
+        return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error occurred', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
 
@@ -419,7 +545,9 @@ def admin_cash_reconcile_success(request):
     deposit = float(request.GET['amount'])
     expected = float(request.GET['expected_amount'])
     difference = deposit - expected
-    return {'cash': {'deposit': deposit, 'expected': expected, 'difference': difference}}
+    return {'cash': {'deposit': deposit,
+                     'expected': expected,
+                     'difference': difference}}
 
 
 def admin_btc_reoncile(request):
@@ -444,11 +572,6 @@ def admin_btc_reconcile_post(request):
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
 
-
-
-
-
-
 @view_config(route_name='admin_inventory',
              renderer='templates/admin/inventory.jinja2',
              permission='manage')
@@ -468,22 +591,29 @@ def admin_inventory(request):
              request_method='POST',
              permission='manage')
 def admin_inventory_submit(request):
-    items = {}
-    for key in request.POST:
-        item = Item.from_id(key.split('-')[2])
-        try:
-            items[item] = int(request.POST[key])
-        except ValueError:
-            pass
-    t = datalayer.reconcile_items(items, request.user)
-    request.session.flash('Inventory Reconciled', 'success')
-    if t.amount < 0:
-        request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
-    elif t.amount == 0:
-        request.session.flash('Chez Betty was spot on.', 'success')
-    else:
-        request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
-    return HTTPFound(location=request.route_url('admin_inventory'))
+    try:
+        items = {}
+        for key in request.POST:
+            try:
+                # Parse quantity first so we don't have to find the item if
+                # we aren't recording an inventory.
+                new_quantity = int(request.POST[key])
+                item = Item.from_id(key.split('-')[2])
+                items[item] = new_quantity
+            except ValueError:
+                pass
+        t = datalayer.reconcile_items(items, request.user)
+        request.session.flash('Inventory Reconciled', 'success')
+        if t.amount < 0:
+            request.session.flash('Chez Betty made ${:,.2f}'.format(-t.amount), 'success')
+        elif t.amount == 0:
+            request.session.flash('Chez Betty was spot on.', 'success')
+        else:
+            request.session.flash('Chez Betty lost ${:,.2f}. :('.format(t.amount), 'error')
+        return HTTPFound(location=request.route_url('admin_inventory'))
+    except Exception as e:
+        if request.debug: raise(e)
+        return HTTPFound(location=request.route_url('admin_index'))
 
 
 @view_config(route_name='admin_items_add',
@@ -491,12 +621,9 @@ def admin_inventory_submit(request):
              permission='manage')
 def admin_items_add(request):
     if len(request.GET) == 0:
-        return {'items': {'count': 1,
-                          'name-0': '',
-                          'barcode-0': '',
-                         }}
+        return {'d': {'item_count': 1}}
     else:
-        return {'items': request.GET}
+        return {'d': request.GET}
 
 
 @view_config(route_name='admin_items_add_submit',
@@ -508,8 +635,9 @@ def admin_items_add_submit(request):
 
     # Iterate all the POST keys and find the ones that are item names
     for key in request.POST:
-        if 'item-name-' in key:
-            id = int(key.split('-')[2])
+        kf = key.split('-')
+        if len(kf) == 3 and kf[0] == 'item' and kf[2] == 'name':
+            id = int(kf[1])
             stock = 0
             wholesale = 0
             price = 0
@@ -517,8 +645,12 @@ def admin_items_add_submit(request):
 
             # Parse out the important fields looking for errors
             try:
-                name = request.POST['item-name-{}'.format(id)].strip()
-                barcode = request.POST['item-barcode-{}'.format(id)].strip()
+                name = request.POST['item-{}-name'.format(id)].strip()
+                name_general = request.POST['item-{}-general'.format(id)].strip()
+                name_volume = request.POST['item-{}-volume'.format(id)].strip()
+                barcode = request.POST['item-{}-barcode'.format(id)].strip()
+                sales_tax = request.POST['item-{}-salestax'.format(id)].strip() == 'on'
+                bottle_dep = request.POST['item-{}-bottledep'.format(id)].strip() == 'on'
 
                 # Check that name and barcode are not blank. If name is blank
                 # treat this as an empty row and skip. If barcode is blank
@@ -526,29 +658,52 @@ def admin_items_add_submit(request):
                 if name == '':
                     continue
                 if barcode == '':
-                    barcode = None
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
+                    request.session.flash('Error adding item: {}. No barcode.'.\
+                                    format(name), 'error')
+                    continue
 
                 # Make sure the name and/or barcode doesn't already exist
                 if Item.exists_name(name):
-                    error_items.append({'name': name, 'barcode': barcode})
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
                     request.session.flash('Error adding item: {}. Name exists.'.\
                                     format(name), 'error')
                     continue
                 if barcode and Item.exists_barcode(barcode):
-                    error_items.append({'name': name, 'barcode': barcode})
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
                     request.session.flash('Error adding item: {}. Barcode exists.'.\
                                     format(name), 'error')
                     continue
 
                 # Add the item to the DB
-                item = Item(name, barcode, price, wholesale, stock, enabled)
+                item = Item(name, barcode, price, wholesale, sales_tax, bottle_dep, stock, enabled)
                 DBSession.add(item)
                 DBSession.flush()
                 count += 1
             except Exception as e:
                 if request.debug: raise(e)
                 if len(name):
-                    error_items.append({'name': name, 'barcode': barcode})
+                    error_items.append({'name': name,
+                                        'general': name_general,
+                                        'volume': name_volume,
+                                        'barcode': barcode,
+                                        'salestax': sales_tax,
+                                        'bottledep': bottle_dep})
                     request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
                 # Otherwise this was probably a blank row; ignore.
@@ -561,9 +716,9 @@ def admin_items_add_submit(request):
         e_count = 0
         for err in error_items:
             for k,v in err.items():
-                flat['{}-{}'.format(k, e_count)] = v
+                flat['item-{}-{}'.format(e_count, k)] = v
             e_count += 1
-        flat['count'] = len(error_items)
+        flat['item_count'] = len(error_items)
         return HTTPFound(location=request.route_url('admin_items_add', _query=flat))
     else:
         return HTTPFound(location=request.route_url('admin_items_edit'))
@@ -573,9 +728,62 @@ def admin_items_add_submit(request):
              renderer='templates/admin/items_edit.jinja2',
              permission='manage')
 def admin_items_edit(request):
-    items_active = DBSession.query(Item).filter_by(enabled=True).order_by(Item.name).all()
-    items_inactive = DBSession.query(Item).filter_by(enabled=False).order_by(Item.name).all()
+    items_active = DBSession.query(Item)\
+                            .filter_by(enabled=True)\
+                            .order_by(Item.name).all()
+    items_inactive = DBSession.query(Item)\
+                              .filter_by(enabled=False)\
+                              .order_by(Item.name).all()
     items = items_active + items_inactive
+
+    # Calculate the number sold here (much faster)
+    purchased_items = PurchaseLineItem.all()
+    purchased_quantities = {}
+    for pi in purchased_items:
+        if pi.item_id not in purchased_quantities:
+            purchased_quantities[pi.item_id] = 0
+        purchased_quantities[pi.item_id] += pi.quantity
+
+    # Calculate the number lost here (much faster)
+    lost_items = InventoryLineItem.all()
+    lost_quantities = {}
+    for li in lost_items:
+        if li.item_id not in lost_quantities:
+            lost_quantities[li.item_id] = 0
+        lost_quantities[li.item_id] += (li.quantity - li.quantity_counted)
+
+    # Get the sale speed
+    sale_speeds = views_data.item_sale_speed(30)
+
+    # Get the total amount of inventory we have
+    inventory_total = Item.total_inventory_wholesale()
+
+    for item in items:
+        if item.id in purchased_quantities:
+            item.number_sold = purchased_quantities[item.id]
+        else:
+            item.number_sold = None
+
+        if item.id in lost_quantities:
+            item.number_lost = lost_quantities[item.id]
+        else:
+            item.number_lost = None
+
+        if item.id in sale_speeds:
+            speed = sale_speeds[item.id]
+
+            item.sale_speed_thirty_days = speed
+
+            if speed > 0:
+                item.days_until_out = item.in_stock / sale_speeds[item.id]
+            else:
+                item.days_until_out = None
+        else:
+            item.sale_speed_thirty_days = 0
+            item.days_until_out = None
+
+        item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
+
     return {'items': items}
 
 
@@ -597,6 +805,10 @@ def admin_items_edit_submit(request):
                 val = round(float(request.POST[key]), 2)
             elif field == 'wholesale':
                 val = round(float(request.POST[key]), 4)
+            elif field == 'sales_tax':
+                val = request.POST[key] == 'on'
+            elif field == 'bottle_dep':
+                val = request.POST[key] == 'on'
             else:
                 val = request.POST[key].strip()
 
@@ -720,66 +932,75 @@ def admin_item_edit_submit(request):
 
 @view_config(route_name='admin_item_barcode_pdf', permission='manage')
 def admin_item_barcode_pdf(request):
-    item = Item.from_id(request.matchdict['item_id'])
-    fname = '/tmp/{}.pdf'.format(item.id)
+    try:
+        item = Item.from_id(request.matchdict['item_id'])
+        fname = '/tmp/{}.pdf'.format(item.id)
 
-    c = canvas.Canvas(fname, pagesize=letter)
+        c = canvas.Canvas(fname, pagesize=letter)
 
-    barcode_height = .250*inch
+        barcode_height = .250*inch
 
-    x_margin = 0.27 * inch
-    y_margin = 0.485 * inch
+        x_margin = 0.27 * inch
+        y_margin = 0.485 * inch
 
-    x_interlabel = 0.12 * inch
-    y_interlabel = 0
+        x_interlabel = 0.12 * inch
+        y_interlabel = 0
 
-    x_label = 1.5 * inch
-    y_label = 1 * inch
+        x_label = 1.5 * inch
+        y_label = 1 * inch
 
-    label_padding = 0.1 * inch
+        label_padding = 0.1 * inch
 
-    x = x_margin
-    y = letter[1] - y_margin
+        x = x_margin
+        y = letter[1] - y_margin
 
-    # Don't know why I need this, but it makes it work
-    x_hack = 0.2 * inch
+        # Don't know why I need this, but it makes it work
+        x_hack = 0.2 * inch
 
-    for x_ind in range(5):
-        for y_ind in range(10):
-            x_off = x + x_ind * (x_label + x_interlabel) + label_padding - x_hack
-            y_off = y - y_ind * (y_label + y_interlabel) - barcode_height - label_padding
-
-            print("x_off {} ({}) y_off {} ({})".format(x_off, x_off / inch, y_off, y_off / inch))
-
-            barcode = code93.Extended93(item.barcode)
-            print(barcode.minWidth())
-            print(barcode.minWidth() / inch)
-            barcode.drawOn(c, x_off, y_off)
-
-            x_text = x_off + 6.4 * mm
-            y_text = y_off - 5 * mm
-            c.setFont("Helvetica", 12)
-            c.drawString(x_text, y_text, item.barcode)
-
-            y_text = y_text - 5 * mm
-            c.setFont("Helvetica", 8)
-            c.drawString(x_text, y_text, item.name)
-
-    c.showPage()
-    c.save()
-
-    response = FileResponse(fname, request=request)
-    return response
+        if item.barcode:
+            label_text = item.barcode
+        else:
+            for bi in item.boxes:
+                if len(bi.box.items) == 1:
+                    label_text = bi.box.barcode
+                    break
+            else:
+                request.session.flash('Cannot create barcodes. \
+                    This item has no barcode and none of the boxes it is in\
+                    only have one item.', 'error')
+                return HTTPFound(location=request.route_url('admin_item_edit', item_id=request.matchdict['item_id']))
 
 
-@view_config(route_name='admin_item_enable', permission='admin')
-def admin_item_enable(request):
-    item = Item.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        item.enabled = True
-    else:
-        item.enabled = False
-    return request.response
+        for x_ind in range(5):
+            for y_ind in range(10):
+                x_off = x + x_ind * (x_label + x_interlabel) + label_padding - x_hack
+                y_off = y - y_ind * (y_label + y_interlabel) - barcode_height - label_padding
+
+                print("x_off {} ({}) y_off {} ({})".format(x_off, x_off / inch, y_off, y_off / inch))
+
+                barcode = code93.Extended93(label_text)
+                print(barcode.minWidth())
+                print(barcode.minWidth() / inch)
+                barcode.drawOn(c, x_off, y_off)
+
+                x_text = x_off + 6.4 * mm
+                y_text = y_off - 5 * mm
+                c.setFont("Helvetica", 12)
+                c.drawString(x_text, y_text, label_text)
+
+                y_text = y_text - 5 * mm
+                c.setFont("Helvetica", 8)
+                c.drawString(x_text, y_text, item.name)
+
+        c.showPage()
+        c.save()
+
+        response = FileResponse(fname, request=request)
+        return response
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error occurred while creating barcodes.', 'error')
+        return HTTPFound(location=request.route_url('admin_item_edit', item_id=request.matchdict['item_id']))
 
 
 @view_config(route_name='admin_item_delete', permission='admin')
@@ -810,7 +1031,9 @@ def admin_box_add(request):
     else:
         fields = request.GET
 
-    return {'items': items, 'd': fields}
+    return {'items': items,
+            'vendors': Vendor.all(),
+            'd': fields}
 
 
 @view_config(route_name='admin_box_add_submit',
@@ -822,8 +1045,12 @@ def admin_box_add_submit(request):
         items_empty_barcode = 0
 
         # Work on the box first
-        box_name     = request.POST['box-name'].strip()
-        box_barcode  = request.POST['box-barcode'].strip()
+        box_name      = request.POST['box-name'].strip()
+        box_barcode   = request.POST['box-barcode'].strip()
+        box_salestax  = request.POST['box-sales_tax'] == 'on'
+        box_bottledep = request.POST['box-bottle_dep'] == 'on'
+        box_vendor    = int(request.POST['box-vendor'])
+        box_itemnum   = request.POST['box-vendor-item_num'].strip()
 
         if box_name == '':
             request.session.flash('Error adding box: must have name.', 'error')
@@ -899,7 +1126,7 @@ def admin_box_add_submit(request):
 
         else:
             # Need to create the box
-            box = Box(box_name, box_barcode)
+            box = Box(box_name, box_barcode, box_bottledep, box_salestax)
             DBSession.add(box)
             DBSession.flush()
 
@@ -907,12 +1134,25 @@ def admin_box_add_submit(request):
             for item,quantity in items_to_add:
                 if type(item) is dict:
                     # Need to add this item first
-                    item = Item(item['name'], item['barcode'], 0, 0, 0, False)
+                    item = Item(name=item['name'],
+                                barcode=item['barcode'] or None,
+                                price=0,
+                                wholesale=0,
+                                sales_tax=box_salestax,
+                                bottle_dep=box_bottledep,
+                                in_stock=0,
+                                enabled=False)
                     DBSession.add(item)
                     DBSession.flush()
 
                 box_item = BoxItem(box, item, quantity)
                 DBSession.add(box_item)
+
+            if box_itemnum != '':
+                # Add a new vendor to the item
+                vendor = Vendor.from_id(box_vendor)
+                box_vendor = BoxVendor(vendor, box, box_itemnum)
+                DBSession.add(box_vendor)
 
             request.session.flash('Box "{}" added successfully.'.format(box_name), 'success')
             return HTTPFound(location=request.route_url('admin_box_add'))
@@ -1096,6 +1336,10 @@ def admin_box_edit_submit(request):
                     val = round(float(request.POST[key]), 2)
                 elif field == 'quantity':
                     val = int(request.POST[key])
+                elif field == 'sales_tax':
+                    val = request.POST[key] == 'on'
+                elif field == 'bottle_dep':
+                    val = request.POST[key] == 'on'
                 else:
                     val = request.POST[key].strip()
 
@@ -1116,16 +1360,6 @@ def admin_box_edit_submit(request):
     except:
         request.session.flash('Error updating box.', 'error')
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
-
-
-@view_config(route_name='admin_box_enable', permission='admin')
-def admin_box_enable(request):
-    box = Box.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        box.enabled = True
-    else:
-        box.enabled = False
-    return request.response
 
 
 @view_config(route_name='admin_box_delete', permission='admin')
@@ -1183,14 +1417,6 @@ def admin_vendors_edit_submit(request):
     request.session.flash('Vendors updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_vendors_edit'))
 
-@view_config(route_name='admin_vendor_enable', permission='admin')
-def admin_vendor_enable(request):
-    vendor = Vendor.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        vendor.enabled = True
-    else:
-        vendor.enabled = False
-    return request.response
 
 @view_config(route_name='admin_users_edit',
              renderer='templates/admin/users_edit.jinja2',
@@ -1235,6 +1461,19 @@ def admin_users_edit_submit(request):
     return HTTPFound(location=request.route_url('admin_users_edit'))
 
 
+@view_config(route_name='admin_user',
+             renderer='templates/admin/user.jinja2',
+             permission='admin')
+def admin_user(request):
+    try:
+        user = User.from_id(request.matchdict['user_id'])
+        return {'user': user}
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Invalid user?', 'error')
+        return HTTPFound(location=request.route_url('admin_index'))
+
+
 @view_config(route_name='admin_user_balance_edit',
              renderer='templates/admin/user_balance_edit.jinja2',
              permission='admin')
@@ -1263,16 +1502,6 @@ def admin_user_balance_edit_submit(request):
     except event.NotesMissingException:
         request.session.flash('Must include a reason', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
-
-
-@view_config(route_name='admin_user_enable', permission='admin')
-def admin_user_enable(request):
-    user = User.from_id(int(request.matchdict['id']))
-    if request.matchdict['state'].lower() == 'true':
-        user.enabled = True
-    else:
-        user.enabled = False
-    return request.response
 
 
 @view_config(route_name='admin_users_email',
@@ -1615,7 +1844,7 @@ def admin_event_undo(request):
 
         for transaction in event.transactions:
             # Make sure transaction is a deposit (no user check since admin doing)
-            if transaction.type not in ('deposit', 'purchase', 'restock', 'inventory'):
+            if transaction.type not in ('cashdeposit', 'purchase', 'restock', 'inventory'):
                 request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
                 return HTTPFound(location=request.route_url('admin_events'))
 
@@ -1697,20 +1926,6 @@ def admin_requests(request):
     return {'requests': requests}
 
 
-@view_config(route_name='admin_requests_delete',
-             renderer='json',
-             permission='admin')
-def admin_requests_delete(request):
-    try:
-        request_id = int(request.matchdict['request_id'])
-        request = Request.from_id(request_id)
-        request.enabled = False
-        return {'status':     'success',
-                'request_id': request_id}
-    except:
-        return {'status': 'error'}
-
-
 @view_config(route_name='admin_announcements_edit',
              renderer='templates/admin/announcements_edit.jinja2',
              permission='admin')
@@ -1741,10 +1956,7 @@ def admin_announcements_edit_submit(request):
             DBSession.add(announcement)
         else:
             announcement = Announcement.from_id(int(announcement_id))
-            if not int(props['enabled']):
-                announcement.enabled = False
-            else:
-                announcement.announcement = props['text']
+            announcement.announcement = props['text']
 
     request.session.flash('Announcements updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_announcements_edit'))

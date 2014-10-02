@@ -57,6 +57,25 @@ Betty stops selling something you would like back, feel free to
 
           </table>
 
+          <h4>Temporarily Out-of-Stock Items:</h4>
+
+          <table class="table table-bordered table-striped sortable">
+            <thead>
+              <tr>
+                <th>Item</th>
+              </tr>
+            </thead>
+
+            <tbody>
+            {% for item in out_of_stock_items %}
+              <tr>
+                <td class="item-name">{{ item.name }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+
+          </table>
+
           <h4>Discontinued Items:</h4>
 
           <table class="table table-bordered table-striped sortable">
@@ -83,4 +102,8 @@ Betty stops selling something you would like back, feel free to
   </div>
 </div>
 
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
 {% endblock %}

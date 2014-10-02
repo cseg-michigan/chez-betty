@@ -37,7 +37,11 @@
                 </tr>
                 <tr>
                   <td>Users</td>
-                  <td class="right">{{ users_balance.total_balance|format_currency|safe }}</td>
+                  <td class="right">{{ users_balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Users Owe</td>
+                  <td class="right">{{ owed_by_users|format_currency|safe }}</td>
                 </tr>
               </tbody>
             </table>
@@ -61,6 +65,10 @@
                 <tr>
                   <td>Bitcoin Box</td>
                   <td class="right">{{ btcbox.balance|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Users Cash</td>
+                  <td class="right">{{ held_for_users|format_currency|safe }}</td>
                 </tr>
               </tbody>
             </table>
@@ -183,13 +191,91 @@
             </tr>
             <tr>
               <td>Projected Profit</td>
-              <td class="right">{{ ((inventory.price - users_balance.total_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
+              <td class="right">{{ ((inventory.price - users_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Year-to-Date</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>YTD Sales</td>
+              <td class="right">{{ ytd_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Profit on Sales</td>
+              <td class="right">{{ ytd_profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Inventory Lost</td>
+              <td class="right">{{ ytd_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total Deposits</td>
+              <td class="right">{{ ytd_dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total Cash Deposits</td>
+              <td class="right">{{ ytd_dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total BTC Deposits</td>
+              <td class="right">{{ ytd_dep_btc|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Month-to-Date</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>MTD Sales</td>
+              <td class="right">{{ mtd_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Profit on Sales</td>
+              <td class="right">{{ mtd_profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Inventory Lost</td>
+              <td class="right">{{ mtd_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total Deposits</td>
+              <td class="right">{{ mtd_dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total Cash Deposits</td>
+              <td class="right">{{ mtd_dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total BTC Deposits</td>
+              <td class="right">{{ mtd_dep_btc|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  
 </div>
 
 
@@ -204,13 +290,13 @@
           <thead>
             <tr>
               <th>User</th>
-              <th class="right">Balance</th>
+              <th class="right" style="width:20%;">Balance</th>
             </tr>
           </thead>
           <tbody>
             {% for user in users_shame %}
             <tr>
-              <td>{{ user|make_link|safe }}</td>
+              <td>{{ user|make_link(33)|safe }}</td>
               <td class="right">{{ user.balance|format_currency|safe }}</td>
             </tr>
             {% endfor %}
@@ -231,13 +317,13 @@
           <thead>
             <tr>
               <th>Item</th>
-              <th class="right">In Stock</th>
+              <th class="right" style="width:20%;">Stock</th>
             </tr>
           </thead>
           <tbody>
             {% for item in items_low_stock %}
             <tr>
-              <td>{{ item|make_link|safe }}</td>
+              <td>{{ item|make_link(33)|safe }}</td>
               <td class="right">{{ item.in_stock }}</td>
             </tr>
             {% endfor %}
@@ -257,13 +343,13 @@
           <thead>
             <tr>
               <th>Item</th>
-              <th class="right">Quantity Sold</th>
+              <th class="right" style="width:20%;">Sold</th>
             </tr>
           </thead>
           <tbody>
             {% for item in best_selling_items %}
             <tr>
-              <td>{{ item[1]|make_link|safe }}</td>
+              <td>{{ item[1]|make_link(33)|safe }}</td>
               <td class="right">{{ item.quantity }}</td>
             </tr>
             {% endfor %}
@@ -329,6 +415,12 @@
   </div>
   <div class="col-md-4">
   {{ graph.create_graph_panel(graph_deposits_day.xs, graph_deposits_day.ys, graph_deposits_day.avg_hack, "Deposits per day") }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/users/totals", "Total Users") }}
   </div>
 </div>
 

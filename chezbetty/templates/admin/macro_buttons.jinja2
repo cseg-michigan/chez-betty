@@ -5,3 +5,11 @@
 {% macro box(id) %}
 <a href="/admin/box/edit/{{ id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a>
 {% endmacro %}
+
+{% macro onoff_switch(object, field, id, status) %}
+<input type="checkbox" id="switch-onoff-{{ object }}-{{ field }}-{{ id }}" class="admin-switch toggle-disabled ajax-bool-switch" data-parent="{{ object }}-{{ id }}" {% if status == True %}checked="checked"{% endif %}>
+{% endmacro %}
+
+{% macro delete(object, field, id) %}
+<button type="button" id="btn-delete-{{ object }}-{{ field }}-{{ id }}-true" class="btn btn-danger button-delete ajax-bool-btn delete-entry" data-parent="{{ object }}-{{ id }}">X</button>
+{% endmacro %}

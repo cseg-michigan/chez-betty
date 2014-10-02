@@ -7,29 +7,42 @@ $(".date").each(function (index) {
 
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
 $(".admin-switch").bootstrapSwitch();
-$(".admin-switch").on('switchChange.bootstrapSwitch', function (event, state) {
-	var url = $(this).attr("id").replace(/-/g, '/');
-	ajax_url = "/" + url + "/" + state;
+
+function ajax_bool (js_obj, object, field, id, status) {
+	var url = "/admin/ajax/bool/"+object+"/"+id+"/"+field+"/"+status;
 	$.ajax({
-		url: ajax_url,
-		context: this,
+		url: url,
+		context: js_obj,
 		success: toggle_state_success,
 		error: toggle_state_fail
 	});
+}
+
+$(".ajax-bool-switch").on('switchChange.bootstrapSwitch', function (event, state) {
+	var fields = $(this).attr("id").split("-");
+	ajax_bool($(this), fields[2], fields[3], fields[4], state);
+});
+
+$(".ajax-bool-btn").on('click', function () {
+	var fields = $(this).attr("id").split("-");
+	ajax_bool($(this), fields[2], fields[3], fields[4], fields[5]);
 });
 
 function toggle_state_success (data) {
+	var parent = $("#"+$(this).attr("data-parent"))
+
 	if ($(this).hasClass('require-refresh')) {
 		location.reload();
+
 	} else if ($(this).hasClass('toggle-disabled')) {
-		var type = $(this).attr("id").split('-')[1];
-		var id   = $(this).attr("id").split('-')[3];
-		console.log($(this).prop("checked"));
 		if ($(this).prop("checked")) {
-			$("#"+type+"-" + id).removeClass("disabled-row");
+			parent.removeClass("disabled-row");
 		} else {
-			$("#"+type+"-" + id).addClass("disabled-row");
+			parent.addClass("disabled-row");
 		}
+
+	} else if ($(this).hasClass("delete-entry")) {
+		parent.hide();
 	}
 }
 
@@ -71,6 +84,49 @@ function toggle_enabled (type, btn) {
 		$("#btn-disable-"+type+"-" + id).show();
 	}
 }
+
+// ITEMS
+
+$("#new-item").click(function () {
+	// Instead of counting each time, just keep the number of lines around
+	// in a hidden element.
+	var item_lines_count = parseInt($("#item-count").val());
+
+	// Copy row 0 to create a new row
+	container = $("#item-0").clone().attr("id", "item-"+item_lines_count);
+	container.find("*").each(function (index) {
+		// Update the ID to the next number
+		id = $(this).attr("name");
+		if (id) {
+			name_pieces = id.split("-");
+			name_pieces[name_pieces.length-2] = item_lines_count;
+			new_id = name_pieces.join("-");
+			$(this).attr("id", "box-" + new_id);
+			$(this).attr("name", new_id);
+			if ($(this).is(":checkbox")) {
+				// Clear checkmarks
+				$(this).prop("checked", "");
+			} else {
+				// Clear the value if there is text in the first row already
+				$(this).val("");
+			}
+			if (name_pieces[3] == 'barcode') {
+				$(this).on("input", barcode_check_fn);
+				// Since we clone the input, we need to trigger to clear its coloring
+				$(this).trigger("input");
+			}
+		}
+	});
+
+	// Add the new row to the page
+	$("#newitem-rows").append(container);
+
+	// Update the number of new items to be added
+	$("#item-count").val(item_lines_count+1);
+
+	attach_keypad();
+});
+
 
 $(".edit-item-row").on("click", "button", function () {
 	toggle_enabled("item", $(this));
@@ -134,7 +190,7 @@ $("#btn-items-add-row").click(function () {
 
 barcode_check_fn = function () {
 	var validator = new Barcoder();
-	console.log($(this).val());
+
 	if ($(this).val() == '') {
 		$(this).css("backgroundColor", "inherit");
 	} else if (validator.validate($(this).val()).isValid) {
@@ -148,7 +204,6 @@ $(".barcode-check").on("input", barcode_check_fn);
 
 $("#select-user").change(function () {
 	user_id = $("#select-user option:selected").val();
-	console.log(user_id);
 
 	// Hide all current balances
 	$(".current-balance").hide();
@@ -192,7 +247,11 @@ $("#restock-table tbody tr").each(function () {
 
 $(".restock-manual").on("click", function () {
 	var type = $(this).attr("id").split("-")[2];
-	add_item($("#restock-manual-"+type+"-select").val());
+	if (type == "item" || type == "box") {
+		add_item($("#restock-manual-"+type+"-select").val());
+	} else if (type == "search") {
+		search_item($("#restock-manual-"+type+"-input").val());
+	}
 });
 
 $("#restock-table").on("click", "input:checkbox", function () {
@@ -202,6 +261,12 @@ $("#restock-table").on("click", "input:checkbox", function () {
 // When the per item cost changes, update the line item total
 $("#restock-table").on("input", "input:text", function () {
 	restock_update_line_total($(this).attr("id").split("-")[2]);
+});
+
+// Add a searched for item to the restock table
+$("#restock-search-table").on("click", "button", function () {
+	var barcode = $(this).attr("data-item");
+	add_item(barcode);
 });
 
 
@@ -226,7 +291,7 @@ $("#new-box-table").on("input", "input:text", function () {
 	$("#box-name").val(name);
 });
 
-$(".box-subitem").on("input", "input:text", function () {
+$(".box-subitem, #newitems").on("input", "input:text", function () {
 	var row_id = $(this).attr("id").split("-")[2];
 	var base = $("#box-item-"+row_id+"-general").val();
 	var volume = $("#box-item-"+row_id+"-volume").val();
@@ -385,7 +450,6 @@ serialized_form_clean = $("form").serialize().split("&").sort().join("&");
 
 // Before we leave the page we now compare between the new form values and the orignal
 window.onbeforeunload = function (e) {
-	console.log(serialized_form_clean);
     var serialized_form_dirty = $("form").serialize().split("&").sort().join("&");
     if (serialized_form_clean != serialized_form_dirty && !clicked_submit) {
         return "You are about to leave a page where you have not saved the data.";

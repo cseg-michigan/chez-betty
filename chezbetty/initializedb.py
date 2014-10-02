@@ -52,6 +52,8 @@ def main(argv=sys.argv):
            14.37,
            0.47,
            1,
+           True,
+           True,
            True
         ))
         DBSession.add(Item(
@@ -60,6 +62,8 @@ def main(argv=sys.argv):
            1.25,
            1.17,
            5,
+           True,
+           True,
            True
         ))
         DBSession.add(Item(
@@ -68,6 +72,8 @@ def main(argv=sys.argv):
            1.25,
            1.14,
            5,
+           True,
+           True,
            True
         ))
         coke = Item(
@@ -76,6 +82,8 @@ def main(argv=sys.argv):
             0.42,
             0.37,
             12,
+            True,
+            True,
             True
         )
         DBSession.add(coke)

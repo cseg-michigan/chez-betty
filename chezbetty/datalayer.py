@@ -148,7 +148,7 @@ def deposit(user, amount):
     e = event.Deposit(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Deposit(e, user, amount)
+    t = transaction.CashDeposit(e, user, amount)
     DBSession.add(t)
     return dict(prev=prev,
                 new=user.balance,
@@ -241,8 +241,8 @@ def reconcile_items(items, admin):
     DBSession.flush()
     total_amount_missing = Decimal(0.0)
     for item, quantity in items.items():
-        if item.in_stock == quantity:
-            continue
+        # Record the restock line item even if the number hasn't changed.
+        # This lets us track when we have counted items.
         quantity_missing = item.in_stock - quantity
         line_amount = quantity_missing * item.wholesale
         ili = transaction.InventoryLineItem(t, line_amount, item, item.in_stock,
@@ -258,7 +258,7 @@ def reconcile_items(items, admin):
 
 # Call this when the cash box gets emptied
 def reconcile_cash(amount, admin):
-    assert(amount>0)
+    assert(amount>=0)
 
     e = event.EmptyCashBox(admin)
     DBSession.add(e)
@@ -292,6 +292,19 @@ def reconcile_cash(amount, admin):
     DBSession.add(t2)
     return expected_amount
 
+
+# Call this to move money from the cash box to the bank, but without necessarily
+# emptying the cash box.
+def cashbox_to_bank(amount, admin):
+    assert(amount>=0)
+
+    e = event.EmptyCashBox(admin)
+    DBSession.add(e)
+    DBSession.flush()
+
+    t = transaction.EmptyCashBox(e, amount)
+    DBSession.add(t)
+    
 
 # Call this when bitcoins are converted to USD
 def reconcile_bitcoins(amount, admin, expected_amount=None):

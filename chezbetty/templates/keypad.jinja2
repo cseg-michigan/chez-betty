@@ -1,8 +1,10 @@
+{% set keypad_val = keypad_val|default(0.00) %}
+
 <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-keypad.css'|static_url}}" />
 
 <div id="keypad">
 
-  <div id="keypad-total" class="well well-sm keypad-full-width">$0.00</div>
+  <div id="keypad-total" class="well well-sm keypad-full-width">${{ '%0.2f'| format(keypad_val|float) }}</div>
 
   <container>
     <block><button type="button" id="btn-keypad-9" class="btn btn-default btn-keypad">9</button></block>

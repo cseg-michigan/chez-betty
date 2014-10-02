@@ -1,0 +1,61 @@
+{% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
+{% set active_page = 'users' %}
+{% block title %}User{% endblock %}
+
+{% block top %}
+<h1 class="page-header">User</h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">User Details</div>
+  <div class="panel-body">
+    <dl class="dl-horizontal">
+      <dt>Name</dt><dd>{{ user.name }}</dd>
+      <dt>uniqname</dt><dd>{{ user.uniqname }}</dd>
+      <dt>UMID</dt><dd>{{ user.umid }}</dd>
+      <dt>Balance</dt><dd>{{ user.balance|format_currency|safe }}</dd>
+      <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
+    </dl>
+  </div>
+</div>
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Transaction History</h3>
+  </div>
+  <div class="panel-body">
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Date</th>
+          <th>Type</th>
+          <th class="right">Amount</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for event in user.events|reverse %}
+
+        <tr>
+          <td>{{ button.event(event.id) }}</td>
+          <td>{{ event.timestamp|pretty_date|safe }}</td>
+          <td>{{ event.type }}</td>
+          <td class="right">{{ event.transactions[0].amount|format_currency|safe }}</td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+{% endblock %}

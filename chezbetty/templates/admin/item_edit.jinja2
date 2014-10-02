@@ -1,5 +1,6 @@
 {% extends "base.jinja2" %}
 {% import "macro_buttons.jinja2" as button %}
+{% import "macro_graph.jinja2" as graph %}
 {% set active_page = 'items_edit' %}
 {% block title %}Edit Item{% endblock %}
 
@@ -32,9 +33,17 @@
         <dt>In Stock</dt>
         <dd><input type="text" class="form-control numeric" disabled value="{{ item.in_stock }}"></input></dd>
 
+        <dt>Sales Tax</dt>
+        <input type="hidden" name="item-sales_tax" value="off">
+        <dd><input type="checkbox" id="item-sales_tax" name="item-sales_tax" {% if item.sales_tax == True %}checked="checked"{% endif %}></input></dd>
+
+        <dt>Bottle Deposit</dt>
+        <input type="hidden" name="item-bottle_dep" value="off">
+        <dd><input type="checkbox" id="item-bottle_dep" name="item-bottle_dep" {% if item.bottle_dep == True %}checked="checked"{% endif %}></input></dd>
+
         <hr />
         <dt>Enabled</dt>
-        <dd><input type="checkbox" id="admin-item-enable-{{ item.id }}" class="admin-switch toggle-disabled" {% if item.enabled == True %}checked="checked"{% endif %}></input></dd>
+        <dd>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</dd>
       </dl>
     </div>
 
@@ -46,6 +55,7 @@
           <tr>
             <th>Vendor</th>
             <th>Product Num</th>
+            <th>Link</th>
           </tr>
         </thead>
 
@@ -59,7 +69,11 @@
             <td>
               <input type="text" class="form-control" id="item-vendor-item_num-{{ v.id }}" name="item-vendor-item_num-{{ v.id }}" value="{{ v.item_number }}">
             </td>
-
+            <td>
+              {% if v.vendor.name == "Costco" %}
+              <a href="http://www2.costco.com/Common/Search.aspx?whse=BD_823&topnav=bd&search={{ v.item_number }}&N=0&Ntt={{ v.item_number }}&cm_re=1_en-_-Top_Left_Nav-_-Top_search&lang=en-US">View on Costco</a>
+              {% endif %}
+            </td>
           </tr>
           {% endif %}
           {% endfor %}
@@ -172,6 +186,12 @@
 
 
 </form>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_timeseries_panel("/admin/data/item/sales/"~item.id, "Items sold over time") }}
+  </div>
+</div>
 
 {% if can_delete %}
 <a href="/admin/item/delete/{{ item.id }}" class="btn btn-danger">Permanently Delete this Item</a>

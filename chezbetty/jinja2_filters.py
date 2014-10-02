@@ -17,12 +17,21 @@ def format_currency(value):
 def pretty_date(datetime_obj):
 	return '<span class="date">{}</span>'.format(datetime_obj.strftime('%m/%d/%Y %I:%M:%S %p UTC'))
 
-def make_link(obj):
+# Shorten a string to l length
+def shorten(s, l):
+	if l == 0:
+		return s
+	elif len(s) <= l:
+		return s
+	else:
+		return s[0:l-1] + '…'
+
+def make_link(obj, str_len=0):
 	if type(obj) is box.Box:
-		return '<a href="/admin/box/edit/{}">{}</a>'.format(obj.id, obj.name)
+		return '<a href="/admin/box/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	elif type(obj) is item.Item:
-		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, obj.name)
+		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	elif type(obj) is user.User:
-		return '<a href="/user/{}">{}</a>'.format(obj.umid, obj.name)
+		return '<a href="/user/{}">{}</a>'.format(obj.umid, shorten(obj.name, str_len))
 	else:
 		return obj.name

@@ -22,6 +22,7 @@ sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 chezbetty.default_password = chezbetty
 chezbetty.host = chezbetty.com
 chezbetty.email = chezbetty@chezbetty.com
+chezbetty.ipaddr = 111.222.333.444
 
 ldap.server = ldap.domain.com
 ldap.password = abc123
@@ -34,6 +35,7 @@ jinja2.filters =
     format_currency = chezbetty.jinja2_filters:format_currency
     pretty_date = chezbetty.jinja2_filters:pretty_date
     make_link = chezbetty.jinja2_filters:make_link
+    shorten = chezbetty.jinja2_filters:shorten
 
 auth.secret = aabbcc
 
