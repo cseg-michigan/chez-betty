@@ -1,0 +1,7 @@
+{% macro dropdown(input_name, options, selected) %}
+<select class="form-control" id="{{ input_name }}" name="{{ input_name }}">
+	{% for option in options %}
+	<option value="{{ option.id }}" {% if option.id == selected|int %}selected="selected"{% endif %}>{{ option.name }}</option>
+	{% endfor %}
+</select>
+{% endmacro %}
