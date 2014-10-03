@@ -392,8 +392,8 @@ def admin_restock_submit(request):
                 obj_type   = request.POST['-'.join([f[0], 'type', f[2]])]
                 obj_id     = request.POST['-'.join([f[0], 'id', f[2]])]
                 quantity   = int(request.POST['-'.join([f[0], 'quantity', f[2]])] or 0)
-                wholesale  = float(request.POST['-'.join([f[0], 'wholesale', f[2]])] or 0.0)
-                coupon     = float(request.POST['-'.join([f[0], 'coupon', f[2]])] or 0.0)
+                wholesale  = float(request.POST['-'.join([f[0], 'wholesale', f[2]])] or Decimal(0.0))
+                coupon     = float(request.POST['-'.join([f[0], 'coupon', f[2]])] or Decimal(0.0))
                 salestax   = request.POST['-'.join([f[0], 'salestax', f[2]])] == 'on'
                 btldeposit = request.POST['-'.join([f[0], 'bottledeposit', f[2]])] == 'on'
                 itemcount  = int(request.POST['-'.join([f[0], 'itemcount', f[2]])])

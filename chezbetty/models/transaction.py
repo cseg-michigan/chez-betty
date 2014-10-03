@@ -148,7 +148,7 @@ class Transaction(Base):
         if end:
             r = r.filter(event.Event.timestamp<end)
 
-        return r.one().a or 0.0
+        return r.one().a or Decimal(0.0)
 
 
 @property
@@ -185,7 +185,7 @@ def __total_deposit_amount(self):
                         Transaction.to_account_virt_id == self.id,
                         or_(Transaction.type == 'cashdeposit',
                             Transaction.type == 'btcdeposit')))\
-            .filter(event.Event.deleted==False).one().total or 0.0
+            .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_deposits = __total_deposit_amount
 
 # This is in a stupid place due to circular input problems
@@ -196,7 +196,7 @@ def __total_purchase_amount(self):
             .filter(and_(
                         Transaction.fr_account_virt_id == self.id,
                         Transaction.type == 'purchase'))\
-            .filter(event.Event.deleted==False).one().total or 0.0
+            .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_purchases = __total_purchase_amount
 
 class Purchase(Transaction):
@@ -425,7 +425,7 @@ class PurchaseLineItem(SubTransaction):
         if end:
             r = r.filter(event.Event.timestamp<end)
 
-        return r.one().p or 0.0
+        return r.one().p or Decimal(0.0)
 
     @classmethod
     def item_sale_quantities(cls, item_id):
