@@ -85,6 +85,24 @@ function toggle_enabled (type, btn) {
 	}
 }
 
+// ANNOUNCEMENTS
+
+function tweet_char_count () {
+  var len = $('#tweet').val().length;
+  var rem = 140 - len;
+  $('#tweet-char-count').text('Characters Remaining: ' + rem);
+  if (rem > 0) {
+    $('#tweet-char-count').css('color', 'black');
+  } else {
+    $('#tweet-char-count').css('color', 'red');
+  }
+};
+
+$("#tweet").on('change keyup paste input propertychange', tweet_char_count);
+
+// Need to call on page load too b/c browser may remember form contents
+tweet_char_count();
+
 // ITEMS
 
 $("#new-item").click(function () {
