@@ -8,6 +8,8 @@ from . import event
 from chezbetty import utility
 
 import ldap3
+import random
+import string
 
 class InvalidUserException(Exception):
     pass
@@ -177,12 +179,23 @@ class User(account.Account):
             salted = (self._salt + password).encode('utf-8')
             self._password = hashlib.sha256(salted).hexdigest()
 
+    def random_password(self):
+        password = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(6))
+        self._salt = self.__make_salt()
+        salted = (self._salt + password).encode('utf-8')
+        self._password = hashlib.sha256(salted).hexdigest()
+        return password
+
     def check_password(self, cand):
         if not self._salt:
             return False
         salted = (self._salt + cand).encode('utf-8')
         c = hashlib.sha256(salted).hexdigest()
         return c == self._password
+
+    @property
+    def has_password(self):
+        return self._password != None
 
 
 def get_user(request):

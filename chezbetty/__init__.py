@@ -145,6 +145,7 @@ def main(global_config, **settings):
     config.add_route('admin_user',                     '/admin/user/{user_id}')
     config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
+    config.add_route('admin_user_password_create',     '/admin/user/{user_id}/password/create')
 
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',  '/admin/cash/reconcile/submit')

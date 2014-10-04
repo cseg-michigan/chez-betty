@@ -1,5 +1,4 @@
 {% extends "base.jinja2" %}
-{% import "macro_buttons.jinja2" as button %}
 {% set active_page = 'users' %}
 {% block title %}User{% endblock %}
 
@@ -10,7 +9,9 @@
 {% block content %}
 
 <div class="panel panel-default">
-  <div class="panel-heading">User Details</div>
+  <div class="panel-heading">
+    <h3 class="panel-title">User Details</h3>
+  </div>
   <div class="panel-body">
     <dl class="dl-horizontal">
       <dt>Name</dt><dd>{{ user.name }}</dd>
@@ -19,6 +20,10 @@
       <dt>Balance</dt><dd>{{ user.balance|format_currency|safe }}</dd>
       <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
     </dl>
+    {% if user.has_password == False %}
+    {{ button.ajax_singleuse_button("Create and Email Password", "/admin/user/"~user.id~"/password/create") }}
+    {% endif %}
+
   </div>
 </div>
 

@@ -52,6 +52,25 @@ import math
 import pytz
 
 
+def send_email(recipient, subject, body):
+    print('SEND EMAIL')
+    print('SEND EMAIL')
+    print('SEND EMAIL')
+    print('SEND EMAIL')
+
+    print('To:   {}'.format(recipient))
+    print('Subj: {}'.format(subject))
+    print('')
+    print(body)
+    print('')
+    print('')
+
+    print('SENT EMAIL')
+    print('SENT EMAIL')
+    print('SENT EMAIL')
+    print('SENT EMAIL')
+
+
 ###
 ### Global Attributes (passed to every template)
 ###   - n.b. This really is global, it will pick up views routes too
@@ -1504,6 +1523,31 @@ def admin_user_balance_edit_submit(request):
     except event.NotesMissingException:
         request.session.flash('Must include a reason', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
+
+
+@view_config(route_name='admin_user_password_create',
+             renderer='json',
+             permission='admin')
+def admin_user_password_create(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if user.has_password:
+            return {'status': 'error',
+                    'msg': 'Error: User already has password.'}
+
+        password = user.random_password()
+        send_email(recipient='bradjc@umich.edu',
+                   subject='Chez Betty Login',
+                   body=render('templates/admin/email_password.jinja2', {'user': user, 'password': password}))
+        return {'status': 'success',
+                'msg': 'Password set and emailed to user.'}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
 
 
 @view_config(route_name='admin_users_email',
