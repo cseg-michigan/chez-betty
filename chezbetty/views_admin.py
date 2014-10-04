@@ -776,6 +776,8 @@ def admin_items_edit(request):
 
             if speed > 0:
                 item.days_until_out = item.in_stock / sale_speeds[item.id]
+            elif item.in_stock <= 0:
+                item.days_until_out = 0
             else:
                 item.days_until_out = None
         else:
