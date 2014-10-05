@@ -8,12 +8,14 @@ class Pool(account.Account):
     __tablename__ = 'pools'
     __mapper_args__ = {'polymorphic_identity': 'pool'}
 
-    id        = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
-    owner     = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    enabled   = Column(Boolean, nullable=False, default=True)
+    id           = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
+    owner        = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    credit_limit = Column(Numeric, nullable=False, default=20)
+    enabled      = Column(Boolean, nullable=False, default=True)
 
-    def __init__(self, owner):
+    def __init__(self, owner, name):
         self.owner = owner.id
+        self.name = name
         self.balance = 0.0
 
     @classmethod

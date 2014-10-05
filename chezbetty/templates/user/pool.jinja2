@@ -1,0 +1,78 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'pools' %}
+
+{% block title %}{{ pool.name }}{% endblock %}
+
+{% block top %}
+<h1 class="page-header">{{ pool.name }} Pool</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Pool Details</h3>
+  </div>
+  <div class="panel-body">
+
+    <dl class="dl-horizontal">
+      <dt>Name</dt><dd>{{ pool.name }}</dd>
+      <dt>Balance</dt><dd>{{ pool.balance|format_currency|safe }}</dd>
+      <dt>Credit Limit</dt><dd>{{ pool.credit_limit|format_currency|safe }}</dd>
+      <dt>Created</dt><dd>{{ pool.created_at|pretty_date|safe }}</dd>
+      <dt>Enabled</dt><dd>{{ button.onoff_switch('pool', 'enabled', pool.id, pool.enabled) }}</dd>
+    </dl>
+
+    <table id="my-pool-{{ pool.id }}-members" class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Temporarily Remove From Pool</th>
+          <th>Remove From Pool</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for pu in pool.users %}
+        <tr id="pool_user-{{ pu.id }}" class="{% if pu.enabled == False %}disabled-row{% endif %}"> 
+          <td>{{ pu.user.name }}</td>
+          <td>
+            {{ button.onoff_switch('pool_user', 'enabled', pu.id, pu.enabled) }}
+          </td>
+          <td>
+            {{ button.delete('pool_user', 'deleted',  pu.id) }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Add User To Pool</h3>
+  </div>
+  <div class="panel-body">
+
+    <form class="form-horizontal" role="form" action="/user/pool/addmember/submit" method="post">
+      <input type="hidden" id="pool-id" name="pool-id" value="{{ pool.id }}">
+      <div class="form-group">
+        <label for="uniqname" class="col-sm-2 control-label">Member Uniqname</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="uniqname" name="uniqname">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Add User to Pool</button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

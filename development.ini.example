@@ -35,6 +35,7 @@ jinja2.filters =
     format_currency = chezbetty.jinja2_filters:format_currency
     pretty_date = chezbetty.jinja2_filters:pretty_date
     make_link = chezbetty.jinja2_filters:make_link
+    make_user_link = chezbetty.jinja2_filters:make_user_link
     shorten = chezbetty.jinja2_filters:shorten
 
 auth.secret = aabbcc

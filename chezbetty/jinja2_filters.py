@@ -2,6 +2,7 @@ from .models import box
 from .models import item
 from .models import user
 from .models import account
+from .models import pool
 
 def format_currency(value):
 	try:
@@ -33,5 +34,11 @@ def make_link(obj, str_len=0):
 		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	elif type(obj) is user.User:
 		return '<a href="/user/{}">{}</a>'.format(obj.umid, shorten(obj.name, str_len))
+	else:
+		return obj.name
+
+def make_user_link(obj, str_len=0):
+	if type(obj) is pool.Pool:
+		return '<a href="/user/pool/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	else:
 		return obj.name

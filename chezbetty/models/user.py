@@ -102,13 +102,12 @@ class User(account.Account):
 
     @classmethod
     def from_id(cls, id):
-        u = DBSession.query(cls).filter(cls.id == id).one()
-        return u
+        return DBSession.query(cls).filter(cls.id == id).one()
 
     @classmethod
-    def from_uniqname(cls, uniqname):
+    def from_uniqname(cls, uniqname, local_only=False):
         u = DBSession.query(cls).filter(cls.uniqname == uniqname).first()
-        if not u:
+        if not u and not local_only:
             u = cls(**cls.__ldap.lookup_uniqname(uniqname))
             DBSession.add(u)
         return u

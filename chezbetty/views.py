@@ -307,26 +307,6 @@ def event_undo(request):
         assert(False and "Should not be able to get here?")
 
 
-@view_config(route_name='pools',
-             renderer='templates/pool.jinja2',
-             permission='service')
-def pools(request):
-    try:
-        user = User.from_umid(request.matchdict['umid'])
-
-        my_pools = Pool.all_by_owner(user)
-        their_pools = user.pools
-
-        return {'user': user,
-                'my_pools': my_pools}
-
-    except Exception as e:
-        if request.debug: raise(e)
-        request.session.flash('Error finding user.', 'error')
-        return HTTPFound(location=request.route_url('index'))
-
-
-
 ###
 ### JSON Requests
 ###
