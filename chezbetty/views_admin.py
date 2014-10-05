@@ -465,7 +465,7 @@ def admin_restock_submit(request):
                         itembox.item.sales_tax = salestax
 
                         subquantity = itembox.quantity * quantity
-                        subtotal    = subquantity * inv_cost
+                        subtotal    = float(itembox.percentage / 100) * total
                         add_item(itembox.item, subquantity, subtotal)
 
                     items.append((box, quantity, total, wholesale, coupon, salestax, btldeposit))
@@ -1095,6 +1095,7 @@ def admin_box_add_submit(request):
 
         # Now iterate over the subitems
         items_to_add = []
+        total_items = 0
 
         for key in request.POST:
             kf = key.split('-')
@@ -1113,6 +1114,8 @@ def admin_box_add_submit(request):
                 except:
                     request.session.flash('Error adding subitem: quantity must be numeric.', 'error')
                     error = True
+
+                total_items += quantity
 
                 if item_id == 'new':
                     # Need to add a new item for this box
@@ -1173,7 +1176,8 @@ def admin_box_add_submit(request):
                     DBSession.add(item)
                     DBSession.flush()
 
-                box_item = BoxItem(box, item, quantity)
+                # Set the box percentages all equal
+                box_item = BoxItem(box, item, quantity, round((quantity/total_items)*100, 2))
                 DBSession.add(box_item)
 
             if box_itemnum != '':
@@ -1317,6 +1321,7 @@ def admin_box_edit_submit(request):
                 # Handle the sub item quantities
                 item_id  = int(request.POST['box-item-id-'+fields[3]])
                 quantity = request.POST['box-item-quantity-'+fields[3]].strip()
+                percentage = request.POST['box-item-percentage-'+fields[3]].strip()
 
                 for boxitem in box.items:
                     # Update the BoxItem record.
@@ -1327,12 +1332,13 @@ def admin_box_edit_submit(request):
                             boxitem.enabled = False
                         else:
                             boxitem.quantity = int(quantity)
+                            boxitem.percentage = round(float(percentage), 2)
                         break
                 else:
                     if quantity != '':
                         # Add a new vendor to the item
                         item = Item.from_id(item_id)
-                        box_item = BoxItem(box, item, quantity)
+                        box_item = BoxItem(box, item, quantity, round(float(percentage), 2))
                         DBSession.add(box_item)
 
             elif fields[1] == 'vendor' and fields[2] == 'id':
@@ -1385,7 +1391,8 @@ def admin_box_edit_submit(request):
         request.session.flash('Error processing box fields.', 'error')
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
 
-    except:
+    except Exception as e:
+        if request.debug: raise(e)
         request.session.flash('Error updating box.', 'error')
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
 
