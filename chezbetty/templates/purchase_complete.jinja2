@@ -37,7 +37,12 @@
 
       <tfoot>
         <tr>
-          <td colspan="3"><b>Total</b></td>
+          <td colspan="3">
+            <b>Total</b>
+            {% if paid_with == "user" %}(Paid with your user account)
+            {% elif paid_with == "pool" %}(Paid with {{ pool.name }} Pool)
+            {% endif %}
+          </td>
           <td id="purchase-total">{{ order['total']|format_currency|safe }}</td>
         </tr>
       </tfoot>

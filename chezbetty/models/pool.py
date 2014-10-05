@@ -30,8 +30,11 @@ class Pool(account.Account):
                         .all()
 
     @classmethod
-    def all_by_owner(cls, user):
-        return DBSession.query(cls).filter(cls.owner==user.id)
+    def all_by_owner(cls, user, only_enabled=False):
+        q = DBSession.query(cls).filter(cls.owner==user.id)
+        if only_enabled:
+            q.filter(cls.enabled==True)
+        return q.all()
 
     @classmethod
     def count(cls):

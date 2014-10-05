@@ -36,7 +36,7 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 });
 
 // Click handler to submit a purchase.
-$("#btn-submit-purchase").click(function () {
+$(".btn-submit-purchase").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -46,6 +46,13 @@ $("#btn-submit-purchase").click(function () {
 	// to the server. Also include the purchasing user.
 	purchase = {};
 	purchase.umid = $("#user-umid").text();
+
+	// What account to pay with?
+	fields = $(this).attr("id").split("-");
+	purchase["account"] = fields[2];
+	if (purchase["account"] == "pool") {
+		purchase["pool_id"] = fields["3"];
+	}
 
 	item_count = 0;
 	$(".purchase-item").each(function (index) {

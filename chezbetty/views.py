@@ -118,7 +118,20 @@ def purchase(request):
                 existing_items += render('templates/item_row.jinja2',
                     {'item': item, 'quantity': int(quantity)})
 
-        return {'user': user, 'items': items, 'existing_items': existing_items}
+        # Figure out if any pools can be used to pay for this purchase
+        pools = []
+        for pool in Pool.all_by_owner(user, True):
+            if pool.balance > (pool.credit_limit * -1):
+                pools.append(pool)
+
+        for pu in user.pools:
+            if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
+                pools.append(pu.pool)
+
+        return {'user': user,
+                'items': items,
+                'existing_items': existing_items,
+                'pools': pools}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
@@ -206,7 +219,6 @@ def deposit_edit(request):
 
 @view_config(route_name='event', permission='service')
 def event(request):
-
     try:
         event = Event.from_id(request.matchdict['event_id'])
         transaction = event.transactions[0]
@@ -214,9 +226,7 @@ def event(request):
         # Choose which page to show based on the type of event
         if event.type == 'deposit':
             # View the deposit success page
-
-            user = DBSession.query(User) \
-                .filter(User.id==transaction.to_account_virt_id).one()
+            user = User.from_id(event.user_id)
 
             prev_balance = user.balance - transaction.amount
 
@@ -229,8 +239,7 @@ def event(request):
 
         elif event.type == 'purchase':
             # View the purchase success page
-            user = DBSession.query(User) \
-                .filter(User.id==transaction.fr_account_virt_id).one()
+            user = User.from_id(event.user_id)
 
             order = {'total': transaction.amount,
                      'items': []}
@@ -242,11 +251,20 @@ def event(request):
                 item['total_price'] = subtrans.amount
                 order['items'].append(item)
 
+            if transaction.fr_account_virt_id == user.id:
+                paid_with = 'user'
+                pool = None
+            else:
+                paid_with = 'pool'
+                pool = Pool.from_id(transaction.fr_account_virt_id)
+
             request.session.flash('Success! The purchase was added successfully', 'success')
             return render_to_response('templates/purchase_complete.jinja2',
                 {'user': user,
                  'event': event,
-                 'order': order}, request)
+                 'order': order,
+                 'paid_with': paid_with,
+                 'pool': pool}, request)
 
     except NoResultFound as e:
         # TODO: add generic failure page
@@ -276,10 +294,7 @@ def event_undo(request):
         # Make sure that the user who is requesting the deposit was the one who
         # actually placed the deposit.
         try:
-            if transaction.type == 'cashdeposit':
-                user = User.from_id(transaction.to_account_virt_id)
-            elif transaction.type == 'purchase':
-                user = User.from_id(transaction.fr_account_virt_id)
+            user = User.from_id(event.user_id)
         except:
             request.session.flash('Error: Invalid user for transaction.', 'error')
             return HTTPFound(location=request.route_url('index'))
@@ -376,16 +391,25 @@ def purchase_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
 
+        ignored_keys = ['umid', 'account', 'pool_id']
+
         # Bundle all purchase items
         items = {}
         for item_id,quantity in request.POST.items():
-            if item_id == 'umid':
+            if item_id in ignored_keys:
                 continue
             item = Item.from_id(int(item_id))
             items[item] = int(quantity)
 
-        # Commit the purchase
-        purchase = datalayer.purchase(user, items)
+        # What should pay for this?
+        # Note: should do a bunch of checking to make sure all of this
+        # is kosher. But given our locked down single terminal, we're just
+        # going to skip all of that.
+        if request.POST['account'] == 'user':
+            purchase = datalayer.purchase(user, user, items)
+        elif request.POST['account'] == 'pool':
+            pool = Pool.from_id(int(request.POST['pool_id']))
+            purchase = datalayer.purchase(user, pool, items)
 
         # Return the committed transaction ID
         return {'event_id': purchase.event.id}

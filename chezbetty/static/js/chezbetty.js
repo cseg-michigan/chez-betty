@@ -96,7 +96,7 @@ function add_item_fail () {
 function purchase_success (data) {
 	if ("error" in data) {
 		alert_error(data.error);
-		enable_button($("#btn-submit-purchase"));
+		enable_button($(".btn-submit-purchase"));
 	} else if ("redirect_url" in data) {
 		window.location.replace(data.redirect_url);
 	} else {
@@ -109,7 +109,7 @@ function purchase_success (data) {
 // Callback when a purchase fails for some reason
 function purchase_error () {
 	alert_error("Failed to complete purchase. Perhaps try again?");
-	enable_button($("#btn-submit-purchase"));
+	enable_button($(".btn-submit-purchase"));
 }
 
 // Callback when a deposit POST was successful

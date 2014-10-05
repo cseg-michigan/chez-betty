@@ -116,14 +116,14 @@ def new_request(user, request_text):
 
 
 # Call this to let a user purchase items
-def purchase(user, items):
+def purchase(user, account, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
 
     e = event.Purchase(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Purchase(e, user)
+    t = transaction.Purchase(e, account)
     DBSession.add(t)
     DBSession.flush()
     amount = Decimal(0.0)
