@@ -33,7 +33,9 @@ def make_link(obj, str_len=0):
 	elif type(obj) is item.Item:
 		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	elif type(obj) is user.User:
-		return '<a href="/user/{}">{}</a>'.format(obj.umid, shorten(obj.name, str_len))
+		return '<a href="/admin/user/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
+	elif type(obj) is pool.Pool:
+		return '<a href="/admin/pool/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	else:
 		return obj.name
 

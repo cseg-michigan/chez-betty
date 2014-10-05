@@ -152,6 +152,10 @@ def main(global_config, **settings):
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
     config.add_route('admin_user_password_create',     '/admin/user/{user_id}/password/create')
 
+    config.add_route('admin_pools',                    '/admin/pools')
+    config.add_route('admin_pool',                     '/admin/pool/{pool_id}')
+    config.add_route('admin_pool_addmember_submit',    '/admin/pool/addmember/submit')
+
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',  '/admin/cash/reconcile/submit')
     config.add_route('admin_cash_reconcile_success', '/admin/cash/reconcile/success')

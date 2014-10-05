@@ -27,6 +27,70 @@
   </div>
 </div>
 
+{% if my_pools|first %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Pools Owned By User</h3>
+  </div>
+  <div class="panel-body">
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th class="right">Balance</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for pool in my_pools %}
+
+        <tr>
+          <td>{{ pool|make_link|safe }}</td>
+          <td class="right">{{ pool.balance|format_currency|safe }}</td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if user.pools|first %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Pools This User Is In</h3>
+  </div>
+  <div class="panel-body">
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th class="right">Balance</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for pu in user.pools %}
+
+        <tr>
+          <td>{{ pu.pool|make_link|safe }}</td>
+          <td class="right">{{ pu.pool.balance|format_currency|safe }}</td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
 
 <div class="panel panel-default">
   <div class="panel-heading">

@@ -29,6 +29,7 @@
   <li {% if active_page == 'users' %}class="active"{% endif %}><a href="/admin/users/edit">Edit Users<span class="badge pull-right">{{ counts["users"] }}</span></a></li>
   <li {% if active_page == 'user_balance_edit' %}class="active"{% endif %}><a href="/admin/user/balance/edit">Edit User Balance</a></li>
   <li {% if active_page == 'users_email' %}class="active"{% endif %}><a href="/admin/users/email">Email Users</a></li>
+  <li {% if active_page == 'pools' %}class="active"{% endif %}><a href="/admin/pools">Manage Pools<span class="badge pull-right">{{ counts["pools"] }}</span></a></li>
 </ul>
 {% endif %}
 <ul class="nav nav-sidebar">

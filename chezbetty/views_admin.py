@@ -33,6 +33,8 @@ from .models.request import Request
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.receipt import Receipt
+from .models.pool import Pool
+from .models.pool_user import PoolUser
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -87,6 +89,7 @@ def add_counts(event):
         count['users']        = User.count()
         count['transactions'] = Transaction.count()
         count['requests']     = Request.count()
+        count['pools']        = Pool.count()
         event.rendering_val['counts'] = count
 
 @subscriber(BeforeRender)
@@ -123,6 +126,10 @@ def admin_ajax_bool(request):
         obj = User.from_id(obj_id)
     elif obj_str == 'request':
         obj = Request.from_id(obj_id)
+    elif obj_str == 'pool':
+        obj = Pool.from_id(obj_id)
+    elif obj_str == 'pool_user':
+        obj = PoolUser.from_id(obj_id)
     elif obj_str == 'cookie':
         # Set a cookie instead of change a property
         request.response.set_cookie(obj_field, '1' if obj_state else '0')
@@ -1488,7 +1495,9 @@ def admin_users_edit_submit(request):
 def admin_user(request):
     try:
         user = User.from_id(request.matchdict['user_id'])
-        return {'user': user}
+        my_pools = Pool.all_by_owner(user)
+        return {'user': user,
+                'my_pools': my_pools}
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Invalid user?', 'error')
@@ -1580,6 +1589,63 @@ def admin_users_email_all(request):
 
     request.session.flash('All users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
+
+
+@view_config(route_name='admin_pools',
+             renderer='templates/admin/pools.jinja2',
+             permission='admin')
+def admin_pools(request):
+    return {'pools': Pool.all()}
+
+
+@view_config(route_name='admin_pool',
+             renderer='templates/admin/pool.jinja2',
+             permission='admin')
+def admin_pool(request):
+    try:
+        pool = Pool.from_id(request.matchdict['pool_id'])
+        return {'pool': pool,
+                'pool_owner': User.from_id(pool.owner),
+                'users': User.all()}
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Unable to find pool.', 'error')
+        return HTTPFound(location=request.route_url('admin_pools'))
+
+
+@view_config(route_name='admin_pool_addmember_submit',
+             request_method='POST',
+             permission='admin')
+def admin_pool_addmember_submit(request):
+    try:
+        pool = Pool.from_id(request.POST['pool-id'])
+
+        # Look up the user that is being added to the pool
+        user = User.from_id(request.POST['user_id'])
+
+        # Can't add yourself
+        if user.id == pool.owner:
+            request.session.flash('Cannot add owner to a pool.', 'error')
+            return HTTPFound(location=request.route_url('admin_pool', pool_id=pool.id))
+
+        # Make sure the user isn't already in the pool
+        for u in pool.users:
+            if u.user_id == user.id:
+                request.session.flash('User is already in pool.', 'error')
+                return HTTPFound(location=request.route_url('admin_pool', pool_id=pool.id))
+
+        # Add the user to the pool
+        pooluser = PoolUser(pool, user)
+        DBSession.add(pooluser)
+        DBSession.flush()
+
+        request.session.flash('{} added to the pool.'.format(user.name), 'succcess')
+        return HTTPFound(location=request.route_url('admin_pool', pool_id=pool.id))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error adding user to pool.', 'error')
+        return HTTPFound(location=request.route_url('admin_pools'))
 
 
 @view_config(route_name='admin_cash_donation',
