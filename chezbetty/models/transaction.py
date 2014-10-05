@@ -156,11 +156,18 @@ def __transactions(self):
     return object_session(self).query(Transaction)\
             .join(event.Event)\
             .filter(or_(
-                    Transaction.to_account_virt_id == self.id,
-                    Transaction.fr_account_virt_id == self.id,
-                    Transaction.to_account_cash_id == self.id,
-                    Transaction.fr_account_cash_id == self.id))\
-            .filter(event.Event.deleted==False).all()
+                      or_(
+                        Transaction.to_account_virt_id == self.id,
+                        Transaction.fr_account_virt_id == self.id,
+                        Transaction.to_account_cash_id == self.id,
+                        Transaction.fr_account_cash_id == self.id),
+                      and_(
+                        or_(event.Event.type == "purchase",
+                            event.Event.type == "deposit"),
+                        event.Event.user_id == self.id)))\
+            .filter(event.Event.deleted==False)\
+            .order_by(event.Event.timestamp)\
+            .all()
 account.Account.transactions = __transactions
 
 # This is in a stupid place due to circular input problems
@@ -169,11 +176,18 @@ def __events(self):
     return object_session(self).query(event.Event)\
             .join(Transaction)\
             .filter(or_(
-                    Transaction.to_account_virt_id == self.id,
-                    Transaction.fr_account_virt_id == self.id,
-                    Transaction.to_account_cash_id == self.id,
-                    Transaction.fr_account_cash_id == self.id))\
-            .filter(event.Event.deleted==False).all()
+                      or_(
+                        Transaction.to_account_virt_id == self.id,
+                        Transaction.fr_account_virt_id == self.id,
+                        Transaction.to_account_cash_id == self.id,
+                        Transaction.fr_account_cash_id == self.id),
+                      and_(
+                        or_(event.Event.type == "purchase",
+                            event.Event.type == "deposit"),
+                        event.Event.user_id == self.id)))\
+            .filter(event.Event.deleted==False)\
+            .order_by(event.Event.timestamp)\
+            .all()
 account.Account.events = __events
 
 # This is in a stupid place due to circular input problems

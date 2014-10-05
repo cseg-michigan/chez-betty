@@ -146,15 +146,7 @@ def user(request):
             request.session.flash('User not permitted to purchase items.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
-        # Iterate through all of the events that the user was the to_account
-        # or fr_account on in the transactions
-        transactions = []
-        for event in user.events:
-            for transaction in event.transactions:
-                transactions.append(transaction)
-
-        return {'user': user,
-                'transactions': transactions}
+        return {'user': user}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
