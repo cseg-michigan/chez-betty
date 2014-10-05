@@ -175,7 +175,18 @@ def deposit(request):
         except BTCException as e:
             btc_html = ""
 
-        return {'user': user, 'btc' : btc_html}
+        # Get pools the user can deposit to
+        pools = []
+        for pool in Pool.all_by_owner(user, True):
+            pools.append(pool)
+
+        for pu in user.pools:
+            if pu.pool.enabled:
+                pools.append(pu.pool)
+
+        return {'user' : user,
+                'btc'  : btc_html, 
+                'pools': pools}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -194,9 +205,19 @@ def deposit_edit(request):
             request.session.flash('Can only edit a cash deposit.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
+        # Get pools the user can deposit to
+        pools = []
+        for pool in Pool.all_by_owner(user, True):
+            pools.append(pool)
+
+        for pu in user.pools:
+            if pu.pool.enabled:
+                pools.append(pu.pool)
+
         return {'user': user,
                 'old_event': event,
-                'old_deposit': event.transactions[0]}
+                'old_deposit': event.transactions[0], 
+                'pools': pools}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -214,25 +235,31 @@ def event(request):
     try:
         event = Event.from_id(request.matchdict['event_id'])
         transaction = event.transactions[0]
+        user = User.from_id(event.user_id)
 
         # Choose which page to show based on the type of event
         if event.type == 'deposit':
             # View the deposit success page
-            user = User.from_id(event.user_id)
-
             prev_balance = user.balance - transaction.amount
+
+            if transaction.to_account_virt_id == user.id:
+                account_type = 'user'
+                pool = None
+            else:
+                account_type = 'pool'
+                pool = Pool.from_id(transaction.to_account_virt_id)
 
             request.session.flash('Success! The deposit was added successfully', 'success')
             return render_to_response('templates/deposit_complete.jinja2',
                 {'deposit': transaction,
                  'user': user,
                  'event': event,
-                 'prev_balance': prev_balance}, request)
+                 'prev_balance': prev_balance, 
+                 'account_type': account_type,
+                 'pool': pool}, request)
 
         elif event.type == 'purchase':
             # View the purchase success page
-            user = User.from_id(event.user_id)
-
             order = {'total': transaction.amount,
                      'items': []}
             for subtrans in transaction.subtransactions:
@@ -244,10 +271,10 @@ def event(request):
                 order['items'].append(item)
 
             if transaction.fr_account_virt_id == user.id:
-                paid_with = 'user'
+                account_type = 'user'
                 pool = None
             else:
-                paid_with = 'pool'
+                account_type = 'pool'
                 pool = Pool.from_id(transaction.fr_account_virt_id)
 
             request.session.flash('Success! The purchase was added successfully', 'success')
@@ -255,7 +282,7 @@ def event(request):
                 {'user': user,
                  'event': event,
                  'order': order,
-                 'paid_with': paid_with,
+                 'account_type': account_type,
                  'pool': pool}, request)
 
     except NoResultFound as e:
@@ -480,6 +507,7 @@ def deposit_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
         amount = Decimal(request.POST['amount'])
+        account = request.POST['account']
 
         # Check if the deposit amount is too great.
         # This if block could be tighter, but this is easier to understand
@@ -494,7 +522,10 @@ def deposit_new(request):
             # deposit
             raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
 
-        deposit = datalayer.deposit(user, amount)
+        if account == 'user':
+            deposit = datalayer.deposit(user, user, amount)
+        elif account == 'pool':
+            deposit = datalayer.deposit(user, Pool.from_id(request.POST['pool_id']), amount)
 
         # Return a JSON blob of the transaction ID so the client can redirect to
         # the deposit success page
@@ -524,7 +555,8 @@ def deposit_edit_submit(request):
 
         if old_event.type != 'deposit' or \
            old_event.transactions[0].type != 'cashdeposit' or \
-           old_event.transactions[0].to_account_virt_id != user.id:
+           (old_event.transactions[0].to_account_virt_id != user.id and \
+            old_event.user_id != user.id):
            # Something went wrong, can't undo this deposit
            raise DepositException('Cannot undo that deposit')
 

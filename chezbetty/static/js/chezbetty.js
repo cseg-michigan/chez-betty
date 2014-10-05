@@ -116,8 +116,8 @@ function purchase_error () {
 function deposit_success (data) {
 	if ("error" in data) {
 		alert_error(data.error);
-		enable_button($("#btn-submit-deposit"));
-		enable_button($("#btn-edit-deposit"));
+		enable_button($(".btn-submit-deposit"));
+		enable_button($(".btn-edit-deposit"));
 		//$("#keypad-total").html(format_price(0.0));
 	} else if ("redirect_url" in data) {
 		window.location.replace(data.redirect_url);
@@ -131,8 +131,8 @@ function deposit_success (data) {
 // Callback when a deposit fails for some reason
 function deposit_error () {
 	alert_error("Failed to complete deposit. Perhaps try again?");
-	enable_button($("#btn-submit-deposit"));
-	enable_button($("#btn-edit-deposit"));
+	enable_button($(".btn-submit-deposit"));
+	enable_button($(".btn-edit-deposit"));
 	$("#keypad-total").html(format_price(0.0));
 }
 

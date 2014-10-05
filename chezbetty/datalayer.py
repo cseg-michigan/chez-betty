@@ -140,7 +140,7 @@ def purchase(user, account, items):
 
 # Call this when a user puts money in the dropbox and needs to deposit it
 # to their account
-def deposit(user, amount):
+def deposit(user, account, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
 
@@ -148,7 +148,7 @@ def deposit(user, amount):
     e = event.Deposit(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.CashDeposit(e, user, amount)
+    t = transaction.CashDeposit(e, account, amount)
     DBSession.add(t)
     return dict(prev=prev,
                 new=user.balance,

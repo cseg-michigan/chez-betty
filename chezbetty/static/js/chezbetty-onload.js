@@ -80,7 +80,7 @@ $(".btn-submit-purchase").click(function () {
 });
 
 // Click handler to submit a deposit.
-$("#btn-submit-deposit").click(function () {
+$(".btn-submit-deposit").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -89,6 +89,13 @@ $("#btn-submit-deposit").click(function () {
 	deposit = {};
 	deposit.umid = $("#user-umid").text();
 	deposit.amount = strip_price($("#keypad-total").text());
+
+	// What account to deposit to?
+	fields = $(this).attr("id").split("-");
+	deposit.account = fields[2];
+	if (deposit.account == "pool") {
+		deposit.pool_id = fields["3"];
+	}
 
 	// Post the deposit to the server
 	$.ajax({
@@ -102,7 +109,7 @@ $("#btn-submit-deposit").click(function () {
 });
 
 // Click handler to submit a deposit.
-$("#btn-edit-deposit").click(function () {
+$(".btn-edit-deposit").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -112,6 +119,13 @@ $("#btn-edit-deposit").click(function () {
 	deposit.umid = $("#user-umid").text();
 	deposit.amount = strip_price($("#keypad-total").text());
 	deposit.old_event_id = $("#event_id").text();
+
+	// What account to deposit to?
+	fields = $(this).attr("id").split("-");
+	deposit.account = fields[2];
+	if (deposit.account == "pool") {
+		deposit.pool_id = fields["3"];
+	}
 
 	// Post the deposit to the server
 	$.ajax({

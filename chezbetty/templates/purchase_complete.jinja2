@@ -39,8 +39,8 @@
         <tr>
           <td colspan="3">
             <b>Total</b>
-            {% if paid_with == "user" %}(Paid with your user account)
-            {% elif paid_with == "pool" %}(Paid with {{ pool.name }} Pool)
+            {% if account_type == "user" %}(Paid with your user account)
+            {% elif account_type == "pool" %}(Paid with {{ pool.name }} Pool)
             {% endif %}
           </td>
           <td id="purchase-total">{{ order['total']|format_currency|safe }}</td>

@@ -34,8 +34,11 @@
       <div class="deposit-cash">
         <span class="deposit-thankyou">Thank you!</span>
         <p class="deposit-info">
-          You successfully deposited <span class="deposit-amount">{{ deposit.amount|format_currency|safe }}</span>
-          into your account.
+          You successfully deposited
+          <span class="deposit-amount">{{ deposit.amount|format_currency|safe }}</span>
+          {% if account_type == "user" %}into your account.
+          {% elif account_type == "pool" %}in the {{ pool.name }} Pool.
+          {% endif %}
         </p>
 
         <a class="btn btn-primary btn-huge" href="/deposit/edit/{{ user.umid }}/{{ event.id }}">
