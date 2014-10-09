@@ -5,6 +5,14 @@ from . import item
 from . import box
 from chezbetty import utility
 
+from pyramid.threadlocal import get_current_registry
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+
+
 class Transaction(Base):
     __tablename__ = 'transactions'
 
@@ -238,9 +246,72 @@ class Deposit(Transaction):
 
 class CashDeposit(Deposit):
     __mapper_args__ = {'polymorphic_identity': 'cashdeposit'}
+
+    CONTENTS_THRESHOLD = 300
+    REPEAT_THRESHOLD = 50
+
     def __init__(self, event, user, amount):
         cashbox_c = account.get_cash_account("cashbox")
+        prev = cashbox_c.balance
         Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
+        new = cashbox_c.balance
+        if prev < CashDeposit.CONTENTS_THRESHOLD and new > CashDeposit.CONTENTS_THRESHOLD:
+            self.send_alert_email(new)
+        elif prev > CashDeposit.CONTENTS_THRESHOLD:
+            pr = int((prev - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+            nr = int((new - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+            if pr != nr:
+                self.send_alert_email(new, nr)
+
+    def send_alert_email(self, amount, repeat=0):
+        settings = get_current_registry().settings
+
+        FROM = 'chezbetty@eecs.umich.edu'
+        SUBJECT = 'Time to empty Betty. Cash box has ${}.'.format(amount)
+        TO = 'chez-betty@umich.edu'
+
+        body = """
+        <p>Betty's cash box is getting full. Time to go to the bank.</p>
+        <p>The cash box currently contains ${}.</p>
+        """.format(amount)
+        if repeat > 8:
+            body = """
+            <p><strong>Yo! Get your shit together! That's a lot of cash lying
+            around!</strong></p>""" + body
+        elif repeat > 4:
+            body = body + """
+            <p><strong>But seriously, you should probably go empty the cashbox
+            like, right meow.</strong></p>"""
+
+        if 'debugging' in settings:
+            SUBJECT = '[ DEBUG_MODE ] ' + SUBJECT
+            body = """
+            <p><em>This message was sent from a debugging session and may be
+            safely ignored.</em></p>""" + body
+
+        sm = smtplib.SMTP()
+        sm.connect()
+
+        msg = MIMEMultipart()
+        msg['Subject'] = SUBJECT
+        msg['From'] = FROM
+        msg['To'] = TO
+        msg.attach(MIMEText(body, 'html'))
+
+        if 'debugging' in settings:
+            print(msg.as_string())
+            if 'debugging_send_email' in settings and settings['debugging_send_email']:
+                try:
+                    msg.replace_header('To', settings['debugging_send_email_to'])
+                    print("DEBUG: e-mail destination overidden to {}".format(msg['To']))
+                except KeyError: pass
+                send_to = msg['To'].split(', ')
+                sm.sendmail(FROM, send_to, msg.as_string())
+        else:
+            send_to = msg['To'].split(', ')
+            sm.sendmail(FROM, send_to, msg.as_string())
+        sm.quit()
+
 
 
 class BTCDeposit(Deposit):

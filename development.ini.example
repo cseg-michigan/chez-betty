@@ -17,6 +17,11 @@ pyramid.includes =
 
 debugging = 1
 
+# Supress actually sending e-mails in debug mode by default. If e-mail is enabled and
+# a replacement e-mail address specified, all e-mail will only go to the debug address
+debugging_send_email = false
+debugging_send_email_to = youraccount@testing.com
+
 sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 
 chezbetty.default_password = chezbetty
