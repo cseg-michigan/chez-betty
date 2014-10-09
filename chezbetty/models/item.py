@@ -73,7 +73,7 @@ class Item(Versioned, Base):
 
     @classmethod
     def total_inventory_wholesale(cls):
-        return DBSession.query(func.sum(cls.wholesale * cls.in_stock).label('c'))
+        return DBSession.query(func.sum(cls.wholesale * cls.in_stock).label('c'))\
                         .one().c or 0
 
     def __str__(self):
