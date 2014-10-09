@@ -25,7 +25,8 @@ requires = [
     'reportlab',
     'twitter',
     'pytz',
-    'psycopg2'
+    'psycopg2',
+    'abbreviate>=0.1.1',
     ]
 
 setup(name='chezbetty',

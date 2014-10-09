@@ -48,6 +48,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
+import abbreviate
 import uuid
 import twitter
 import math
@@ -998,6 +999,19 @@ def admin_item_barcode_pdf(request):
                     only have one item.', 'error')
                 return HTTPFound(location=request.route_url('admin_item_edit', item_id=request.matchdict['item_id']))
 
+        def len_fn(t):
+            print('len_fn {} -- {}'.format(t, c.stringWidth(t, "Helvetica", 8)))
+            return c.stringWidth(t, "Helvetica", 8)
+        try:
+            abbr = abbreviate.Abbreviate()
+            name = abbr.abbreviate(item.name, target_len=1.3*inch, len_fn=len_fn)
+        except Exception as e:
+            # A little extra robustness here since this library is really alpha
+            name = item.name
+
+        barcode = code93.Extended93(label_text)
+        print(barcode.minWidth())
+        print(barcode.minWidth() / inch)
 
         for x_ind in range(5):
             for y_ind in range(10):
@@ -1007,8 +1021,6 @@ def admin_item_barcode_pdf(request):
                 print("x_off {} ({}) y_off {} ({})".format(x_off, x_off / inch, y_off, y_off / inch))
 
                 barcode = code93.Extended93(label_text)
-                print(barcode.minWidth())
-                print(barcode.minWidth() / inch)
                 barcode.drawOn(c, x_off, y_off)
 
                 x_text = x_off + 6.4 * mm
@@ -1018,7 +1030,7 @@ def admin_item_barcode_pdf(request):
 
                 y_text = y_text - 5 * mm
                 c.setFont("Helvetica", 8)
-                c.drawString(x_text, y_text, item.name)
+                c.drawString(x_text, y_text, name)
 
         c.showPage()
         c.save()
