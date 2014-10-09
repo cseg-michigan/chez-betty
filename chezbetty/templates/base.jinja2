@@ -36,6 +36,14 @@
     {% set demo = False %}
   {% endif %}
 
+  <script>
+    {% if request.is_terminal %}
+    onscreen_keyboard = true;
+    {% else %}
+    onscreen_keyboard = false;
+    {% endif %}
+  </script>
+
   <div id="wrap">
 
     {% set active_page = active_page|default('index') -%}

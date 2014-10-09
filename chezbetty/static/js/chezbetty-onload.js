@@ -181,12 +181,13 @@ $(".faq-q").click(function() {
 
 
 
-
-$(".keyboard-wanted").keyboard({
-  layout : 'qwerty',
-  tabNavigation : true,
-  enterNavigation : true,
-});
+if (onscreen_keyboard) {
+	$(".keyboard-wanted").keyboard({
+	  layout : 'qwerty',
+	  tabNavigation : true,
+	  enterNavigation : true,
+	});
+}
 
 var scrollStep = 100;
 
