@@ -5,7 +5,6 @@ from . import item
 from . import box
 from chezbetty import utility
 
-
 class Transaction(Base):
     __tablename__ = 'transactions'
 
@@ -379,20 +378,44 @@ class SubTransaction(Base):
             raise AttributeError
 
     @classmethod
+    @limitable_all
     def all_item(cls, id):
         return DBSession.query(cls)\
                         .join(Transaction)\
                         .join(event.Event)\
                         .filter(cls.item_id == id)\
                         .filter(event.Event.deleted==False)\
-                        .order_by(cls.id).all()
+                        .order_by(cls.id)
 
     @classmethod
+    @limitable_all
+    def all_item_purchases(cls, id):
+        return DBSession.query(cls)\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(cls.item_id == id)\
+                        .filter(event.Event.deleted==False)\
+                        .filter(event.Event.type=="purchase")\
+                        .order_by(cls.id)
+
+    @classmethod
+    @limitable_all
+    def all_item_events(cls, id):
+        return DBSession.query(cls)\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(cls.item_id == id)\
+                        .filter(event.Event.deleted==False)\
+                        .filter(or_(event.Event.type=="inventory", event.Event.type =="restock"))\
+                        .order_by(cls.id)
+
+    @classmethod
+    @limitable_all
     def all(cls):
         return DBSession.query(cls)\
                         .join(Transaction)\
                         .join(event.Event)\
-                        .filter(event.Event.deleted==False).all()
+                        .filter(event.Event.deleted==False)
 
 
 class PurchaseLineItem(SubTransaction):
@@ -548,13 +571,15 @@ class SubSubTransaction(Base):
             raise AttributeError
 
     @classmethod
+    @limitable_all
     def all_item(cls, id):
         return DBSession.query(cls)\
                         .join(SubTransaction)\
                         .join(Transaction)\
                         .join(event.Event)\
                         .filter(cls.item_id == id)\
-                        .filter(event.Event.deleted==False).all()
+                        .filter(event.Event.deleted==False)\
+                        .order_by(cls.id)
 
 
 class RestockLineBoxItem(SubSubTransaction):

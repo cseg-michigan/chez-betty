@@ -865,10 +865,71 @@ def admin_items_edit_submit(request):
              permission='manage')
 def admin_item_edit(request):
     try:
+        try:
+            purchase_limit = request.GET['purchase_limit']
+            if purchase_limit.lower() == 'none':
+                purchase_limit = None
+            else:
+                purchase_limit = int(purchase_limit)
+        except KeyError:
+            purchase_limit = 10
+        try:
+            event_limit = request.GET['event_limit']
+            if event_limit.lower() == 'none':
+                event_limit = None
+            else:
+                event_limit = int(event_limit)
+        except KeyError:
+            event_limit = 5
+
         item = Item.from_id(request.matchdict['item_id'])
         vendors = Vendor.all()
-        subtransactions = SubTransaction.all_item(item.id)
-        subsubtransactions = SubSubTransaction.all_item(item.id)
+
+        purchases, purchases_total = SubTransaction.all_item_purchases(item.id,
+                limit=purchase_limit, count=True)
+        if purchase_limit is None or purchases_total <= purchase_limit:
+            purchases_total = None
+
+        events, events_total = SubTransaction.all_item_events(item.id,
+                limit=event_limit, count=True)
+        sst, sst_total = SubSubTransaction.all_item(item.id,
+                limit=event_limit, count=True)
+
+        events.extend([e.subtransaction for e in sst])
+        events.sort(key=lambda x: x.transaction.event.timestamp)
+        events_total += sst_total
+
+        if event_limit is None or events_total <= event_limit:
+            events_total = None
+        else:
+            events = events[:event_limit]
+
+        stats = {}
+        stats['stock'] = item.in_stock
+
+        stats['num_sold'] = 0
+        purchased_items = PurchaseLineItem.all()
+        for pi in purchased_items:
+            if pi.item_id == item.id:
+                stats['num_sold'] += pi.quantity
+
+        stats['sale_speed'] = views_data.item_sale_speed(30, item.id)
+
+        if stats['sale_speed'] > 0:
+            stats['until_out'] = item.in_stock / stats['sale_speed']
+        elif item.in_stock <= 0:
+            stats['until_out']  = 0
+        else:
+            stats['until_out'] = '---'
+
+        stats['lost'] = 0
+        lost_items = InventoryLineItem.all()
+        for li in lost_items:
+            if li.item_id == item.id:
+                stats['lost'] += (li.quantity - li.quantity_counted)
+
+        inventory_total = Item.total_inventory_wholesale()
+        stats['inv_percent'] = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
         # Don't display vendors that already have an item number in the add
         # new vendor item number section
@@ -888,8 +949,13 @@ def admin_item_edit(request):
                 'can_delete': can_delete,
                 'vendors': vendors,
                 'new_vendors': new_vendors,
-                'subtransactions': subtransactions,
-                'subsubtransactions': subsubtransactions}
+                'purchases': purchases,
+                'purchases_total': purchases_total,
+                'purchase_limit': purchase_limit,
+                'events': events,
+                'events_total': events_total,
+                'event_limit': event_limit,
+                'stats': stats}
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Unable to find item {}'.format(request.matchdict['item_id']), 'error')
