@@ -9,7 +9,7 @@
       </button>
       <a class="navbar-brand" href="#">Chez Betty Admin</a>
       {% if request.debug %}
-      <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE</span></a>
+      <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE{{ ''|add_git_version }}</span></a>
       {% endif %}
     </div>
     <div class="navbar-collapse collapse">

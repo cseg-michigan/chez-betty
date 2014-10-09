@@ -4,6 +4,8 @@ from .models import user
 from .models import account
 from .models import pool
 
+from sh import ErrorReturnCode, git
+
 def format_currency(value):
 	try:
 		p = float(value)
@@ -44,3 +46,9 @@ def make_user_link(obj, str_len=0):
 		return '<a href="/user/pool/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	else:
 		return obj.name
+
+def add_git_version(s):
+	try:
+		return ' v'+git.describe('--tags').strip()
+	except ErrorReturnCode:
+		pass
