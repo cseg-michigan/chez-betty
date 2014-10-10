@@ -53,7 +53,7 @@
             <dt>In Stock</dt> <dd>{{ stats.stock }}</dd>
             <dt>Num Sold</dt> <dd>{{ stats.num_sold }}</dd>
             <dt>Sale Speed</dt> <dd>{{ stats.sale_speed|float|round(3) }}</dd>
-            <dt>Days Until Out</dt> <dd>{{ stats.until_out }}</dd>
+            <dt>Days Until Out</dt> <dd>{{ stats.until_out|round(0)|int }}</dd>
             <dt>Num Lost</dt> <dd>{{ stats.lost }}</dd>
             <dt>Inventory Percent</dt> <dd>{{ stats.inv_percent|round(2) }}%</dd>
           </dl>
