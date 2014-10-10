@@ -13,6 +13,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Boolean,
+    LargeBinary,
     desc
     )
 

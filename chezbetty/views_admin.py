@@ -17,7 +17,7 @@ from .models import *
 from .models.model import *
 from .models import user as __user
 from .models.user import User
-from .models.item import Item
+from .models.item import Item, ItemImage
 from .models.box import Box
 from .models.box_item import BoxItem
 from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
@@ -53,6 +53,8 @@ import uuid
 import twitter
 import math
 import pytz
+import io
+from PIL import Image
 
 
 def send_email(recipient, subject, body):
@@ -1002,6 +1004,24 @@ def admin_item_edit_submit(request):
                     val = round(float(request.POST[key]), 4)
                 elif field == 'barcode':
                     val = request.POST[key].strip() or None
+                elif field == 'img':
+                    try:
+                        ifile = request.POST[key].file
+                        ifile.seek(0)
+                        im = Image.open(ifile)
+                        buf = io.BytesIO()
+                        im.save(buf, 'jpeg')
+                        buf.seek(0)
+                        try:
+                            item.img.img = buf.read()
+                        except AttributeError:
+                            buf.seek(0)
+                            item_img = ItemImage(item.id, buf.read())
+                            item.img = item_img
+                    except AttributeError:
+                        # No image uploaded, skip
+                        pass
+                    continue
                 else:
                     val = request.POST[key].strip()
 

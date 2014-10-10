@@ -203,6 +203,9 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_speed_items', '/admin/data/speed/items')
 
+    # DYNAMIC CONTENT
+    config.add_route('dynamic_item_img', '/dynamic/item/{item_id}.jpg')
+
 
     config.add_route('login',  '/login')
     config.add_route('logout', '/logout')
@@ -215,5 +218,6 @@ def main(global_config, **settings):
     config.scan(".views_user")
     config.scan(".views_admin")
     config.scan(".views_data")
+    config.scan(".views_dynamic")
 
     return config.make_wsgi_app()

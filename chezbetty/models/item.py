@@ -1,5 +1,22 @@
 from .model import *
 
+class ItemImage(Base):
+    __tablename__ = 'items_images'
+
+    id         = Column(Integer, primary_key=True, nullable=False)
+    item_id    = Column(Integer, ForeignKey("items.id"), nullable=False)
+    img        = Column(LargeBinary, nullable=False)
+
+    def __init__(self, item_id, img):
+        self.item_id = item_id
+        self.img = img
+
+    def __str__(self):
+        return "<ItemImage (%s)>" % self.item.name
+
+    __repr__ = __str__
+
+
 class Item(Versioned, Base):
     __tablename__ = 'items'
 
@@ -11,6 +28,7 @@ class Item(Versioned, Base):
     bottle_dep = Column(Boolean, nullable=False, default=False)
     sales_tax  = Column(Boolean, nullable=False, default=False)
     in_stock   = Column(Integer, nullable=False, default=0)
+    img        = relationship(ItemImage, uselist=False, backref="item")
 
     enabled    = Column(Boolean, default=True, nullable=False)
 
@@ -80,3 +98,4 @@ class Item(Versioned, Base):
         return "<Item (%s)>" % self.name
 
     __repr__ = __str__
+

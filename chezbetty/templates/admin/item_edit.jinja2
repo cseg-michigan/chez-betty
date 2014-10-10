@@ -11,14 +11,14 @@
 
 {% block content %}
 
-<form role="form" action="/admin/item/edit/submit" method="post" id="form-edit-item">
+<form role="form" action="/admin/item/edit/submit" method="post" id="form-edit-item" enctype="multipart/form-data">
   <input type="hidden" id="item-id" name="item-id" value="{{ item.id }}">
 
   <div class="panel panel-default">
     <div class="panel-heading">Item Details</div>
     <div class="panel-body">
       <div class="row">
-        <div class="col-lg-9 col-md-9 col-sm-12">
+        <div class="col-lg-6 col-md-6 col-sm-12">
           <dl class="dl-horizontal">
             <dt>Name</dt>
             <dd><input type="text" class="form-control" id="item-name" name="item-name" value="{{ item.name }}"></dd>
@@ -57,6 +57,14 @@
             <dt>Num Lost</dt> <dd>{{ stats.lost }}</dd>
             <dt>Inventory Percent</dt> <dd>{{ stats.inv_percent|round(2) }}%</dd>
           </dl>
+        </div>
+        <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
+          {% if item.img %}
+          <img src="/dynamic/item/{{item.id}}.jpg" width="200px" />
+          {% else %}
+          <img src="{{'chezbetty:static/placeholder_300px.png'|static_url}}" width="200px" />
+          {% endif %}
+          <input type="file" id="item-img" name="item-img" />
         </div>
       </div>
     </div>
