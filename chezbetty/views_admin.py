@@ -2018,7 +2018,7 @@ def admin_event(request):
 def admin_event_upload(request):
     try:
         event = Event.from_id(int(request.POST['event-id']))
-        receipt = request.POST['event-receipt'].file.read()
+        receipt = request.POST['event-receipt'].file
         datalayer.upload_receipt(event, request.user, receipt)
         return HTTPFound(location=request.route_url('admin_event',
                          event_id=int(request.POST['event-id'])))
