@@ -128,28 +128,65 @@
   <div class="row">
     <div class="col-lg-6 col-md-12">
       <div class="panel panel-default">
+        <div class="panel-heading">Tags</div>
+        <div id="item-existing-tags" class="panel-body">
+
+          {% for it in item.tags %}
+          <button type="button" class="btn btn-default" data-tagid="{{ it.tag.id }}">{{ it.tag.name }}</button>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">Add New Tags</div>
+        <div id="item-new-tags" class="panel-body">
+
+          {% for tag in other_tags %}
+          <button type="button" class="btn btn-default tag-to-add">{{ tag.name }}</button>
+          {% endfor %}
+
+          <div class="input-group">
+            <input type="text" id="tag-new" class="form-control">
+            <span class="input-group-btn">
+              <button type="button" id="btn-tag-new" class="btn btn-default">Add New Tag</button>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row">
+    <div class="col-lg-6 col-md-12">
+      <div class="panel panel-default">
         <div class="panel-heading">Boxes the Item is in</div>
         <div class="panel-body">
 
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Box</th>
-              <th>Quantity</th>
-            </tr>
-          </thead>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Box</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {% for boxitem in item.boxes %}
-            <tr>
-              <td>{{ button.box(boxitem.box.id) }}</td>
-              <td>{{ boxitem.box|make_link|safe }}</td>
-              <td>{{ boxitem.quantity }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            <tbody>
+              {% for boxitem in item.boxes %}
+              <tr>
+                <td>{{ button.box(boxitem.box.id) }}</td>
+                <td>{{ boxitem.box|make_link|safe }}</td>
+                <td>{{ boxitem.quantity }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
 
         </div>
       </div>

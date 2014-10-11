@@ -35,6 +35,8 @@ from .models.btcdeposit import BtcPendingDeposit
 from .models.receipt import Receipt
 from .models.pool import Pool
 from .models.pool_user import PoolUser
+from .models.tag import Tag
+from .models.item_tag import ItemTag
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -133,6 +135,8 @@ def admin_ajax_bool(request):
         obj = Pool.from_id(obj_id)
     elif obj_str == 'pool_user':
         obj = PoolUser.from_id(obj_id)
+    elif obj_str == 'tag':
+        obj = Tag.from_id(obj_id)
     elif obj_str == 'cookie':
         # Set a cookie instead of change a property
         request.response.set_cookie(obj_field, '1' if obj_state else '0')
@@ -148,6 +152,58 @@ def admin_ajax_bool(request):
     DBSession.flush()
 
     return request.response
+
+@view_config(route_name='admin_ajax_new',
+             renderer='json',
+             permission='admin')
+def admin_ajax_new(request):
+    obj_str = request.matchdict['object']
+    obj_arg = request.matchdict['arg']
+
+    if obj_str == 'tag':
+        mod = Tag
+    else:
+        # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+    new_thing = mod(obj_arg)
+    DBSession.add(new_thing)
+    DBSession.flush()
+
+    return {'id': new_thing.id,
+            'arg': obj_arg}
+
+@view_config(route_name='admin_ajax_connection',
+             renderer='json',
+             permission='admin')
+def admin_ajax_connection(request):
+    obj_str1  = request.matchdict['object1']
+    obj_str2  = request.matchdict['object2']
+    obj_arg1 = request.matchdict['arg1']
+    obj_arg2 = request.matchdict['arg2']
+
+    out = {'arg1': obj_arg1,
+           'arg2': obj_arg2}
+
+    if obj_str1 == 'item':
+        item = Item.from_id(int(obj_arg1))
+
+        if obj_str2 == 'tag':
+            tag = Tag.from_id(int(obj_arg2))
+            itemtag = ItemTag(item, tag)
+            DBSession.add(itemtag)
+
+            out['tag_name'] = tag.name
+        
+    else:
+        # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+    DBSession.flush()
+
+    return out
 
 @view_config(route_name='admin_index',
              renderer='templates/admin/index.jinja2',
@@ -920,7 +976,7 @@ def admin_item_edit(request):
         if stats['sale_speed'] > 0:
             stats['until_out'] = item.in_stock / stats['sale_speed']
         elif item.in_stock <= 0:
-            stats['until_out']  = 0
+            stats['until_out'] = 0
         else:
             stats['until_out'] = '---'
 
@@ -947,6 +1003,16 @@ def admin_item_edit(request):
         if datalayer.can_delete_item(item):
             can_delete = True
 
+        # Tags
+        other_tags = []
+        all_tags = Tag.all()
+        for tag in all_tags:
+            for it in item.tags:
+                if it.tag.id == tag.id:
+                    break
+            else:
+                other_tags.append(tag)
+
         return {'item': item,
                 'can_delete': can_delete,
                 'vendors': vendors,
@@ -957,7 +1023,8 @@ def admin_item_edit(request):
                 'events': events,
                 'events_total': events_total,
                 'event_limit': event_limit,
-                'stats': stats}
+                'stats': stats,
+                'other_tags': other_tags}
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Unable to find item {}'.format(request.matchdict['item_id']), 'error')

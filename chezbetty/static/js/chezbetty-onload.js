@@ -178,9 +178,6 @@ $(".faq-q").click(function() {
 
 
 
-
-
-
 if (onscreen_keyboard) {
 	$(".keyboard-wanted").keyboard({
 	  layout : 'qwerty',

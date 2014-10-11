@@ -450,6 +450,63 @@ $(".request-delete").click(function () {
 	});
 })
 
+
+
+
+//
+// Tags
+//
+
+$("#btn-tag-new").click(function () {
+	var new_tag = $("#tag-new").val();
+
+	$.ajax({
+		url: "/admin/ajax/new/tag/" + new_tag,
+		success: tag_new_success,
+		error: tag_new_fail
+	});
+});
+
+function tag_new_success (data) {
+	// Add the new tag to the existing tags box on the page
+	add_tag_to_item(data['id'], $("#item-id").val());
+
+	$("#tag-new").val("");
+}
+
+function tag_new_fail () {
+	alert_error("Could not create a new tag.");
+}
+
+$(".tag-to-add").click(function () {
+	var tag_id = $(this).attr("data-tagid");
+	var item_id = $("#item-id").val();
+	add_tag_to_item(tag_id, item_id);
+});
+
+function add_tag_to_item (tag_id, item_id) {
+	$.ajax({
+		url: "/admin/ajax/connection/item/tag/" + item_id + "/" + tag_id,
+		success: tag_connected_success,
+		error: tag_connected_fail
+	});
+}
+
+function tag_connected_success (data) {
+	tag_name = $("#tag-"+data['arg2']).val();
+	$("#tag-"+data['arg2']).remove();
+
+	$("#item-existing-tags").append('<button type="button" \
+		class="btn btn-default" data-tagid="' + data['arg2'] + '">'
+		+ data['tag_name'] + '</button>');
+}
+
+function tag_connected_fail () {
+	alert_error("Could not add that tag to the item.");
+}
+
+
+
 // filterable tables
 $('.filterable').each(function (table_index) {
 
