@@ -170,6 +170,7 @@ def main(global_config, **settings):
     config.add_route('admin_btc_reconcile_submit', '/admin/btc/reconcile/submit')
 
     config.add_route('admin_events',         '/admin/events')
+    config.add_route('admin_events_load_more','/admin/events/load_more')
     config.add_route('admin_events_deleted', '/admin/events/deleted')
     config.add_route('admin_event_upload',   '/admin/event/upload')
     config.add_route('admin_event',          '/admin/event/{event_id}')

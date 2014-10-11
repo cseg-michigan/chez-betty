@@ -56,8 +56,10 @@ class RootFactory(object):
 
 # Decorator that adds optional limit parameter to any all() query
 def limitable_all(fn_being_decorated):
-    def wrapped_fn(*args, limit=None, count=False, **kwargs):
+    def wrapped_fn(*args, limit=None, offset=None, count=False, **kwargs):
         q = fn_being_decorated(*args, **kwargs)
+        if offset:
+            q = q.offset(offset)
         if limit:
             if count:
                 return q.limit(limit).all(), q.count()

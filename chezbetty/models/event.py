@@ -39,10 +39,11 @@ class Event(Base):
         return DBSession.query(cls).filter(cls.id == id).one()
 
     @classmethod
+    @limitable_all
     def all(cls):
         return DBSession.query(cls)\
                         .filter(cls.deleted == False)\
-                        .order_by(cls.id).all()
+                        .order_by(desc(cls.id))
 
     @classmethod
     def some(cls, count):

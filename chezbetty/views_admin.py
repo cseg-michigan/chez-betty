@@ -1981,9 +1981,27 @@ def admin_btc_reconcile_submit(request):
              renderer='templates/admin/events.jinja2',
              permission='manage')
 def admin_events(request):
-    events = Event.all()
-    return {'events': events}
+    LIMIT=50
+    events = Event.all(limit=LIMIT)
+    return {'events': events, 'limit': LIMIT}
 
+@view_config(route_name='admin_events_load_more',
+             request_method='POST',
+             renderer='json',
+             permission='manage')
+def admin_events_load_more(request):
+    LIMIT=25
+    last = int(request.POST['last'])
+    events = Event.all(limit=LIMIT,offset=last)
+
+    events_html = []
+    for e in events:
+        events_html.append(render('templates/admin/events_row.jinja2', {'event': e}))
+
+    return {
+            'count': last+LIMIT,
+            'rows': events_html
+            }
 
 @view_config(route_name='admin_events_deleted',
              renderer='templates/admin/events_deleted.jinja2',

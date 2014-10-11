@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<table class="table table-condensed table-striped filterable">
+<table class="table table-condensed table-striped filterable" id="events_table">
   <thead>
     <tr>
       <th></th>
@@ -26,21 +26,12 @@
     </tr>
   </thead>
   <tbody>
-  {% for e in events|reverse %}
-  {% for t in e.transactions|reverse %}
-    <tr>
-        <td><a href="/admin/event/{{ e.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
-        <td>{{ t.event.timestamp|pretty_date|safe }}</td>
-        <td>{{ t.type }}</td>
-        <td>{{ t.fr_account_virt|make_link|safe if t.fr_account_virt else "n/a" }}</td>
-        <td>{{ t.to_account_virt|make_link|safe if t.to_account_virt else "n/a" }}</td>
-        <td>{{ t.fr_account_cash|make_link|safe if t.fr_account_cash else "n/a" }}</td>
-        <td>{{ t.to_account_cash|make_link|safe if t.to_account_cash else "n/a" }}</td>
-        <td class="right">{{ t.amount|format_currency|safe }}</td>
-    </tr>
-  {% endfor %}
+  {% for event in events %}
+  {% include "events_row.jinja2" %}
   {% endfor %}
   </tbody>
 </table>
+<p id="events_showing_text">Showing rows 1-{{ limit }}.</p>
+<p id="events_showing_count" style="visibility: hidden;">{{ limit }}</p>
 
 {% endblock %}

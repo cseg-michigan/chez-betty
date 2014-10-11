@@ -1,9 +1,11 @@
 
-$(".date").each(function (index) {
+function prettydate (index) {
 	d = new Date($(this).text());
 	s = $.format.date(d, "MMM d, yyyy") + " at " + $.format.date(d, "h:mm a");
 	$(this).text(s);
-});
+	$(this).switchClass('date', 'prettydate');
+}
+$(".date").each(prettydate);
 
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
 $(".admin-switch").bootstrapSwitch();
@@ -130,6 +132,41 @@ $("#tweet").on('change keyup paste input propertychange', tweet_char_count);
 if ($('#tweet').length > 0) {
 	tweet_char_count();
 }
+
+// EVENTS / TRANSACTIONS
+
+var event_loading = false;
+
+function event_load_more_success (data) {
+  $("#events_showing_text").text("Showing rows 1-"+data.count+".");
+  $("#events_showing_count").text(data.count);
+
+  $("#events_table tr:last").after(data.rows);
+  $(".date").each(prettydate);
+
+  event_loading = false;
+}
+
+function event_load_more_fail () {
+  $("#events_showing_text").text("Error loading more rows.");
+}
+
+$(window).scroll(function event_autoload_onscroll () {
+  if (event_loading) return;
+
+  if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+    event_loading = true;
+    $("#events_showing_text").text($("#events_showing_text").text() + " Loading more rows...");
+    $.ajax({
+      type: "POST",
+      url: "/admin/events/load_more",
+      data: { last: $("#events_showing_count").text() },
+      success: event_load_more_success,
+      error: event_load_more_fail
+    });
+  }
+});
+
 
 // ITEMS
 
