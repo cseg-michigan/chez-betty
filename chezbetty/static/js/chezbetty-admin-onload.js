@@ -479,7 +479,7 @@ function tag_new_fail () {
 }
 
 $(".tag-to-add").click(function () {
-	var tag_id = $(this).attr("data-tagid");
+	var tag_id = $(this).attr("data-tag-id");
 	var item_id = $("#item-id").val();
 	add_tag_to_item(tag_id, item_id);
 });
@@ -496,13 +496,32 @@ function tag_connected_success (data) {
 	tag_name = $("#tag-"+data['arg2']).val();
 	$("#tag-"+data['arg2']).remove();
 
-	$("#item-existing-tags").append('<button type="button" \
-		class="btn btn-default" data-tagid="' + data['arg2'] + '">'
+	$("#item-existing-tags").append(' <button type="button" \
+		class="btn btn-default" data-item-tag-id="' + data['item_tag_id'] + '">'
 		+ data['tag_name'] + '</button>');
 }
 
 function tag_connected_fail () {
 	alert_error("Could not add that tag to the item.");
+}
+
+$("#item-existing-tags").on("click", "button", function () {
+	var item_tag_id = $(this).attr("data-item-tag-id");
+
+	$.ajax({
+		url: "/admin/ajax/bool/itemtag/" + item_tag_id + "/deleted/true",
+		context: $(this),
+		success: tag_disconnected_success,
+		error: tag_disconnected_fail
+	});
+});
+
+function tag_disconnected_success (data) {
+	$(this).remove();
+}
+
+function tag_disconnected_fail () {
+	alert_error("Could not remove the tag from the item.");
 }
 
 

@@ -131,8 +131,8 @@
         <div class="panel-heading">Tags</div>
         <div id="item-existing-tags" class="panel-body">
 
-          {% for it in item.tags %}
-          <button type="button" class="btn btn-default" data-tagid="{{ it.tag.id }}">{{ it.tag.name }}</button>
+          {% for it in item.tags|sort(attribute='tag.name') %}
+          <button type="button" class="btn btn-default" data-item-tag-id="{{ it.id }}">{{ it.tag.name }}</button>
           {% endfor %}
 
         </div>
@@ -144,8 +144,8 @@
         <div class="panel-heading">Add New Tags</div>
         <div id="item-new-tags" class="panel-body">
 
-          {% for tag in other_tags %}
-          <button type="button" class="btn btn-default tag-to-add">{{ tag.name }}</button>
+          {% for tag in other_tags|sort(attribute='name') %}
+          <button type="button" id="tag-{{ tag.id }}" class="btn btn-default tag-to-add" data-tag-id="{{ tag.id }}">{{ tag.name }}</button>
           {% endfor %}
 
           <div class="input-group">

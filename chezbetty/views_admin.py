@@ -137,6 +137,8 @@ def admin_ajax_bool(request):
         obj = PoolUser.from_id(obj_id)
     elif obj_str == 'tag':
         obj = Tag.from_id(obj_id)
+    elif obj_str == 'itemtag':
+        obj = ItemTag.from_id(obj_id)
     elif obj_str == 'cookie':
         # Set a cookie instead of change a property
         request.response.set_cookie(obj_field, '1' if obj_state else '0')
@@ -178,8 +180,8 @@ def admin_ajax_new(request):
              renderer='json',
              permission='admin')
 def admin_ajax_connection(request):
-    obj_str1  = request.matchdict['object1']
-    obj_str2  = request.matchdict['object2']
+    obj_str1 = request.matchdict['object1']
+    obj_str2 = request.matchdict['object2']
     obj_arg1 = request.matchdict['arg1']
     obj_arg2 = request.matchdict['arg2']
 
@@ -191,10 +193,18 @@ def admin_ajax_connection(request):
 
         if obj_str2 == 'tag':
             tag = Tag.from_id(int(obj_arg2))
-            itemtag = ItemTag(item, tag)
-            DBSession.add(itemtag)
 
-            out['tag_name'] = tag.name
+            # Make sure we don't already have this tag
+            for t in item.tags:
+                if t.tag.id == tag.id:
+                    break
+            else:
+                itemtag = ItemTag(item, tag)
+                DBSession.add(itemtag)
+                DBSession.flush()
+
+                out['tag_name'] = tag.name
+                out['item_tag_id'] = itemtag.id
         
     else:
         # Return an error, object type not recognized
