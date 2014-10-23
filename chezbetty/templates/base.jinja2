@@ -86,6 +86,16 @@
     {% block footer %}{% endblock %}
   </div>
 
+  {% if request.debug %}
+  <div class="navbar navbar-inverse navbar-fixed-bottom" style="background-color:#E8192F" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE{{ ''|add_git_version }}</span></a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   <script src="{{'chezbetty:static/js/chezbetty-onload.js'|static_url}}"></script>
   {% block onload %}
   {% endblock %}
