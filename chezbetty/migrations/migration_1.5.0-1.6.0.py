@@ -11,21 +11,29 @@ from pyramid.paster import (
 
 from pyramid.scripts.common import parse_vars
 
-import models.account as account
-from models.item import Item
-from models.user import User
-from models.vendor import Vendor
-from models.box import Box
-from models.request import Request
-from models.item_vendor import ItemVendor
-from models.box_vendor import BoxVendor
-from models.box_item import BoxItem
-from models.announcement import Announcement
-from models.model import *
-from models.transaction import *
-from models.btcdeposit import BtcPendingDeposit
-from models.receipt import Receipt
+try:
+    import models.account as account
+    from models.item import Item
+    from models.user import User
+    from models.vendor import Vendor
+    from models.box import Box
+    from models.request import Request
+    from models.item_vendor import ItemVendor
+    from models.box_vendor import BoxVendor
+    from models.box_item import BoxItem
+    from models.announcement import Announcement
+    from models.model import *
+    from models.transaction import *
+    from models.btcdeposit import BtcPendingDeposit
+    from models.receipt import Receipt
+except ImportError:
+    print("relative import struggles? this script has to be run in the")
+    print("root code directory (i.e. where models.py et al are)")
+    raise
 
+def usage(argv):
+    print("ERR: Script requires config file (probably development.ini) as an argument")
+    sys.exit(1)
 
 def main(argv=sys.argv):
     if len(argv) < 2:
