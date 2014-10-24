@@ -2066,7 +2066,12 @@ def admin_btc_reconcile_submit(request):
              renderer='templates/admin/events.jinja2',
              permission='manage')
 def admin_events(request):
-    LIMIT=50
+    try:
+        LIMIT = int(request.GET['limit'])
+        if LIMIT == 0:
+            LIMIT = None
+    except (KeyError, ValueError):
+        LIMIT=50
     events = Event.all(limit=LIMIT)
     return {'events': events, 'limit': LIMIT}
 
