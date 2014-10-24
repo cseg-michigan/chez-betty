@@ -7,11 +7,6 @@ from chezbetty import utility
 
 from pyramid.threadlocal import get_current_registry
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-
 
 class Transaction(Base):
     __tablename__ = 'transactions'
@@ -266,7 +261,6 @@ class CashDeposit(Deposit):
     def send_alert_email(self, amount, repeat=0):
         settings = get_current_registry().settings
 
-        FROM = 'chezbetty@eecs.umich.edu'
         SUBJECT = 'Time to empty Betty. Cash box has ${}.'.format(amount)
         TO = 'chez-betty@umich.edu'
 
@@ -289,29 +283,7 @@ class CashDeposit(Deposit):
             <p><em>This message was sent from a debugging session and may be
             safely ignored.</em></p>""" + body
 
-        sm = smtplib.SMTP()
-        sm.connect()
-
-        msg = MIMEMultipart()
-        msg['Subject'] = SUBJECT
-        msg['From'] = FROM
-        msg['To'] = TO
-        msg.attach(MIMEText(body, 'html'))
-
-        if 'debugging' in settings:
-            print(msg.as_string())
-            if 'debugging_send_email' in settings and settings['debugging_send_email']:
-                try:
-                    msg.replace_header('To', settings['debugging_send_email_to'])
-                    print("DEBUG: e-mail destination overidden to {}".format(msg['To']))
-                except KeyError: pass
-                send_to = msg['To'].split(', ')
-                sm.sendmail(FROM, send_to, msg.as_string())
-        else:
-            send_to = msg['To'].split(', ')
-            sm.sendmail(FROM, send_to, msg.as_string())
-        sm.quit()
-
+        utility.send_email(TO=TO, SUBJECT=SUBJECT, body=body)
 
 
 class BTCDeposit(Deposit):

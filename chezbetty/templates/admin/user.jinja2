@@ -20,8 +20,11 @@
       <dt>Balance</dt><dd>{{ user.balance|format_currency|safe }}</dd>
       <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
     </dl>
+    <hr />
     {% if user.has_password == False %}
     {{ button.ajax_singleuse_button("Create and Email Password", "/admin/user/"~user.id~"/password/create") }}
+    {% else %}
+    {{ button.ajax_singleuse_button("Reset and Email Password", "/admin/user/"~user.id~"/password/reset") }}
     {% endif %}
 
   </div>
