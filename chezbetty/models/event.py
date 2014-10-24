@@ -40,10 +40,16 @@ class Event(Base):
 
     @classmethod
     @limitable_all
-    def all(cls):
-        return DBSession.query(cls)\
-                        .filter(cls.deleted == False)\
-                        .order_by(desc(cls.id))
+    def all(cls, trans_type=None):
+        if not trans_type:
+            return DBSession.query(cls)\
+                            .filter(cls.deleted == False)\
+                            .order_by(desc(cls.id))
+        else:
+            return DBSession.query(cls)\
+                            .filter(cls.deleted == False)\
+                            .filter(cls.type==trans_type)\
+                            .order_by(desc(cls.id))
 
     @classmethod
     def some(cls, count):

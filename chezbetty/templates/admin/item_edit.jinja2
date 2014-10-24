@@ -209,6 +209,7 @@
     <div class="panel-heading">Item History</div>
     <div class="panel-body">
 
+    {% if request.has_permission('admin') %}
     <a name="purchase_history"></a>
     <h3>Recent Purchase History</h3>
     <table class="table table-striped">
@@ -239,6 +240,7 @@
       Displaying 1-{{ purchase_limit }} of {{ purchases_total }}. Click to show all.</p>
     </a>
     {% endif %}
+    {% endif %} {# has_permission:admin #}
 
     <a name="event_history"></a>
     <h3>Recent Stock Events</h3>

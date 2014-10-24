@@ -34,7 +34,11 @@
 {% endif %}
 <ul class="nav nav-sidebar">
   <li><span>View Transactions</span></li>
+  {% if request.has_permission("admin") %}
   <li {% if active_page == 'transactions' %}class="active"{% endif %}><a href="/admin/events">Transactions<span class="badge pull-right">{{ counts["transactions"] }}</span></a></li>
+  {% else %}
+  <li {% if active_page == 'restocks' %}class="active"{% endif %}><a href="/admin/restocks">Restocks<span class="badge pull-right">{{ counts["restocks"] }}</span></a></li>
+  {% endif %}
 </ul>
 {% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">

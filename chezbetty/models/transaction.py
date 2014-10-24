@@ -454,12 +454,18 @@ class SubTransaction(Base):
 
     @classmethod
     @limitable_all
-    def all(cls):
-        return DBSession.query(cls)\
-                        .join(Transaction)\
-                        .join(event.Event)\
-                        .filter(event.Event.deleted==False)
-
+    def all(cls, trans_type=None):
+        if not trans_type:
+            return DBSession.query(cls)\
+                            .join(Transaction)\
+                            .join(event.Event)\
+                            .filter(event.Event.deleted==False)
+        else:
+            return DBSession.query(cls)\
+                            .join(Transaction)\
+                            .join(event.Event)\
+                            .filter(cls.type==trans_type)\
+                            .filter(event.Event.deleted==False)
 
 class PurchaseLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}

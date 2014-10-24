@@ -80,6 +80,7 @@ def add_counts(event):
         count['vendors']      = Vendor.count()
         count['users']        = User.count()
         count['transactions'] = Transaction.count()
+        count['restocks']     = Transaction.count("restock")
         count['requests']     = Request.count()
         count['pools']        = Pool.count()
         event.rendering_val['counts'] = count
@@ -2062,9 +2063,22 @@ def admin_btc_reconcile_submit(request):
     return HTTPFound(location=request.route_url('admin_index'))
 
 
+@view_config(route_name='admin_restocks',
+             renderer='templates/admin/restocks.jinja2',
+             permission='manage')
+def admin_restocks(request):
+    try:
+        LIMIT = int(request.GET['limit'])
+        if LIMIT == 0:
+            LIMIT = None
+    except (KeyError, ValueError):
+        LIMIT=50
+    events = Event.all(trans_type='restock')
+    return {'events': events, 'limit': LIMIT}
+
 @view_config(route_name='admin_events',
              renderer='templates/admin/events.jinja2',
-             permission='manage')
+             permission='admin')
 def admin_events(request):
     try:
         LIMIT = int(request.GET['limit'])
@@ -2078,7 +2092,7 @@ def admin_events(request):
 @view_config(route_name='admin_events_load_more',
              request_method='POST',
              renderer='json',
-             permission='manage')
+             permission='admin')
 def admin_events_load_more(request):
     LIMIT=25
     last = int(request.POST['last'])
