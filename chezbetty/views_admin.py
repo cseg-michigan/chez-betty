@@ -38,6 +38,8 @@ from .models.pool_user import PoolUser
 from .models.tag import Tag
 from .models.item_tag import ItemTag
 
+from .jinja2_filters import format_currency
+
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
@@ -53,6 +55,7 @@ from reportlab.pdfgen import canvas
 import abbreviate
 import uuid
 import twitter
+import traceback
 import math
 import pytz
 import io
@@ -215,6 +218,23 @@ def admin_ajax_connection(request):
 
     return out
 
+@view_config(route_name='admin_ajaxed_field',
+             renderer='json',
+             permission='manage')
+def admin_ajaxed_field(request):
+    field = request.matchdict['field']
+    if field == 'index-bitcoin':
+        try:
+            btc_balance = Bitcoin.get_balance()
+            btc = {"btc": btc_balance,
+                   "mbtc": round(btc_balance*1000, 2),
+                   "usd": btc_balance * Bitcoin.get_spot_price()}
+            html='{} mBTC ({})'.format(btc['mbtc'], format_currency(btc['usd']))
+            return dict(html=html)
+        except BTCException:
+            return dict(html='Error loading BTC Value')
+    request.session.flash('No handler for ajaxed field: {}'.format(field), 'error')
+
 @view_config(route_name='admin_index',
              renderer='templates/admin/index.jinja2',
              permission='manage')
@@ -262,16 +282,6 @@ def admin_index(request):
     cashbox_net = cashbox_found.balance - cashbox_lost.balance
     btcbox_net = btcbox_found.balance - btcbox_lost.balance
     chezbetty_net = chezbetty_found.balance - chezbetty_lost.balance
-
-    try:
-        btc_balance = Bitcoin.get_balance()
-        btc = {"btc": btc_balance,
-               "mbtc": round(btc_balance*1000, 2),
-               "usd": btc_balance * Bitcoin.get_spot_price()}
-    except BTCException:
-        btc = {"btc": None,
-               "mbtc": None,
-               "usd": None}
 
     total_sales          = Purchase.total()
     profit_on_sales      = PurchaseLineItem.profit_on_sales()
@@ -321,7 +331,6 @@ def admin_index(request):
                 btcbox=btcbox,
                 chezbetty_cash=chezbetty_cash,
                 chezbetty=chezbetty,
-                btc_balance=btc,
                 cashbox_net=cashbox_net,
                 btcbox_net=btcbox_net,
                 chezbetty_net=chezbetty_net,

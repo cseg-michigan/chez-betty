@@ -113,6 +113,22 @@ $(".btn-ajax_singleuse").on('click', function () {
 });
 
 
+// General class that allows values to be fetched on-demand
+$(".ajaxed_field").each(function ajaxed_each (index) {
+	var url = "/admin/ajax/field/" + $(this).attr('id');
+	$.ajax({
+		url: url,
+		context: this,
+		success: function ajaxed_field_success (data) {
+			$(this).html(data['html']);
+		},
+		error: function ajaxed_field_error (data) {
+			$(this).text('<Error>');
+		},
+	});
+});
+
+
 // ANNOUNCEMENTS
 
 function tweet_char_count () {
