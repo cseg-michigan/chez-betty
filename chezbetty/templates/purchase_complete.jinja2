@@ -51,3 +51,7 @@
 {% endblock %}
 
 {% set timeout = 1000*15 %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
+{% endblock %}

@@ -129,3 +129,158 @@
     </div>
 </div>
 {% endmacro %}
+
+
+
+{% macro create_timeseries_panel(url, title) %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ title }}</h3>
+  </div>
+  <div class="panel-body">
+    <div id="chart-{{ title|replace(" ", "") }}" style="width:100%; height:400px;"></canvas>
+
+<script>
+  $(function () {
+    $.getJSON("{{ url }}", function (data) {
+
+        // create the chart
+        $('#chart-{{ title|replace(" ", "") }}').highcharts('StockChart', {
+            chart: {
+                alignTicks: true
+            },
+
+            rangeSelector: {
+                inputEnabled: $('#chart-{{ title|replace(" ", "") }}').width() > 480,
+                selected: 1
+            },
+
+            series: [{
+                type: 'column',
+                name: 'Number Sold',
+                data: data.individual,
+                yAxis: 1,
+                dataGrouping: {
+                    units: [
+                    [
+                        'minute',
+                        [30]
+                    ], [
+                        'day',
+                        [1]
+                    ], [
+                        'month',
+                        [1]
+                    ], [
+                        'year',
+                        [1]
+                    ]],
+                    approximation: "sum",
+                    forced: true,
+                    groupPixelWidth: 100
+                }//,
+                //gapSize: 2
+            }, {
+                type: 'line',
+                name: 'Total Sold',
+                data: data.sum,
+                dataGrouping: {
+                    units: [
+                    [
+                        'minute',
+                        [30]
+                    ], [
+                        'day',
+                        [1]
+                    ], [
+                        'month',
+                        [1]
+                    ], [
+                        'year',
+                        [1]
+                    ]],
+                    forced: true,
+                    groupPixelWidth: 100
+                }
+            }],
+
+            xAxis: {
+                ordinal: false
+            },
+
+            yAxis: [{ // Primary yAxis
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: 'Total Items Sold',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                opposite: true
+            }, { // Secondary yAxis
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                title: {
+                    text: 'Items Sold',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: false
+            }]
+        });
+    });
+});
+</script>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro create_cumulative_timeseries_panel(url, title) %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ title }}</h3>
+  </div>
+  <div class="panel-body">
+    <div id="chart-{{ title|replace(" ", "") }}" style="width:100%; height:400px;"></canvas>
+
+<script>
+  $(function () {
+    $.getJSON("{{ url }}", function (data) {
+
+        // create the chart
+        $('#chart-{{ title|replace(" ", "") }}').highcharts('StockChart', {
+            chart: {
+                alignTicks: true
+            },
+
+            rangeSelector: {
+                inputEnabled: $('#chart-{{ title|replace(" ", "") }}').width() > 480,
+                selected: 1
+            },
+
+            series: [{
+                type: 'line',
+                name: 'Total',
+                data: data,
+            }],
+
+            xAxis: {
+                ordinal: false
+            }
+        });
+    });
+});
+</script>
+    </div>
+</div>
+{% endmacro %}

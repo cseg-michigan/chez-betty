@@ -25,9 +25,17 @@
         <dt>Wholesale</dt>
         <dd><input type="text" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}"></dd>
 
+        <dt>Sales Tax</dt>
+        <input type="hidden" name="box-sales_tax" value="off">
+        <dd><input type="checkbox" id="box-sales_tax" name="box-sales_tax" {% if box.sales_tax == True %}checked="checked"{% endif %}></input></dd>
+
+        <dt>Bottle Deposit</dt>
+        <input type="hidden" name="box-bottle_dep" value="off">
+        <dd><input type="checkbox" id="box-bottle_dep" name="box-bottle_dep" {% if box.bottle_dep == True %}checked="checked"{% endif %}></input></dd>
+
         <hr />
         <dt>Enabled</dt>
-        <dd><input type="checkbox" id="admin-box-enable-{{ box.id }}" class="admin-switch toggle-disabled" {% if box.enabled == True %}checked="checked"{% endif %}></input></dd>
+        <dd>{{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}</dd>
       </dl>
     </div>
 
@@ -86,6 +94,7 @@
           <tr>
             <th>Vendor</th>
             <th>Box Number</th>
+            <th>Link</th>
           </tr>
         </thead>
 
@@ -99,7 +108,11 @@
             <td>
               <input type="text" class="form-control" id="box-vendor-item_num-{{ vb.id }}" name="box-vendor-item_num-{{ vb.id }}" value="{{ vb.item_number }}">
             </td>
-
+            <td>
+              {% if vb.vendor.name == "Costco" %}
+              <a href="http://www2.costco.com/Common/Search.aspx?whse=BD_823&topnav=bd&search={{ vb.item_number }}&N=0&Ntt={{ vb.item_number }}&cm_re=1_en-_-Top_Left_Nav-_-Top_search&lang=en-US">View on Costco</a>
+              {% endif %}
+            </td>
           </tr>
           {% endif %}
           {% endfor %}

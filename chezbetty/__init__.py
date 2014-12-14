@@ -1,6 +1,7 @@
 from pyramid.config import Configurator
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.httpexceptions import HTTPFound
 from sqlalchemy import engine_from_config
 
 # Import all models so they get auto created if they don't exist
@@ -18,9 +19,19 @@ from .models import request
 from .models import transaction
 from .models import user
 from .models import vendor
+from .models import pool
+from .models import pool_user
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
+
+###
+### 404
+###
+
+def notfound(request):
+    request.session.flash('404: Could not find that page.', 'error')
+    return HTTPFound(location=request.route_url('index'))
 
 def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
@@ -62,6 +73,7 @@ def main(global_config, **settings):
     config.add_route('index', '/')
 
     config.add_route('about', '/about')
+    config.add_route('shame', '/shame')
 
     config.add_route('items',            '/items')
     config.add_route('item',             '/item/{barcode}/json')
@@ -69,28 +81,32 @@ def main(global_config, **settings):
     config.add_route('item_request_new', '/item/request/new')
     config.add_route('item_request_by_id', '/item/request/by_id/{id}')
 
-    config.add_route('shame', '/shame')
-    config.add_route('user',  '/user/{umid}')
+    config.add_route('user',         '/user/{umid}')
 
     config.add_route('purchase_new', '/purchase/new')
     config.add_route('purchase',     '/purchase/{umid}')
 
-    config.add_route('deposit_new', '/deposit/new')
-    config.add_route('deposit',     '/deposit/{umid}')
+    config.add_route('deposit_new',         '/deposit/new')
+    config.add_route('deposit',             '/deposit/{umid}')
+    config.add_route('deposit_edit',        '/deposit/edit/{umid}/{event_id}')
+    config.add_route('deposit_edit_submit', '/deposit/edit/submit')
 
-    config.add_route('btc_deposit', '/bitcoin/deposit/{umid}/{auth_key}')
-    config.add_route('btc_check',   '/bitcoin/check/{addr}')
+    config.add_route('btc_deposit',  '/bitcoin/deposit/{umid}/{auth_key}')
+    config.add_route('btc_check',    '/bitcoin/check/{addr}')
 
-    config.add_route('event',      '/event/{event_id}')
-    config.add_route('event_undo', '/event/undo/{umid}/{event_id}')
+    config.add_route('event',        '/event/{event_id}')
+    config.add_route('event_undo',   '/event/undo/{umid}/{event_id}')
+
+    config.add_route('pools',        '/pools/{umid}')
 
 
     # ADMIN
     config.add_route('admin_index',     '/admin')
-    config.add_route('admin_demo',      '/admin/demo/{state}')
-    config.add_route('admin_keyboard',  '/admin/keyboard/{state}')
+
+    config.add_route('admin_ajax_bool',  '/admin/ajax/bool/{object}/{id}/{field}/{state}')
 
     config.add_route('admin_item_barcode_json', '/admin/item/{barcode}/json')
+    config.add_route('admin_item_search_json',  '/admin/item/search/{search}/json')
     config.add_route('admin_restock',           '/admin/restock')
     config.add_route('admin_restock_submit',    '/admin/restock/submit')
 
@@ -101,7 +117,6 @@ def main(global_config, **settings):
     config.add_route('admin_item_edit_submit',  '/admin/item/edit/submit')
     config.add_route('admin_item_edit',         '/admin/item/edit/{item_id}')
     config.add_route('admin_item_barcode_pdf',  '/admin/item/barcode/{item_id}.pdf')
-    config.add_route('admin_item_enable',       '/admin/item/enable/{id}/{state}')
     config.add_route('admin_item_delete',       '/admin/item/delete/{item_id}')
 
     config.add_route('admin_box_add',           '/admin/box/add')
@@ -110,12 +125,10 @@ def main(global_config, **settings):
     config.add_route('admin_boxes_edit_submit', '/admin/boxes/edit/submit')
     config.add_route('admin_box_edit_submit',   '/admin/box/edit/submit')
     config.add_route('admin_box_edit',          '/admin/box/edit/{box_id}')
-    config.add_route('admin_box_enable',        '/admin/box/enable/{id}/{state}')
     config.add_route('admin_box_delete',        '/admin/box/delete/{box_id}')
 
     config.add_route('admin_vendors_edit',        '/admin/vendors/edit')
     config.add_route('admin_vendors_edit_submit', '/admin/vendors/edit/submit')
-    config.add_route('admin_vendor_enable', '/admin/vendor/enable/{id}/{state}')
 
     config.add_route('admin_inventory',        '/admin/inventory')
     config.add_route('admin_inventory_submit', '/admin/inventory/submit')
@@ -125,9 +138,9 @@ def main(global_config, **settings):
     config.add_route('admin_users_email',              '/admin/users/email')
     config.add_route('admin_users_email_deadbeats',    '/admin/users/email/deadbeats')
     config.add_route('admin_users_email_all',          '/admin/users/email/all')
+    config.add_route('admin_user',                     '/admin/user/{user_id}')
     config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
-    config.add_route('admin_user_enable',              '/admin/user/enable/{id}/{state}')
 
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',  '/admin/cash/reconcile/submit')
@@ -152,10 +165,9 @@ def main(global_config, **settings):
     config.add_route('admin_password_edit',        '/admin/password/edit')
     config.add_route('admin_password_edit_submit', '/admin/password/edit/submit')
 
-    config.add_route('admin_shopping_list', '/admin/shopping')
+    config.add_route('admin_shopping_list',   '/admin/shopping')
 
     config.add_route('admin_requests',        '/admin/requests')
-    config.add_route('admin_requests_delete', '/admin/request/delete/{request_id}')
 
     config.add_route('admin_announcements_edit',        '/admin/announcements/edit')
     config.add_route('admin_announcements_edit_submit', '/admin/announcements/edit/submit')
@@ -171,10 +183,19 @@ def main(global_config, **settings):
     config.add_route('admin_data_sales_each_json', '/admin/data/sales/{period}/each')
     config.add_route('admin_data_deposits_each_json', '/admin/data/deposits/{period}/each')
 
+    config.add_route('admin_data_item_sales_json', '/admin/data/item/sales/{item_id}')
+
+    config.add_route('admin_data_users_totals_json', '/admin/data/users/totals')
+
+    config.add_route('admin_data_speed_items', '/admin/data/speed/items')
+
 
     config.add_route('login',  '/login')
     config.add_route('logout', '/logout')
     config.add_request_method(get_user, "user", reify=True)
+
+    # 404 Page
+    config.add_view(notfound, context='pyramid.httpexceptions.HTTPNotFound')
 
     config.scan(".views")
     config.scan(".views_admin")

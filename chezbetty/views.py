@@ -21,6 +21,7 @@ from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
+from .models.pool import Pool
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -31,6 +32,7 @@ import binascii
 class DepositException(Exception):
     pass
 
+
 ###
 ### HTML Pages
 ###
@@ -39,7 +41,7 @@ class DepositException(Exception):
 
 @view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
-    announcements = Announcement.all()
+    announcements = Announcement.all_enabled()
     for announcement in announcements:
         request.session.flash(announcement.announcement, 'info')
 
@@ -61,11 +63,18 @@ def about(request):
 def items(request):
     items = DBSession.query(Item)\
                      .filter(Item.enabled==True)\
+                     .filter(Item.in_stock>0)\
+                     .order_by(Item.name).all()
+    out_of_stock_items = DBSession.query(Item)\
+                     .filter(Item.enabled==True)\
+                     .filter(Item.in_stock==0)\
                      .order_by(Item.name).all()
     disabled_items = DBSession.query(Item)\
                      .filter(Item.enabled==False)\
                      .order_by(Item.name).all()
-    return {'items': items, 'disabled_items': disabled_items}
+    return {'items': items,
+            'out_of_stock_items': out_of_stock_items,
+            'disabled_items': disabled_items}
 
 
 @view_config(route_name='item_request', renderer='templates/item_request.jinja2')
@@ -144,6 +153,12 @@ def deposit(request):
     try:
         user = User.from_umid(request.matchdict['umid'])
 
+        # Record the deposit limit so we can show the user
+        if user.total_deposits > 10.0 and user.total_purchases > 10.0:
+            user.deposit_limit = 100.0
+        else:
+            user.deposit_limit = 20.0
+
         try:
             auth_key = binascii.b2a_hex(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
             btc_addr = Bitcoin.get_new_address(user.umid, auth_key)
@@ -160,6 +175,33 @@ def deposit(request):
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
         return HTTPFound(location=request.route_url('index'))
+
+
+@view_config(route_name='deposit_edit',
+             renderer='templates/deposit_edit.jinja2',
+             permission='service')
+def deposit_edit(request):
+    try:
+        user = User.from_umid(request.matchdict['umid'])
+        event = Event.from_id(request.matchdict['event_id'])
+
+        if event.type != 'deposit' or event.transactions[0].type != 'cashdeposit':
+            request.session.flash('Can only edit a cash deposit.', 'error')
+            return HTTPFound(location=request.route_url('index'))
+
+        return {'user': user,
+                'old_event': event,
+                'old_deposit': event.transactions[0]}
+
+    except __user.InvalidUserException as e:
+        request.session.flash('Invalid User ID.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
 
 
 @view_config(route_name='event', permission='service')
@@ -209,6 +251,10 @@ def event(request):
     except NoResultFound as e:
         # TODO: add generic failure page
         pass
+    except Exception as e:
+        if request.debug: raise(e)
+        return HTTPFound(location=request.route_url('index'))
+
 
 @view_config(route_name='event_undo', permission='service')
 def event_undo(request):
@@ -223,14 +269,14 @@ def event_undo(request):
 
         # Make sure transaction is a deposit, the only one the user is allowed
         # to undo
-        if transaction.type not in ('deposit', 'purchase'):
+        if transaction.type not in ('cashdeposit', 'purchase'):
             request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
         # Make sure that the user who is requesting the deposit was the one who
         # actually placed the deposit.
         try:
-            if transaction.type == 'deposit':
+            if transaction.type == 'cashdeposit':
                 user = User.from_id(transaction.to_account_virt_id)
             elif transaction.type == 'purchase':
                 user = User.from_id(transaction.fr_account_virt_id)
@@ -245,16 +291,41 @@ def event_undo(request):
     # If the checks pass, actually revert the transaction
     try:
         line_items = datalayer.undo_event(event, user)
-        request.session.flash('Transaction successfully reverted.', 'success')
+        if event.type == 'deposit':
+            request.session.flash('Deposit successfully undone.', 'success')
+        elif event.type == 'purchase':
+            request.session.flash('Purchase undone. Please edit it as needed.', 'success')
     except:
         request.session.flash('Error: Failed to undo transaction.', 'error')
         return HTTPFound(location=request.route_url('purchase', umid=user.umid))
+
     if event.type == 'deposit':
         return HTTPFound(location=request.route_url('user', umid=user.umid))
     elif event.type == 'purchase':
         return HTTPFound(location=request.route_url('purchase', umid=user.umid, _query=line_items))
     else:
         assert(False and "Should not be able to get here?")
+
+
+@view_config(route_name='pools',
+             renderer='templates/pool.jinja2',
+             permission='service')
+def pools(request):
+    try:
+        user = User.from_umid(request.matchdict['umid'])
+
+        my_pools = Pool.all_by_owner(user)
+        their_pools = user.pools
+
+        return {'user': user,
+                'my_pools': my_pools}
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error finding user.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+
 
 ###
 ### JSON Requests
@@ -317,7 +388,10 @@ def item_request_by_id(request):
     request.session.flash('Request for {} added successfully'.format(item.name), 'success')
     return HTTPFound(location=request.route_url('index'))
 
-@view_config(route_name='purchase_new', request_method='POST', renderer='json', permission='service')
+@view_config(route_name='purchase_new',
+             request_method='POST',
+             renderer='json',
+             permission='service')
 def purchase_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
@@ -402,13 +476,26 @@ def btc_check(request):
         return {}
 
 
-@view_config(route_name='deposit_new', request_method='POST', renderer='json', permission='service')
+@view_config(route_name='deposit_new',
+             request_method='POST',
+             renderer='json',
+             permission='service')
 def deposit_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
         amount = Decimal(request.POST['amount'])
 
-        if amount > 20.0:
+        # Check if the deposit amount is too great.
+        # This if block could be tighter, but this is easier to understand
+        if amount > 100.0:
+            # Anything above 100 is blocked
+            raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
+
+        if amount < 100.0 and amount > 20.0 and (user.total_deposits < 10.0 or user.total_purchases < 10.0):
+            # If the deposit is between 20 and 100 and the user hasn't done much
+            # with betty. Block the deposit. We do allow deposits up to 100 for
+            # customers that have shown they know how to scan/purchase and
+            # deposit
             raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
 
         deposit = datalayer.deposit(user, amount)
@@ -419,11 +506,51 @@ def deposit_new(request):
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid user error. Please try again.', 'error')
-        return {'redirect_url': '/'}
+        return {'error': 'Error finding user.',
+                'redirect_url': '/'}
 
     except ValueError as e:
         return {'error': 'Error understanding deposit amount.'}
 
     except DepositException as e:
         return {'error': str(e)}
+
+
+@view_config(route_name='deposit_edit_submit',
+             request_method='POST',
+             renderer='json',
+             permission='service')
+def deposit_edit_submit(request):
+    try:
+        user = User.from_umid(request.POST['umid'])
+        amount = Decimal(request.POST['amount'])
+        old_event = Event.from_id(request.POST['old_event_id'])
+
+        if old_event.type != 'deposit' or \
+           old_event.transactions[0].type != 'cashdeposit' or \
+           old_event.transactions[0].to_account_virt_id != user.id:
+           # Something went wrong, can't undo this deposit
+           raise DepositException('Cannot undo that deposit')
+
+        new_deposit = deposit_new(request)
+
+        if 'error' in new_deposit and new_deposit['error'] != 'success':
+            # Error occurred, do not delete old event
+            return new_deposit
+
+        # Now undo old deposit
+        datalayer.undo_event(old_event, user)
+
+        return new_deposit
+
+    except __user.InvalidUserException as e:
+        request.session.flash('Invalid user error. Please try again.', 'error')
+        return {'redirect_url': '/'}
+
+    except DepositException as e:
+        return {'error': str(e)}
+
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'error': 'Error.'}
 
