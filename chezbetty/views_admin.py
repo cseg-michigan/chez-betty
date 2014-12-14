@@ -1763,8 +1763,11 @@ def admin_users_email(request):
 def admin_users_email_deadbeats(request):
     deadbeats = DBSession.query(User).filter(User.enabled).filter(User.balance<-20.0).all()
     for deadbeat in deadbeats:
-        text = render('templates/admin/email_deadbeats.jinja2', {'user': deadbeat})
-        print(text)
+        send_email(
+                TO=deadbeat.uniqname+'@umich.edu',
+                SUBJECT='Chez Betty Balance',
+                body=render('templates/admin/email_deadbeats.jinja2', {'user': deadbeat})
+                )
 
     request.session.flash('Deadbeat users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
@@ -1776,7 +1779,12 @@ def admin_users_email_deadbeats(request):
 def admin_users_email_all(request):
     users = User.all()
     text = request.POST['text']
-    print(text)
+
+    send_email(
+            TO='@umich.edu, '.join(users) + '@umich.edu',
+            SUBJECT='A message from Chez Betty',
+            body=text
+            )
 
     request.session.flash('All users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
