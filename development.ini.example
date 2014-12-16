@@ -25,7 +25,7 @@ debugging_send_email_to = youraccount@testing.com
 sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 
 chezbetty.default_password = chezbetty
-chezbetty.host = chezbetty.com
+chezbetty.host = http://chezbetty.com
 chezbetty.email = chezbetty@chezbetty.com
 chezbetty.ipaddr = 111.222.333.444
 
