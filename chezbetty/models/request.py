@@ -26,4 +26,5 @@ class Request(Base):
     @classmethod
     def count(cls):
         return DBSession.query(func.count(cls.id).label('c'))\
-                        .filter(cls.enabled).one().c
+                        .filter(cls.enabled)\
+                        .filter(cls.deleted==False).one().c

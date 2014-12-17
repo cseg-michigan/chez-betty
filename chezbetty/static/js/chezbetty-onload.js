@@ -36,7 +36,7 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 });
 
 // Click handler to submit a purchase.
-$("#btn-submit-purchase").click(function () {
+$(".btn-submit-purchase").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -46,6 +46,13 @@ $("#btn-submit-purchase").click(function () {
 	// to the server. Also include the purchasing user.
 	purchase = {};
 	purchase.umid = $("#user-umid").text();
+
+	// What account to pay with?
+	fields = $(this).attr("id").split("-");
+	purchase["account"] = fields[2];
+	if (purchase["account"] == "pool") {
+		purchase["pool_id"] = fields["3"];
+	}
 
 	item_count = 0;
 	$(".purchase-item").each(function (index) {
@@ -73,7 +80,7 @@ $("#btn-submit-purchase").click(function () {
 });
 
 // Click handler to submit a deposit.
-$("#btn-submit-deposit").click(function () {
+$(".btn-submit-deposit").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -82,6 +89,13 @@ $("#btn-submit-deposit").click(function () {
 	deposit = {};
 	deposit.umid = $("#user-umid").text();
 	deposit.amount = strip_price($("#keypad-total").text());
+
+	// What account to deposit to?
+	fields = $(this).attr("id").split("-");
+	deposit.account = fields[2];
+	if (deposit.account == "pool") {
+		deposit.pool_id = fields["3"];
+	}
 
 	// Post the deposit to the server
 	$.ajax({
@@ -95,7 +109,7 @@ $("#btn-submit-deposit").click(function () {
 });
 
 // Click handler to submit a deposit.
-$("#btn-edit-deposit").click(function () {
+$(".btn-edit-deposit").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -105,6 +119,13 @@ $("#btn-edit-deposit").click(function () {
 	deposit.umid = $("#user-umid").text();
 	deposit.amount = strip_price($("#keypad-total").text());
 	deposit.old_event_id = $("#event_id").text();
+
+	// What account to deposit to?
+	fields = $(this).attr("id").split("-");
+	deposit.account = fields[2];
+	if (deposit.account == "pool") {
+		deposit.pool_id = fields["3"];
+	}
 
 	// Post the deposit to the server
 	$.ajax({
@@ -157,15 +178,13 @@ $(".faq-q").click(function() {
 
 
 
-
-
-
-
-$(".keyboard-wanted").keyboard({
-  layout : 'qwerty',
-  tabNavigation : true,
-  enterNavigation : true,
-});
+if (onscreen_keyboard) {
+	$(".keyboard-wanted").keyboard({
+	  layout : 'qwerty',
+	  tabNavigation : true,
+	  enterNavigation : true,
+	});
+}
 
 var scrollStep = 100;
 

@@ -39,10 +39,17 @@ class Event(Base):
         return DBSession.query(cls).filter(cls.id == id).one()
 
     @classmethod
-    def all(cls):
-        return DBSession.query(cls)\
-                        .filter(cls.deleted == False)\
-                        .order_by(cls.id).all()
+    @limitable_all
+    def all(cls, trans_type=None):
+        if not trans_type:
+            return DBSession.query(cls)\
+                            .filter(cls.deleted == False)\
+                            .order_by(desc(cls.id))
+        else:
+            return DBSession.query(cls)\
+                            .filter(cls.deleted == False)\
+                            .filter(cls.type==trans_type)\
+                            .order_by(desc(cls.id))
 
     @classmethod
     def some(cls, count):

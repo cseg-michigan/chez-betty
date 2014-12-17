@@ -1,9 +1,11 @@
 
-$(".date").each(function (index) {
+function prettydate (index) {
 	d = new Date($(this).text());
 	s = $.format.date(d, "MMM d, yyyy") + " at " + $.format.date(d, "h:mm a");
 	$(this).text(s);
-});
+	$(this).switchClass('date', 'prettydate');
+}
+$(".date").each(prettydate);
 
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
 $(".admin-switch").bootstrapSwitch();
@@ -84,6 +86,69 @@ function toggle_enabled (type, btn) {
 		$("#btn-disable-"+type+"-" + id).show();
 	}
 }
+
+// single use button
+
+function button_singleuse_success (data) {
+	if (data["status"] == "success") {
+		$(this).hide();
+		alert_success(data["msg"]);
+	} else {
+		alert_error(data["msg"]);
+	}
+}
+
+function button_singleuse_fail (data) {
+	alert_error("Button click failed.");
+}
+
+$(".btn-ajax_singleuse").on('click', function () {
+	var url = $(this).attr("data-url");
+	$.ajax({
+		url: url,
+		context: $(this),
+		success: button_singleuse_success,
+		error: button_singleuse_fail
+	});
+});
+
+
+// General class that allows values to be fetched on-demand
+$(".ajaxed_field").each(function ajaxed_each (index) {
+	var url = "/admin/ajax/field/" + $(this).attr('id');
+	$.ajax({
+		url: url,
+		context: this,
+		success: function ajaxed_field_success (data) {
+			$(this).html(data['html']);
+		},
+		error: function ajaxed_field_error (data) {
+			$(this).text('<Error>');
+		},
+	});
+});
+
+
+// ANNOUNCEMENTS
+
+function tweet_char_count () {
+  var len = $('#tweet').val().length;
+  var rem = 140 - len;
+  $('#tweet-char-count').text('Characters Remaining: ' + rem);
+  if (rem > 0) {
+    $('#tweet-char-count').css('color', 'black');
+  } else {
+    $('#tweet-char-count').css('color', 'red');
+  }
+};
+
+$("#tweet").on('change keyup paste input propertychange', tweet_char_count);
+
+// Need to call on page load too b/c browser may remember form contents
+if ($('#tweet').length > 0) {
+	tweet_char_count();
+}
+
 
 // ITEMS
 
@@ -366,6 +431,82 @@ $(".request-delete").click(function () {
 		error: request_delete_fail
 	});
 })
+
+
+
+
+//
+// Tags
+//
+
+$("#btn-tag-new").click(function () {
+	var new_tag = $("#tag-new").val();
+
+	$.ajax({
+		url: "/admin/ajax/new/tag/" + new_tag,
+		success: tag_new_success,
+		error: tag_new_fail
+	});
+});
+
+function tag_new_success (data) {
+	// Add the new tag to the existing tags box on the page
+	add_tag_to_item(data['id'], $("#item-id").val());
+
+	$("#tag-new").val("");
+}
+
+function tag_new_fail () {
+	alert_error("Could not create a new tag.");
+}
+
+$(".tag-to-add").click(function () {
+	var tag_id = $(this).attr("data-tag-id");
+	var item_id = $("#item-id").val();
+	add_tag_to_item(tag_id, item_id);
+});
+
+function add_tag_to_item (tag_id, item_id) {
+	$.ajax({
+		url: "/admin/ajax/connection/item/tag/" + item_id + "/" + tag_id,
+		success: tag_connected_success,
+		error: tag_connected_fail
+	});
+}
+
+function tag_connected_success (data) {
+	tag_name = $("#tag-"+data['arg2']).val();
+	$("#tag-"+data['arg2']).remove();
+
+	$("#item-existing-tags").append(' <button type="button" \
+		class="btn btn-default" data-item-tag-id="' + data['item_tag_id'] + '">'
+		+ data['tag_name'] + '</button>');
+}
+
+function tag_connected_fail () {
+	alert_error("Could not add that tag to the item.");
+}
+
+$("#item-existing-tags").on("click", "button", function () {
+	var item_tag_id = $(this).attr("data-item-tag-id");
+
+	$.ajax({
+		url: "/admin/ajax/bool/itemtag/" + item_tag_id + "/deleted/true",
+		context: $(this),
+		success: tag_disconnected_success,
+		error: tag_disconnected_fail
+	});
+});
+
+function tag_disconnected_success (data) {
+	$(this).remove();
+}
+
+function tag_disconnected_fail () {
+	alert_error("Could not remove the tag from the item.");
+}
+
+
 
 // filterable tables
 $('.filterable').each(function (table_index) {

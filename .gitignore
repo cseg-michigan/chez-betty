@@ -10,6 +10,7 @@ chezbetty.sqlite
 chezbetty/.Python
 include/
 lib/
+lib64
 local
 sessions/
 bower_components/

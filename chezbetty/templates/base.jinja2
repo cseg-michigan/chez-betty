@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+  <link rel="shortcut icon" type="image/png" href="{{'chezbetty:static/chezbetty_32px.png'|static_url}}" />
   {% block head %}
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap/bootstrap.min.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap-sortable/bootstrap-sortable.css'|static_url}}" />
@@ -36,10 +36,44 @@
     {% set demo = False %}
   {% endif %}
 
+  <script>
+    {% if request.is_terminal %}
+    onscreen_keyboard = true;
+    {% else %}
+    onscreen_keyboard = false;
+    {% endif %}
+
+    is_service_account = {% if request.user.role == "serviceaccount" %}true{% else %}false{% endif %};
+  </script>
+
   <div id="wrap">
 
     {% set active_page = active_page|default('index') -%}
     {#{% include 'navbar.html' %}#}
+
+    {% if user %}
+    {% if user.balance < -50 %}
+    <div class="alert alert-warning" role="alert">
+      <div class="container">
+        <h2>Hi {{ user.name }},</h2>
+        <h3>You currently owe Betty {{ user.balance|format_currency|safe }}.
+          That's a lot of money!</h3>
+        <p>We're glad you like Betty. We're happy to extend a small line of
+        credit, but if people owe Betty lots of money, it's hard to keep things
+        in stock. Please try to pay Betty back soon!</p>
+      </div>
+    </div>
+    {% elif user.balance < -20 %}
+    <div class="alert alert-warning" role="alert">
+      <div class="container">
+        <h2>Hi {{ user.name }},</h2>
+        <p>You currently owe Betty
+        <strong>{{ user.balance|format_currency|safe }}</strong>.</p>
+        <p>Please try to pay Betty back soon, thanks!</p>
+      </div>
+    </div>
+    {% endif %}
+    {% endif %}
 
     <div id="alerts" class="container">
       {% block alerts %}
@@ -76,6 +110,16 @@
     {% block footer %}{% endblock %}
   </div>
 
+  {% if request.debug %}
+  <div class="navbar navbar-inverse navbar-fixed-bottom" style="background-color:#E8192F" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE{{ ''|add_git_version }}</span></a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   <script src="{{'chezbetty:static/js/chezbetty-onload.js'|static_url}}"></script>
   {% block onload %}
   {% endblock %}
@@ -83,5 +127,16 @@
   {% set timeout = timeout|default(60*1000*5) -%}
   <script>
     setTimeout(function(){window.location.replace("/");}, {{ timeout }});
+  </script>
+
+  <!-- Google Analytics tracker -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-55624000-1', 'auto');
+    ga('send', 'pageview');
   </script>
 </body>

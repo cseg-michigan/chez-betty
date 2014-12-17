@@ -9,11 +9,12 @@
       </button>
       <a class="navbar-brand" href="#">Chez Betty Admin</a>
       {% if request.debug %}
-      <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE</span></a>
+      <a class="navbar-brand hidden-xs" href="#"><span style="color:black;">DEBUG MODE{{ ''|add_git_version }}</span></a>
       {% endif %}
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
+        <li><a class="navbar-brand hidden-lg hidden-md hidden-sm" href="#" style="color:black; display:block;">DEBUG MODE{{ ''|add_git_version }}</a></li>
         {% if request.has_permission("admin") %}
         <li><a href="/">User Interface</a></li>
         {% endif %}

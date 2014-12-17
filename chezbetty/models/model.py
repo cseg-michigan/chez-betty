@@ -13,6 +13,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Boolean,
+    LargeBinary,
     desc
     )
 
@@ -53,3 +54,21 @@ class RootFactory(object):
     def __init__(self, request):
         pass
 
+# Decorator that adds optional limit parameter to any all() query
+def limitable_all(fn_being_decorated):
+    def wrapped_fn(*args, limit=None, offset=None, count=False, **kwargs):
+        q = fn_being_decorated(*args, **kwargs)
+        if offset:
+            q = q.offset(offset)
+        if limit:
+            if count:
+                return q.limit(limit).all(), q.count()
+            else:
+                return q.limit(limit).all()
+        else:
+            if count:
+                return q.all(), q.count()
+            else:
+                return q.all()
+    wrapped_fn.__name__ = 'limitable_all{' + fn_being_decorated.__name__+'}'
+    return wrapped_fn

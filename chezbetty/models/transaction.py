@@ -5,6 +5,8 @@ from . import item
 from . import box
 from chezbetty import utility
 
+from pyramid.threadlocal import get_current_registry
+
 
 class Transaction(Base):
     __tablename__ = 'transactions'
@@ -148,7 +150,7 @@ class Transaction(Base):
         if end:
             r = r.filter(event.Event.timestamp<end)
 
-        return r.one().a or 0.0
+        return r.one().a or Decimal(0.0)
 
 
 @property
@@ -156,11 +158,18 @@ def __transactions(self):
     return object_session(self).query(Transaction)\
             .join(event.Event)\
             .filter(or_(
-                    Transaction.to_account_virt_id == self.id,
-                    Transaction.fr_account_virt_id == self.id,
-                    Transaction.to_account_cash_id == self.id,
-                    Transaction.fr_account_cash_id == self.id))\
-            .filter(event.Event.deleted==False).all()
+                      or_(
+                        Transaction.to_account_virt_id == self.id,
+                        Transaction.fr_account_virt_id == self.id,
+                        Transaction.to_account_cash_id == self.id,
+                        Transaction.fr_account_cash_id == self.id),
+                      and_(
+                        or_(event.Event.type == "purchase",
+                            event.Event.type == "deposit"),
+                        event.Event.user_id == self.id)))\
+            .filter(event.Event.deleted==False)\
+            .order_by(event.Event.timestamp)\
+            .all()
 account.Account.transactions = __transactions
 
 # This is in a stupid place due to circular input problems
@@ -169,11 +178,18 @@ def __events(self):
     return object_session(self).query(event.Event)\
             .join(Transaction)\
             .filter(or_(
-                    Transaction.to_account_virt_id == self.id,
-                    Transaction.fr_account_virt_id == self.id,
-                    Transaction.to_account_cash_id == self.id,
-                    Transaction.fr_account_cash_id == self.id))\
-            .filter(event.Event.deleted==False).all()
+                      or_(
+                        Transaction.to_account_virt_id == self.id,
+                        Transaction.fr_account_virt_id == self.id,
+                        Transaction.to_account_cash_id == self.id,
+                        Transaction.fr_account_cash_id == self.id),
+                      and_(
+                        or_(event.Event.type == "purchase",
+                            event.Event.type == "deposit"),
+                        event.Event.user_id == self.id)))\
+            .filter(event.Event.deleted==False)\
+            .order_by(event.Event.timestamp)\
+            .all()
 account.Account.events = __events
 
 # This is in a stupid place due to circular input problems
@@ -185,7 +201,7 @@ def __total_deposit_amount(self):
                         Transaction.to_account_virt_id == self.id,
                         or_(Transaction.type == 'cashdeposit',
                             Transaction.type == 'btcdeposit')))\
-            .filter(event.Event.deleted==False).one().total or 0.0
+            .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_deposits = __total_deposit_amount
 
 # This is in a stupid place due to circular input problems
@@ -196,7 +212,7 @@ def __total_purchase_amount(self):
             .filter(and_(
                         Transaction.fr_account_virt_id == self.id,
                         Transaction.type == 'purchase'))\
-            .filter(event.Event.deleted==False).one().total or 0.0
+            .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_purchases = __total_purchase_amount
 
 class Purchase(Transaction):
@@ -225,9 +241,49 @@ class Deposit(Transaction):
 
 class CashDeposit(Deposit):
     __mapper_args__ = {'polymorphic_identity': 'cashdeposit'}
+
+    CONTENTS_THRESHOLD = 300
+    REPEAT_THRESHOLD = 50
+
     def __init__(self, event, user, amount):
         cashbox_c = account.get_cash_account("cashbox")
+        prev = cashbox_c.balance
         Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
+        new = cashbox_c.balance
+        if prev < CashDeposit.CONTENTS_THRESHOLD and new > CashDeposit.CONTENTS_THRESHOLD:
+            self.send_alert_email(new)
+        elif prev > CashDeposit.CONTENTS_THRESHOLD:
+            pr = int((prev - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+            nr = int((new - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+            if pr != nr:
+                self.send_alert_email(new, nr)
+
+    def send_alert_email(self, amount, repeat=0):
+        settings = get_current_registry().settings
+
+        SUBJECT = 'Time to empty Betty. Cash box has ${}.'.format(amount)
+        TO = 'chez-betty@umich.edu'
+
+        body = """
+        <p>Betty's cash box is getting full. Time to go to the bank.</p>
+        <p>The cash box currently contains ${}.</p>
+        """.format(amount)
+        if repeat > 8:
+            body = """
+            <p><strong>Yo! Get your shit together! That's a lot of cash lying
+            around!</strong></p>""" + body
+        elif repeat > 4:
+            body = body + """
+            <p><strong>But seriously, you should probably go empty the cashbox
+            like, right meow.</strong></p>"""
+
+        if 'debugging' in settings:
+            SUBJECT = '[ DEBUG_MODE ] ' + SUBJECT
+            body = """
+            <p><em>This message was sent from a debugging session and may be
+            safely ignored.</em></p>""" + body
+
+        utility.send_email(TO=TO, SUBJECT=SUBJECT, body=body)
 
 
 class BTCDeposit(Deposit):
@@ -365,21 +421,51 @@ class SubTransaction(Base):
             raise AttributeError
 
     @classmethod
+    @limitable_all
     def all_item(cls, id):
         return DBSession.query(cls)\
                         .join(Transaction)\
                         .join(event.Event)\
                         .filter(cls.item_id == id)\
                         .filter(event.Event.deleted==False)\
-                        .order_by(cls.id).all()
+                        .order_by(cls.id)
 
     @classmethod
-    def all(cls):
+    @limitable_all
+    def all_item_purchases(cls, id):
         return DBSession.query(cls)\
                         .join(Transaction)\
                         .join(event.Event)\
-                        .filter(event.Event.deleted==False).all()
+                        .filter(cls.item_id == id)\
+                        .filter(event.Event.deleted==False)\
+                        .filter(event.Event.type=="purchase")\
+                        .order_by(cls.id)
 
+    @classmethod
+    @limitable_all
+    def all_item_events(cls, id):
+        return DBSession.query(cls)\
+                        .join(Transaction)\
+                        .join(event.Event)\
+                        .filter(cls.item_id == id)\
+                        .filter(event.Event.deleted==False)\
+                        .filter(or_(event.Event.type=="inventory", event.Event.type =="restock"))\
+                        .order_by(cls.id)
+
+    @classmethod
+    @limitable_all
+    def all(cls, trans_type=None):
+        if not trans_type:
+            return DBSession.query(cls)\
+                            .join(Transaction)\
+                            .join(event.Event)\
+                            .filter(event.Event.deleted==False)
+        else:
+            return DBSession.query(cls)\
+                            .join(Transaction)\
+                            .join(event.Event)\
+                            .filter(cls.type==trans_type)\
+                            .filter(event.Event.deleted==False)
 
 class PurchaseLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}
@@ -425,7 +511,7 @@ class PurchaseLineItem(SubTransaction):
         if end:
             r = r.filter(event.Event.timestamp<end)
 
-        return r.one().p or 0.0
+        return r.one().p or Decimal(0.0)
 
     @classmethod
     def item_sale_quantities(cls, item_id):
@@ -534,13 +620,15 @@ class SubSubTransaction(Base):
             raise AttributeError
 
     @classmethod
+    @limitable_all
     def all_item(cls, id):
         return DBSession.query(cls)\
                         .join(SubTransaction)\
                         .join(Transaction)\
                         .join(event.Event)\
                         .filter(cls.item_id == id)\
-                        .filter(event.Event.deleted==False).all()
+                        .filter(event.Event.deleted==False)\
+                        .order_by(cls.id)
 
 
 class RestockLineBoxItem(SubSubTransaction):

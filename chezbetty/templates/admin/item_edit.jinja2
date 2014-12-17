@@ -11,40 +11,62 @@
 
 {% block content %}
 
-<form role="form" action="/admin/item/edit/submit" method="post" id="form-edit-item">
+<form role="form" action="/admin/item/edit/submit" method="post" id="form-edit-item" enctype="multipart/form-data">
   <input type="hidden" id="item-id" name="item-id" value="{{ item.id }}">
 
   <div class="panel panel-default">
     <div class="panel-heading">Item Details</div>
     <div class="panel-body">
-      <dl class="dl-horizontal">
-        <dt>Name</dt>
-        <dd><input type="text" class="form-control" id="item-name" name="item-name" value="{{ item.name }}"></dd>
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <dl class="dl-horizontal">
+            <dt>Name</dt>
+            <dd><input type="text" class="form-control" id="item-name" name="item-name" value="{{ item.name }}"></dd>
 
-        <dt>Barcode</dt>
-        <dd><input type="text" class="form-control barcode-check" id="item-barcode" name="item-barcode" value="{{ item.barcode if item.barcode != None }}"></dd>
+            <dt>Barcode</dt>
+            <dd><input type="text" class="form-control barcode-check" id="item-barcode" name="item-barcode" value="{{ item.barcode if item.barcode != None }}"></dd>
 
-        <dt>Price</dt>
-        <dd><input type="text" class="form-control numeric" id="item-price" name="item-price" value="{{ item.price|round(2) }}"></dd>
+            <dt>Price</dt>
+            <dd><input type="text" class="form-control numeric" id="item-price" name="item-price" value="{{ item.price|round(2) }}"></dd>
 
-        <dt>Wholesale</dt>
-        <dd><input type="text" class="form-control numeric" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale|round(4) }}"></dd>
+            <dt>Wholesale</dt>
+            <dd><input type="text" class="form-control numeric" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale|round(4) }}"></dd>
 
-        <dt>In Stock</dt>
-        <dd><input type="text" class="form-control numeric" disabled value="{{ item.in_stock }}"></input></dd>
+            <dt>Sales Tax</dt>
+            <input type="hidden" name="item-sales_tax" value="off">
+            <dd><input type="checkbox" id="item-sales_tax" name="item-sales_tax" {% if item.sales_tax == True %}checked="checked"{% endif %}></input></dd>
 
-        <dt>Sales Tax</dt>
-        <input type="hidden" name="item-sales_tax" value="off">
-        <dd><input type="checkbox" id="item-sales_tax" name="item-sales_tax" {% if item.sales_tax == True %}checked="checked"{% endif %}></input></dd>
+            <dt>Bottle Deposit</dt>
+            <input type="hidden" name="item-bottle_dep" value="off">
+            <dd><input type="checkbox" id="item-bottle_dep" name="item-bottle_dep" {% if item.bottle_dep == True %}checked="checked"{% endif %}></input></dd>
 
-        <dt>Bottle Deposit</dt>
-        <input type="hidden" name="item-bottle_dep" value="off">
-        <dd><input type="checkbox" id="item-bottle_dep" name="item-bottle_dep" {% if item.bottle_dep == True %}checked="checked"{% endif %}></input></dd>
-
-        <hr />
-        <dt>Enabled</dt>
-        <dd>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</dd>
-      </dl>
+            <hr />
+            <dt>Enabled</dt>
+            <dd>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</dd>
+          </dl>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+          <div class="hidden-lg hidden-md">
+            <hr />
+          </div>
+          <dl class="dl-horizontal">
+            <dt>In Stock</dt> <dd>{{ stats.stock }}</dd>
+            <dt>Num Sold</dt> <dd>{{ stats.num_sold }}</dd>
+            <dt>Sale Speed</dt> <dd>{{ stats.sale_speed|float|round(3) }}</dd>
+            <dt>Days Until Out</dt> <dd>{{ stats.until_out|round(0)|int }}</dd>
+            <dt>Num Lost</dt> <dd>{{ stats.lost }}</dd>
+            <dt>Inventory Percent</dt> <dd>{{ stats.inv_percent|round(2) }}%</dd>
+          </dl>
+        </div>
+        <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
+          {% if item.img %}
+          <img src="/dynamic/item/{{item.id}}.jpg" width="200px" />
+          {% else %}
+          <img src="{{'chezbetty:static/placeholder_300px.png'|static_url}}" width="200px" />
+          {% endif %}
+          <input type="file" id="item-img" name="item-img" />
+        </div>
+      </div>
     </div>
 
     <ul class="list-group">
@@ -103,10 +125,93 @@
 
   </div>
 
+  <div class="row">
+    <div class="col-lg-6 col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">Tags</div>
+        <div id="item-existing-tags" class="panel-body">
+
+          {% for it in item.tags|sort(attribute='tag.name') %}
+          <button type="button" class="btn btn-default" data-item-tag-id="{{ it.id }}">{{ it.tag.name }}</button>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">Add New Tags</div>
+        <div id="item-new-tags" class="panel-body">
+
+          {% for tag in other_tags|sort(attribute='name') %}
+          <button type="button" id="tag-{{ tag.id }}" class="btn btn-default tag-to-add" data-tag-id="{{ tag.id }}">{{ tag.name }}</button>
+          {% endfor %}
+
+          <div class="input-group">
+            <input type="text" id="tag-new" class="form-control">
+            <span class="input-group-btn">
+              <button type="button" id="btn-tag-new" class="btn btn-default">Add New Tag</button>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row">
+    <div class="col-lg-6 col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">Boxes the Item is in</div>
+        <div class="panel-body">
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Box</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for boxitem in item.boxes %}
+              <tr>
+                <td>{{ button.box(boxitem.box.id) }}</td>
+                <td>{{ boxitem.box|make_link|safe }}</td>
+                <td>{{ boxitem.quantity }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">Barcodes</div>
+        <div class="panel-body">
+          <p>Barcodes are designed for sheets of 1.5&rdquo; &times; 1&rdquo; labels and print 50 labels per sheet.</p>
+          <p>They have been tested with the <tt>OL1000WS</tt> labels from <a href="http://www.onlinelabels.com/Products/OL1000WS.htm">OnlineLabels.com</a>.</p>
+          <p style="color: red; font-weight: bold;">Remember to deselect any &ldquo;Fit to Page&rdquo; options in print settings!</p>
+          <a href="/admin/item/barcode/{{ item.id }}.pdf" class="btn btn-default">Print Barcodes for Item</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="panel panel-default">
     <div class="panel-heading">Item History</div>
     <div class="panel-body">
 
+    {% if request.has_permission('admin') %}
+    <a name="purchase_history"></a>
+    <h3>Recent Purchase History</h3>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -119,67 +224,58 @@
       </thead>
 
       <tbody>
-        {% for subtrans in subtransactions|reverse %}
+        {% for purchase in purchases|reverse %}
         <tr>
-          <td>{{ button.event(subtrans.transaction.event.id) }}</td>
-          <td>{{ subtrans.transaction.event.timestamp|pretty_date|safe }}</td>
-          <td>{{ subtrans.transaction.event.admin.name }}</td>
-          <td>{{ subtrans.transaction.type }}</td>
-          {% if subtrans.transaction.type == "inventory" %}
-          <td>{{ subtrans.quantity_counted }}</td>
-          {% else %}
-          <td>{{ subtrans.quantity }}</td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-        {% for sst in subsubtransactions|reverse %}
-        <tr>
-          <td>{{ button.event(sst.subtransaction.transaction.event.id) }}</td>
-          <td>{{ sst.subtransaction.transaction.event.timestamp|pretty_date|safe }}</td>
-          <td>{{ sst.subtransaction.transaction.event.admin.name }}</td>
-          <td>{{ sst.subtransaction.transaction.type }}</td>
-          <td>{{ sst.quantity }}</td>
+          <td>{{ button.event(purchase.transaction.event.id) }}</td>
+          <td>{{ purchase.transaction.event.timestamp|pretty_date|safe }}</td>
+          <td>{{ purchase.transaction.event.admin.name }}</td>
+          <td>{{ purchase.transaction.type }}</td>
+          <td>{{ purchase.quantity }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% if purchases_total %}
+    <a href="/admin/item/edit/{{ item.id }}?purchase_limit=none#purchase_history">
+      Displaying 1-{{ purchase_limit }} of {{ purchases_total }}. Click to show all.</p>
+    </a>
+    {% endif %}
+    {% endif %} {# has_permission:admin #}
 
-    </div>
-  </div>
-
-  <div class="panel panel-default">
-    <div class="panel-heading">Barcodes</div>
-    <div class="panel-body">
-      <p>Barcodes are designed for sheets of 1.5&rdquo; &times; 1&rdquo; labels and will print 50 labels per sheet.</p>
-      <p>They have been tested with the <tt>OL1000WS</tt> labels from <a href="http://www.onlinelabels.com/Products/OL1000WS.htm">OnlineLabels.com</a>.</p>
-      <p style="color: red;">Remember to deselect any &ldquo;Fit to Page&rdquo; options in print settings!</p>
-      <a href="/admin/item/barcode/{{ item.id }}.pdf" class="btn btn-default">Print Barcodes for Item</a>
-    </div>
-  </div>
-
-  <div class="panel panel-default">
-    <div class="panel-heading">Boxes the Item is in</div>
-    <div class="panel-body">
-
+    <a name="event_history"></a>
+    <h3>Recent Stock Events</h3>
     <table class="table table-striped">
       <thead>
         <tr>
           <th></th>
-          <th>Box</th>
+          <th>Date</th>
+          <th>User</th>
+          <th>Type</th>
           <th>Quantity</th>
         </tr>
       </thead>
 
       <tbody>
-        {% for boxitem in item.boxes %}
+        {% for event in events|reverse %}
         <tr>
-          <td>{{ button.box(boxitem.box.id) }}</td>
-          <td>{{ boxitem.box|make_link|safe }}</td>
-          <td>{{ boxitem.quantity }}</td>
+          <td>{{ button.event(event.transaction.event.id) }}</td>
+          <td>{{ event.transaction.event.timestamp|pretty_date|safe }}</td>
+          <td>{{ event.transaction.event.admin.name }}</td>
+          <td>{{ event.transaction.type }}</td>
+          {% if event.transaction.type == "inventory" %}
+          <td>{{ event.quantity_counted }}</td>
+          {% else %}
+          <td>{{ event.quantity }}</td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% if events_total %}
+    <a href="/admin/item/edit/{{ item.id }}?event_limit=none#event_history">
+      Displaying 1-{{event_limit}} of {{ events_total }}. Click to show all.</p>
+    </a>
+    {% endif %}
 
     </div>
   </div>

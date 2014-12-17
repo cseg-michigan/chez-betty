@@ -27,6 +27,9 @@ requires = [
     'pytz',
     'psycopg2',
     'alembic'
+    'abbreviate>=0.1.1',
+    'sh',
+    'Pillow',
     ]
 
 setup(name='chezbetty',

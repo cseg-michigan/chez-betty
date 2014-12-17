@@ -116,14 +116,14 @@ def new_request(user, request_text):
 
 
 # Call this to let a user purchase items
-def purchase(user, items):
+def purchase(user, account, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
 
     e = event.Purchase(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Purchase(e, user)
+    t = transaction.Purchase(e, account)
     DBSession.add(t)
     DBSession.flush()
     amount = Decimal(0.0)
@@ -140,7 +140,7 @@ def purchase(user, items):
 
 # Call this when a user puts money in the dropbox and needs to deposit it
 # to their account
-def deposit(user, amount):
+def deposit(user, account, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
 
@@ -148,7 +148,7 @@ def deposit(user, amount):
     e = event.Deposit(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.CashDeposit(e, user, amount)
+    t = transaction.CashDeposit(e, account, amount)
     DBSession.add(t)
     return dict(prev=prev,
                 new=user.balance,

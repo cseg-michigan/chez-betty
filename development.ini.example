@@ -17,10 +17,15 @@ pyramid.includes =
 
 debugging = 1
 
+# Supress actually sending e-mails in debug mode by default. If e-mail is enabled and
+# a replacement e-mail address specified, all e-mail will only go to the debug address
+debugging_send_email = false
+debugging_send_email_to = youraccount@testing.com
+
 sqlalchemy.url = sqlite:///%(here)s/chezbetty.sqlite
 
 chezbetty.default_password = chezbetty
-chezbetty.host = chezbetty.com
+chezbetty.host = http://chezbetty.com
 chezbetty.email = chezbetty@chezbetty.com
 chezbetty.ipaddr = 111.222.333.444
 
@@ -35,7 +40,9 @@ jinja2.filters =
     format_currency = chezbetty.jinja2_filters:format_currency
     pretty_date = chezbetty.jinja2_filters:pretty_date
     make_link = chezbetty.jinja2_filters:make_link
+    make_user_link = chezbetty.jinja2_filters:make_user_link
     shorten = chezbetty.jinja2_filters:shorten
+    add_git_version = chezbetty.jinja2_filters:add_git_version
 
 auth.secret = aabbcc
 
