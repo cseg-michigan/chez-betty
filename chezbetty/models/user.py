@@ -58,7 +58,7 @@ class LDAPLookup(object):
         if len(self.__conn.response) == 0:
             raise InvalidUserException()
         return {
-            "umid":self.__conn.response[0]["attributes"]["entityid"][0],
+            "umid":self.__conn.response[0]["attributes"]["entityid"],
             "uniqname":self.__conn.response[0]["attributes"]["uid"][0],
             "name":self.__conn.response[0]["attributes"]["displayName"][0]
         }
