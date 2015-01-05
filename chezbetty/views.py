@@ -522,6 +522,9 @@ def deposit_new(request):
             # deposit
             raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
 
+        if amount <= 0.0:
+            raise DepositException('Deposit amount must be greater than $0.00')
+
         if account == 'user':
             deposit = datalayer.deposit(user, user, amount)
         elif account == 'pool':
