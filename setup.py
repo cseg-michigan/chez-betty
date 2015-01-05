@@ -26,7 +26,7 @@ requires = [
     'twitter',
     'pytz',
     'psycopg2',
-    'alembic'
+    'alembic',
     'abbreviate>=0.1.1',
     'sh',
     'Pillow',
