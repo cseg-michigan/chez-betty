@@ -18,7 +18,7 @@
   <div class="panel-body">
     <dl class="dl-horizontal">
       <dt>Timestamp</dt><dd>{{ event.timestamp|pretty_date|safe }}</dd>
-      <dt>Creator</dt><dd>{{ event.admin.name if event.admin else "n/a" }}</dd>
+      <dt>Creator</dt><dd>{{ event.admin|make_link|safe if event.admin else "n/a" }}</dd>
       <dt>Type</dt><dd>{{ event.type }}</dd>
       {% if event.notes %}
       <dt>Notes</dt><dd>{{ event.notes }}</dd>
