@@ -28,6 +28,7 @@ from pyramid.security import Allow, Everyone, remember, forget
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
 import binascii
+import transaction
 
 class DepositException(Exception):
     pass
@@ -98,7 +99,8 @@ def purchase(request):
         if len(request.matchdict['umid']) != 8:
             raise __user.InvalidUserException()
 
-        user = User.from_umid(request.matchdict['umid'])
+        with transaction.manager:
+            user = User.from_umid(request.matchdict['umid'])
         if not user.enabled:
             request.session.flash('User is not enabled. Please contact {}.'\
                 .format(request.registry.settings['chezbetty.email']), 'error')
