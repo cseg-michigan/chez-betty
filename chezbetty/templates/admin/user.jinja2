@@ -15,7 +15,7 @@
   <div class="panel-body">
     <dl class="dl-horizontal">
       <dt>Name</dt><dd>{{ user.name }}</dd>
-      <dt>uniqname</dt><dd>{{ user.uniqname }}</dd>
+      <dt>uniqname</dt><dd><a href="https://mcommunity.umich.edu/#search:{{ user.uniqname }}">{{ user.uniqname }}</a></dd>
       <dt>UMID</dt><dd>{{ user.umid }}</dd>
       <dt>Balance</dt><dd>{{ user.balance|format_currency|safe }}</dd>
       <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
