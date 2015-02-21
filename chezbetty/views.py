@@ -101,6 +101,7 @@ def purchase(request):
 
         with transaction.manager:
             user = User.from_umid(request.matchdict['umid'])
+        user = DBSession.merge(user)
         if not user.enabled:
             request.session.flash('User is not enabled. Please contact {}.'\
                 .format(request.registry.settings['chezbetty.email']), 'error')
