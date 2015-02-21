@@ -157,43 +157,7 @@
 
 
 <div class="row">
-  <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Stats</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-condensed">
-          <tbody>
-            <tr>
-              <td>Total Sales</td>
-              <td class="right">{{ total_sales|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Profit on Sales</td>
-              <td class="right">{{ profit_on_sales|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Inventory Lost</td>
-              <td class="right">{{ total_inventory_lost|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Total Cash Deposits</td>
-              <td class="right">{{ total_cash_deposits|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Total BTC Deposits</td>
-              <td class="right">{{ total_btc_deposits|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Projected Profit</td>
-              <td class="right">{{ ((inventory.price - users_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+
 
   <div class="col-md-4">
     <div class="panel panel-default">
@@ -271,11 +235,88 @@
     </div>
   </div>
 
-  
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Today</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>Sales</td>
+              <td class="right">{{ today_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Profit on Sales</td>
+              <td class="right">{{ today_profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Inventory Lost</td>
+              <td class="right">{{ today_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Deposits</td>
+              <td class="right">{{ today_dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Cash Deposits</td>
+              <td class="right">{{ today_dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>BTC Deposits</td>
+              <td class="right">{{ today_dep_btc|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 
 <div class="row">
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Stats</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>Total Sales</td>
+              <td class="right">{{ total_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Profit on Sales</td>
+              <td class="right">{{ profit_on_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Inventory Lost</td>
+              <td class="right">{{ total_inventory_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>% Inventory Lost</td>
+              <td class="right">{{ ((total_inventory_lost / restock.balance)*100)|round(2) }}%</td>
+            </tr>
+            <tr>
+              <td>Total Deposits</td>
+              <td class="right">{{ total_deposits|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Projected Profit</td>
+              <td class="right">{{ ((inventory.price - users_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -311,7 +352,7 @@
     </div>
   </div>
 
-  <div class="col-md-4">
+  {#} <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title"><a href="/admin/items/edit?sort=stock">Low Stock Items</a></h3>
@@ -335,7 +376,7 @@
         </table>
       </div>
     </div>
-  </div>
+  </div> #}
 
   <div class="col-md-4">
     <div class="panel panel-default">
