@@ -44,6 +44,7 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     config = Configurator(settings=settings,
                           root_factory="chezbetty.models.model.RootFactory")
+    config.add_translation_dirs('chezbetty:locale/')
 
     def debug(request):
         if 'debugging' in request.registry.settings:
@@ -74,6 +75,8 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
 
     config.add_route('index',               '/')
+
+    config.add_route('lang',                '/lang-{code}')
 
     config.add_route('about',               '/about')
     config.add_route('shame',               '/shame')

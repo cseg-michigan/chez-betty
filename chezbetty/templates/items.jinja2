@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
-{% block title %}Items{% endblock %}
-{% block header %}Items at Chez Betty{% endblock %}
+{% block title %}{{ _('Items') }}{% endblock %}
+{% block header %}{{ _('Items at Chez Betty') }}{% endblock %}
 
 {% block content %}
 
@@ -19,7 +19,7 @@
           <a class="btn btn-default btn-lg btn-block" href="/">Home</a>
           <a class="btn btn-default btn-lg btn-block" href="/item/request">Request an Item</a>
           <hr />
-          <h4>Touch columns to change sort order.</h4>
+          <h4>{{ _('Touch columns to change sort order.') }}</h4>
           <hr />
           <h4>Scroll Controls:</h4>
           <a id="scrollTop"  class="btn btn-info btn-lg btn-block" href="#">Top</a>
@@ -33,10 +33,10 @@
           <table class="table table-bordered table-striped sortable">
             <thead>
               <tr>
-                <th>Item</th>
-                <th class="item-stock" style="width: 15%">In Stock&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                <th class="item-cost" style="width: 15%">Wholesale&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                <th class="item-price" style="width: 15%">Price&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th>{{ _('Item') }}</th>
+                <th class="item-stock" style="width: 15%">{{ _('In Stock') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th class="item-cost" style="width: 15%">{{ _('Wholesale') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <th class="item-price" style="width: 15%">{{ _('Price') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
               </tr>
             </thead>
 
@@ -53,12 +53,12 @@
 
           </table>
 
-          <h4>Temporarily Out-of-Stock Items:</h4>
+          <h4>{{ _('Temporarily Out-of-Stock Items:') }}</h4>
 
           <table class="table table-bordered table-striped sortable">
             <thead>
               <tr>
-                <th>Item</th>
+                <th>{{ _('Item') }}</th>
               </tr>
             </thead>
 
@@ -72,16 +72,16 @@
 
           </table>
 
-          <h4>Discontinued Items:</h4>
+          <h4>{{ _('Discontinued Items:') }}</h4>
 
-          <p>Betty discontinues items that did not sell well or that we
-          cannot buy any more. If you would like to request the return of
-          a discontinued item, please e-mail chez-betty@umich.edu.</p>
+          <p>{{ _('Betty discontinues items that did not sell well or that we'
+          'cannot buy any more. If you would like to request the return of'
+          'a discontinued item, please e-mail chez-betty@umich.edu.') }}</p>
 
           <table class="table table-bordered table-striped sortable">
             <thead>
               <tr>
-                <th>Item</th>
+                <th>{{ _('Item') }}</th>
               </tr>
             </thead>
 

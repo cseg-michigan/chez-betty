@@ -1,100 +1,108 @@
 {% extends "base.jinja2" %}
-{% block title %}About{% endblock %}
-{% block header %}About Chez Betty{% endblock %}
+{% block title %}{{ _('About Chez Betty') }}{% endblock %}
+{% block header %}{{ _('About Chez Betty') }}{% endblock %}
 
 {% block content %}
 
 <p class="lead">
-Chez Betty is an honor-system based food cooperative for graduate students,
-faculty, and staff in Computer Science at the University of Michigan.
-Chez Betty is inspired by Chez Bob, a similar system built at UCSD.
+{{ _('Chez Betty is an honor-system based food cooperative for graduate students, '
+'faculty, and staff in Computer Science at the University of Michigan. '
+'The name "Chez Betty" is an homage to Chez Bob, a similar system at UCSD.') }}
 </p>
 
-<p><a class="btn btn-default btn-lg" href="/">Home</a></p>
+<p><a class="btn btn-default btn-lg" href="/">{{ _('Home') }}</a></p>
 
 <hr />
-<h2>FAQ</h2>
+<h2>{{ _('FAQ') }}</h2>
 <div class="lead">
-Touch questions to show/hide.
+{{ _('Touch questions to show/hide.') }}
 </div>
 <hr />
 
-<h3 class="faq-q">Who are the awesome people who run Chez Betty?</h3>
+<h3 class="faq-q">{{ _('Who are the awesome people who run Chez Betty?') }}</h3>
 <div class="faq-a faq-a-default-open">
-	<p>Chez Betty is a service of CSEG, the CSE graduate student group.</p>
+	<p>{{ _('Chez Betty is run by CSEG, the CSE graduate student group.') }}</p>
+	<p>{{ _('Currently, Betty is primarily maintained by Brad Campbell, Pat Pannuto, and Zakir Durumeriç') }}</p>
 </div>
 
-<h3 class="faq-q">Where's Betty?</h3>
+<h3 class="faq-q">{{ _('How to Use Betty like a Pro') }}</h3>
 <div class="faq-a">
-	<p>Chez Betty is located 2817&nbsp;BBB, the graduate student lounge.</p>
+	<p><strong>{{ _('Keep a positive balance.') }}</strong>
+		{{ _("Tracking down debtors sucks for us and for you. You don't want to end up on the Wall of Shame!") }}
+	</p>
+	<p><strong>{{ _('Take advantage of the Bank of Betty.') }}</strong>
+		{{ _("Our power users usually deposit $100 once a year or so. Most people deposit $20 to use until that runs out. Remembering cash every time you want to use Betty is no fun.") }}
+	</p>
+	<p><strong>{{ _('Help restock.') }}</strong>
+		{{ _("Betty is run by volunteers who have finite time. If you grab a cold drink, put a warm one in to get cold (though, don't put it in front!). If you finish a box of food, grab a full box and replace it.") }}
+	</p>
 </div>
+</h3>
 
-<h3 class="faq-q">How do I buy things from Chez Betty?</h3>
+<h3 class="faq-q">{{ _('How do I buy things from Chez Betty?') }}</h3>
 <div class="faq-a">
 	<ol>
-		<li>Log in to Chez Betty by swiping your MCard at the terminal.</li>
+		<li>{{ _('Log in to Chez Betty by swiping your MCard at the terminal.') }}</li>
 		<ul>
-			<li>Accounts are tied to your UMID.</li>
-			<li>A new account is automatically created for first-time users on the the fly the first time you log in.</li>
+			<li>{{ _('Accounts are tied to your UMID.') }}</li>
+			<li>{{ _('A new account is automatically created for first-time users on the the fly the first time you log in.') }}</li>
 		</ul>
-		<li>Look at your Account Balance. If you're low, deposit some money.</li>
+		<li>{{ _("Look at your Account Balance. If you're low, deposit some money.") }}</li>
 		<ul>
-			<li>Every user has an account with Chez Betty that keeps track of how much money they've put in.</li>
-			<li>Betty doesn't make change, instead excess money stays in your account for your next transaction.</li>
-			<li>You can run into the red, see below.</li>
+			<li>{{ _("Every user has an account with Chez Betty that keeps track of how much money they've put in.") }}</li>
+			<li>{{ _("Betty doesn't make change, instead excess money stays in your account for your next transaction.") }}</li>
+			<li>{{ _("You can run into the red, see below.") }}</li>
 		</ul>
-		<li>Grab what you'd like from Chez Betty and scan your items.</li>
-		<li>Click &ldquo;Submit Purchase&rdquo; and you're done!</li>
+		<li>{{ _("Grab what you'd like from Chez Betty and scan your items.") }}</li>
+		<li>{{ _('Touch "Submit Purchase" and you\'re done!') }}</li>
 	</ol>
 </div>
 
-<h3 class="faq-q">Wait... Couldn't people steal from this really easily?</h3>
+<h3 class="faq-q">{{ _("Wait... Couldn't people steal from this really easily?") }}</h3>
 <div class="faq-a">
-	<p>Yes. (But please don't).</p>
-	<p>The idea is to provide a convenient service to members of the UM CSE community. Betty makes a small
-	profit off each sale, some of which will be used to cover the inevitable losses. If too many people take
-	advantage of Betty's trusting nature, the service will have to shut down :(.</p>
+	<p>{{ _("Yes. (But please don't).") }}</p>
+	<p>{{ _("The idea is to provide a convenient service to members of the UM CSE community. Betty makes a small profit off each sale, some of which will be used to cover the inevitable losses. If too many people take advantage of Betty's trusting nature, the service will have to shut down :(.") }}</p>
 </div>
 
-<h3 class="faq-q">Tell me more about my Chez Betty account?</h3>
+<h3 class="faq-q">{{ _("Tell me more about my Chez Betty account?") }}</h3>
 <div class="faq-a">
-	<p>Chez Betty sells things nearly at-cost (usually about a 15% markup).
-	Since no one likes change and Betty is a self-service operation, it's
-	set up so that each user has an account with Betty. You can put in $20
-	(or however much) at a time and use that balance until it runs out.</p>
+	<p>{{ _("Chez Betty sells things nearly at-cost (usually about a 15% markup). "
+	"Since no one likes change and Betty is a self-service operation, it's "
+	"set up so that each user has an account with Betty. You can put in $20 "
+	"(or however much) at a time and use that balance until it runs out.") }}</p>
 </div>
 
-<h3 class="faq-q">What if I don't have any money / Can my account balance go negative?</h3>
+<h3 class="faq-q">{{ _("What if I don't have any money / Can my account balance go negative?") }}</h3>
 <div class="faq-a">
-	<p>Yes. Chez Betty allows you to spend beyond your immediate means
-	under that assumption that you'll pay Betty back eventually. The idea
-	is to let you grab stuff when you need it and keep track of what owe,
-	instead of incentivizing folks to steal. There is a
-	<a href="/shame">Wall of Shame</a> for persons who owe Betty
-	more than $5.</p>
+	<p>{{ _("Yes. Chez Betty allows you to spend beyond your immediate means "
+	"under that assumption that you'll pay Betty back eventually. The idea "
+	"is to let you grab stuff when you need it and keep track of what owe, "
+	"instead of incentivizing folks to steal. There is a "
+	'<a href="/shame">Wall of Shame</a> for persons who owe Betty '
+	"more than $5.") }}</p>
 </div>
 
-<h3 class="faq-q">How does Betty set prices?</h3>
+<h3 class="faq-q">{{ _("How does Betty set prices?") }}</h3>
 <div class="faq-a">
-	<p>Betty sells things just above wholesale, usually a 15% markup. If
-	you're interested in the actual algorithm, check out Betty's source
-	code at github.com/um-cseg/chez-betty.</p>
-	<p>Current wholesale and Betty prices are always available on <a href="/items">the items page</a>.</p>
+	<p>{{ _("Betty sells things just above wholesale, usually a 15% markup. "
+	"If you're interested in the actual algorithm, check out Betty's source "
+	"code at github.com/um-cseg/chez-betty.") }}</p>
+	<p>{{ _('Current wholesale and Betty prices are always available on <a href="/items">the items page</a>.') }}</p>
 </div>
 
-<h3 class="faq-q">What does Betty do with her profits?</h3>
+<h3 class="faq-q">{{ _("What does Betty do with her profits?") }}</h3>
 <div class="faq-a">
-	<p>First, Betty has to pay her debts (e.g. any losses incurred from
-	dishonest Chez Betty users). After that, Betty's profits roll into the
-	CSEG general fund. They're used to fund improvements to Betty, buy
-	miscellaneous needs (e.g. new ping pong paddles and balls), or to throw
-	events (e.g. bar nights) for CSEG.</p>
-	<p>If you have more questions / concerns, please feel free to talk to
-	the CSEG officers.</p>
+	<p>{{ _("First, Betty has to pay her debts (e.g. any losses incurred from "
+	"dishonest Chez Betty users). After that, Betty's profits roll into the "
+	"CSEG general fund. They're used to fund improvements to Betty, buy "
+	"miscellaneous needs (e.g. new ping pong paddles and balls), or to throw "
+	"events (e.g. bar nights) for CSEG.") }}</p>
+	<p>{{ _("If you have more questions / concerns, please feel free to talk "
+	"to the CSEG officers.") }}</p>
 </div>
 
 <hr />
-<a class="btn btn-default btn-lg" href="/">Home</a>
+<a class="btn btn-default btn-lg" href="/">{{ _('Home') }}</a>
 
 {% endblock %}
 

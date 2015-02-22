@@ -11,7 +11,7 @@
  #}
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Transaction History</h3>
+    <h3 class="panel-title">{{ _('Transaction History') }}</h3>
   </div>
   <div class="panel-body">
 
@@ -29,7 +29,7 @@
          #}
         {% if transaction.type == "purchase" %}
 
-        Purchase totaling {{ transaction.amount|format_currency|safe }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        {{ _('Purchase totaling %(amount)s')|format(amount=transaction.amount|format_currency)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
@@ -40,10 +40,10 @@
 
             <thead>
               <tr>
-                <th class="item-title">Item Name</th>
-                <th class="item-quantity" style="width: 15%;">Quantity</th>
-                <th class="item-price" style="width: 15%;">Item Price</th>
-                <th class="item-total" style="width: 15%;">Total Price</th>
+                <th class="item-title">{{ _('Item') }}</th>
+                <th class="item-quantity" style="width: 15%;">{{ _('Quantity') }}</th>
+                <th class="item-price" style="width: 15%;">{{ _('Item Price') }}</th>
+                <th class="item-total" style="width: 15%;">{{ _('Total Price') }}</th>
               </tr>
             </thead>
 
@@ -59,7 +59,7 @@
             </tbody>
 
             <tfoot>
-              <td colspan="3"><b>Total</b></td>
+              <td colspan="3"><b>{{ _('Total') }}</b></td>
               <td class="item-total"><b>{{ transaction.amount|format_currency|safe }}</b></td>
             </tfoot>
 
@@ -69,14 +69,14 @@
 
         {% elif transaction.type == "cashdeposit" %}
 
-        Deposit of {{ transaction.amount|format_currency|safe }}
+        {{ _('Deposit of %(amount)s')|format(amount=transaction.amount|format_currency)|safe }}
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
 
         {% elif transaction.type == "adjustment" %}
 
-        Adjustment of {{ transaction.amount }} by {{ transaction.event.admin.name }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        {{ _('Adjustment of %(amount)s by %(admin_name) ')|format(amount=transaction.amount|format_currency, admin_name=transaction.event.admin.name)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
@@ -85,7 +85,7 @@
 
         {% elif transaction.type == "btcdeposit" %}
 
-        BTC Deposit of {{ transaction.amount }} ({{ transaction.amount_btc|safe }} BTC) <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        {{ _('BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) ')|format(amount_in_usd=transaction.amount, amount_in_btc=transaction.amount_btc)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
@@ -101,7 +101,7 @@
 
       {% if user.transactions|length == 0 %}
       <li class="list-group-item">
-        No transactions.
+        {{ _('No transactions.') }}
       </li>
       {% endif %}
 

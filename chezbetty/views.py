@@ -6,6 +6,9 @@ from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config, forbidden_view_config
 
+from pyramid.i18n import TranslationStringFactory
+_ = TranslationStringFactory('betty')
+
 from sqlalchemy.sql import func
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import NoResultFound
@@ -40,6 +43,14 @@ class DepositException(Exception):
 
 ### No login needed
 
+@view_config(route_name='lang')
+def lang(request):
+    code = request.matchdict['code']
+    response = Response()
+    response.set_cookie('_LOCALE_', value=code, max_age=15*60) # reset lang after 15min
+
+    return HTTPFound(location='/', headers=response.headers)
+
 @view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
     announcements = Announcement.all_enabled()
@@ -52,6 +63,10 @@ def index(request):
     else:
         admins = []
 
+    try:
+        print("Request _LOCALE_: >>{}<<".format(request._LOCALE_))
+    except AttributeError:
+        pass
     return {'admins': admins}
 
 
@@ -103,8 +118,11 @@ def purchase(request):
             user = User.from_umid(request.matchdict['umid'])
         user = DBSession.merge(user)
         if not user.enabled:
-            request.session.flash('User is not enabled. Please contact {}.'\
-                .format(request.registry.settings['chezbetty.email']), 'error')
+            request.session.flash(_(
+                'user-not-enabled',
+                default='User is not enabled. Please contact ${email}.',
+                mapping={'email':request.registry.settings['chezbetty.email']},
+                ), 'error')
             return HTTPFound(location=request.route_url('index'))
 
         # For Demo mode:
@@ -137,7 +155,10 @@ def purchase(request):
                 'pools': pools}
 
     except __user.InvalidUserException as e:
-        request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
+        request.session.flash(_(
+            'mcard-error',
+            default='Failed to read M-Card. Please try swiping again.',
+            ), 'error')
         return HTTPFound(location=request.route_url('index'))
 
 
@@ -252,7 +273,11 @@ def event(request):
                 account_type = 'pool'
                 pool = Pool.from_id(transaction.to_account_virt_id)
 
-            request.session.flash('Success! The deposit was added successfully', 'success')
+            request.session.flash(_(
+                'deposit-success',
+                default='${deposit} has been added to your account. Your new balance is ${balance}. Thanks for using Betty!',
+                mapping={'deposit':transaction.amount, 'balance':user.balance},
+                ), 'success')
             return render_to_response('templates/deposit_complete.jinja2',
                 {'deposit': transaction,
                  'user': user,
