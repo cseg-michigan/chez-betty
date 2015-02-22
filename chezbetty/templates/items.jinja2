@@ -4,11 +4,7 @@
 
 {% block content %}
 
-<p class="lead">All that Betty has to offer.</p>
-<p>Generally, Betty will automatically re-order items as she begins to run low
-on them. Items with consistent poor sales will be moved out of rotation. If
-Betty stops selling something you would like back, feel free to
-<a href="/item/request">request it's return</a>.</p>
+<p class="lead">{{ _('All that Betty has to offer.') }}</p>
 
 <hr />
 
@@ -78,11 +74,14 @@ Betty stops selling something you would like back, feel free to
 
           <h4>Discontinued Items:</h4>
 
+          <p>Betty discontinues items that did not sell well or that we
+          cannot buy any more. If you would like to request the return of
+          a discontinued item, please e-mail chez-betty@umich.edu.</p>
+
           <table class="table table-bordered table-striped sortable">
             <thead>
               <tr>
                 <th>Item</th>
-                <th style="width: 15%"></th>
               </tr>
             </thead>
 
@@ -90,7 +89,6 @@ Betty stops selling something you would like back, feel free to
             {% for item in disabled_items %}
               <tr>
                 <td class="item-name">{{ item.name }}</td>
-                <td><a href="/item/request/by_id/{{ item.id }}" class="btn btn-default">Request Return</a></td>
               </tr>
             {% endfor %}
             </tbody>
