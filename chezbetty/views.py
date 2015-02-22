@@ -63,10 +63,6 @@ def index(request):
     else:
         admins = []
 
-    try:
-        print("Request _LOCALE_: >>{}<<".format(request._LOCALE_))
-    except AttributeError:
-        pass
     return {'admins': admins}
 
 
