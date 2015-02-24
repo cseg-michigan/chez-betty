@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-02-22 00:28-0500\n"
+"POT-Creation-Date: 2015-02-24 12:34-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,18 @@ msgstr ""
 "Generated-By: Lingua 3.9\n"
 
 #. Default: User is not enabled. Please contact ${email}.
-#: ./chezbetty/views.py:121
+#: ./chezbetty/views.py:117
 msgid "user-not-enabled"
 msgstr ""
 
 #. Default: Failed to read M-Card. Please try swiping again.
-#: ./chezbetty/views.py:158
+#: ./chezbetty/views.py:154
 msgid "mcard-error"
 msgstr ""
 
 #. Default: ${deposit} has been added to your account. Your new balance is
 #. ${balance}. Thanks for using Betty!
-#: ./chezbetty/views.py:276
+#: ./chezbetty/views.py:272
 msgid "deposit-success"
 msgstr ""
 
@@ -60,7 +60,7 @@ msgstr ""
 
 #: ./chezbetty/templates/item_request.jinja2:10
 #: ./chezbetty/templates/about.jinja2:13 ./chezbetty/templates/about.jinja2:105
-#: ./chezbetty/templates/shame.jinja2:10
+#: ./chezbetty/templates/shame.jinja2:10 ./chezbetty/templates/items.jinja2:19
 msgid "Home"
 msgstr ""
 
@@ -497,8 +497,28 @@ msgstr ""
 msgid "All that Betty has to offer."
 msgstr ""
 
+#: ./chezbetty/templates/items.jinja2:20 ./chezbetty/templates/index.jinja2:25
+msgid "Request an Item"
+msgstr ""
+
 #: ./chezbetty/templates/items.jinja2:22
 msgid "Touch columns to change sort order."
+msgstr ""
+
+#: ./chezbetty/templates/items.jinja2:25
+msgid "Top"
+msgstr ""
+
+#: ./chezbetty/templates/items.jinja2:26
+msgid "Up"
+msgstr ""
+
+#: ./chezbetty/templates/items.jinja2:27
+msgid "Down"
+msgstr ""
+
+#: ./chezbetty/templates/items.jinja2:28
+msgid "Bottom"
 msgstr ""
 
 #: ./chezbetty/templates/items.jinja2:37
@@ -559,10 +579,6 @@ msgstr ""
 
 #: ./chezbetty/templates/index.jinja2:24
 msgid "Item List"
-msgstr ""
-
-#: ./chezbetty/templates/index.jinja2:25
-msgid "Request an Item"
 msgstr ""
 
 #: ./chezbetty/templates/index.jinja2:26

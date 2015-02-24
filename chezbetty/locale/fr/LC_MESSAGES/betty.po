@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-02-22 00:28-0500\n"
-"PO-Revision-Date: 2015-02-22 00:35-0500\n"
+"POT-Creation-Date: 2015-02-24 12:34-0500\n"
+"PO-Revision-Date: 2015-02-24 12:30-0500\n"
 "Last-Translator: Pat Pannuto <ppannuto@umich.edu>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -18,18 +18,18 @@ msgstr ""
 "X-Generator: Poedit 1.7.3\n"
 
 #. Default: User is not enabled. Please contact ${email}.
-#: chezbetty/views.py:121
+#: chezbetty/views.py:117
 msgid "user-not-enabled"
 msgstr ""
 
 #. Default: Failed to read M-Card. Please try swiping again.
-#: chezbetty/views.py:158
+#: chezbetty/views.py:154
 msgid "mcard-error"
 msgstr ""
 
 #. Default: ${deposit} has been added to your account. Your new balance is
 #. ${balance}. Thanks for using Betty!
-#: chezbetty/views.py:276
+#: chezbetty/views.py:272
 msgid "deposit-success"
 msgstr ""
 
@@ -53,21 +53,21 @@ msgstr ""
 
 #: chezbetty/templates/item_request.jinja2:2
 msgid "Item Request"
-msgstr ""
+msgstr "Demande de l'Article"
 
 #: chezbetty/templates/item_request.jinja2:3
 msgid "Request a New Item at Chez Betty"
-msgstr ""
+msgstr "Demandez un nouvel article"
 
 #: chezbetty/templates/item_request.jinja2:10
 #: chezbetty/templates/about.jinja2:13 chezbetty/templates/about.jinja2:105
-#: chezbetty/templates/shame.jinja2:10
+#: chezbetty/templates/shame.jinja2:10 chezbetty/templates/items.jinja2:19
 msgid "Home"
 msgstr "Accueil"
 
 #: chezbetty/templates/item_request.jinja2:15
 msgid "New Item Request"
-msgstr ""
+msgstr "Demande d'un nouvel article"
 
 #: chezbetty/templates/item_request.jinja2:21
 msgid "Submit Request"
@@ -119,7 +119,7 @@ msgstr ""
 #: chezbetty/templates/items.jinja2:84
 #: chezbetty/templates/purchase_complete.jinja2:20
 msgid "Item"
-msgstr ""
+msgstr "Atricle"
 
 #: chezbetty/templates/purchase.jinja2:35 chezbetty/templates/user.jinja2:44
 #: chezbetty/templates/purchase_complete.jinja2:21
@@ -129,12 +129,12 @@ msgstr "Quantité"
 #: chezbetty/templates/purchase.jinja2:36 chezbetty/templates/user.jinja2:45
 #: chezbetty/templates/purchase_complete.jinja2:22
 msgid "Item Price"
-msgstr ""
+msgstr "Prix"
 
 #: chezbetty/templates/purchase.jinja2:37 chezbetty/templates/user.jinja2:46
 #: chezbetty/templates/purchase_complete.jinja2:23
 msgid "Total Price"
-msgstr ""
+msgstr "Prix Total"
 
 #: chezbetty/templates/purchase.jinja2:47
 msgid "Order Empty"
@@ -248,9 +248,10 @@ msgid ""
 "name \"Chez Betty\" is an homage to Chez Bob, a similar system at UCSD."
 msgstr ""
 
+# http://www.nakedtranslations.com/en/2003/acronyms
 #: chezbetty/templates/about.jinja2:16
 msgid "FAQ"
-msgstr ""
+msgstr "FAQ"
 
 #: chezbetty/templates/about.jinja2:18
 msgid "Touch questions to show/hide."
@@ -354,7 +355,7 @@ msgstr "Touchez \"Achetez\" et vous êtes fini!"
 
 #: chezbetty/templates/about.jinja2:61
 msgid "Wait... Couldn't people steal from this really easily?"
-msgstr ""
+msgstr "Attend..., on pourrait facilement voler, non?"
 
 #: chezbetty/templates/about.jinja2:63
 msgid "Yes. (But please don't)."
@@ -480,18 +481,38 @@ msgstr ""
 
 #: chezbetty/templates/items.jinja2:2
 msgid "Items"
-msgstr ""
+msgstr "Articles"
 
 #: chezbetty/templates/items.jinja2:3
 msgid "Items at Chez Betty"
-msgstr ""
+msgstr "Articles à Chez Betty"
 
 #: chezbetty/templates/items.jinja2:7
 msgid "All that Betty has to offer."
-msgstr ""
+msgstr "Tout ce que Betty a à offrir."
+
+#: chezbetty/templates/items.jinja2:20 chezbetty/templates/index.jinja2:25
+msgid "Request an Item"
+msgstr "Demande quelque chose"
 
 #: chezbetty/templates/items.jinja2:22
 msgid "Touch columns to change sort order."
+msgstr ""
+
+#: chezbetty/templates/items.jinja2:25
+msgid "Top"
+msgstr ""
+
+#: chezbetty/templates/items.jinja2:26
+msgid "Up"
+msgstr ""
+
+#: chezbetty/templates/items.jinja2:27
+msgid "Down"
+msgstr ""
+
+#: chezbetty/templates/items.jinja2:28
+msgid "Bottom"
 msgstr ""
 
 #: chezbetty/templates/items.jinja2:37
@@ -524,7 +545,7 @@ msgstr ""
 #: chezbetty/templates/purchase_complete.jinja2:2
 #: chezbetty/templates/purchase_complete.jinja2:3
 msgid "Purchase Complete"
-msgstr ""
+msgstr "Achat fini"
 
 #: chezbetty/templates/purchase_complete.jinja2:43
 msgid "(Paid with your user account)"
@@ -552,11 +573,7 @@ msgstr ""
 
 #: chezbetty/templates/index.jinja2:24
 msgid "Item List"
-msgstr ""
-
-#: chezbetty/templates/index.jinja2:25
-msgid "Request an Item"
-msgstr "Demande quelque chose"
+msgstr "Liste des articles"
 
 #: chezbetty/templates/index.jinja2:26
 msgid "About"
