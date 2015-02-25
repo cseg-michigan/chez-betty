@@ -52,6 +52,17 @@
           </tbody>
 
           <tfoot>
+            {% if user.balance > 20 %} {# todo: parameterize this #}
+            <tr>
+              <td colspan="4"><b>{{ _('Subtotal') }}</b></td>
+              <td id="purchase-subtotal">$0.00</td>
+            </tr>
+            <tr>
+              <td colspan="2"><b>{{ _('Good Standing Discount') }}</b></td>
+              <td id="purchase-discount-percent" colspan="2">(5.0%)</td>
+              <td id="purchase-discount">($0.00)</td>
+            </tr>
+            {% endif %}
             <tr>
               <td colspan="4"><b>{{ _('Total') }}</b></td>
               <td id="purchase-total">$0.00</td>
