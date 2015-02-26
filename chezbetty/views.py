@@ -166,7 +166,12 @@ def user(request):
             request.session.flash('User not permitted to purchase items.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
-        return {'user': user}
+        transactions,count = limitable_request(
+                request, user.get_transactions, limit=20, count=True)
+        return {'user': user,
+                'transactions': transactions,
+                'transactions_count': count,
+                }
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
