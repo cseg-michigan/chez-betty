@@ -132,9 +132,13 @@ h1 {
 .purchase-item {
 }
 
-#purchase-total {
+#purchase-total, #purchase-subtotal, #purchase-discount, #purchase-discount-percent {
 	text-align: right;
 	font-weight: bold;
+}
+
+#purchase-discount, #purchase-discount-percent {
+  color: red;
 }
 
 /* Items */

@@ -193,7 +193,7 @@ def admin_ajax_connection(request):
 
                 out['tag_name'] = tag.name
                 out['item_tag_id'] = itemtag.id
-        
+
     else:
         # Return an error, object type not recognized
         request.response.status = 502
@@ -271,6 +271,7 @@ def admin_index(request):
     total_sales          = Purchase.total()
     profit_on_sales      = PurchaseLineItem.profit_on_sales()
     total_inventory_lost = Inventory.total()
+    total_deposits       = Deposit.total()
     total_cash_deposits  = CashDeposit.total()
     total_btc_deposits   = BTCDeposit.total()
 
@@ -290,6 +291,13 @@ def admin_index(request):
     mtd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
     mtd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
     mtd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+
+    today_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
+    today_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
+    today_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
+    today_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
+    today_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
+    today_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
 
 
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
@@ -327,6 +335,7 @@ def admin_index(request):
                 total_sales=total_sales,
                 profit_on_sales=profit_on_sales,
                 total_inventory_lost=total_inventory_lost,
+                total_deposits=total_deposits,
                 total_cash_deposits=total_cash_deposits,
                 total_btc_deposits=total_btc_deposits,
                 ytd_sales=ytd_sales,
@@ -341,6 +350,12 @@ def admin_index(request):
                 mtd_dep=mtd_dep,
                 mtd_dep_cash=mtd_dep_cash,
                 mtd_dep_btc=mtd_dep_btc,
+                today_sales=today_sales,
+                today_profit=today_profit,
+                today_lost=today_lost,
+                today_dep=today_dep,
+                today_dep_cash=today_dep_cash,
+                today_dep_btc=today_dep_btc,
                 graph_items_day=views_data.create_dict('items', 'day', 21),
                 graph_sales_day=views_data.create_dict('sales', 'day', 21),
                 graph_deposits_day=graph_deposits_day)

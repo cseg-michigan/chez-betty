@@ -1,3 +1,4 @@
+*~
 chezbetty/__pycache__/*
 chezbetty.egg-info/*
 chezbetty/scripts/__pycache__/*
@@ -16,3 +17,4 @@ sessions/
 bower_components/
 *backup*.sql
 RELEASE-VERSION
+*.mo

@@ -153,8 +153,8 @@ class Transaction(Base):
         return r.one().a or Decimal(0.0)
 
 
-@property
-def __transactions(self):
+@limitable_all
+def __get_transactions(self):
     return object_session(self).query(Transaction)\
             .join(event.Event)\
             .filter(or_(
@@ -168,8 +168,13 @@ def __transactions(self):
                             event.Event.type == "deposit"),
                         event.Event.user_id == self.id)))\
             .filter(event.Event.deleted==False)\
-            .order_by(event.Event.timestamp)\
-            .all()
+            .order_by(desc(event.Event.timestamp))\
+
+@property
+def __transactions(self):
+    return __get_transactions(self)
+
+account.Account.get_transactions = __get_transactions
 account.Account.transactions = __transactions
 
 # This is in a stupid place due to circular input problems
@@ -217,9 +222,12 @@ account.Account.total_purchases = __total_purchase_amount
 
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
-    def __init__(self, event, user):
+    discount = Column(Numeric)
+
+    def __init__(self, event, user, discount=None):
         chezbetty_v = account.get_virt_account("chezbetty")
         Transaction.__init__(self, event, user, chezbetty_v, None, None, Decimal(0.0))
+        self.discount = discount
 
 
 class Deposit(Transaction):

@@ -33,6 +33,7 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 
 	item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
 	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
+	calculate_total();
 });
 
 // Click handler to submit a purchase.
@@ -160,10 +161,12 @@ $(".btn-trans-showhide").click(function () {
 
 	if (transaction.is(":visible")) {
 		transaction.hide();
-		$("#transaction-small-"+transaction_id).text("touch to show");
+		$("#transaction-small-tohide-"+transaction_id).hide();
+		$("#transaction-small-toshow-"+transaction_id).show();
 	} else {
 		transaction.show();
-		$("#transaction-small-"+transaction_id).text("touch to hide");
+		$("#transaction-small-tohide-"+transaction_id).show();
+		$("#transaction-small-toshow-"+transaction_id).hide();
 	}
 });
 

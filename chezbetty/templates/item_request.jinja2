@@ -1,24 +1,24 @@
 {% extends "base.jinja2" %}
-{% block title %}Item Request{% endblock %}
-{% block header %}Request a New Item at Chez Betty{% endblock %}
+{% block title %}{{ _('Item Request') }}{% endblock %}
+{% block header %}{{ _('Request a New Item at Chez Betty') }}{% endblock %}
 
 
 
 {% block content %}
 
 <div class="top-button">
-  <a class="btn btn-default btn-lg" href="/">Home</a>
+  <a class="btn btn-default btn-lg" href="/">{{ _('Home') }}</a>
 </div>
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">New Item Request</h3>
+    <h3 class="panel-title">{{ _('New Item Request') }}</h3>
   </div>
   <div class="panel-body">
     <form role="form" action="/item/request/new" method="post" id="form-item-request">
       <input type="text" class="form-control keyboard-wanted" id="item-request" name="request">
       <hr />
-      <button type="submit" id="btn-submit-request" class="btn btn-success btn-lg">Submit Request</button>
+      <button type="submit" id="btn-submit-request" class="btn btn-success btn-lg">{{ _('Submit Request') }}</button>
     </form>
   </div>
 </div>

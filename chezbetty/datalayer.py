@@ -120,10 +120,13 @@ def purchase(user, account, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
 
+    # TODO: Parameterize
+    discount = Decimal(0.05) if user.balance > 20.0 else None
+
     e = event.Purchase(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Purchase(e, account)
+    t = transaction.Purchase(e, account, discount)
     DBSession.add(t)
     DBSession.flush()
     amount = Decimal(0.0)
@@ -134,6 +137,8 @@ def purchase(user, account, items):
                                            item.price, item.wholesale)
         DBSession.add(pli)
         amount += line_amount
+    if discount:
+        amount = amount - (amount * discount)
     t.update_amount(amount)
     return t
 

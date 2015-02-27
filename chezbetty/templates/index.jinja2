@@ -9,25 +9,25 @@
 <div class="jumbotron top">
   <img class="pull-right" src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:120px;" />
 
-  <h1>Welcome to Chez Betty!</h1>
-  <p>This is a 24/7 food store for all members of the CSE community.</p>
+  <h1>{{ _('Welcome to Chez Betty!') }}</h1>
+  <p>{{ _('The 24/7 food co-op for all members of the CSE community.') }}</p>
 </div>
 
 
 <div id="index-main" class="col-md-12">
-  <h2>Swipe your M-Card to login</h2>
+  <h2>{{ _('Swipe your M-Card to login') }}</h2>
 </div>
 
 <div id="spinner-box"></div>
 
 <div id="front-buttons" class="col-md-12 buttons">
-  <a class="btn btn-default btn-huge btn-bordered" href="/items">Item List</a>
-  <a class="btn btn-default btn-huge btn-bordered" href="/item/request">Request an Item</a>
-  <a class="btn btn-default btn-huge btn-bordered" href="/about">About</a>
-  <a class="btn btn-default btn-huge btn-bordered" href="/shame">Wall of Shame</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/items">{{ _('Item List') }}</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/item/request">{{ _('Request an Item') }}</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/about">{{ _('About') }}</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
 
   {% if request.has_permission("manage") %}
-  <a class="btn btn-default btn-huge btn-bordered" href="/admin">Administration</a>
+  <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Administration') }}</a>
   {% endif %}
 </div>
 
@@ -42,6 +42,20 @@
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block footer %}
+<div class="navbar navbar-fixed-bottom" role="navigation">
+  <div class="container-fluid">
+    <hr />
+    <p>
+      <a class="btn btn-default btn-lg btn-bordered" href="/lang-en">English</a>
+      <a class="btn btn-default btn-lg btn-bordered" href="/lang-fr">français</a>
+      <strong>{{ _('Can you help translate Betty? E-mail chez-betty@umich.edu.') }}</strong>
+    </p>
+    <hr />
+  </div>
+</div>
 {% endblock %}
 
 {% set timeout = 1000*60*60*4 %}

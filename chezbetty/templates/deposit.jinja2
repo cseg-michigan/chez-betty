@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
-{% block title %}Deposit{% endblock %}
-{% block header %}Deposit{% endblock %}
+{% block title %}{{ _('Deposit') }}{% endblock %}
+{% block header %}{{ _('Deposit') }}{% endblock %}
 
 
 {% block content %}
@@ -10,7 +10,7 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Deposit</h3>
+    <h3 class="panel-title">{{ _('Deposit') }}</h3>
   </div>
   <div class="panel-body">
 
@@ -18,16 +18,16 @@
       <div class="col-md-4 deposit-type-col">
         <div class="row">
           <div class="col-md-12">
-            <h3>Cash</h3>
-            <h5 style="margin-left: 10px;">Your Deposit Limit: {{ user.deposit_limit|format_currency|safe }}</h5>
+            <h3>{{ _('Cash') }}</h3>
+            <h5 style="margin-left: 10px;">{{ _('Your Deposit Limit: %(limit)s')|format(limit=user.deposit_limit|format_currency)|safe }}</h5>
             {% include "keypad.jinja2" %}
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
-            <button type="button" id="btn-deposit-user" class="btn btn-success btn-lg btn-submit-deposit">Deposit To Your Account</button>
+            <button type="button" id="btn-deposit-user" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To Your Account') }}</button>
             {% for pool in pools %}
-            <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-deposit">Deposit To {{ pool.name }} Pool</button>
+            <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To %(pool_name) Pool')|format(pool_name=pool.name) }}</button>
             {% endfor %}
           </div>
         </div>
@@ -42,7 +42,7 @@
 
 
       <div class="col-md-4 deposit-type-col">
-        <h3>Bitcoin</h3>
+        <h3>{{ _('Bitcoin') }}</h3>
         {{ btc|safe }}
       </div>
 
@@ -53,8 +53,8 @@
       </div>
 
       <div class="col-md-4 deposit-type-col">
-        <h3>Credit Card</h3>
-        <p style="text-align:center;">Coming soon.</p>
+        <h3>{{ _('Credit Card') }}</h3>
+        <p style="text-align:center;">{{ _('Coming soon.') }}</p>
       </div>
 
 

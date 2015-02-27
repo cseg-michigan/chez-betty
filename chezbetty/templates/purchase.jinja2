@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
-{% block title %}Purchase{% endblock %}
-{% block header %}Purchase{% endblock %}
+{% block title %}{{ _('Purchase') }}{% endblock %}
+{% block header %}{{ _('Purchase') }}{% endblock %}
 
 
 {% block content %}
@@ -14,7 +14,7 @@
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Order</h3>
+        <h3 class="panel-title">{{ _('Order Summary') }}</h3>
       </div>
       <div class="panel-body">
 
@@ -31,10 +31,10 @@
           <thead>
             <tr>
               <th style="width: 6%">&nbsp;</th>
-              <th>Item</th>
-              <th style="width: 10%">Quantity</th>
-              <th style="width: 10%">Item Price</th>
-              <th style="width: 10%">Total Price</th>
+              <th>{{ _('Item') }}</th>
+              <th style="width: 10%">{{ _('Quantity') }}</th>
+              <th style="width: 10%">{{ _('Item Price') }}</th>
+              <th style="width: 10%">{{ _('Total Price') }}</th>
             </tr>
           </thead>
 
@@ -44,16 +44,27 @@
               {{ existing_items|safe }}
               {% else %}
               <td colspan="5">
-                <h3>Order Empty</h3>
-                Scan an item to begin
+                <h3>{{ _('Order Empty') }}</h3>
+                {{ _('Scan an item to begin') }}
               </td>
               {% endif %}
             </tr>
           </tbody>
 
           <tfoot>
+            {% if user.balance > 20 %} {# todo: parameterize this #}
             <tr>
-              <td colspan="4"><b>Total</b></td>
+              <td colspan="4"><b>{{ _('Subtotal') }}</b></td>
+              <td id="purchase-subtotal">$0.00</td>
+            </tr>
+            <tr>
+              <td colspan="2"><b>{{ _('Good Standing Discount') }}</b></td>
+              <td id="purchase-discount-percent" colspan="2">(5.0%)</td>
+              <td id="purchase-discount">($0.00)</td>
+            </tr>
+            {% endif %}
+            <tr>
+              <td colspan="4"><b>{{ _('Total') }}</b></td>
               <td id="purchase-total">$0.00</td>
             </tr>
           </tfoot>
@@ -64,9 +75,9 @@
   </div>
 
   <div class="col-md-3">
-    <button type="button" id="btn-purchase-user" class="btn btn-success btn-lg btn-submit-purchase">Pay With Your User Account</button>
+    <button type="button" id="btn-purchase-user" class="btn btn-success btn-lg btn-submit-purchase">{{ _('Pay With Your User Account') }}</button>
     {% for pool in pools %}
-    <button type="button" id="btn-purchase-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-purchase">Pay With<br />{{ pool.name }}<br />Pool</button>
+    <button type="button" id="btn-purchase-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-purchase">{{ _('Pay With %(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
     {% endfor %}
   </div>
 

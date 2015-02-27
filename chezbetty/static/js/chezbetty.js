@@ -158,5 +158,21 @@ function calculate_total () {
 		}
 	});
 
+	var discount_td = $("#purchase-discount");
+	if (typeof discount_td !== 'undefined') {
+		var discount_percent_td = $("#purchase-discount-percent");
+		var discount_percent_str = discount_percent_td.text().slice(1,-2);
+		var discount_percent = parseFloat(discount_percent_str) * .01;
+		var discount = total * discount_percent;
+
+		$("#purchase-subtotal").html(format_price(total));
+
+		// basic sanity check
+		if ((total - discount) > 0) {
+			total = total - discount;
+			discount_td.html('(' + format_price(discount) + ')');
+		}
+	}
+
 	$("#purchase-total").html(format_price(total));
 }

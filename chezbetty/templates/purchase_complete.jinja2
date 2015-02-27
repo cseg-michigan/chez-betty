@@ -1,6 +1,6 @@
 {% extends "base.jinja2" %}
-{% block title %}Purchase Complete{% endblock %}
-{% block header %}Purchase Complete{% endblock %}
+{% block title %}{{ _('Purchase Complete') }}{% endblock %}
+{% block header %}{{ _('Purchase Complete') }}{% endblock %}
 
 {% block content %}
 
@@ -10,17 +10,17 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Order</h3>
+    <h3 class="panel-title">{{ _('Order Summary') }}</h3>
   </div>
   <div class="panel-body">
 
     <table class="table table-bordered" id="purchase_table">
       <thead>
         <tr>
-          <th class="item-title">Item</th>
-          <th class="item-quantity" style="width: 15%;">Quantity</th>
-          <th class="item-price" style="width: 15%;">Item Price</th>
-          <th class="item-total" style="width: 15%;">Total Price</th>
+          <th class="item-title">{{ _('Item') }}</th>
+          <th class="item-quantity" style="width: 15%;">{{ _('Quantity') }}</th>
+          <th class="item-price" style="width: 15%;">{{ _('Item Price') }}</th>
+          <th class="item-total" style="width: 15%;">{{ _('Total Price') }}</th>
         </tr>
       </thead>
 
@@ -36,11 +36,25 @@
       </tbody>
 
       <tfoot>
+        {% if order['discount'] %}
+        {% set subtotal = transaction.amount / (1-transaction.discount) %}
+        <tr>
+          <td colspan="3"><b>{{ _('Subtotal') }}</b></td>
+          <td id="purchase-subtotal">{{ subtotal|format_currency|safe }}</td>
+        </tr>
+        <tr>
+          <td><b>{{ _('Discounts') }}</b></td>
+          <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(order['discount']*100) }}%)</td>
+          <td id="purchase-discount">({{ (subtotal * order['discount'])|format_currency|safe }})</td>
+        </tr>
+        {% endif %}
         <tr>
           <td colspan="3">
-            <b>Total</b>
-            {% if account_type == "user" %}(Paid with your user account)
-            {% elif account_type == "pool" %}(Paid with {{ pool.name }} Pool)
+            <b>{{ _('Total') }}</b>
+            {% if account_type == "user" %}
+            {{ _('(Paid with your user account)') }}
+            {% elif account_type == "pool" %}
+            {{ _('(Paid with %(pool_name)s Pool)')|format(pool_name=pool.name) }}
             {% endif %}
           </td>
           <td id="purchase-total">{{ order['total']|format_currency|safe }}</td>
@@ -51,7 +65,7 @@
   </div>
 </div>
 
-<a class="btn btn-danger" href="/event/undo/{{ user.umid }}/{{ event.id }}">If this was a mistake, touch here to undo this transaction.</a>
+<a class="btn btn-danger" href="/event/undo/{{ user.umid }}/{{ event.id }}">{{ _('If this was a mistake, touch here to undo this transaction.') }}</a>
 
 {% endblock %}
 

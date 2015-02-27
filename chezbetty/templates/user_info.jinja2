@@ -3,15 +3,15 @@
     
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Customer</h3>
+        <h3 class="panel-title">{{ _('Customer') }}</h3>
       </div>
       <div class="panel-body">
 
         <dl class="dl-horizontal">
-          <dt>Name</dt>
+          <dt>{{ _('Name') }}</dt>
           <dd>{{ user.name }}</dd>
 
-          <dt>Account Balance</dt>
+          <dt>{{ _('Account Balance') }}</dt>
           <dd>{{ user.balance|format_currency|safe }}</dd>
         </dl>
 
@@ -27,21 +27,21 @@
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Links</h3>
+        <h3 class="panel-title">{{ _('Links') }}</h3>
       </div>
       <div class="panel-body buttons">
         {% if page != "purchase" %}
-        <a class="btn btn-primary btn-lg" href="/purchase/{{ user.umid }}">Purchase</a>
+        <a class="btn btn-primary btn-lg" href="/purchase/{{ user.umid }}">{{ _('Purchase') }}</a>
         {% endif %}
         {% if page != "account" %}
-        <a class="btn btn-primary btn-lg" href="/profile/{{ user.umid }}">Account</a>
+        <a class="btn btn-primary btn-lg" href="/profile/{{ user.umid }}">{{ _('Account') }}</a>
         {% endif %}
         {% if page != "deposit" %}
-        <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">Deposit</a>
+        <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">{{ _('Deposit') }}</a>
         {% endif %}
-        <a class="btn btn-warning btn-lg" href="/">Logout</a>
+        <a class="btn btn-warning btn-lg" href="/">{{ _('Logout') }}</a>
         {% if user.role == "administrator" or user.role == "manager" %}
-        <a class="btn btn-success btn-lg" href="/admin">Admin</a>
+        <a class="btn btn-success btn-lg" href="/admin">{{ _('Admin') }}</a>
         {% endif %}
       </div>
     </div>
