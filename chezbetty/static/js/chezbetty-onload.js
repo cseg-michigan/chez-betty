@@ -161,10 +161,12 @@ $(".btn-trans-showhide").click(function () {
 
 	if (transaction.is(":visible")) {
 		transaction.hide();
-		$("#transaction-small-"+transaction_id).text("touch to show");
+		$("#transaction-small-tohide-"+transaction_id).hide();
+		$("#transaction-small-toshow-"+transaction_id).show();
 	} else {
 		transaction.show();
-		$("#transaction-small-"+transaction_id).text("touch to hide");
+		$("#transaction-small-tohide-"+transaction_id).show();
+		$("#transaction-small-toshow-"+transaction_id).hide();
 	}
 });
 

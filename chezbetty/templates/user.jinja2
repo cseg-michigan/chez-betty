@@ -29,7 +29,9 @@
          #}
         {% if transaction.type == "purchase" %}
 
-        {{ _('Purchase totaling %(amount)s')|format(amount=transaction.amount|format_currency)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
+        {{ _('Purchase totaling %(amount)s')|format(amount=transaction.amount|format_currency)|safe }}
+        <small id="transaction-small-toshow-{{ transaction.id }}">{{ _('touch to show') }}</small>
+        <small id="transaction-small-tohide-{{ transaction.id }}" style="display:none;">{{ _('touch to hide') }}</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 

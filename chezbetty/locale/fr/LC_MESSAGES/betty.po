@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-02-26 21:56-0500\n"
-"PO-Revision-Date: 2015-02-26 21:54-0500\n"
+"POT-Creation-Date: 2015-02-26 22:11-0500\n"
+"PO-Revision-Date: 2015-02-26 22:23-0500\n"
 "Last-Translator: Pat Pannuto <ppannuto@umich.edu>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -112,24 +112,24 @@ msgstr "Achat"
 msgid "Order Summary"
 msgstr ""
 
-#: chezbetty/templates/purchase.jinja2:34 chezbetty/templates/user.jinja2:43
+#: chezbetty/templates/purchase.jinja2:34 chezbetty/templates/user.jinja2:45
 #: chezbetty/templates/items.jinja2:36 chezbetty/templates/items.jinja2:61
 #: chezbetty/templates/items.jinja2:84
 #: chezbetty/templates/purchase_complete.jinja2:20
 msgid "Item"
 msgstr "Atricle"
 
-#: chezbetty/templates/purchase.jinja2:35 chezbetty/templates/user.jinja2:44
+#: chezbetty/templates/purchase.jinja2:35 chezbetty/templates/user.jinja2:46
 #: chezbetty/templates/purchase_complete.jinja2:21
 msgid "Quantity"
 msgstr "Quantité"
 
-#: chezbetty/templates/purchase.jinja2:36 chezbetty/templates/user.jinja2:45
+#: chezbetty/templates/purchase.jinja2:36 chezbetty/templates/user.jinja2:47
 #: chezbetty/templates/purchase_complete.jinja2:22
 msgid "Item Price"
 msgstr "Prix"
 
-#: chezbetty/templates/purchase.jinja2:37 chezbetty/templates/user.jinja2:46
+#: chezbetty/templates/purchase.jinja2:37 chezbetty/templates/user.jinja2:48
 #: chezbetty/templates/purchase_complete.jinja2:23
 msgid "Total Price"
 msgstr "Prix Total"
@@ -142,7 +142,7 @@ msgstr ""
 msgid "Scan an item to begin"
 msgstr ""
 
-#: chezbetty/templates/purchase.jinja2:57 chezbetty/templates/user.jinja2:65
+#: chezbetty/templates/purchase.jinja2:57 chezbetty/templates/user.jinja2:67
 #: chezbetty/templates/purchase_complete.jinja2:42
 msgid "Subtotal"
 msgstr "Sous total"
@@ -151,7 +151,7 @@ msgstr "Sous total"
 msgid "Good Standing Discount"
 msgstr ""
 
-#: chezbetty/templates/purchase.jinja2:67 chezbetty/templates/user.jinja2:74
+#: chezbetty/templates/purchase.jinja2:67 chezbetty/templates/user.jinja2:76
 #: chezbetty/templates/purchase_complete.jinja2:53
 msgid "Total"
 msgstr "Total"
@@ -221,36 +221,39 @@ msgstr ""
 
 #: chezbetty/templates/user.jinja2:32
 msgid "Purchase totaling %(amount)s"
-msgstr ""
+msgstr "Achat pour %(amount)s"
 
-#: chezbetty/templates/user.jinja2:32 chezbetty/templates/user.jinja2:91
-#: chezbetty/templates/user.jinja2:100
+#: chezbetty/templates/user.jinja2:33 chezbetty/templates/user.jinja2:93
+#: chezbetty/templates/user.jinja2:102
 msgid "touch to show"
-msgstr "touchez pour montrer"
+msgstr "touchez pour afficher"
 
-#: chezbetty/templates/user.jinja2:69
+#: chezbetty/templates/user.jinja2:34
+msgid "touch to hide"
+msgstr "touchez pour masquer"
+
+#: chezbetty/templates/user.jinja2:71
 #: chezbetty/templates/purchase_complete.jinja2:46
-#, fuzzy
 msgid "Discounts"
-msgstr "Compte"
+msgstr "Réductions"
 
-#: chezbetty/templates/user.jinja2:84
+#: chezbetty/templates/user.jinja2:86
 msgid "Deposit of %(amount)s"
 msgstr "Dépôt de %(amount)s"
 
-#: chezbetty/templates/user.jinja2:91
+#: chezbetty/templates/user.jinja2:93
 msgid "Adjustment of %(amount)s by %(admin_name) "
 msgstr ""
 
-#: chezbetty/templates/user.jinja2:100
+#: chezbetty/templates/user.jinja2:102
 msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
 msgstr ""
 
-#: chezbetty/templates/user.jinja2:116
+#: chezbetty/templates/user.jinja2:118
 msgid "No transactions."
 msgstr ""
 
-#: chezbetty/templates/user.jinja2:120
+#: chezbetty/templates/user.jinja2:122
 msgid "Show All"
 msgstr ""
 
