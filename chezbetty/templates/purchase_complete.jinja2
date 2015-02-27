@@ -44,7 +44,7 @@
         </tr>
         <tr>
           <td><b>{{ _('Discounts') }}</b></td>
-          <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(order['discount']) }}%)</td>
+          <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(order['discount']*100) }}%)</td>
           <td id="purchase-discount">({{ (subtotal * order['discount'])|format_currency|safe }})</td>
         </tr>
         {% endif %}
