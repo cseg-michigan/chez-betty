@@ -274,11 +274,6 @@ def event(request):
                 account_type = 'pool'
                 pool = Pool.from_id(transaction.to_account_virt_id)
 
-            request.session.flash(_(
-                'deposit-success',
-                default='${deposit} has been added to your account. Your new balance is ${balance}. Thanks for using Betty!',
-                mapping={'deposit':transaction.amount, 'balance':user.balance},
-                ), 'success')
             return render_to_response('templates/deposit_complete.jinja2',
                 {'deposit': transaction,
                  'user': user,

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-02-24 12:34-0500\n"
-"PO-Revision-Date: 2015-02-24 12:30-0500\n"
+"POT-Creation-Date: 2015-02-26 21:56-0500\n"
+"PO-Revision-Date: 2015-02-26 21:54-0500\n"
 "Last-Translator: Pat Pannuto <ppannuto@umich.edu>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -27,29 +27,27 @@ msgstr ""
 msgid "mcard-error"
 msgstr ""
 
-#. Default: ${deposit} has been added to your account. Your new balance is
-#. ${balance}. Thanks for using Betty!
-#: chezbetty/views.py:272
-msgid "deposit-success"
-msgstr ""
-
 #: chezbetty/templates/deposit_edit.jinja2:2
 #: chezbetty/templates/deposit_edit.jinja2:3
 msgid "Edit Deposit"
-msgstr ""
+msgstr "Modifez un dépôt"
 
 #: chezbetty/templates/deposit_edit.jinja2:16
 msgid "New Deposit Amount"
-msgstr ""
+msgstr "Nouveau dépôt somme"
 
 #: chezbetty/templates/deposit_edit.jinja2:28
 #: chezbetty/templates/deposit.jinja2:28
 msgid "Deposit To Your Account"
-msgstr ""
+msgstr "Déposez à votre compte"
 
 #: chezbetty/templates/deposit_edit.jinja2:30
 msgid "Deposit To %(pool_name)s Pool"
-msgstr ""
+msgstr "Déposez à %(pool_name)s"
+
+#: chezbetty/templates/deposit_edit.jinja2:35
+msgid "Delete Deposit"
+msgstr "Supprimez ce dépôt"
 
 #: chezbetty/templates/item_request.jinja2:2
 msgid "Item Request"
@@ -78,7 +76,7 @@ msgstr ""
 #: chezbetty/templates/user_info.jinja2:40
 #: chezbetty/templates/deposit_complete.jinja2:12
 msgid "Deposit"
-msgstr ""
+msgstr "Déposez"
 
 #: chezbetty/templates/deposit.jinja2:21
 msgid "Cash"
@@ -86,11 +84,11 @@ msgstr ""
 
 #: chezbetty/templates/deposit.jinja2:22
 msgid "Your Deposit Limit: %(limit)s"
-msgstr ""
+msgstr "Vous pouvez déposer jusqu'a %(limit)s"
 
 #: chezbetty/templates/deposit.jinja2:30
 msgid "Deposit To %(pool_name) Pool"
-msgstr ""
+msgstr "Déposez à %(pool_name)s"
 
 #: chezbetty/templates/deposit.jinja2:45
 msgid "Bitcoin"
@@ -144,18 +142,27 @@ msgstr ""
 msgid "Scan an item to begin"
 msgstr ""
 
-#: chezbetty/templates/purchase.jinja2:56 chezbetty/templates/user.jinja2:62
-#: chezbetty/templates/purchase_complete.jinja2:41
+#: chezbetty/templates/purchase.jinja2:57 chezbetty/templates/user.jinja2:65
+#: chezbetty/templates/purchase_complete.jinja2:42
+msgid "Subtotal"
+msgstr "Sous total"
+
+#: chezbetty/templates/purchase.jinja2:61
+msgid "Good Standing Discount"
+msgstr ""
+
+#: chezbetty/templates/purchase.jinja2:67 chezbetty/templates/user.jinja2:74
+#: chezbetty/templates/purchase_complete.jinja2:53
 msgid "Total"
-msgstr "Complet"
+msgstr "Total"
 
-#: chezbetty/templates/purchase.jinja2:67
+#: chezbetty/templates/purchase.jinja2:78
 msgid "Pay With Your User Account"
-msgstr ""
+msgstr "Payez avec votre compte"
 
-#: chezbetty/templates/purchase.jinja2:69
+#: chezbetty/templates/purchase.jinja2:80
 msgid "Pay With %(pool_name)s Pool"
-msgstr ""
+msgstr "Payez avec %(pool_name)s"
 
 #: chezbetty/templates/user_info.jinja2:6
 msgid "Customer"
@@ -167,19 +174,19 @@ msgstr "Nom"
 
 #: chezbetty/templates/user_info.jinja2:14 chezbetty/templates/shame.jinja2:25
 msgid "Account Balance"
-msgstr ""
+msgstr "Solde de compte"
 
 #: chezbetty/templates/user_info.jinja2:30
 msgid "Links"
-msgstr ""
+msgstr "Actions"
 
 #: chezbetty/templates/user_info.jinja2:37
 msgid "Account"
-msgstr ""
+msgstr "Compte"
 
 #: chezbetty/templates/user_info.jinja2:42
 msgid "Logout"
-msgstr ""
+msgstr "Déconnexion"
 
 #: chezbetty/templates/user_info.jinja2:44
 msgid "Admin"
@@ -216,25 +223,35 @@ msgstr ""
 msgid "Purchase totaling %(amount)s"
 msgstr ""
 
-#: chezbetty/templates/user.jinja2:32 chezbetty/templates/user.jinja2:79
-#: chezbetty/templates/user.jinja2:88
+#: chezbetty/templates/user.jinja2:32 chezbetty/templates/user.jinja2:91
+#: chezbetty/templates/user.jinja2:100
 msgid "touch to show"
 msgstr "touchez pour montrer"
 
-#: chezbetty/templates/user.jinja2:72
-msgid "Deposit of %(amount)s"
-msgstr ""
+#: chezbetty/templates/user.jinja2:69
+#: chezbetty/templates/purchase_complete.jinja2:46
+#, fuzzy
+msgid "Discounts"
+msgstr "Compte"
 
-#: chezbetty/templates/user.jinja2:79
+#: chezbetty/templates/user.jinja2:84
+msgid "Deposit of %(amount)s"
+msgstr "Dépôt de %(amount)s"
+
+#: chezbetty/templates/user.jinja2:91
 msgid "Adjustment of %(amount)s by %(admin_name) "
 msgstr ""
 
-#: chezbetty/templates/user.jinja2:88
+#: chezbetty/templates/user.jinja2:100
 msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
 msgstr ""
 
-#: chezbetty/templates/user.jinja2:104
+#: chezbetty/templates/user.jinja2:116
 msgid "No transactions."
+msgstr ""
+
+#: chezbetty/templates/user.jinja2:120
+msgid "Show All"
 msgstr ""
 
 #: chezbetty/templates/about.jinja2:2 chezbetty/templates/about.jinja2:3
@@ -433,7 +450,7 @@ msgstr ""
 #: chezbetty/templates/shame.jinja2:2 chezbetty/templates/shame.jinja2:3
 #: chezbetty/templates/index.jinja2:27
 msgid "Wall of Shame"
-msgstr ""
+msgstr "Mur de la Honte"
 
 #: chezbetty/templates/shame.jinja2:13
 msgid "These users owe Chez Betty more than $5."
@@ -449,15 +466,15 @@ msgstr "uniqname"
 
 #: chezbetty/templates/deposit_complete.jinja2:20
 msgid "Old Balance"
-msgstr ""
+msgstr "Solde du compte ancienne"
 
 #: chezbetty/templates/deposit_complete.jinja2:23
 msgid "Deposit Amount"
-msgstr ""
+msgstr "Dépôt"
 
 #: chezbetty/templates/deposit_complete.jinja2:26
 msgid "New Balance"
-msgstr ""
+msgstr "Nouvel solde du compte"
 
 #: chezbetty/templates/deposit_complete.jinja2:29
 msgid "Transaction"
@@ -469,15 +486,15 @@ msgstr "Merci Beaucoup!"
 
 #: chezbetty/templates/deposit_complete.jinja2:38
 msgid "You successfully deposited %(amount)s into your account"
-msgstr ""
+msgstr "Vous avez déposé %(amount)s à votre compte"
 
-#: chezbetty/templates/deposit_complete.jinja2:42
+#: chezbetty/templates/deposit_complete.jinja2:41
 msgid "You successfully deposited %(amount)s in the %(pool_name)s Pool"
-msgstr ""
+msgstr "Vous avez déposé %(amount)s à %(pool_name)s"
 
-#: chezbetty/templates/deposit_complete.jinja2:51
+#: chezbetty/templates/deposit_complete.jinja2:50
 msgid "Edit this Deposit"
-msgstr ""
+msgstr "Modifez ce dépôt"
 
 #: chezbetty/templates/items.jinja2:2
 msgid "Items"
@@ -547,15 +564,15 @@ msgstr ""
 msgid "Purchase Complete"
 msgstr "Achat fini"
 
-#: chezbetty/templates/purchase_complete.jinja2:43
+#: chezbetty/templates/purchase_complete.jinja2:55
 msgid "(Paid with your user account)"
 msgstr ""
 
-#: chezbetty/templates/purchase_complete.jinja2:45
+#: chezbetty/templates/purchase_complete.jinja2:57
 msgid "(Paid with %(pool_name)s Pool)"
 msgstr ""
 
-#: chezbetty/templates/purchase_complete.jinja2:56
+#: chezbetty/templates/purchase_complete.jinja2:68
 msgid "If this was a mistake, touch here to undo this transaction."
 msgstr ""
 
@@ -565,11 +582,11 @@ msgstr "Bienvenue à Chez Betty!"
 
 #: chezbetty/templates/index.jinja2:13
 msgid "The 24/7 food co-op for all members of the CSE community."
-msgstr ""
+msgstr "La coopérative pour l'ensemble de CSE."
 
 #: chezbetty/templates/index.jinja2:18
 msgid "Swipe your M-Card to login"
-msgstr ""
+msgstr "Glissez votre MCard pour vous identifier "
 
 #: chezbetty/templates/index.jinja2:24
 msgid "Item List"
