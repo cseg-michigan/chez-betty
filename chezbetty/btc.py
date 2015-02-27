@@ -70,7 +70,7 @@ class Bitcoin(object):
                       '{"address": {"callback_url": "%s/%s/%s", "label": "%s"}' % (cb_url, umid, auth_key, umid))
 
         if not(obj['success']):
-            raise BTCException("Could not get address: %s" % res)
+            raise BTCException("Could not get address: %s" % umid)
 
         return obj['address']
 

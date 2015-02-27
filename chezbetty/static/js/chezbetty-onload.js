@@ -33,6 +33,7 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 
 	item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
 	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
+	calculate_total();
 });
 
 // Click handler to submit a purchase.
