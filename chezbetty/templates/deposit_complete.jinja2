@@ -37,7 +37,6 @@
           {% if account_type == "user" %}
           {{ _("You successfully deposited %(amount)s into your account")|
              format(amount='<span class="deposit-amount">'+deposit.amount|format_currency+'</span>')|safe }}
-into your account.
           {% elif account_type == "pool" %}
           {{ _("You successfully deposited %(amount)s in the %(pool_name)s Pool")|
              format(
