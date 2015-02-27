@@ -34,6 +34,24 @@
 	font-size: 18pt;
 }
 
+.btn-submit-purchase {
+	width: 100%;
+	height: 100px;
+	margin-bottom: 20px;
+}
+
+.btn-submit-deposit {
+	width: 100%;
+	height: 60px;
+	margin-bottom: 15px;
+}
+
+.btn-edit-deposit, .btn-delete-deposit {
+	width: 100%;
+	height: 80px;
+	margin-bottom: 15px;
+}
+
 .buttons a {
 	margin-right: 20px;
 }

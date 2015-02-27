@@ -8,6 +8,8 @@ from . import event
 from chezbetty import utility
 
 import ldap3
+import random
+import string
 
 class InvalidUserException(Exception):
     pass
@@ -100,13 +102,12 @@ class User(account.Account):
 
     @classmethod
     def from_id(cls, id):
-        u = DBSession.query(cls).filter(cls.id == id).one()
-        return u
+        return DBSession.query(cls).filter(cls.id == id).one()
 
     @classmethod
-    def from_uniqname(cls, uniqname):
+    def from_uniqname(cls, uniqname, local_only=False):
         u = DBSession.query(cls).filter(cls.uniqname == uniqname).first()
-        if not u:
+        if not u and not local_only:
             u = cls(**cls.__ldap.lookup_uniqname(uniqname))
             DBSession.add(u)
         return u
@@ -121,7 +122,10 @@ class User(account.Account):
 
     @classmethod
     def all(cls):
-        return DBSession.query(cls).filter(cls.enabled).all()
+        return DBSession.query(cls)\
+                        .filter(cls.enabled)\
+                        .order_by(cls.name)\
+                        .all()
 
     @classmethod
     def count(cls):
@@ -136,7 +140,7 @@ class User(account.Account):
     @classmethod
     def get_users_total(cls):
         return DBSession.query(func.sum(User.balance).label("total_balance"))\
-                        .one().total_balance or 0.0
+                        .one().total_balance or Decimal(0.0)
 
     # Sum the total amount of money in user accounts that we are holding for
     # users. This is different from just getting the total because it doesn't
@@ -145,13 +149,13 @@ class User(account.Account):
     def get_amount_held(cls):
         return DBSession.query(func.sum(User.balance).label("total_balance"))\
                         .filter(User.balance>0)\
-                        .one().total_balance or 0.0
+                        .one().total_balance or Decimal(0.0)
 
     @classmethod
     def get_amount_owed(cls):
         return DBSession.query(func.sum(User.balance).label("total_balance"))\
                         .filter(User.balance<0)\
-                        .one().total_balance or 0.0
+                        .one().total_balance or Decimal(0.0)
 
     @classmethod
     def get_user_count_cumulative(cls):
@@ -177,12 +181,23 @@ class User(account.Account):
             salted = (self._salt + password).encode('utf-8')
             self._password = hashlib.sha256(salted).hexdigest()
 
+    def random_password(self):
+        password = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(6))
+        self._salt = self.__make_salt()
+        salted = (self._salt + password).encode('utf-8')
+        self._password = hashlib.sha256(salted).hexdigest()
+        return password
+
     def check_password(self, cand):
         if not self._salt:
             return False
         salted = (self._salt + cand).encode('utf-8')
         c = hashlib.sha256(salted).hexdigest()
         return c == self._password
+
+    @property
+    def has_password(self):
+        return self._password != None
 
 
 def get_user(request):
@@ -201,4 +216,4 @@ def groupfinder(userid, request):
     elif user.role == "administrator":
         return ["user","manager","admin","serviceaccount"]
     elif user.role == "serviceaccount":
-        return ["user", "serviceaccount"]
+        return ["serviceaccount"]

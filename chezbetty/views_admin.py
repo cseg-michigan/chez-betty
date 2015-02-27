@@ -17,7 +17,7 @@ from .models import *
 from .models.model import *
 from .models import user as __user
 from .models.user import User
-from .models.item import Item
+from .models.item import Item, ItemImage
 from .models.box import Box
 from .models.box_item import BoxItem
 from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
@@ -33,6 +33,14 @@ from .models.request import Request
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.receipt import Receipt
+from .models.pool import Pool
+from .models.pool_user import PoolUser
+from .models.tag import Tag
+from .models.item_tag import ItemTag
+
+from .utility import send_email
+
+from .jinja2_filters import format_currency
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -46,10 +54,15 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
+import abbreviate
 import uuid
 import twitter
+import traceback
 import math
 import pytz
+import io
+from PIL import Image
+
 
 
 ###
@@ -67,7 +80,9 @@ def add_counts(event):
         count['vendors']      = Vendor.count()
         count['users']        = User.count()
         count['transactions'] = Transaction.count()
+        count['restocks']     = Transaction.count("restock")
         count['requests']     = Request.count()
+        count['pools']        = Pool.count()
         event.rendering_val['counts'] = count
 
 @subscriber(BeforeRender)
@@ -104,6 +119,14 @@ def admin_ajax_bool(request):
         obj = User.from_id(obj_id)
     elif obj_str == 'request':
         obj = Request.from_id(obj_id)
+    elif obj_str == 'pool':
+        obj = Pool.from_id(obj_id)
+    elif obj_str == 'pool_user':
+        obj = PoolUser.from_id(obj_id)
+    elif obj_str == 'tag':
+        obj = Tag.from_id(obj_id)
+    elif obj_str == 'itemtag':
+        obj = ItemTag.from_id(obj_id)
     elif obj_str == 'cookie':
         # Set a cookie instead of change a property
         request.response.set_cookie(obj_field, '1' if obj_state else '0')
@@ -119,6 +142,83 @@ def admin_ajax_bool(request):
     DBSession.flush()
 
     return request.response
+
+@view_config(route_name='admin_ajax_new',
+             renderer='json',
+             permission='admin')
+def admin_ajax_new(request):
+    obj_str = request.matchdict['object']
+    obj_arg = request.matchdict['arg']
+
+    if obj_str == 'tag':
+        mod = Tag
+    else:
+        # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+    new_thing = mod(obj_arg)
+    DBSession.add(new_thing)
+    DBSession.flush()
+
+    return {'id': new_thing.id,
+            'arg': obj_arg}
+
+@view_config(route_name='admin_ajax_connection',
+             renderer='json',
+             permission='admin')
+def admin_ajax_connection(request):
+    obj_str1 = request.matchdict['object1']
+    obj_str2 = request.matchdict['object2']
+    obj_arg1 = request.matchdict['arg1']
+    obj_arg2 = request.matchdict['arg2']
+
+    out = {'arg1': obj_arg1,
+           'arg2': obj_arg2}
+
+    if obj_str1 == 'item':
+        item = Item.from_id(int(obj_arg1))
+
+        if obj_str2 == 'tag':
+            tag = Tag.from_id(int(obj_arg2))
+
+            # Make sure we don't already have this tag
+            for t in item.tags:
+                if t.tag.id == tag.id:
+                    break
+            else:
+                itemtag = ItemTag(item, tag)
+                DBSession.add(itemtag)
+                DBSession.flush()
+
+                out['tag_name'] = tag.name
+                out['item_tag_id'] = itemtag.id
+        
+    else:
+        # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+    DBSession.flush()
+
+    return out
+
+@view_config(route_name='admin_ajaxed_field',
+             renderer='json',
+             permission='manage')
+def admin_ajaxed_field(request):
+    field = request.matchdict['field']
+    if field == 'index-bitcoin':
+        try:
+            btc_balance = Bitcoin.get_balance()
+            btc = {"btc": btc_balance,
+                   "mbtc": round(btc_balance*1000, 2),
+                   "usd": btc_balance * Bitcoin.get_spot_price()}
+            html='{} mBTC ({})'.format(btc['mbtc'], format_currency(btc['usd']))
+            return dict(html=html)
+        except BTCException:
+            return dict(html='Error loading BTC Value')
+    request.session.flash('No handler for ajaxed field: {}'.format(field), 'error')
 
 @view_config(route_name='admin_index',
              renderer='templates/admin/index.jinja2',
@@ -168,16 +268,6 @@ def admin_index(request):
     btcbox_net = btcbox_found.balance - btcbox_lost.balance
     chezbetty_net = chezbetty_found.balance - chezbetty_lost.balance
 
-    try:
-        btc_balance = Bitcoin.get_balance()
-        btc = {"btc": btc_balance,
-               "mbtc": round(btc_balance*1000, 2),
-               "usd": btc_balance * Bitcoin.get_spot_price()}
-    except BTCException:
-        btc = {"btc": None,
-               "mbtc": None,
-               "usd": None}
-
     total_sales          = Purchase.total()
     profit_on_sales      = PurchaseLineItem.profit_on_sales()
     total_inventory_lost = Inventory.total()
@@ -226,7 +316,6 @@ def admin_index(request):
                 btcbox=btcbox,
                 chezbetty_cash=chezbetty_cash,
                 chezbetty=chezbetty,
-                btc_balance=btc,
                 cashbox_net=cashbox_net,
                 btcbox_net=btcbox_net,
                 chezbetty_net=chezbetty_net,
@@ -392,8 +481,8 @@ def admin_restock_submit(request):
                 obj_type   = request.POST['-'.join([f[0], 'type', f[2]])]
                 obj_id     = request.POST['-'.join([f[0], 'id', f[2]])]
                 quantity   = int(request.POST['-'.join([f[0], 'quantity', f[2]])] or 0)
-                wholesale  = float(request.POST['-'.join([f[0], 'wholesale', f[2]])] or 0.0)
-                coupon     = float(request.POST['-'.join([f[0], 'coupon', f[2]])] or 0.0)
+                wholesale  = float(request.POST['-'.join([f[0], 'wholesale', f[2]])] or Decimal(0.0))
+                coupon     = float(request.POST['-'.join([f[0], 'coupon', f[2]])] or Decimal(0.0))
                 salestax   = request.POST['-'.join([f[0], 'salestax', f[2]])] == 'on'
                 btldeposit = request.POST['-'.join([f[0], 'bottledeposit', f[2]])] == 'on'
                 itemcount  = int(request.POST['-'.join([f[0], 'itemcount', f[2]])])
@@ -439,7 +528,7 @@ def admin_restock_submit(request):
                         itembox.item.sales_tax = salestax
 
                         subquantity = itembox.quantity * quantity
-                        subtotal    = subquantity * inv_cost
+                        subtotal    = float(itembox.percentage / 100) * total
                         add_item(itembox.item, subquantity, subtotal)
 
                     items.append((box, quantity, total, wholesale, coupon, salestax, btldeposit))
@@ -776,6 +865,8 @@ def admin_items_edit(request):
 
             if speed > 0:
                 item.days_until_out = item.in_stock / sale_speeds[item.id]
+            elif item.in_stock <= 0:
+                item.days_until_out = 0
             else:
                 item.days_until_out = None
         else:
@@ -836,10 +927,71 @@ def admin_items_edit_submit(request):
              permission='manage')
 def admin_item_edit(request):
     try:
+        try:
+            purchase_limit = request.GET['purchase_limit']
+            if purchase_limit.lower() == 'none':
+                purchase_limit = None
+            else:
+                purchase_limit = int(purchase_limit)
+        except KeyError:
+            purchase_limit = 10
+        try:
+            event_limit = request.GET['event_limit']
+            if event_limit.lower() == 'none':
+                event_limit = None
+            else:
+                event_limit = int(event_limit)
+        except KeyError:
+            event_limit = 5
+
         item = Item.from_id(request.matchdict['item_id'])
         vendors = Vendor.all()
-        subtransactions = SubTransaction.all_item(item.id)
-        subsubtransactions = SubSubTransaction.all_item(item.id)
+
+        purchases, purchases_total = SubTransaction.all_item_purchases(item.id,
+                limit=purchase_limit, count=True)
+        if purchase_limit is None or purchases_total <= purchase_limit:
+            purchases_total = None
+
+        events, events_total = SubTransaction.all_item_events(item.id,
+                limit=event_limit, count=True)
+        sst, sst_total = SubSubTransaction.all_item(item.id,
+                limit=event_limit, count=True)
+
+        events.extend([e.subtransaction for e in sst])
+        events.sort(key=lambda x: x.transaction.event.timestamp)
+        events_total += sst_total
+
+        if event_limit is None or events_total <= event_limit:
+            events_total = None
+        else:
+            events = events[:event_limit]
+
+        stats = {}
+        stats['stock'] = item.in_stock
+
+        stats['num_sold'] = 0
+        purchased_items = PurchaseLineItem.all()
+        for pi in purchased_items:
+            if pi.item_id == item.id:
+                stats['num_sold'] += pi.quantity
+
+        stats['sale_speed'] = views_data.item_sale_speed(30, item.id)
+
+        if stats['sale_speed'] > 0:
+            stats['until_out'] = item.in_stock / stats['sale_speed']
+        elif item.in_stock <= 0:
+            stats['until_out'] = 0
+        else:
+            stats['until_out'] = '---'
+
+        stats['lost'] = 0
+        lost_items = InventoryLineItem.all()
+        for li in lost_items:
+            if li.item_id == item.id:
+                stats['lost'] += (li.quantity - li.quantity_counted)
+
+        inventory_total = Item.total_inventory_wholesale()
+        stats['inv_percent'] = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
         # Don't display vendors that already have an item number in the add
         # new vendor item number section
@@ -855,12 +1007,28 @@ def admin_item_edit(request):
         if datalayer.can_delete_item(item):
             can_delete = True
 
+        # Tags
+        other_tags = []
+        all_tags = Tag.all()
+        for tag in all_tags:
+            for it in item.tags:
+                if it.tag.id == tag.id:
+                    break
+            else:
+                other_tags.append(tag)
+
         return {'item': item,
                 'can_delete': can_delete,
                 'vendors': vendors,
                 'new_vendors': new_vendors,
-                'subtransactions': subtransactions,
-                'subsubtransactions': subsubtransactions}
+                'purchases': purchases,
+                'purchases_total': purchases_total,
+                'purchase_limit': purchase_limit,
+                'events': events,
+                'events_total': events_total,
+                'event_limit': event_limit,
+                'stats': stats,
+                'other_tags': other_tags}
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Unable to find item {}'.format(request.matchdict['item_id']), 'error')
@@ -907,6 +1075,24 @@ def admin_item_edit_submit(request):
                     val = round(float(request.POST[key]), 4)
                 elif field == 'barcode':
                     val = request.POST[key].strip() or None
+                elif field == 'img':
+                    try:
+                        ifile = request.POST[key].file
+                        ifile.seek(0)
+                        im = Image.open(ifile)
+                        buf = io.BytesIO()
+                        im.save(buf, 'jpeg')
+                        buf.seek(0)
+                        try:
+                            item.img.img = buf.read()
+                        except AttributeError:
+                            buf.seek(0)
+                            item_img = ItemImage(item.id, buf.read())
+                            item.img = item_img
+                    except AttributeError:
+                        # No image uploaded, skip
+                        pass
+                    continue
                 else:
                     val = request.POST[key].strip()
 
@@ -970,6 +1156,19 @@ def admin_item_barcode_pdf(request):
                     only have one item.', 'error')
                 return HTTPFound(location=request.route_url('admin_item_edit', item_id=request.matchdict['item_id']))
 
+        def len_fn(t):
+            print('len_fn {} -- {}'.format(t, c.stringWidth(t, "Helvetica", 8)))
+            return c.stringWidth(t, "Helvetica", 8)
+        try:
+            abbr = abbreviate.Abbreviate()
+            name = abbr.abbreviate(item.name, target_len=1.3*inch, len_fn=len_fn)
+        except Exception as e:
+            # A little extra robustness here since this library is really alpha
+            name = item.name
+
+        barcode = code93.Extended93(label_text)
+        print(barcode.minWidth())
+        print(barcode.minWidth() / inch)
 
         for x_ind in range(5):
             for y_ind in range(10):
@@ -979,8 +1178,6 @@ def admin_item_barcode_pdf(request):
                 print("x_off {} ({}) y_off {} ({})".format(x_off, x_off / inch, y_off, y_off / inch))
 
                 barcode = code93.Extended93(label_text)
-                print(barcode.minWidth())
-                print(barcode.minWidth() / inch)
                 barcode.drawOn(c, x_off, y_off)
 
                 x_text = x_off + 6.4 * mm
@@ -990,7 +1187,7 @@ def admin_item_barcode_pdf(request):
 
                 y_text = y_text - 5 * mm
                 c.setFont("Helvetica", 8)
-                c.drawString(x_text, y_text, item.name)
+                c.drawString(x_text, y_text, name)
 
         c.showPage()
         c.save()
@@ -1067,6 +1264,7 @@ def admin_box_add_submit(request):
 
         # Now iterate over the subitems
         items_to_add = []
+        total_items = 0
 
         for key in request.POST:
             kf = key.split('-')
@@ -1085,6 +1283,8 @@ def admin_box_add_submit(request):
                 except:
                     request.session.flash('Error adding subitem: quantity must be numeric.', 'error')
                     error = True
+
+                total_items += quantity
 
                 if item_id == 'new':
                     # Need to add a new item for this box
@@ -1145,7 +1345,8 @@ def admin_box_add_submit(request):
                     DBSession.add(item)
                     DBSession.flush()
 
-                box_item = BoxItem(box, item, quantity)
+                # Set the box percentages all equal
+                box_item = BoxItem(box, item, quantity, round((quantity/total_items)*100, 2))
                 DBSession.add(box_item)
 
             if box_itemnum != '':
@@ -1289,6 +1490,7 @@ def admin_box_edit_submit(request):
                 # Handle the sub item quantities
                 item_id  = int(request.POST['box-item-id-'+fields[3]])
                 quantity = request.POST['box-item-quantity-'+fields[3]].strip()
+                percentage = request.POST['box-item-percentage-'+fields[3]].strip()
 
                 for boxitem in box.items:
                     # Update the BoxItem record.
@@ -1299,12 +1501,13 @@ def admin_box_edit_submit(request):
                             boxitem.enabled = False
                         else:
                             boxitem.quantity = int(quantity)
+                            boxitem.percentage = round(float(percentage), 2)
                         break
                 else:
                     if quantity != '':
                         # Add a new vendor to the item
                         item = Item.from_id(item_id)
-                        box_item = BoxItem(box, item, quantity)
+                        box_item = BoxItem(box, item, quantity, round(float(percentage), 2))
                         DBSession.add(box_item)
 
             elif fields[1] == 'vendor' and fields[2] == 'id':
@@ -1357,7 +1560,8 @@ def admin_box_edit_submit(request):
         request.session.flash('Error processing box fields.', 'error')
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
 
-    except:
+    except Exception as e:
+        if request.debug: raise(e)
         request.session.flash('Error updating box.', 'error')
         return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
 
@@ -1467,7 +1671,9 @@ def admin_users_edit_submit(request):
 def admin_user(request):
     try:
         user = User.from_id(request.matchdict['user_id'])
-        return {'user': user}
+        my_pools = Pool.all_by_owner(user)
+        return {'user': user,
+                'my_pools': my_pools}
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Invalid user?', 'error')
@@ -1503,6 +1709,46 @@ def admin_user_balance_edit_submit(request):
         request.session.flash('Must include a reason', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
+def _admin_user_password_reset(user):
+    password = user.random_password()
+    send_email(TO=user.uniqname+'@umich.edu',
+               SUBJECT='Chez Betty Login',
+               body=render('templates/admin/email_password.jinja2', {'user': user, 'password': password}))
+    return {'status': 'success',
+            'msg': 'Password set and emailed to user.'}
+
+@view_config(route_name='admin_user_password_create',
+             renderer='json',
+             permission='admin')
+def admin_user_password_create(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if user.has_password:
+            return {'status': 'error',
+                    'msg': 'Error: User already has password.'}
+        return _admin_user_password_reset(user)
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
+@view_config(route_name='admin_user_password_reset',
+        renderer='json',
+        permission='admin')
+def admin_user_password_reset(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        return _admin_user_password_reset(user)
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
 
 @view_config(route_name='admin_users_email',
              renderer='templates/admin/users_email.jinja2',
@@ -1517,8 +1763,11 @@ def admin_users_email(request):
 def admin_users_email_deadbeats(request):
     deadbeats = DBSession.query(User).filter(User.enabled).filter(User.balance<-20.0).all()
     for deadbeat in deadbeats:
-        text = render('templates/admin/email_deadbeats.jinja2', {'user': deadbeat})
-        print(text)
+        send_email(
+                TO=deadbeat.uniqname+'@umich.edu',
+                SUBJECT='Chez Betty Balance',
+                body=render('templates/admin/email_deadbeats.jinja2', {'user': deadbeat})
+                )
 
     request.session.flash('Deadbeat users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
@@ -1530,10 +1779,72 @@ def admin_users_email_deadbeats(request):
 def admin_users_email_all(request):
     users = User.all()
     text = request.POST['text']
-    print(text)
+
+    send_email(
+            TO='@umich.edu, '.join(users) + '@umich.edu',
+            SUBJECT='A message from Chez Betty',
+            body=text
+            )
 
     request.session.flash('All users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
+
+
+@view_config(route_name='admin_pools',
+             renderer='templates/admin/pools.jinja2',
+             permission='admin')
+def admin_pools(request):
+    return {'pools': Pool.all()}
+
+
+@view_config(route_name='admin_pool',
+             renderer='templates/admin/pool.jinja2',
+             permission='admin')
+def admin_pool(request):
+    try:
+        pool = Pool.from_id(request.matchdict['pool_id'])
+        return {'pool': pool,
+                'pool_owner': User.from_id(pool.owner),
+                'users': User.all()}
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Unable to find pool.', 'error')
+        return HTTPFound(location=request.route_url('admin_pools'))
+
+
+@view_config(route_name='admin_pool_addmember_submit',
+             request_method='POST',
+             permission='admin')
+def admin_pool_addmember_submit(request):
+    try:
+        pool = Pool.from_id(request.POST['pool-id'])
+
+        # Look up the user that is being added to the pool
+        user = User.from_id(request.POST['user_id'])
+
+        # Can't add yourself
+        if user.id == pool.owner:
+            request.session.flash('Cannot add owner to a pool.', 'error')
+            return HTTPFound(location=request.route_url('admin_pool', pool_id=pool.id))
+
+        # Make sure the user isn't already in the pool
+        for u in pool.users:
+            if u.user_id == user.id:
+                request.session.flash('User is already in pool.', 'error')
+                return HTTPFound(location=request.route_url('admin_pool', pool_id=pool.id))
+
+        # Add the user to the pool
+        pooluser = PoolUser(pool, user)
+        DBSession.add(pooluser)
+        DBSession.flush()
+
+        request.session.flash('{} added to the pool.'.format(user.name), 'succcess')
+        return HTTPFound(location=request.route_url('admin_pool', pool_id=pool.id))
+
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error adding user to pool.', 'error')
+        return HTTPFound(location=request.route_url('admin_pools'))
 
 
 @view_config(route_name='admin_cash_donation',
@@ -1760,13 +2071,49 @@ def admin_btc_reconcile_submit(request):
     return HTTPFound(location=request.route_url('admin_index'))
 
 
+@view_config(route_name='admin_restocks',
+             renderer='templates/admin/restocks.jinja2',
+             permission='manage')
+def admin_restocks(request):
+    try:
+        LIMIT = int(request.GET['limit'])
+        if LIMIT == 0:
+            LIMIT = None
+    except (KeyError, ValueError):
+        LIMIT=50
+    events = Event.all(trans_type='restock')
+    return {'events': events, 'limit': LIMIT}
+
 @view_config(route_name='admin_events',
              renderer='templates/admin/events.jinja2',
-             permission='manage')
+             permission='admin')
 def admin_events(request):
-    events = Event.all()
-    return {'events': events}
+    try:
+        LIMIT = int(request.GET['limit'])
+        if LIMIT == 0:
+            LIMIT = None
+    except (KeyError, ValueError):
+        LIMIT=50
+    events = Event.all(limit=LIMIT)
+    return {'events': events, 'limit': LIMIT}
 
+@view_config(route_name='admin_events_load_more',
+             request_method='POST',
+             renderer='json',
+             permission='admin')
+def admin_events_load_more(request):
+    LIMIT=25
+    last = int(request.POST['last'])
+    events = Event.all(limit=LIMIT,offset=last)
+
+    events_html = []
+    for e in events:
+        events_html.append(render('templates/admin/events_row.jinja2', {'event': e}))
+
+    return {
+            'count': last+LIMIT,
+            'rows': events_html
+            }
 
 @view_config(route_name='admin_events_deleted',
              renderer='templates/admin/events_deleted.jinja2',
@@ -1801,7 +2148,7 @@ def admin_event(request):
 def admin_event_upload(request):
     try:
         event = Event.from_id(int(request.POST['event-id']))
-        receipt = request.POST['event-receipt'].file.read()
+        receipt = request.POST['event-receipt'].file
         datalayer.upload_receipt(event, request.user, receipt)
         return HTTPFound(location=request.route_url('admin_event',
                          event_id=int(request.POST['event-id'])))

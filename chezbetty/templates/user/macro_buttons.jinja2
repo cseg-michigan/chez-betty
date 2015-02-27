@@ -1,0 +1,7 @@
+{% macro onoff_switch(object, field, id, status) %}
+<input type="checkbox" id="switch-onoff-{{ object }}-{{ field }}-{{ id }}" class="user-switch toggle-disabled ajax-bool-switch" data-parent="{{ object }}-{{ id }}" {% if status == True %}checked="checked"{% endif %}>
+{% endmacro %}
+
+{% macro delete(object, field, id) %}
+<button type="button" id="btn-delete-{{ object }}-{{ field }}-{{ id }}-true" class="btn btn-danger button-delete ajax-bool-btn delete-entry" data-parent="{{ object }}-{{ id }}">Remove</button>
+{% endmacro %}

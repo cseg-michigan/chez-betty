@@ -3,11 +3,45 @@ import itertools
 import qrcode
 import qrcode.image.svg
 
+from pyramid.threadlocal import get_current_registry
+
 try:
     import lxml.etree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+
+# TODO: Should probably send mail 'from' our actual server and have a local MTA
+# that forwards mails to this alias
+def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
+    settings = get_current_registry().settings
+
+    sm = smtplib.SMTP()
+    sm.connect()
+
+    msg = MIMEMultipart()
+    msg['Subject'] = SUBJECT
+    msg['From'] = FROM
+    msg['To'] = TO
+    msg.attach(MIMEText(body, 'html'))
+
+    if 'debugging' in settings:
+        print(msg.as_string())
+        if 'debugging_send_email' in settings and settings['debugging_send_email']:
+            try:
+                msg.replace_header('To', settings['debugging_send_email_to'])
+                print("DEBUG: e-mail destination overidden to {}".format(msg['To']))
+            except KeyError: pass
+            send_to = msg['To'].split(', ')
+            sm.sendmail(FROM, send_to, msg.as_string())
+    else:
+        send_to = msg['To'].split(', ')
+        sm.sendmail(FROM, send_to, msg.as_string())
+    sm.quit()
 
 def string_to_qrcode(s):
     factory = qrcode.image.svg.SvgPathImage

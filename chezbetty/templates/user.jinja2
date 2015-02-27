@@ -20,7 +20,7 @@
 
       {# Iterate all of the transactions in the user's history.
        #}
-      {% for transaction in transactions|reverse %}
+      {% for transaction in user.transactions|reverse %}
 
       <li id="btn-trans-{{ transaction.id }}" class="list-group-item btn-trans-showhide">
 
@@ -99,7 +99,7 @@
 
       {% endfor %}
 
-      {% if transactions|length == 0 %}
+      {% if user.transactions|length == 0 %}
       <li class="list-group-item">
         No transactions.
       </li>

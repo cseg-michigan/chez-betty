@@ -69,7 +69,7 @@
           <td>{{ item.in_stock }}</td>
           <td data-value="{{ item.number_sold|int }}">{{ item.number_sold }}</td>
           <td>{{ item.sale_speed_thirty_days|float|round(3) }}</td>
-          <td>{{ item.days_until_out|int }}</td>
+          <td data-value="{% if item.days_until_out == None %}100000{% else %}{{ item.days_until_out }}{% endif %}">{% if item.days_until_out == None %}Inf{% else %}{{ item.days_until_out|int }}{% endif %}</td>
           <td>{{ item.number_lost|int }}</td>
           <td data-value="{{ item.inventory_percent|round(2) }}">{{ item.inventory_percent|round(2) }}%</td>
           <td>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</td>

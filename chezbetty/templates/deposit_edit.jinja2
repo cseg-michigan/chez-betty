@@ -24,14 +24,15 @@
       <div class="col-md-4">
         {% include "keypad.jinja2" %}
       </div>
-      <div class="col-md-4" style="padding-top:80px;">
-        <button type="button" id="btn-edit-deposit" class="btn btn-success btn-lg btn-full-width">Edit Deposit</button>
+      <div class="col-md-4" style="padding-top:10px;">
+        <button type="button" id="btn-deposit-user" class="btn btn-success btn-lg btn-edit-deposit">Deposit To Your Account</button>
+        {% for pool in pools %}
+        <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-edit-deposit">Deposit To {{ pool.name }} Pool</button>
+        {% endfor %}
         <br />
         <br />
         <br />
-        <br />
-        <br />
-        <a id="btn-delete-deposit" class="btn btn-danger btn-lg btn-full-width" href="/event/undo/{{ user.umid }}/{{ old_event.id }}" style="padding-top:38px;">Delete Deposit</a>
+        <a id="btn-delete-deposit" class="btn btn-danger btn-lg btn-delete-deposit" href="/event/undo/{{ user.umid }}/{{ old_event.id }}" style="padding-top:38px;">Delete Deposit</a>
       </div>
       <div class="col-md-2"></div>
   </div>

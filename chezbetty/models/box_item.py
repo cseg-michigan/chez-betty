@@ -9,6 +9,7 @@ class BoxItem(Base):
     box_id      = Column(Integer, ForeignKey("boxes.id"), nullable=False)
     item_id     = Column(Integer, ForeignKey("items.id"), nullable=False)
     quantity    = Column(Integer, nullable=False)
+    percentage  = Column(Numeric, nullable=False)
 
     enabled     = Column(Boolean, default=True, nullable=False)
 
@@ -23,11 +24,12 @@ class BoxItem(Base):
                     backref="boxes"
                   )
 
-    def __init__(self, box, item, quantity, enabled=True):
-        self.box_id   = box.id
-        self.item_id  = item.id
-        self.quantity = quantity
-        self.enabled  = enabled
+    def __init__(self, box, item, quantity, percentage, enabled=True):
+        self.box_id     = box.id
+        self.item_id    = item.id
+        self.quantity   = quantity
+        self.percentage = percentage
+        self.enabled    = enabled
 
     @classmethod
     def from_id(cls, id):

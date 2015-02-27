@@ -47,6 +47,7 @@
           <tr>
             <th>Sub Item</th>
             <th>Quantity</th>
+            <th>Percentage</th>
           </tr>
         </thead>
 
@@ -59,6 +60,9 @@
             <td>{{ bi.item|make_link|safe }} <input type="hidden" name="box-item-id-{{ bi.id}}" value="{{ bi.item_id }}"></td>
             <td>
               <input type="text" class="form-control" id="box-item-quantity-{{ bi.id }}" name="box-item-quantity-{{ bi.id }}" value="{{ bi.quantity }}">
+            </td>
+            <td>
+              <input type="text" class="form-control" id="box-item-percentage-{{ bi.id }}" name="box-item-percentage-{{ bi.id }}" value="{{ bi.percentage }}">
             </td>
 
           </tr>
@@ -77,6 +81,9 @@
             </td>
             <td>
               <input type="text" class="form-control" id="box-item-quantity-new" name="box-item-quantity-new">
+            </td>
+            <td>
+              <input type="text" class="form-control" id="box-item-percentage-new" name="box-item-percentage-new">
             </td>
 
           </tr>

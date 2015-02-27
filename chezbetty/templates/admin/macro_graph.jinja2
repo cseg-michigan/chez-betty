@@ -7,6 +7,7 @@
     <canvas id="chart-{{ title|replace(" ", "") }}" height="400"></canvas>
 
 <script>
+  /*
   function* color_factory() {
     var i = 0;
     var colors = [
@@ -22,6 +23,33 @@
       yield colors[i];
       i = (i + 1) % colors.length;
     }
+  }
+  */
+  // Work around patchy generator support by emulating the interface
+  function color_factory() {
+    var r = function cf_int() {
+    };
+
+    r.next = function() {
+      var colors = [
+        "rgba(56, 108, 176, 1)",  //"#386cb0",
+        "rgba(127, 201, 127, 1)", //"#7fc97f",
+        "rgba(240, 2, 127, 1)",   //"#f0027f",
+        "rgba(255, 255, 153, 1)", //"#ffff99",
+        "rgba(253, 192, 134, 1)", //"#fdc086",
+        "rgba(190, 174, 212, 1)", //"#beaed4",
+        ];
+      if (typeof this.idx == 'undefined') {
+        this.idx = 0;
+      }
+      if (this.idx >= colors.length) {
+        this.idx = 0;
+      }
+      this.idx += 1;
+      var hack = {value: colors[this.idx-1]};
+      return hack;
+    };
+    return r;
   }
 
   var cf1 = color_factory();

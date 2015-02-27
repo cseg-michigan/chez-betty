@@ -51,9 +51,9 @@ def main(argv=sys.argv):
            "038000358210",
            14.37,
            0.47,
-           1,
-           True,
-           True,
+           False,
+           False,
+           3,
            True
         ))
         DBSession.add(Item(
@@ -61,9 +61,9 @@ def main(argv=sys.argv):
            "722252100900",
            1.25,
            1.17,
-           5,
-           True,
-           True,
+           False,
+           False,
+           12,
            True
         ))
         DBSession.add(Item(
@@ -71,9 +71,9 @@ def main(argv=sys.argv):
            "722252101204",
            1.25,
            1.14,
-           5,
-           True,
-           True,
+           False,
+           False,
+           11,
            True
         ))
         coke = Item(
@@ -81,9 +81,9 @@ def main(argv=sys.argv):
             "04963406",
             0.42,
             0.37,
-            12,
             True,
-            True,
+            False,
+            8,
             True
         )
         DBSession.add(coke)
@@ -123,7 +123,14 @@ def main(argv=sys.argv):
         account.get_cash_account("cashbox")
         account.get_cash_account("chezbetty")
         account.get_cash_account("btcbox")
-        coke_box = Box("Coke 32 pack", "123", 32.00)
+        coke_box = Box(
+                "Coke 32 pack", # name
+                "049000042511", # barcode
+                True,           # bottle deposit
+                False,          # sales tax
+                32.00,          # wholesale
+                # enabled implicit True
+                )
         DBSession.add(coke_box)
         DBSession.flush()
         DBSession.add(BoxItem(coke_box, coke, 32))

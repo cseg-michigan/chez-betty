@@ -1,0 +1,49 @@
+{% extends "base.jinja2" %}
+
+{% block title %}Home{% endblock %}
+
+
+{% block top %}
+<h1 class="page-header">Chez Betty User Admin Panel</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<h1>Hello {{ user.name }}</h1>
+
+<div class="row">
+
+  {% if my_pools|first %}
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pools You Own</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Pool</th>
+              <th class="right" style="width:20%;">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pool in my_pools %}
+            <tr>
+              <td>{{ pool|make_user_link(33)|safe }}</td>
+              <td class="right">{{ pool.balance|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+ </div>
+
+{% endblock %}

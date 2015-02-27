@@ -8,59 +8,68 @@
 {% set page = 'purchase' %}
 {% include "user_info.jinja2" %}
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Order</h3>
-  </div>
-  <div class="panel-body">
+<div class="row">
 
-    {% if demo and request.has_permission("admin") %}
-    <div class="well">
-      <h3>Demo Mode:</h3>
-      <p class="lead">Touch to scan items</p>
-      {% for item in items %}
-      <a class="btn btn-default btn-huge btn-bordered" href="#" onclick='add_item("{{ item.barcode }}");'>{{ item.name }}</a>
-      {% endfor %}
+  <div class="col-md-9">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Order</h3>
+      </div>
+      <div class="panel-body">
+
+        {% if demo and request.has_permission("admin") %}
+        <div class="well">
+          <h4>Demo Mode</h4>
+          {% for item in items %}
+          <a class="btn btn-default btn-small btn-bordered" href="#" onclick='add_item("{{ item.barcode }}");'>{{ item.name }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <table class="table table-bordered" id="purchase_table">
+          <thead>
+            <tr>
+              <th style="width: 6%">&nbsp;</th>
+              <th>Item</th>
+              <th style="width: 10%">Quantity</th>
+              <th style="width: 10%">Item Price</th>
+              <th style="width: 10%">Total Price</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr id="purchase-empty">
+              {% if existing_items %}
+              {{ existing_items|safe }}
+              {% else %}
+              <td colspan="5">
+                <h3>Order Empty</h3>
+                Scan an item to begin
+              </td>
+              {% endif %}
+            </tr>
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td colspan="4"><b>Total</b></td>
+              <td id="purchase-total">$0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+
+      </div>
     </div>
-    {% endif %}
-
-    <table class="table table-bordered" id="purchase_table">
-      <thead>
-        <tr>
-          <th style="width: 6%">&nbsp;</th>
-          <th>Item</th>
-          <th style="width: 10%">Quantity</th>
-          <th style="width: 10%">Item Price</th>
-          <th style="width: 10%">Total Price</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr id="purchase-empty">
-          {% if existing_items %}
-          {{ existing_items|safe }}
-          {% else %}
-          <td colspan="5">
-            <h3>Order Empty</h3>
-            Scan an item to begin
-          </td>
-          {% endif %}
-        </tr>
-      </tbody>
-
-      <tfoot>
-        <tr>
-          <td colspan="4"><b>Total</b></td>
-          <td id="purchase-total">$0.00</td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <div class="btn-group btn-group-large" style="width: 100%">
-      <button type="button" id="btn-submit-purchase" class="btn btn-success btn-lg" style="width: 100%; height: 100px;">Submit Purchase</button>
-    </div>
-
   </div>
+
+  <div class="col-md-3">
+    <button type="button" id="btn-purchase-user" class="btn btn-success btn-lg btn-submit-purchase">Pay With Your User Account</button>
+    {% for pool in pools %}
+    <button type="button" id="btn-purchase-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-purchase">Pay With<br />{{ pool.name }}<br />Pool</button>
+    {% endfor %}
+  </div>
+
 </div>
 
 {% endblock %}

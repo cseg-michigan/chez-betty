@@ -280,7 +280,10 @@ def create_item_sales_json(request, item_id):
 # We are going to do this over all time and over the last 30 days
 
 # Returns a dict of {item_num -> {number of days -> sale speed}}
-def item_sale_speed(num_days):
+def item_sale_speed(num_days, only_item_id=None):
+    # TODO: If we're only looking for one item (only_item_id), this can probably
+    # be made more efficient
+
     # First we need to figure out when each item was in stock and when it wasn't.
     # I don't know what the best way to do this is. I think the easiest way is
     # to look at the in_stock column in the item_history table and figure it
@@ -299,10 +302,9 @@ def item_sale_speed(num_days):
     items = DBSession.execute("SELECT * FROM items_history\
                                WHERE item_changed_at>'{}'\
                                ORDER BY item_changed_at ASC".format(start_str))
-    
+
     # Calculate the number of days in the interval the item was in stock
     for item in items:
-
         status = item.in_stock>0
 
         if item.id not in data_onsale:
@@ -328,7 +330,7 @@ def item_sale_speed(num_days):
             # calculate time difference
             tdelta = item.item_changed_at - data_onsale[item.id]['date_in_stock']
             data_onsale[item.id]['days_on_sale'] += tdelta.days
-            print('{}: {}'.format(item.id, tdelta))
+            #print('{}: {}'.format(item.id, tdelta))
 
             data_onsale[item.id]['date_in_stock'] = None
 
@@ -336,7 +338,7 @@ def item_sale_speed(num_days):
         if item_data['date_in_stock'] != None:
             tdelta = datetime.datetime.now() - item_data['date_in_stock']
             item_data['days_on_sale'] += tdelta.days
-            print('{}: {}'.format(item_id, tdelta.days))
+            #print('{}: {}'.format(item_id, tdelta.days))
 
 
     # Calculate the number of items sold during the period
@@ -358,8 +360,10 @@ def item_sale_speed(num_days):
             continue
         data[itemid] = item_data['num_sold'] / item_data['days_on_sale']
 
-
-    return data
+    if only_item_id:
+        return data[only_item_id]
+    else:
+        return data
 
 
 
