@@ -59,6 +59,18 @@
             </tbody>
 
             <tfoot>
+              {% if transaction.discount %}
+              {% set subtotal = transaction.amount / (1-transaction.discount) %}
+              <tr>
+                <td colspan="3"><b>{{ _('Subtotal') }}</b></td>
+                <td id="purchase-subtotal">{{ subtotal|format_currency|safe }}</td>
+              </tr>
+              <tr>
+                <td><b>{{ _('Discounts') }}</b></td>
+                <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(transaction.discount*100) }}%)</td>
+                <td id="purchase-discount">({{ (subtotal * transaction.discount)|format_currency|safe }})</td>
+              </tr>
+              {% endif %}
               <td colspan="3"><b>{{ _('Total') }}</b></td>
               <td class="item-total"><b>{{ transaction.amount|format_currency|safe }}</b></td>
             </tfoot>

@@ -222,9 +222,12 @@ account.Account.total_purchases = __total_purchase_amount
 
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
-    def __init__(self, event, user):
+    discount = Column(Numeric)
+
+    def __init__(self, event, user, discount=None):
         chezbetty_v = account.get_virt_account("chezbetty")
         Transaction.__init__(self, event, user, chezbetty_v, None, None, Decimal(0.0))
+        self.discount = discount
 
 
 class Deposit(Transaction):

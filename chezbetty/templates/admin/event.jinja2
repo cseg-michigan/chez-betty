@@ -39,6 +39,9 @@
       <dl class="dl-horizontal">
         <dt>Type</dt><dd>{{ t.type }}</dd>
         <dt>Amount</dt><dd>{{ t.amount|format_currency|safe }}</dd>
+        {% if t.discount %}
+        <dt>Discount</dt><dd>{{ ((t.amount / (1-t.discount)) - t.amount)|format_currency|safe }} ({{ '{:.2}'.format(t.discount*100) }}%)</dd>
+        {% endif %}
         <dt>From Account (Virt)</dt><dd>{{ t.fr_account_virt.name if t.fr_account_virt else "n/a" }}</dd>
         <dt>To Account (Virt)</dt><dd>{{ t.to_account_virt.name if t.to_account_virt else "n/a" }}</dd>
         <dt>From Account (Cash)</dt><dd>{{ t.fr_account_cash.name if t.fr_account_cash else "n/a" }}</dd>

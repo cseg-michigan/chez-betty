@@ -290,6 +290,7 @@ def event(request):
         elif event.type == 'purchase':
             # View the purchase success page
             order = {'total': transaction.amount,
+                     'discount': transaction.discount,
                      'items': []}
             for subtrans in transaction.subtransactions:
                 item = {}
@@ -311,6 +312,7 @@ def event(request):
                 {'user': user,
                  'event': event,
                  'order': order,
+                 'transaction': transaction,
                  'account_type': account_type,
                  'pool': pool}, request)
 
