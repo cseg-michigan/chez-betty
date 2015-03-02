@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-02-26 22:11-0500\n"
+"POT-Creation-Date: 2015-03-02 14:02-0500\n"
 "PO-Revision-Date: 2015-02-28 20:37-0500\n"
 "Last-Translator: sanae <sanae@umich.edu>\n"
 "Language-Team: French\n"
@@ -42,6 +42,7 @@ msgid "Deposit To Your Account"
 msgstr "Déposez à votre compte"
 
 #: chezbetty/templates/deposit_edit.jinja2:30
+#: chezbetty/templates/deposit.jinja2:30
 msgid "Deposit To %(pool_name)s Pool"
 msgstr "Déposez à %(pool_name)s"
 
@@ -85,10 +86,6 @@ msgstr "Les Espèces"
 #: chezbetty/templates/deposit.jinja2:22
 msgid "Your Deposit Limit: %(limit)s"
 msgstr "Vous pouvez déposer jusqu'a %(limit)s"
-
-#: chezbetty/templates/deposit.jinja2:30
-msgid "Deposit To %(pool_name) Pool"
-msgstr "Déposez à %(pool_name)s"
 
 #: chezbetty/templates/deposit.jinja2:45
 msgid "Bitcoin"
@@ -199,7 +196,7 @@ msgstr "Salut %(name)s,"
 
 #: chezbetty/templates/base.jinja2:59
 msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
-msgstr "Vous devez Betty %(big_debt) actuellement.  C'est beaucoup d'argent!"
+msgstr "Vous devez Betty %(big_debt)s actuellement.  C'est beaucoup d'argent!"
 
 #: chezbetty/templates/base.jinja2:61
 msgid ""
@@ -214,7 +211,7 @@ msgstr ""
 
 #: chezbetty/templates/base.jinja2:70
 msgid "You currently owe Betty %(debt)s."
-msgstr "Vous devez Betty %(debt) actuellement."
+msgstr "Vous devez Betty %(debt)s actuellement."
 
 #: chezbetty/templates/base.jinja2:71
 msgid "Please try to pay Betty back soon, thanks!"
@@ -247,12 +244,12 @@ msgid "Deposit of %(amount)s"
 msgstr "Dépôt de %(amount)s"
 
 #: chezbetty/templates/user.jinja2:93
-msgid "Adjustment of %(amount)s by %(admin_name) "
-msgstr "Adjustement de %(amount) par %(admin_name)"
+msgid "Adjustment of %(amount)s by %(admin_name)s "
+msgstr "Adjustement de %(amount)s par %(admin_name)s"
 
 #: chezbetty/templates/user.jinja2:102
 msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
-msgstr "Dépôt de BTC de %(amount_in_usd) (%(amount_in_btc))"
+msgstr "Dépôt de BTC de %(amount_in_usd)s (%(amount_in_btc)s)"
 
 #: chezbetty/templates/user.jinja2:118
 msgid "No transactions."
@@ -556,7 +553,7 @@ msgstr "Vous avez déposé %(amount)s à %(pool_name)s"
 msgid "Edit this Deposit"
 msgstr "Modifez ce dépôt"
 
-#: chezbetty/templates/items.jinja2:2
+#: chezbetty/templates/items.jinja2:2 chezbetty/templates/items.jinja2:13
 msgid "Items"
 msgstr "Articles"
 
@@ -634,7 +631,7 @@ msgstr "Payé avec votre compte"
 
 #: chezbetty/templates/purchase_complete.jinja2:57
 msgid "(Paid with %(pool_name)s Pool)"
-msgstr "(Payé avec la compte commun %(pool_name))"
+msgstr "(Payé avec la compte commun %(pool_name)s)"
 
 #: chezbetty/templates/purchase_complete.jinja2:68
 msgid "If this was a mistake, touch here to undo this transaction."
@@ -667,3 +664,4 @@ msgstr "Administration"
 #: chezbetty/templates/index.jinja2:54
 msgid "Can you help translate Betty? E-mail chez-betty@umich.edu."
 msgstr "Pouvez-vous aider à traduire Betty? Email chez-betty@umich.edu."
+
