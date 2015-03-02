@@ -90,7 +90,7 @@
 
         {% elif transaction.type == "adjustment" %}
 
-        {{ _('Adjustment of %(amount)s by %(admin_name) ')|format(amount=transaction.amount|format_currency, admin_name=transaction.event.admin.name)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
+        {{ _('Adjustment of %(amount)s by %(admin_name)s ')|format(amount=transaction.amount|format_currency, admin_name=transaction.event.admin.name)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">

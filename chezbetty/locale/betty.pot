@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-02-26 22:11-0500\n"
+"POT-Creation-Date: 2015-03-02 14:02-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,6 +41,7 @@ msgid "Deposit To Your Account"
 msgstr ""
 
 #: ./chezbetty/templates/deposit_edit.jinja2:30
+#: ./chezbetty/templates/deposit.jinja2:30
 msgid "Deposit To %(pool_name)s Pool"
 msgstr ""
 
@@ -84,10 +85,6 @@ msgstr ""
 
 #: ./chezbetty/templates/deposit.jinja2:22
 msgid "Your Deposit Limit: %(limit)s"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:30
-msgid "Deposit To %(pool_name) Pool"
 msgstr ""
 
 #: ./chezbetty/templates/deposit.jinja2:45
@@ -250,7 +247,7 @@ msgid "Deposit of %(amount)s"
 msgstr ""
 
 #: ./chezbetty/templates/user.jinja2:93
-msgid "Adjustment of %(amount)s by %(admin_name) "
+msgid "Adjustment of %(amount)s by %(admin_name)s "
 msgstr ""
 
 #: ./chezbetty/templates/user.jinja2:102
@@ -506,7 +503,7 @@ msgstr ""
 msgid "Edit this Deposit"
 msgstr ""
 
-#: ./chezbetty/templates/items.jinja2:2
+#: ./chezbetty/templates/items.jinja2:2 ./chezbetty/templates/items.jinja2:13
 msgid "Items"
 msgstr ""
 

@@ -30,6 +30,8 @@ requires = [
     'abbreviate>=0.1.1',
     'sh',
     'Pillow',
+    'babel',
+    'lingua',
     ]
 
 setup(name='chezbetty',
