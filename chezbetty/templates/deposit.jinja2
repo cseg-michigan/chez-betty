@@ -27,7 +27,7 @@
           <div class="col-md-12">
             <button type="button" id="btn-deposit-user" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To Your Account') }}</button>
             {% for pool in pools %}
-            <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To %(pool_name) Pool')|format(pool_name=pool.name) }}</button>
+            <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To %(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
             {% endfor %}
           </div>
         </div>
