@@ -51,6 +51,7 @@
     {% set active_page = active_page|default('index') -%}
     {#{% include 'navbar.html' %}#}
 
+    {% if active_page not in ('deposit', 'deposit_edit') %}
     {% if user %}
     {% if user.balance < -50 %}
     <div class="alert alert-warning" role="alert">
@@ -71,6 +72,7 @@
         <p>{{ _('Please try to pay Betty back soon, thanks!') }}</p>
       </div>
     </div>
+    {% endif %}
     {% endif %}
     {% endif %}
 

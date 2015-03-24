@@ -1,11 +1,11 @@
 {% extends "base.jinja2" %}
+{% set active_page = 'purchase' %}
 {% block title %}{{ _('Purchase') }}{% endblock %}
 {% block header %}{{ _('Purchase') }}{% endblock %}
 
 
 {% block content %}
 
-{% set page = 'purchase' %}
 {% include "user_info.jinja2" %}
 
 <div class="row">
