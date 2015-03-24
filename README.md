@@ -28,7 +28,9 @@ development environment set up, do the following:
 1. Setup virtualenv with Python3:
 
         cd chez-betty
-        virtualenv .
+        # virtualenv .
+        # Python3.3 or later:
+        pyvenv .
         source bin/activate
 
 2. Install the Python3 dependencies:
