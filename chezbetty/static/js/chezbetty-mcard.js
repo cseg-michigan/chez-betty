@@ -24,7 +24,10 @@ function clear_spinner () {
 keyboard_input = "";
 input_timer = null;
 
-if (is_service_account) {
+/*** PAT: Removed "if (is_service_account)" check b/c it was always failing
+ *        on the terminal [and my local browser]. Something must have changed.
+ */
+if (true) {
 	$(document).keypress(function (e) {
 		alert_clear();
 
