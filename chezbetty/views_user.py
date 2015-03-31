@@ -41,9 +41,11 @@ from pyramid.security import Allow, Everyone, remember, forget
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
 
+import stripe
 import uuid
 import math
 import pytz
+import traceback
 
 ###
 ### User Admin
@@ -84,6 +86,74 @@ def user_index(request):
     return {'user': request.user,
             'my_pools': Pool.all_by_owner(request.user)}
 
+@view_config(route_name='user_deposit_cc',
+             renderer='templates/user/deposit_cc.jinja2',
+             permission='user')
+def user_deposit_cc(request):
+    return {'user': request.user,
+            'stripe_pk': request.registry.settings['stripe.publishable_key'],
+            }
+
+@view_config(route_name='user_deposit_cc_submit',
+             request_method='POST',
+             permission='user')
+def user_deposit_cc_submit(request):
+    # See http://stripe.com/docs/tutorials/charges
+    stripe.api_key = request.registry.settings['stripe.secret_key']
+
+    token = request.POST['stripeToken']
+    amount = float(request.POST['betty_amount'])
+    total_cents = int(request.POST['betty_total_cents'])
+
+    fee = amount * 0.029 + 0.30
+    if total_cents != int(round((amount + fee)*100)):
+        request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
+        return HTTPFound(location=request.route_url('user_index'))
+    amount = Decimal(amount)
+
+    if amount <= 0.0:
+        request.session.flash(
+                _('Deposit amount must be greater than $0.00. Card NOT charged.'),
+                'error'
+                )
+        return HTTPFound(location=request.route_url('user_index'))
+
+    try:
+        charge = stripe.Charge.create(
+                amount = total_cents,
+                currency="usd",
+                source=token,
+                description=request.user.uniqname+'@umich.edu'
+                )
+
+    except stripe.CardError as e:
+        traceback.print_exc()
+        request.session.flash('Card error processing transaction. Card NOT charged.', 'error')
+        return HTTPFound(location=request.route_url('user_index'))
+    except stripe.StripeError as e:
+        traceback.print_exc()
+        request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
+        request.session.flash('Please e-mail chezbetty@umich.edu so we can correct this error', 'error')
+        return HTTPFound(location=request.route_url('user_index'))
+
+    try:
+        # account = request.POST['account']
+        account = 'user'
+
+        if account == 'user':
+            deposit = datalayer.deposit(request.user, request.user, amount)
+        elif account == 'pool':
+            deposit = datalayer.deposit(request.user, Pool.from_id(request.POST['pool_id']), amount)
+
+        request.session.flash('Deposit added successfully.', 'success')
+
+    except Exception as e:
+        traceback.print_exc()
+        request.session.flash('A unknown error has occured.', 'error')
+        request.session.flash('Your card HAS been charged, but your account HAS NOT been credited.', 'error')
+        request.session.flash('Please e-mail chezbetty@umich.edu so we can correct this error', 'error')
+
+    return HTTPFound(location=request.route_url('user_index'))
 
 @view_config(route_name='user_pools',
              renderer='templates/user/pools.jinja2',

@@ -109,6 +109,9 @@ def main(global_config, **settings):
 
     config.add_route('user_ajax_bool',             '/user/ajax/bool/{object}/{id}/{field}/{state}')
 
+    config.add_route('user_deposit_cc',            '/user/deposit_cc')
+    config.add_route('user_deposit_cc_submit',     '/user/deposit_cc/submit')
+
     config.add_route('user_pools',                 '/user/pools')
     config.add_route('user_pools_new_submit',      '/user/pools/new/submit')
     config.add_route('user_pool',                  '/user/pool/{pool_id}')

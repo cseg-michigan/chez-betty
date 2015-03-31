@@ -49,6 +49,12 @@ auth.secret = aabbcc
 bitcoin.coinbase_api_key = aabb
 bitcoin.coinbase_api_secret = aabb
 
+# Use the credit card number 4242 4242 4242 4242 with any 3-digit CCV and a
+# valid expiry date when testing. Stripe API will return always returns success
+# for charges made on test keys.
+stripe.publishable_key = aabb
+stripe.secret_key = aabb
+
 # By default, the toolbar only appears for clients from IP addresses
 # '127.0.0.1' and '::1'.
 # debugtoolbar.hosts = 127.0.0.1 ::1

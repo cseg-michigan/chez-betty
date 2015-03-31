@@ -1,0 +1,52 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'deposit_cc' %}
+
+{% block title %}{{ _('Credit Card Deposit') }}{% endblock %}
+
+{% block top %}
+<h1 class="page-header">{{ _('Credit Card Deposit') }}</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<p>
+{{ _('We use stripe to process credit card transactions.') }}
+{{ _('Stripe charges 2.9% + $0.30 for each transaction.') }}
+{{ _('We pass this charge directly onto you.') }}
+{{ _('That is, if you wish to deposit $20 to your account, we will charge your
+card 20 + (20*0.029 + 0.30) = $20.88.') }}
+</p>
+
+<hr />
+
+<dl class="dl-horizontal">
+  <dt>{{ _('Account Balance') }}</dt>
+  <dd>{{ user.balance|format_currency|safe }}</dd>
+</dl>
+
+<hr />
+
+<table class="table table-bordered">
+  <tr>
+    <th>Deposit Amount</th>
+    <th>Fees</th>
+    <th>Amount Charged</th>
+    <th>New Balance</th>
+  </tr>
+  {% if user.balance < 0 %}
+  {% set amount = -user.balance|float %}
+  {% include "deposit_cc_row.jinja2" %}
+  {% set amount = amount + 20 %}
+  {% include "deposit_cc_row.jinja2" %}
+  {% set amount = amount + 80 %}
+  {% include "deposit_cc_row.jinja2" %}
+  {% else %}
+  {% set amount = 20 %}
+  {% include "deposit_cc_row.jinja2" %}
+  {% set amount = 100 %}
+  {% include "deposit_cc_row.jinja2" %}
+  {% endif %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% set fee = amount * 0.029 + 0.30 %}
+{% set total_cents = ((amount + fee)*100)|round|int %}
+{% set new_balance = user.balance|float + amount %}
+<tr>
+  <td>{{ amount|format_currency|safe }}</td>
+  <td>{{ fee|format_currency|safe }}</td>
+  <td>{{ (total_cents/100)|format_currency|safe }}</td>
+  <td>{{ new_balance|format_currency|safe }}</td>
+  <td>
+    <form action="/user/deposit_cc/submit" method="POST">
+      <input type="hidden" name="betty_amount" value="{{ amount }}">
+      <input type="hidden" name="betty_total_cents" value="{{ total_cents }}">
+      <script
+        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        data-key="{{ stripe_pk }}"
+        data-amount="{{ total_cents }}"
+        data-name="Chez Betty"
+        data-description="${{ '%0.2f'|format(amount) }} Deposit (${{ '%0.2f'|format(total_cents/100) }} Charge)"
+        data-image="/static/chezbetty_1000px.jpg">
+      </script>
+    </form>
+  </td>
+</tr>
