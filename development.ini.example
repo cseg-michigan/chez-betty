@@ -29,6 +29,11 @@ chezbetty.host = http://chezbetty.com
 chezbetty.email = chezbetty@chezbetty.com
 chezbetty.ipaddr = 111.222.333.444
 
+# These parameters are optional
+# smtp.host =
+# smtp.username =
+# smtp.password =
+
 ldap.server = ldap.domain.com
 ldap.password = abc123
 ldap.username = cn=<name>,ou=Applications,o=services

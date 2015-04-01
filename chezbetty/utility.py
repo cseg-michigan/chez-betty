@@ -20,8 +20,13 @@ from email.mime.base import MIMEBase
 def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
     settings = get_current_registry().settings
 
-    sm = smtplib.SMTP()
-    sm.connect()
+    if 'smtp.host' in settings:
+        sm = smtplib.SMTP(host=settings['smtp.host'])
+    else:
+        sm = smtplib.SMTP()
+        sm.connect()
+    if 'smtp.username' in settings:
+        sm.login(settings['smtp.username'], settings['smtp.password'])
 
     msg = MIMEMultipart()
     msg['Subject'] = SUBJECT
