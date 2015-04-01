@@ -47,6 +47,7 @@ from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
+import transaction
 
 # Used for generating barcodes
 from reportlab.graphics.barcode import code39
@@ -2363,13 +2364,47 @@ def login(request):
             message = 'Login failed. Incorrect username or password.',
 
     return dict(
-        message = message,
+        login_message = message,
         url = request.application_url + '/login',
         came_from = came_from,
         login = login,
         password = password
     )
 
+@view_config(route_name='login_reset_pw',
+             request_method='POST',
+             renderer='templates/login.jinja2')
+def login_reset_pw(request):
+    login_url = request.resource_url(request.context, 'login')
+    login_reset_url = request.resource_url(request.context, 'login_reset_pw')
+    referrer = request.url
+    if referrer == login_url or referrer == login_reset_url:
+        referrer = '/' # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+
+    succ = '',
+    err = '',
+
+    # This will create a user automatically if they do not already exist
+    try:
+        with transaction.manager:
+            user = User.from_umid(request.POST['umid'])
+        user = DBSession.merge(user)
+
+        if request.POST['uniqname'] != user.uniqname:
+            raise __user.InvalidUserException()
+    except:
+        err = 'Bad uniqname or umid',
+    else:
+        user_password_reset(user)
+        succ = ('Password set and emailed to {}@umich.edu.'.format(user.uniqname),)
+
+    return dict(
+        forgot_error = err,
+        forgot_success = succ,
+        url = request.application_url + '/login',
+        came_from = came_from,
+    )
 
 @view_config(route_name='logout')
 def logout(request):

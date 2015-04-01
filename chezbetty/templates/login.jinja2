@@ -27,15 +27,9 @@ body {
 .form-signin .form-control:focus {
   z-index: 2;
 }
-.form-signin input[type="email"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+
+button {
+  margin-top: 10px;
 }
 </style>
 
@@ -53,18 +47,30 @@ body {
 
   <div class="col-md-4">
 
-    <p><a class="btn btn-default btn-lg" href="/">Home</a></p>
-
-    <h4>If you are logging out on Chez Betty, you must login as the service account
-    so that the terminal is functional.</h4>
+    <p><a class="btn btn-default btn-lg btn-block" href="/">Home</a></p>
 
     <form class="form-signin" role="form" method="post" action="/login">
       <input type="hidden" name="came_from" value="{{ came_from }}"/>
       <h2 class="form-signin-heading">Please sign in</h2>
-      <span class="label label-danger">{{ message[0] }}</span>
+      {% for m in login_message %}
+      <span class="label label-danger">{{ m }}</span>
+      {% endfor %}
       <input name="login" type="login" id="login-uniqname" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
       <input name="password" type="password" id="login-password" class="form-control" placeholder="password" required value = "{{ password }}">
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+    <form class="form-signin" role="form" method="post" action="/login/reset_pw">
+      <h2 class="form-signin-heading">Forgot Password?</h2>
+      {% for m in forgot_error %}
+      <span class="label label-danger">{{ m }}</span>
+      {% endfor %}
+      {% for m in forgot_success %}
+      <span class="label label-success">{{ m }}</span>
+      {% endfor %}
+      <input name="uniqname" type="login" id="forgot-uniqname" class="form-control" placeholder="uniqname" required />
+      <input name="umid" type="number" id="forgot-umid" class="form-control" placeholder="umid" required />
+      <button class="btn btn-lg btn-warning btn-block" type="submit">Reset My Password</button>
     </form>
 
   </div>
