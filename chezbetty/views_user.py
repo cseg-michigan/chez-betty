@@ -263,4 +263,25 @@ def user_pool_addmember_submit(request):
 
 
 
+@view_config(route_name='user_password_edit',
+             renderer='templates/user/password_edit.jinja2',
+             permission='user')
+def user_password_edit(request):
+    return {}
+
+
+@view_config(route_name='user_password_edit_submit',
+             request_method='POST',
+             permission='user')
+def user_password_edit_submit(request):
+    pwd0 = request.POST['edit-password-0']
+    pwd1 = request.POST['edit-password-1']
+    if pwd0 != pwd1:
+        request.session.flash('Error: Passwords do not match', 'error')
+        return HTTPFound(location=request.route_url('user_password_edit'))
+    request.user.password = pwd0
+    request.session.flash('Password changed successfully.', 'success')
+    return HTTPFound(location=request.route_url('user_index'))
+    # check that changing password for actually logged in user
+
 
