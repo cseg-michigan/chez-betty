@@ -86,6 +86,12 @@ def user_index(request):
     return {'user': request.user,
             'my_pools': Pool.all_by_owner(request.user)}
 
+@view_config(route_name='user_index_slash',
+             renderer='templates/user/index.jinja2',
+             permission='user')
+def user_index_slash(request):
+    return HTTPFound(location=request.route_url('user_index'))
+
 @view_config(route_name='user_deposit_cc',
              renderer='templates/user/deposit_cc.jinja2',
              permission='user')

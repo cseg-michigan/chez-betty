@@ -108,6 +108,8 @@ def main(global_config, **settings):
 
     # USER ADMIN
     config.add_route('user_index',                 '/user')
+    # Map this as convenience since users will be typing manually often
+    config.add_route('user_index_slash',           '/user/')
 
     config.add_route('user_ajax_bool',             '/user/ajax/bool/{object}/{id}/{field}/{state}')
 
