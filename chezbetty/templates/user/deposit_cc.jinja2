@@ -22,7 +22,7 @@ card 20 + (20*0.029 + 0.30) = $20.88.') }}
 
 <dl class="dl-horizontal">
   <dt>{{ _('Account Balance') }}</dt>
-  <dd>{{ user.balance|format_currency|safe }}</dd>
+  <dd id="user-balance">{{ user.balance|format_currency|safe }}</dd>
 </dl>
 
 <hr />
@@ -47,6 +47,46 @@ card 20 + (20*0.029 + 0.30) = $20.88.') }}
   {% set amount = 100 %}
   {% include "deposit_cc_row.jinja2" %}
   {% endif %}
+  <tr>
+    <form action="/user/deposit_cc/custom" method="GET">
+      <td><input type="text" class="form-control" id="deposit-amount" name="deposit-amount"></input></td>
+      <td id="deposit-fee"></td>
+      <td id="deposit-charge"></td>
+      <td id="deposit-newbal"></td>
+      <td><button type="submit" class="btn btn-default disabled" id="deposit-button">Pay Custom Amount</button></td>
+    </form>
+  </tr>
 </table>
 
+{% endblock %}
+
+{% block onload %}
+<script>
+/* This js is used only on this page. It doesn't make sense to pull it into
+   a separate js file. */
+
+$("#deposit-amount").on('input', function () {
+  var btn    = $('#deposit-button');
+
+  var curbal = parseFloat($('#user-balance').text().slice(1));
+
+  var amount = parseFloat($('#deposit-amount').val());
+  if (isNaN(amount) || (amount < 1)) {
+    $('#deposit-fee').text('');
+    $('#deposit-charge').text('');
+    $('#deposit-newbal').text('');
+    btn.addClass('disabled');
+    return;
+  }
+
+  var fee = Number((amount * 0.029 + 0.30).toFixed(2));
+  $('#deposit-fee').text('$' + fee.toFixed(2));
+  var charge = amount + fee;
+  $('#deposit-charge').text('$' + charge.toFixed(2));
+  var newbal = curbal + amount;
+  $('#deposit-newbal').text('$' + newbal.toFixed(2));
+
+  btn.removeClass('disabled');
+});
+</script>
 {% endblock %}

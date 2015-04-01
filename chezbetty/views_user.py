@@ -94,6 +94,14 @@ def user_deposit_cc(request):
             'stripe_pk': request.registry.settings['stripe.publishable_key'],
             }
 
+@view_config(route_name='user_deposit_cc_custom',
+             renderer='templates/user/deposit_cc_custom.jinja2',
+             permission='user')
+def user_deposit_cc_custom(request):
+    return {'user': request.user,
+            'stripe_pk': request.registry.settings['stripe.publishable_key'],
+            'amount': round(float(request.GET['deposit-amount']), 2)}
+
 @view_config(route_name='user_deposit_cc_submit',
              request_method='POST',
              permission='user')

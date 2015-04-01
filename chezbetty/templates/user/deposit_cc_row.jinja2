@@ -16,7 +16,7 @@
         data-amount="{{ total_cents }}"
         data-name="Chez Betty"
         data-description="${{ '%0.2f'|format(amount) }} Deposit (${{ '%0.2f'|format(total_cents/100) }} Charge)"
-        data-image="/static/chezbetty_1000px.jpg">
+        data-image="{{'chezbetty:static/chezbetty_1000px.jpg'|static_url}}">
       </script>
     </form>
   </td>
