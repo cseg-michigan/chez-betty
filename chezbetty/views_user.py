@@ -141,9 +141,19 @@ def user_deposit_cc_submit(request):
         account = 'user'
 
         if account == 'user':
-            deposit = datalayer.deposit(request.user, request.user, amount)
+            deposit = datalayer.cc_deposit(
+                    request.user,
+                    request.user,
+                    amount,
+                    charge['id'],
+                    charge['source']['last4'])
         elif account == 'pool':
-            deposit = datalayer.deposit(request.user, Pool.from_id(request.POST['pool_id']), amount)
+            deposit = datalayer.cc_deposit(
+                    request.user,
+                    Pool.from_id(request.POST['pool_id']),
+                    amount,
+                    charge['id'],
+                    charge['source']['last4'])
 
         request.session.flash('Deposit added successfully.', 'success')
 

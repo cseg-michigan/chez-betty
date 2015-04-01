@@ -162,6 +162,24 @@ def deposit(user, account, amount):
                 event=e)
 
 
+# Call this when a credit card transaction deposits money into an account
+def cc_deposit(user, account, amount, txn_id, last4):
+    assert(amount > 0.0)
+    assert(hasattr(user, "id"))
+
+    prev = user.balance
+    e = event.Deposit(user)
+    DBSession.add(e)
+    DBSession.flush()
+    t = transaction.CCDeposit(e, account, amount, txn_id, last4)
+    DBSession.add(t)
+    return dict(prev=prev,
+                new=user.balance,
+                amount=amount,
+                transaction=t,
+                event=e)
+
+
 # Call this to deposit bitcoins to the user account
 def bitcoin_deposit(user, amount, btc_transaction, address, amount_btc):
     assert(amount > 0.0)

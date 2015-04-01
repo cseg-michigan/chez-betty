@@ -25,6 +25,7 @@ class Transaction(Base):
     type = Column(Enum("purchase",      # user_account -> chezbetty.        None
                        "deposit",
                        "cashdeposit",   # null         -> user_account.     null      -> cashbox.
+                       "ccdeposit",     # null         -> user_account.     null      -> chezbetty
                        "btcdeposit",    # null         -> user_account      null      -> btcbox
                        "adjustment",    # chezbetty   <-> user              None                            Yes
                        "restock",       # chezbetty    -> null              chezbetty -> null
@@ -205,6 +206,7 @@ def __total_deposit_amount(self):
             .filter(and_(
                         Transaction.to_account_virt_id == self.id,
                         or_(Transaction.type == 'cashdeposit',
+                            Transaction.type == 'ccdeposit',
                             Transaction.type == 'btcdeposit')))\
             .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_deposits = __total_deposit_amount
@@ -292,6 +294,19 @@ class CashDeposit(Deposit):
             safely ignored.</em></p>""" + body
 
         utility.send_email(TO=TO, SUBJECT=SUBJECT, body=body)
+
+
+class CCDeposit(Deposit):
+    __mapper_args__ = {'polymorphic_identity': 'ccdeposit'}
+
+    stripe_id = Column(Text)
+    cc_last4 = Column(Text)
+
+    def __init__(self, event, user, amount, stripe_id, last4):
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, None, user, None, chezbetty_c, amount)
+        self.stripe_id = stripe_id
+        self.cc_last4 = last4
 
 
 class BTCDeposit(Deposit):
