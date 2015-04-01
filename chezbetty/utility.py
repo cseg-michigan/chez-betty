@@ -36,13 +36,15 @@ def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
 
     if 'debugging' in settings:
         print(msg.as_string())
-        if 'debugging_send_email' in settings and settings['debugging_send_email']:
+        if 'debugging_send_email' in settings and settings['debugging_send_email'] == 'true':
             try:
                 msg.replace_header('To', settings['debugging_send_email_to'])
                 print("DEBUG: e-mail destination overidden to {}".format(msg['To']))
             except KeyError: pass
             send_to = msg['To'].split(', ')
             sm.sendmail(FROM, send_to, msg.as_string())
+        else:
+            print("Mail suppressed due to debug settings")
     else:
         send_to = msg['To'].split(', ')
         sm.sendmail(FROM, send_to, msg.as_string())
