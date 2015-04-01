@@ -54,7 +54,19 @@
 
       <div class="col-md-4 deposit-type-col">
         <h3>{{ _('Credit Card') }}</h3>
-        <p style="text-align:center;">{{ _('Coming soon.') }}</p>
+        <div style="text-align:center">
+          <h4 style="text-align:center">{{ _('Betty now accepts credit cards!') }}</h4>
+          <hr />
+          <p>
+          {{ _('To deposit using a credit card, please visit chezbetty.eecs.umich.edu/user in your browser.') }}
+          </p>
+          <hr />
+          {% if user.has_password == False %}
+          {{ button.ajax_singleuse_button("Create and Email Password", "/deposit/"~user.id~"/password/create") }}
+          {% else %}
+          {{ button.ajax_singleuse_button("Reset and Email Password", "/deposit/"~user.id~"/password/reset") }}
+          {% endif %}
+        </div>
       </div>
 
 

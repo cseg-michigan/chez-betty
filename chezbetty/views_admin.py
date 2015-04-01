@@ -39,6 +39,7 @@ from .models.tag import Tag
 from .models.item_tag import ItemTag
 
 from .utility import send_email
+from .utility import user_password_reset
 
 from .jinja2_filters import format_currency
 
@@ -1724,14 +1725,6 @@ def admin_user_balance_edit_submit(request):
         request.session.flash('Must include a reason', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
-def _admin_user_password_reset(user):
-    password = user.random_password()
-    send_email(TO=user.uniqname+'@umich.edu',
-               SUBJECT='Chez Betty Login',
-               body=render('templates/admin/email_password.jinja2', {'user': user, 'password': password}))
-    return {'status': 'success',
-            'msg': 'Password set and emailed to user.'}
-
 @view_config(route_name='admin_user_password_create',
              renderer='json',
              permission='admin')
@@ -1741,7 +1734,9 @@ def admin_user_password_create(request):
         if user.has_password:
             return {'status': 'error',
                     'msg': 'Error: User already has password.'}
-        return _admin_user_password_reset(user)
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to user.'}
     except NoResultFound:
         return {'status': 'error',
                 'msg': 'Could not find user.'}
@@ -1756,7 +1751,9 @@ def admin_user_password_create(request):
 def admin_user_password_reset(request):
     try:
         user = User.from_id(int(request.matchdict['user_id']))
-        return _admin_user_password_reset(user)
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to user.'}
     except NoResultFound:
         return {'status': 'error',
                 'msg': 'Could not find user.'}

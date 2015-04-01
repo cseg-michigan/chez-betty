@@ -26,6 +26,8 @@ from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
 
+from .utility import user_password_reset
+
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
@@ -524,6 +526,43 @@ def btc_check(request):
     except:
         return {}
 
+
+@view_config(route_name='deposit_password_create',
+             renderer='json',
+             permission='service')
+def deposit_password_create(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if user.has_password:
+            return {'status': 'error',
+                    'msg': 'Error: User already has password.'}
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
+@view_config(route_name='deposit_password_reset',
+        renderer='json',
+        permission='service')
+def deposit_password_reset(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
 
 @view_config(route_name='deposit_new',
              request_method='POST',

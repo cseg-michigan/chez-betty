@@ -3,6 +3,7 @@ import itertools
 import qrcode
 import qrcode.image.svg
 
+from pyramid.renderers import render
 from pyramid.threadlocal import get_current_registry
 
 try:
@@ -49,6 +50,14 @@ def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
         send_to = msg['To'].split(', ')
         sm.sendmail(FROM, send_to, msg.as_string())
     sm.quit()
+
+
+def user_password_reset(user):
+    password = user.random_password()
+    send_email(TO=user.uniqname+'@umich.edu',
+               SUBJECT='Chez Betty Login',
+               body=render('templates/admin/email_password.jinja2', {'user': user, 'password': password}))
+
 
 def string_to_qrcode(s):
     factory = qrcode.image.svg.SvgPathImage
