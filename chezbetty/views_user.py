@@ -300,6 +300,29 @@ def user_pool_addmember_submit(request):
         return HTTPFound(location=request.route_url('user_pools'))
 
 
+@view_config(route_name='user_pool_changename_submit',
+             request_method='POST',
+             permission='user')
+def user_pool_changename_submit(request):
+    try:
+        pool = Pool.from_id(request.POST['pool-id'])
+        if pool.owner != request.user.id:
+            request.session.flash('You do not have permission to view that pool.', 'error')
+            return HTTPFound(location=request.route_url('user_pools'))
+
+        pool_name = request.POST['newname'].strip()
+        if len(pool_name) > 255:
+            pool_name = pool_name[0:255]
+
+        pool.name = pool_name
+
+        request.session.flash('Pool created.', 'succcess')
+        return HTTPFound(location=request.route_url('user_pool', pool_id=pool.id))
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error changing pool name.', 'error')
+        return HTTPFound(location=request.route_url('user_pools'))
+
 
 @view_config(route_name='user_password_edit',
              renderer='templates/user/password_edit.jinja2',

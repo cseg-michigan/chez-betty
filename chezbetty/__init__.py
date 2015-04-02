@@ -121,6 +121,7 @@ def main(global_config, **settings):
     config.add_route('user_pools_new_submit',      '/user/pools/new/submit')
     config.add_route('user_pool',                  '/user/pool/{pool_id}')
     config.add_route('user_pool_addmember_submit', '/user/pool/addmember/submit')
+    config.add_route('user_pool_changename_submit','/user/pool/changename/submit')
 
     config.add_route('user_password_edit',         '/user/password/edit')
     config.add_route('user_password_edit_submit',  '/user/password/edit/submit')
