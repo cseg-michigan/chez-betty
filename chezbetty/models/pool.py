@@ -41,7 +41,8 @@ class Pool(account.Account):
         # Get all pools the user can access
         pools = []
         for pool in Pool.all_by_owner(user, only_enabled):
-            pools.append(pool)
+            if not only_enabled or pool.enabled:
+                pools.append(pool)
 
         for pu in user.pools:
             if not only_enabled or pu.pool.enabled:
