@@ -24,7 +24,7 @@ from.</p>
       <thead>
         <tr>
           <th>Pool Name</th>
-          <th>Number of Users</th>
+          <th style="width:20%;">Number of Users</th>
           <th style="width:20%;">Balance</th>
         </tr>
       </thead>
@@ -56,7 +56,7 @@ from.</p>
       <thead>
         <tr>
           <th>Pool Name</th>
-          <th>Number of Users</th>
+          <th style="width:20%;">Number of Users</th>
           <th style="width:20%;">Balance</th>
         </tr>
       </thead>
@@ -90,6 +90,7 @@ from.</p>
       <thead>
         <tr>
           <th>Pool Name</th>
+          <th style="width:20%;">Pool Owner</th>
           <th style="width:20%;">Balance</th>
         </tr>
       </thead>
@@ -98,6 +99,7 @@ from.</p>
         {% for pu in user.pools %}
         <tr>
           <td>{{ pu.pool.name }} {% if pu.enabled == False or pu.pool.enabled == False %}(Currently Disabled){% endif %}</td>
+          <td>{{ pu.pool.get_owner_name() }}</td>
           <td>{{ pu.pool.balance|format_currency|safe }}</td>
         </tr>
         {% endfor %}

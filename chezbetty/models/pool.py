@@ -1,5 +1,6 @@
 import os
 from .model import *
+from .user import User
 from . import account
 from chezbetty import utility
 
@@ -17,6 +18,9 @@ class Pool(account.Account):
         self.owner = owner.id
         self.name = name
         self.balance = 0.0
+
+    def get_owner_name(self):
+        return User.from_id(self.owner).name
 
     @classmethod
     def from_id(cls, id):
