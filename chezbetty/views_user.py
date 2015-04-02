@@ -96,7 +96,18 @@ def user_index_slash(request):
              renderer='templates/user/deposit_cc.jinja2',
              permission='user')
 def user_deposit_cc(request):
+    pools = Pool.all_accessable(request.user, True)
+    pool = None
+    if 'acct' in request.GET:
+        account = request.GET['acct']
+        if account != 'user':
+            pool = Pool.from_id(account.split('-')[1])
+    else:
+        account = 'user'
     return {'user': request.user,
+            'account': account,
+            'pool': pool,
+            'pools': pools,
             'stripe_pk': request.registry.settings['stripe.publishable_key'],
             }
 
@@ -104,9 +115,17 @@ def user_deposit_cc(request):
              renderer='templates/user/deposit_cc_custom.jinja2',
              permission='user')
 def user_deposit_cc_custom(request):
+    account = request.GET['betty_to_account']
+    if account != 'user':
+        pool = Pool.from_id(account.split('-')[1])
+    else:
+        pool = None
     return {'user': request.user,
             'stripe_pk': request.registry.settings['stripe.publishable_key'],
-            'amount': round(float(request.GET['deposit-amount']), 2)}
+            'amount': round(float(request.GET['deposit-amount']), 2),
+            'account': account,
+            'pool': pool,
+            }
 
 @view_config(route_name='user_deposit_cc_submit',
              request_method='POST',
@@ -118,6 +137,22 @@ def user_deposit_cc_submit(request):
     token = request.POST['stripeToken']
     amount = float(request.POST['betty_amount'])
     total_cents = int(request.POST['betty_total_cents'])
+    to_account = request.POST['betty_to_account']
+
+    try:
+        if to_account != 'user':
+            pool = Pool.from_id(to_account.split('-')[1])
+            if pool.enabled == False:
+                print("to_account:", to_account)
+                raise NotImplementedError
+            if pool.owner != request.user.id:
+                if pool not in map(lambda pu: getattr(pu, 'pool'), request.user.pools):
+                    print("to_account:", to_account)
+                    raise NotImplementedError
+    except Exception as e:
+        traceback.print_exc()
+        request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
+        return HTTPFound(location=request.route_url('user_index'))
 
     fee = amount * 0.029 + 0.30
     if total_cents != int(round((amount + fee)*100)):
@@ -151,20 +186,17 @@ def user_deposit_cc_submit(request):
         return HTTPFound(location=request.route_url('user_index'))
 
     try:
-        # account = request.POST['account']
-        account = 'user'
-
-        if account == 'user':
+        if to_account == 'user':
             deposit = datalayer.cc_deposit(
                     request.user,
                     request.user,
                     amount,
                     charge['id'],
                     charge['source']['last4'])
-        elif account == 'pool':
+        else:
             deposit = datalayer.cc_deposit(
                     request.user,
-                    Pool.from_id(request.POST['pool_id']),
+                    pool,
                     amount,
                     charge['id'],
                     charge['source']['last4'])

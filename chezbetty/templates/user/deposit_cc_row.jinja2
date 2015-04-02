@@ -1,16 +1,27 @@
+{% if balance < 0 %}
+{% set amount = target + -(balance|float) %}
+{% else %}
+{% set amount = target %}
+{% endif %}
 {% set fee = amount * 0.029 + 0.30 %}
 {% set total_cents = ((amount + fee)*100)|round|int %}
-{% set new_balance = user.balance|float + amount %}
+{% set new_balance = balance|float + amount %}
+{% if target == 0 %}
+<tr class="cc-in-debt">
+{% else %}
 <tr>
-  <td>{{ amount|format_currency|safe }}</td>
-  <td>{{ fee|format_currency|safe }}</td>
-  <td>{{ (total_cents/100)|format_currency|safe }}</td>
-  <td>{{ new_balance|format_currency|safe }}</td>
+{% endif %}
+  <td id="cc-fixed-amount-{{ target }}">{{ amount|format_currency|safe }}</td>
+  <td id="cc-fixed-fee-{{ target }}">{{ fee|format_currency|safe }}</td>
+  <td id="cc-fixed-total-{{ target }}">{{ (total_cents/100)|format_currency|safe }}</td>
+  <td class="cc-fixed-balance" id="cc-fixed-balance-{{ target }}">{{ new_balance|format_currency|safe }}</td>
   <td>
     <form action="/user/deposit_cc/submit" method="POST">
-      <input type="hidden" name="betty_amount" value="{{ amount }}">
-      <input type="hidden" name="betty_total_cents" value="{{ total_cents }}">
+      <input id="cc-input-amount-{{ target }}" type="hidden" name="betty_amount" value="{{ amount }}">
+      <input id="cc-input-total-{{ target }}" type="hidden" name="betty_total_cents" value="{{ total_cents }}">
+      <input type="hidden" name="betty_to_account" value="{{ account }}" class="cc-betty-to-account">
       <script
+        id="cc-script-{{ target }}"
         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
         data-key="{{ stripe_pk }}"
         data-amount="{{ total_cents }}"

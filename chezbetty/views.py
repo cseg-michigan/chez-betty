@@ -203,13 +203,7 @@ def deposit(request):
             btc_html = ""
 
         # Get pools the user can deposit to
-        pools = []
-        for pool in Pool.all_by_owner(user, True):
-            pools.append(pool)
-
-        for pu in user.pools:
-            if pu.pool.enabled:
-                pools.append(pu.pool)
+        pools = Pool.all_accessable(user, True)
 
         return {'user' : user,
                 'btc'  : btc_html, 

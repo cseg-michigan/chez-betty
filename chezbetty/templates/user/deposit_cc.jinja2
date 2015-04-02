@@ -27,28 +27,50 @@ card 20 + (20*0.029 + 0.30) = $20.88.') }}
 
 <hr />
 
+{% for pool in pools %}
+<dl class="dl-horizontal">
+  <dt>{{ _('%(pool_name)s Pool Balance')|format(pool_name=pool.name) }}</dt>
+  <dd id="pool-{{ pool.id }}-balance">{{ pool.balance|format_currency|safe }}</dd>
+</dl>
+{% endfor %}
+
+<hr />
+
+{% if account == 'user' %}
+{% set balance = user.balance %}
+{% else %}
+{% set balance = pool.balance %}
+{% endif %}
+
+<dl class="dl-horizontal">
+  <dt>Deposit To</dt>
+  <dd>
+  <select id="to-account">
+    <option value="user" {% if account == 'user' %}selected{% endif %}>{{ _('User Account') }}</option>
+    {% for pool in pools %}
+    <option value="pool-{{ pool.id }}" {% if account == 'pool-'+pool.id|string %}selected{% endif %}>{{ pool.name }}</option>
+    {% endfor %}
+  </select>
+  </dd>
+</dl>
+
+<hr />
+
 <table class="table table-bordered">
   <tr>
     <th>Deposit Amount</th>
     <th>Fees</th>
     <th>Amount Charged</th>
     <th>New Balance</th>
+    <th></th>
   </tr>
-  {% if user.balance < 0 %}
-  {% set amount = -user.balance|float %}
+  {% set target = 20 %}
   {% include "deposit_cc_row.jinja2" %}
-  {% set amount = amount + 20 %}
+  {% set target = 100 %}
   {% include "deposit_cc_row.jinja2" %}
-  {% set amount = amount + 80 %}
-  {% include "deposit_cc_row.jinja2" %}
-  {% else %}
-  {% set amount = 20 %}
-  {% include "deposit_cc_row.jinja2" %}
-  {% set amount = 100 %}
-  {% include "deposit_cc_row.jinja2" %}
-  {% endif %}
   <tr>
     <form action="/user/deposit_cc/custom" method="GET">
+      <input type="hidden" name="betty_to_account" value="{{ account }}" class="cc-betty-to-account">
       <td><input type="text" class="form-control" id="deposit-amount" name="deposit-amount"></input></td>
       <td id="deposit-fee"></td>
       <td id="deposit-charge"></td>
@@ -56,6 +78,17 @@ card 20 + (20*0.029 + 0.30) = $20.88.') }}
       <td><button type="submit" class="btn btn-default disabled" id="deposit-button">Pay Custom Amount</button></td>
     </form>
   </tr>
+  <tr class="cc-in-debt"><td colspan="5" /></tr>
+  <tr class="cc-in-debt">
+    <td colspan="5">
+      <h4>We prefer that users keep a positive balance if possible. Betty is
+      largely funded on the credit of the administrators (grad students!).</h4>
+      <h4>If you've graduated or otherwise moved on, we hope you enjoyed Betty.
+      Please do us the courtesy of settling your debts.</h4>
+    </td>
+  </tr>
+  {% set target = 0 %}
+  {% include "deposit_cc_row.jinja2" %}
 </table>
 
 {% endblock %}
@@ -65,10 +98,17 @@ card 20 + (20*0.029 + 0.30) = $20.88.') }}
 /* This js is used only on this page. It doesn't make sense to pull it into
    a separate js file. */
 
-$("#deposit-amount").on('input', function () {
+function update_bal () {
   var btn    = $('#deposit-button');
 
-  var curbal = parseFloat($('#user-balance').text().slice(1));
+  var acct   = $('#to-account').val();
+
+  var curbal;
+  if ($('#'+acct+'-balance').text().charAt(0) == '-') {
+    curbal = -parseFloat($('#'+acct+'-balance').text().slice(2));
+  } else {
+    curbal = parseFloat($('#'+acct+'-balance').text().slice(1));
+  }
 
   var amount = parseFloat($('#deposit-amount').val());
   if (isNaN(amount) || (amount < 1)) {
@@ -87,6 +127,23 @@ $("#deposit-amount").on('input', function () {
   $('#deposit-newbal').text('$' + newbal.toFixed(2));
 
   btn.removeClass('disabled');
-});
+}
+
+function change_acct () {
+  var acct   = $('#to-account').val();
+  window.location = "/user/deposit_cc?acct="+acct;
+}
+
+$("#deposit-amount").on('input', update_bal);
+$("#to-account").on('change', change_acct);
+
+{% if account == 'user' %}
+{% set balance = user.balance %}
+{% else %}
+{% set balance = pool.balance %}
+{% endif %}
+{% if balance >= 0 %}
+$('.cc-in-debt').hide();
+{% endif %}
 </script>
 {% endblock %}

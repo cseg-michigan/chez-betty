@@ -37,6 +37,19 @@ class Pool(account.Account):
         return q.all()
 
     @classmethod
+    def all_accessable(cls, user, only_enabled=False):
+        # Get all pools the user can access
+        pools = []
+        for pool in Pool.all_by_owner(user, only_enabled):
+            pools.append(pool)
+
+        for pu in user.pools:
+            if not only_enabled or pu.pool.enabled:
+                pools.append(pu.pool)
+
+        return pools
+
+    @classmethod
     def count(cls):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.enabled==True)\
