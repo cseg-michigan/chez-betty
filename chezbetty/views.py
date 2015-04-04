@@ -33,8 +33,25 @@ from .btc import Bitcoin, BTCException
 import binascii
 import transaction
 
+import traceback
+
 class DepositException(Exception):
     pass
+
+
+###
+### Catch-all error page
+###
+
+@view_config(route_name='exception_view', renderer='templates/exception.jinja2')
+def exception_view(request):
+    return {}
+
+@view_config(context=Exception)
+def exception_view_handler(context, request):
+    print('An unknown error occurred:')
+    traceback.print_exc()
+    return HTTPFound(location=request.route_url('exception_view'))
 
 
 ###

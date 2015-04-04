@@ -74,6 +74,8 @@ def main(global_config, **settings):
 
     config.add_static_view('static', 'static', cache_max_age=3600)
 
+    config.add_route('exception_view',      '/exception')
+
     config.add_route('index',               '/')
 
     config.add_route('lang',                '/lang-{code}')
