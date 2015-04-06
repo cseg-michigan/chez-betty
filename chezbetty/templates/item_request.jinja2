@@ -15,6 +15,23 @@
     <h3 class="panel-title">{{ _('New Item Request') }}</h3>
   </div>
   <div class="panel-body">
+
+  <p>
+    {{ _('Enter an item you would like to see Betty sell. Please include '
+         'where you purchased the item from before so we have a chance at finding it. '
+         'We normally shop at Costco, Meijer, and Kroger, so if those stores '
+         'do not carry it, it is unlikely that Betty will either.') }}
+  </p>
+  <p>
+    {{ _('Also, depending on your motivation, you could be the supplier of a new item. '
+         'For instance, if you are grocery shopping you can pick up a few extra of '
+         'what you want, add it the Betty system, and see if it sells well. '
+         'The process is pretty simple (particularly for small numbers of items) '
+         'and we can reimburse you by just writing a check. Get in touch with '
+         'us if you are interested.') }}
+  </p>
+
+
     <form role="form" action="/item/request/new" method="post" id="form-item-request">
       <input type="text" class="form-control keyboard-wanted" id="item-request" name="request">
       <hr />
