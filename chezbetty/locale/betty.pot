@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-03-02 14:02-0500\n"
+"POT-Creation-Date: 2015-04-07 18:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,21 @@ msgstr ""
 "Generated-By: Lingua 3.9\n"
 
 #. Default: User is not enabled. Please contact ${email}.
-#: ./chezbetty/views.py:117
+#: ./chezbetty/views.py:136
 msgid "user-not-enabled"
 msgstr ""
 
 #. Default: Failed to read M-Card. Please try swiping again.
-#: ./chezbetty/views.py:154
+#: ./chezbetty/views.py:173
 msgid "mcard-error"
 msgstr ""
 
-#: ./chezbetty/templates/deposit_edit.jinja2:2
+#: ./chezbetty/views_user.py:165
+msgid "Deposit amount must be greater than $0.00. Card NOT charged."
+msgstr ""
+
 #: ./chezbetty/templates/deposit_edit.jinja2:3
+#: ./chezbetty/templates/deposit_edit.jinja2:4
 msgid "Edit Deposit"
 msgstr ""
 
@@ -67,14 +71,31 @@ msgstr ""
 msgid "New Item Request"
 msgstr ""
 
-#: ./chezbetty/templates/item_request.jinja2:21
+#: ./chezbetty/templates/item_request.jinja2:20
+msgid ""
+"Enter an item you would like to see Betty sell. Please include where you "
+"purchased the item from before so we have a chance at finding it. We normally"
+" shop at Costco, Meijer, and Kroger, so if those stores do not carry it, it "
+"is unlikely that Betty will either."
+msgstr ""
+
+#: ./chezbetty/templates/item_request.jinja2:26
+msgid ""
+"Also, depending on your motivation, you could be the supplier of a new item. "
+"For instance, if you are grocery shopping you can pick up a few extra of what"
+" you want, add it the Betty system, and see if it sells well. The process is "
+"pretty simple (particularly for small numbers of items) and we can reimburse "
+"you by just writing a check. Get in touch with us if you are interested."
+msgstr ""
+
+#: ./chezbetty/templates/item_request.jinja2:38
 msgid "Submit Request"
 msgstr ""
 
-#: ./chezbetty/templates/deposit.jinja2:2
 #: ./chezbetty/templates/deposit.jinja2:3
+#: ./chezbetty/templates/deposit.jinja2:4
 #: ./chezbetty/templates/deposit.jinja2:13
-#: ./chezbetty/templates/user_info.jinja2:40
+#: ./chezbetty/templates/user_info.jinja2:45
 #: ./chezbetty/templates/deposit_complete.jinja2:12
 msgid "Deposit"
 msgstr ""
@@ -95,13 +116,21 @@ msgstr ""
 msgid "Credit Card"
 msgstr ""
 
-#: ./chezbetty/templates/deposit.jinja2:57
-msgid "Coming soon."
+#: ./chezbetty/templates/deposit.jinja2:58
+#: ./chezbetty/templates/index.jinja2:36
+msgid "Betty now accepts credit cards!"
 msgstr ""
 
-#: ./chezbetty/templates/purchase.jinja2:2
+#: ./chezbetty/templates/deposit.jinja2:61
+#: ./chezbetty/templates/index.jinja2:38
+msgid ""
+"To deposit using a credit card, please visit chezbetty.eecs.umich.edu/user in"
+" your browser."
+msgstr ""
+
 #: ./chezbetty/templates/purchase.jinja2:3
-#: ./chezbetty/templates/user_info.jinja2:34
+#: ./chezbetty/templates/purchase.jinja2:4
+#: ./chezbetty/templates/user_info.jinja2:39
 msgid "Purchase"
 msgstr ""
 
@@ -178,45 +207,54 @@ msgstr ""
 
 #: ./chezbetty/templates/user_info.jinja2:14
 #: ./chezbetty/templates/shame.jinja2:25
+#: ./chezbetty/templates/user/deposit_cc.jinja2:23
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:26
+#: ./chezbetty/templates/user/index.jinja2:18
 msgid "Account Balance"
 msgstr ""
 
-#: ./chezbetty/templates/user_info.jinja2:30
+#: ./chezbetty/templates/user_info.jinja2:18
+#: ./chezbetty/templates/user/deposit_cc.jinja2:31
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:33
+msgid "%(pool_name)s Balance"
+msgstr ""
+
+#: ./chezbetty/templates/user_info.jinja2:35
 msgid "Links"
 msgstr ""
 
-#: ./chezbetty/templates/user_info.jinja2:37
+#: ./chezbetty/templates/user_info.jinja2:42
 msgid "Account"
 msgstr ""
 
-#: ./chezbetty/templates/user_info.jinja2:42
+#: ./chezbetty/templates/user_info.jinja2:47
 msgid "Logout"
 msgstr ""
 
-#: ./chezbetty/templates/user_info.jinja2:44
+#: ./chezbetty/templates/user_info.jinja2:49
 msgid "Admin"
 msgstr ""
 
-#: ./chezbetty/templates/base.jinja2:58 ./chezbetty/templates/base.jinja2:69
+#: ./chezbetty/templates/base.jinja2:61 ./chezbetty/templates/base.jinja2:72
 msgid "Hi %(name)s,"
 msgstr ""
 
-#: ./chezbetty/templates/base.jinja2:59
+#: ./chezbetty/templates/base.jinja2:62
 msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
 msgstr ""
 
-#: ./chezbetty/templates/base.jinja2:61
+#: ./chezbetty/templates/base.jinja2:64
 msgid ""
 "We're glad you like Betty. We're happy to extend a small line of credit, but "
 "if people owe Betty lots of money, it's hard to keep things in stock. Please "
 "try to pay Betty back soon!"
 msgstr ""
 
-#: ./chezbetty/templates/base.jinja2:70
+#: ./chezbetty/templates/base.jinja2:73
 msgid "You currently owe Betty %(debt)s."
 msgstr ""
 
-#: ./chezbetty/templates/base.jinja2:71
+#: ./chezbetty/templates/base.jinja2:74
 msgid "Please try to pay Betty back soon, thanks!"
 msgstr ""
 
@@ -228,8 +266,8 @@ msgstr ""
 msgid "Purchase totaling %(amount)s"
 msgstr ""
 
-#: ./chezbetty/templates/user.jinja2:33 ./chezbetty/templates/user.jinja2:93
-#: ./chezbetty/templates/user.jinja2:102
+#: ./chezbetty/templates/user.jinja2:33 ./chezbetty/templates/user.jinja2:101
+#: ./chezbetty/templates/user.jinja2:110
 msgid "touch to show"
 msgstr ""
 
@@ -247,18 +285,26 @@ msgid "Deposit of %(amount)s"
 msgstr ""
 
 #: ./chezbetty/templates/user.jinja2:93
+msgid "Credit Card Deposit of %(amount)s"
+msgstr ""
+
+#: ./chezbetty/templates/user.jinja2:94
+msgid "Card ending in %(last4)s"
+msgstr ""
+
+#: ./chezbetty/templates/user.jinja2:101
 msgid "Adjustment of %(amount)s by %(admin_name)s "
 msgstr ""
 
-#: ./chezbetty/templates/user.jinja2:102
+#: ./chezbetty/templates/user.jinja2:110
 msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
 msgstr ""
 
-#: ./chezbetty/templates/user.jinja2:118
+#: ./chezbetty/templates/user.jinja2:126
 msgid "No transactions."
 msgstr ""
 
-#: ./chezbetty/templates/user.jinja2:122
+#: ./chezbetty/templates/user.jinja2:130
 msgid "Show All"
 msgstr ""
 
@@ -566,8 +612,8 @@ msgid ""
 "e-mail chez-betty@umich.edu."
 msgstr ""
 
-#: ./chezbetty/templates/purchase_complete.jinja2:2
 #: ./chezbetty/templates/purchase_complete.jinja2:3
+#: ./chezbetty/templates/purchase_complete.jinja2:4
 msgid "Purchase Complete"
 msgstr ""
 
@@ -607,6 +653,42 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
-#: ./chezbetty/templates/index.jinja2:54
+#: ./chezbetty/templates/index.jinja2:62
 msgid "Can you help translate Betty? E-mail chez-betty@umich.edu."
+msgstr ""
+
+#: ./chezbetty/templates/user/deposit_cc.jinja2:4
+#: ./chezbetty/templates/user/deposit_cc.jinja2:7
+msgid "Credit Card Deposit"
+msgstr ""
+
+#: ./chezbetty/templates/user/deposit_cc.jinja2:14
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:14
+msgid "We use stripe to process credit card transactions."
+msgstr ""
+
+#: ./chezbetty/templates/user/deposit_cc.jinja2:15
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:15
+msgid "Stripe charges 2.9% + $0.30 for each transaction."
+msgstr ""
+
+#: ./chezbetty/templates/user/deposit_cc.jinja2:16
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:16
+msgid "We pass this charge directly onto you."
+msgstr ""
+
+#: ./chezbetty/templates/user/deposit_cc.jinja2:17
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:17
+msgid ""
+"That is, if you wish to deposit $20 to your account, we will charge your card"
+" 20 + (20*0.029 + 0.30) = $20.88."
+msgstr ""
+
+#: ./chezbetty/templates/user/deposit_cc.jinja2:48
+msgid "User Account"
+msgstr ""
+
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:4
+#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:7
+msgid "Custom Credit Card Deposit"
 msgstr ""

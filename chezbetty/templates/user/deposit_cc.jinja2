@@ -14,8 +14,7 @@
 {{ _('We use stripe to process credit card transactions.') }}
 {{ _('Stripe charges 2.9% + $0.30 for each transaction.') }}
 {{ _('We pass this charge directly onto you.') }}
-{{ _('That is, if you wish to deposit $20 to your account, we will charge your
-card 20 + (20*0.029 + 0.30) = $20.88.') }}
+{{ _('That is, if you wish to deposit $20 to your account, we will charge your card 20 + (20*0.029 + 0.30) = $20.88.') }}
 </p>
 
 <hr />
@@ -29,7 +28,7 @@ card 20 + (20*0.029 + 0.30) = $20.88.') }}
 
 {% for pool in pools %}
 <dl class="dl-horizontal">
-  <dt>{{ _('%(pool_name)s Pool Balance')|format(pool_name=pool.name) }}</dt>
+  <dt>{{ _('%(pool_name)s Balance')|format(pool_name=pool.name) }}</dt>
   <dd id="pool-{{ pool.id }}-balance">{{ pool.balance|format_currency|safe }}</dd>
 </dl>
 {% endfor %}
