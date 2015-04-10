@@ -46,7 +46,7 @@ msgstr "واریز پول به حساب"
 #: chezbetty/templates/deposit_edit.jinja2:30
 #: chezbetty/templates/deposit.jinja2:30
 msgid "Deposit To %(pool_name)s Pool"
-msgstr "واریز به حساب مشترک %(pool_name)"
+msgstr "واریز به حساب مشترک %(pool_name)s"
 
 #: chezbetty/templates/deposit_edit.jinja2:35
 msgid "Delete Deposit"
@@ -116,7 +116,7 @@ msgstr "پول نقد"
 
 #: chezbetty/templates/deposit.jinja2:22
 msgid "Your Deposit Limit: %(limit)s"
-msgstr "محدودیت واریز‫:‬ %(limit)"
+msgstr "محدودیت واریز‫:‬ %(limit)s"
 
 #: chezbetty/templates/deposit.jinja2:45
 msgid "Bitcoin"
@@ -198,7 +198,7 @@ msgstr "با حساب کاربری خود پرداخت کنید"
 
 #: chezbetty/templates/purchase.jinja2:80
 msgid "Pay With %(pool_name)s Pool"
-msgstr "با حساب مشترک %(pool_name) پرداخت کنید‫.‬"
+msgstr "با حساب مشترک %(pool_name)s پرداخت کنید‫.‬"
 
 #: chezbetty/templates/user_info.jinja2:6
 msgid "Customer"
@@ -219,7 +219,7 @@ msgstr "موجودی حساب"
 #: chezbetty/templates/user/deposit_cc.jinja2:31
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:33
 msgid "%(pool_name)s Balance"
-msgstr "موجودی %(pool_name)"
+msgstr "موجودی %(pool_name)s"
 
 #: chezbetty/templates/user_info.jinja2:35
 msgid "Links"
@@ -239,11 +239,11 @@ msgstr "مدیریت"
 
 #: chezbetty/templates/base.jinja2:61 chezbetty/templates/base.jinja2:72
 msgid "Hi %(name)s,"
-msgstr "سلام %(name)"
+msgstr "سلام %(name)s"
 
 #: chezbetty/templates/base.jinja2:62
 msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
-msgstr "شما در حال حاضر به بتی %(big_debt) بدهکارید‫.‬ با این وضع ما به زودی ورشکست می‌شویم‫!‬"
+msgstr "شما در حال حاضر به بتی %(big_debt)s بدهکارید‫.‬ با این وضع ما به زودی ورشکست می‌شویم‫!‬"
 
 #: chezbetty/templates/base.jinja2:64
 msgid ""
@@ -257,7 +257,7 @@ msgstr ""
 
 #: chezbetty/templates/base.jinja2:73
 msgid "You currently owe Betty %(debt)s."
-msgstr "شما در حال حاضر %(debt) به بتی بدهکارید‫.‬"
+msgstr "شما در حال حاضر %(debt)s به بتی بدهکارید‫.‬"
 
 #: chezbetty/templates/base.jinja2:74
 msgid "Please try to pay Betty back soon, thanks!"
@@ -269,7 +269,7 @@ msgstr "تاریخچه تراکنش‌ها"
 
 #: chezbetty/templates/user.jinja2:32
 msgid "Purchase totaling %(amount)s"
-msgstr "مبلغ کل خرید %(amount)"
+msgstr "مبلغ کل خرید %(amount)s"
 
 #: chezbetty/templates/user.jinja2:33 chezbetty/templates/user.jinja2:101
 #: chezbetty/templates/user.jinja2:110
@@ -287,23 +287,23 @@ msgstr "تخفیف‌ها"
 
 #: chezbetty/templates/user.jinja2:86
 msgid "Deposit of %(amount)s"
-msgstr "واریز مبلغ %(amount)"
+msgstr "واریز مبلغ %(amount)s"
 
 #: chezbetty/templates/user.jinja2:93
 msgid "Credit Card Deposit of %(amount)s"
-msgstr "واریز مبلغ %(amount) از طریق کارت اعتباری"
+msgstr "واریز مبلغ %(amount)s از طریق کارت اعتباری"
 
 #: chezbetty/templates/user.jinja2:94
 msgid "Card ending in %(last4)s"
-msgstr "کارت با چهار رقم آخر %(last4)"
+msgstr "کارت با چهار رقم آخر %(last4)s"
 
 #: chezbetty/templates/user.jinja2:101
 msgid "Adjustment of %(amount)s by %(admin_name)s "
-msgstr "اصلاح مبلغ %(amount) توسط %(admin_name) انجام شد‫.‬"
+msgstr "اصلاح مبلغ %(amount)s توسط %(admin_name)s انجام شد‫.‬"
 
 #: chezbetty/templates/user.jinja2:110
 msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
-msgstr "واریز %(amount_in_btc) بیت‌کوین به ارزش %(amount_in_usd)"
+msgstr "واریز %(amount_in_btc)s بیت‌کوین به ارزش %(amount_in_usd)s"
 
 #: chezbetty/templates/user.jinja2:126
 msgid "No transactions."
@@ -505,7 +505,7 @@ msgid ""
 "interested in the actual algorithm, check out Betty's source code at github."
 "com/um-cseg/chez-betty."
 msgstr ""
- "چز بتی اجناس خود را با سود اندکی ‫(‬معمولا ۱۵٪‫)‬ نسبت به کلی فروشی به فروش می‌رساند‫.‬"
+"چز بتی اجناس خود را با سود اندکی ‫(‬معمولا ۱۵٪‫)‬ نسبت به کلی فروشی به فروش می‌رساند‫.‬"
 "لطفا برای اطلاعات بیشتر به کد سیستم در آدرس github‪.‬com‪/‬um‪-‬cseg‪/‬chez‪-‬betty مراجعه کنید."
 
 #: chezbetty/templates/about.jinja2:90
@@ -578,11 +578,11 @@ msgstr "مرسی‫!‬"
 
 #: chezbetty/templates/deposit_complete.jinja2:38
 msgid "You successfully deposited %(amount)s into your account"
-msgstr "مبلغ %(amount) با موفقیت به حساب شما واریز گشت"
+msgstr "مبلغ %(amount)s با موفقیت به حساب شما واریز گشت"
 
 #: chezbetty/templates/deposit_complete.jinja2:41
 msgid "You successfully deposited %(amount)s in the %(pool_name)s Pool"
-msgstr "مبلغ %(amount) با موفقیت به حساب مشترک %(pool_name) واریز گردید"
+msgstr "مبلغ %(amount)s با موفقیت به حساب مشترک %(pool_name)s واریز گردید"
 
 #: chezbetty/templates/deposit_complete.jinja2:50
 msgid "Edit this Deposit"
@@ -664,7 +664,7 @@ msgstr "‫(‬با حساب کاربری پرداخت شد‫)‬"
 
 #: chezbetty/templates/purchase_complete.jinja2:57
 msgid "(Paid with %(pool_name)s Pool)"
-msgstr "‫(‬با حساب مشترک %(pool_name) پرداخت شد‫)‬"
+msgstr "‫(‬با حساب مشترک %(pool_name)s پرداخت شد‫)‬"
 
 #: chezbetty/templates/purchase_complete.jinja2:68
 msgid "If this was a mistake, touch here to undo this transaction."
