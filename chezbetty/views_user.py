@@ -154,7 +154,8 @@ def user_deposit_cc_submit(request):
         request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
         return HTTPFound(location=request.route_url('user_index'))
 
-    fee = amount * 0.029 + 0.30
+    charge = (amount + 0.3) / 0.971
+    fee = charge - amount
     if total_cents != int(round((amount + fee)*100)):
         request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
         return HTTPFound(location=request.route_url('user_index'))

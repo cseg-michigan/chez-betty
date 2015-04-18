@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "deposit_cc_row.jinja2" as cc_row %}
 {% set active_page = 'deposit_cc' %}
 
 {% block title %}{{ _('Credit Card Deposit') }}{% endblock %}
@@ -14,7 +15,7 @@
 {{ _('We use stripe to process credit card transactions.') }}
 {{ _('Stripe charges 2.9% + $0.30 for each transaction.') }}
 {{ _('We pass this charge directly onto you.') }}
-{{ _('That is, if you wish to deposit $20 to your account, we will charge your card 20 + (20*0.029 + 0.30) = $20.88.') }}
+{{ _('That is, if you wish to deposit $20 to your account, we will charge your card (20 + 0.30) / 0.971 = $20.91.') }}
 </p>
 
 <hr />
@@ -33,7 +34,7 @@
 </dl>
 {% endfor %}
 
-<hr />
+
 
 {% if account == 'user' %}
 {% set balance = user.balance %}
@@ -41,54 +42,60 @@
 {% set balance = pool.balance %}
 {% endif %}
 
-<dl class="dl-horizontal">
-  <dt>Deposit To</dt>
-  <dd>
-  <select id="to-account">
-    <option value="user" {% if account == 'user' %}selected{% endif %}>{{ _('User Account') }}</option>
-    {% for pool in pools %}
-    <option value="pool-{{ pool.id }}" {% if account == 'pool-'+pool.id|string %}selected{% endif %}>{{ pool.name }}</option>
-    {% endfor %}
-  </select>
-  </dd>
-</dl>
 
-<hr />
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Create New Deposit</h3>
+  </div>
+  <div class="panel-body">
 
-<table class="table table-bordered">
-  <tr>
-    <th>Deposit Amount</th>
-    <th>Fees</th>
-    <th>Amount Charged</th>
-    <th>New Balance</th>
-    <th></th>
-  </tr>
-  {% set target = 20 %}
-  {% include "deposit_cc_row.jinja2" %}
-  {% set target = 100 %}
-  {% include "deposit_cc_row.jinja2" %}
-  <tr>
-    <form action="/user/deposit_cc/custom" method="GET">
-      <input type="hidden" name="betty_to_account" value="{{ account }}" class="cc-betty-to-account">
-      <td><input type="text" class="form-control" id="deposit-amount" name="deposit-amount"></input></td>
-      <td id="deposit-fee"></td>
-      <td id="deposit-charge"></td>
-      <td id="deposit-newbal"></td>
-      <td><button type="submit" class="btn btn-default disabled" id="deposit-button">Pay Custom Amount</button></td>
-    </form>
-  </tr>
-  <tr class="cc-in-debt"><td colspan="5" /></tr>
-  <tr class="cc-in-debt">
-    <td colspan="5">
-      <h4>We prefer that users keep a positive balance if possible. Betty is
-      largely funded on the credit of the administrators (grad students!).</h4>
-      <h4>If you've graduated or otherwise moved on, we hope you enjoyed Betty.
-      Please do us the courtesy of settling your debts.</h4>
-    </td>
-  </tr>
-  {% set target = 0 %}
-  {% include "deposit_cc_row.jinja2" %}
-</table>
+    <dl class="dl-horizontal">
+      <dt>Deposit To</dt>
+      <dd>
+      <select id="to-account">
+        <option value="user" {% if account == 'user' %}selected{% endif %}>{{ _('User Account') }}</option>
+        {% for pool in pools %}
+        <option value="pool-{{ pool.id }}" {% if account == 'pool-'+pool.id|string %}selected{% endif %}>{{ pool.name }}</option>
+        {% endfor %}
+      </select>
+      </dd>
+    </dl>
+
+    <table class="table table-bordered">
+      <tr>
+        <th>Deposit Amount</th>
+        <th>Fees</th>
+        <th>Amount Charged</th>
+        <th>New Balance</th>
+        <th></th>
+      </tr>
+      {{ cc_row.deposit_cc_custom(account, 20, balance, stripe_pk) }}
+      {{ cc_row.deposit_cc_custom(account, 50, balance, stripe_pk) }}
+      {{ cc_row.deposit_cc_custom(account, 100, balance, stripe_pk) }}
+      <tr>
+        <form action="/user/deposit_cc/custom" method="GET">
+          <input type="hidden" name="betty_to_account" value="{{ account }}" class="cc-betty-to-account">
+          <td><input type="text" class="form-control" id="deposit-amount" name="deposit-amount"></input></td>
+          <td id="deposit-fee"></td>
+          <td id="deposit-charge"></td>
+          <td id="deposit-newbal"></td>
+          <td><button type="submit" class="btn btn-default disabled" id="deposit-button">Pay Custom Amount</button></td>
+        </form>
+      </tr>
+      <tr class="cc-in-debt"><td colspan="5" /></tr>
+      <tr class="cc-in-debt">
+        <td colspan="5">
+          <h4>We prefer that users keep a positive balance if possible. Betty is
+          largely funded on the credit of the administrators (grad students!).</h4>
+          <h4>If you've graduated or otherwise moved on, we hope you enjoyed Betty.
+          Please do us the courtesy of settling your debts.</h4>
+        </td>
+      </tr>
+      {{ cc_row.deposit_cc_custom(account, -1.0*balance|float, balance, stripe_pk, 'cc-in-debt') }}
+    </table>
+
+  </div>
+</div>
 
 {% endblock %}
 
@@ -118,11 +125,11 @@ function update_bal () {
     return;
   }
 
-  var fee = Number((amount * 0.029 + 0.30).toFixed(2));
-  $('#deposit-fee').text('$' + fee.toFixed(2));
-  var charge = amount + fee;
-  $('#deposit-charge').text('$' + charge.toFixed(2));
+  var charge = Number(((amount + 0.3) / 0.971).toFixed(2));
+  var fee = charge - amount;
   var newbal = curbal + amount;
+  $('#deposit-fee').text('$' + fee.toFixed(2));
+  $('#deposit-charge').text('$' + charge.toFixed(2));
   $('#deposit-newbal').text('$' + newbal.toFixed(2));
 
   btn.removeClass('disabled');
@@ -137,12 +144,12 @@ $("#deposit-amount").on('input', update_bal);
 $("#to-account").on('change', change_acct);
 
 {% if account == 'user' %}
-{% set balance = user.balance %}
+  {% set balance = user.balance %}
 {% else %}
-{% set balance = pool.balance %}
+  {% set balance = pool.balance %}
 {% endif %}
-{% if balance >= 0 %}
-$('.cc-in-debt').hide();
+{% if balance < 0 %}
+  $('.cc-in-debt').show();
 {% endif %}
 </script>
 {% endblock %}
