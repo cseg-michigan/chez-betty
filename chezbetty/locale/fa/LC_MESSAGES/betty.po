@@ -509,11 +509,8 @@ msgstr ""
 "لطفا برای اطلاعات بیشتر به کد سیستم در آدرس github‪.‬com‪/‬um‪-‬cseg‪/‬chez‪-‬betty مراجعه کنید."
 
 #: chezbetty/templates/about.jinja2:90
-msgid ""
-"Current wholesale and Betty prices are always available on <a href=\"/items"
-"\">the items page</a>."
-msgstr ""
-"لیست قیمت‌های کلی‌فروشی و بتی را می‌توانید در ‪<‬a href‪=‬\‪"/‬items\‪">‬اینجا‪</‬a‪>‬ مشاهده کنید."
+msgid "Current wholesale and Betty prices are always available on <a href=\"/items\">the items page</a>."
+msgstr "لیست قیمت‌های کلی‌فروشی و بتی را می‌توانید در ‪<a href=\"/items\">‬اینجا‪</‬a‪>‬ مشاهده کنید."
 
 #: chezbetty/templates/about.jinja2:93
 msgid "What does Betty do with her profits?"
