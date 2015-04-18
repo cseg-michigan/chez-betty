@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "deposit_cc_row.jinja2" as cc_row %}
 {% set active_page = 'deposit_cc' %}
 
 {% block title %}{{ _('Custom Credit Card Deposit') }}{% endblock %}
@@ -44,8 +45,7 @@
     <th>Amount Charged</th>
     <th>New Balance</th>
   </tr>
-  {# amount is passed from view #}
-  {% include "deposit_cc_row.jinja2" %}
+  {{ cc_row.deposit_cc_custom(account, amount, balance, stripe_pk) }}
 </table>
 
 {% endblock %}
