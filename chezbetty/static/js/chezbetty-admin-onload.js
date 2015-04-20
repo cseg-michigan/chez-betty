@@ -276,7 +276,7 @@ $("#edit-items").on("input", "input:text", function () {
 
 // RESTOCK
 
-$("#restock-date").datetimepicker({
+$(".event-date-picker").datetimepicker({
 	format: "Y/m/d H:iO",
 	inline: true
 });

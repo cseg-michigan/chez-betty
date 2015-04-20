@@ -386,8 +386,8 @@ def reconcile_misc(amount, notes, admin):
 
 
 # Call this to make a cash donation to Chez Betty
-def add_donation(amount, notes, admin):
-    e = event.Donation(admin, notes)
+def add_donation(amount, notes, admin, timestamp=None):
+    e = event.Donation(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Donation(e, amount)
@@ -396,8 +396,8 @@ def add_donation(amount, notes, admin):
 
 
 # Call this to withdraw cash funds from Chez Betty into another account
-def add_withdrawal(amount, notes, admin):
-    e = event.Withdrawal(admin, notes)
+def add_withdrawal(amount, notes, admin, timestamp=None):
+    e = event.Withdrawal(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Withdrawal(e, amount)

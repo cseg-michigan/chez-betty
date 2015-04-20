@@ -1873,7 +1873,20 @@ def admin_cash_donation(request):
 def admin_cash_donation_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
-        datalayer.add_donation(amount, request.POST['notes'], request.user)
+
+        # Look for custom date
+        try:
+            if request.POST['donation-date']:
+                event_date = datetime.datetime.strptime(request.POST['donation-date'].strip(),
+                    '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            else:
+                event_date = None
+        except Exception as e:
+            if request.debug: raise(e)
+            # Could not parse date
+            event_date = None
+
+        datalayer.add_donation(amount, request.POST['notes'], request.user, event_date)
 
         request.session.flash('Donation recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
@@ -1902,7 +1915,20 @@ def admin_cash_withdrawal(request):
 def admin_cash_withdrawal_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
-        datalayer.add_withdrawal(amount, request.POST['notes'], request.user)
+
+        # Look for custom date
+        try:
+            if request.POST['withdrawal-date']:
+                event_date = datetime.datetime.strptime(request.POST['withdrawal-date'].strip(),
+                    '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            else:
+                event_date = None
+        except Exception as e:
+            if request.debug: raise(e)
+            # Could not parse date
+            event_date = None
+
+        datalayer.add_withdrawal(amount, request.POST['notes'], request.user, event_date)
 
         request.session.flash('Withdrawal recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
