@@ -297,13 +297,23 @@ class CashDeposit(Deposit):
         prev = cashbox_c.balance
         Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
         new = cashbox_c.balance
-        if prev < CashDeposit.CONTENTS_THRESHOLD and new > CashDeposit.CONTENTS_THRESHOLD:
-            self.send_alert_email(new)
-        elif prev > CashDeposit.CONTENTS_THRESHOLD:
-            pr = int((prev - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
-            nr = int((new - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
-            if pr != nr:
-                self.send_alert_email(new, nr)
+
+        # It feels like the model should not have all of this application
+        # specific logic in it. What does sending an email have to do with
+        # representing a transaction. I think this should be moved to
+        # datalayer.py which does handle application logic.
+        try:
+            if prev < CashDeposit.CONTENTS_THRESHOLD and new > CashDeposit.CONTENTS_THRESHOLD:
+                self.send_alert_email(new)
+            elif prev > CashDeposit.CONTENTS_THRESHOLD:
+                pr = int((prev - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+                nr = int((new - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+                if pr != nr:
+                    self.send_alert_email(new, nr)
+        except:
+            # Some error sending email. Let's not prevent the deposit from
+            # going through.
+            pass
 
     def send_alert_email(self, amount, repeat=0):
         settings = get_current_registry().settings
