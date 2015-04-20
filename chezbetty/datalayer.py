@@ -12,7 +12,7 @@ from .models import box_vendor
 
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
-       and e.type != 'inventory':
+       and e.type != 'inventory' and e.type != 'emptycashbox':
         return False
     if e.deleted:
         return False
@@ -66,6 +66,10 @@ def undo_event(e, user):
                 quantity_diff = s.quantity - s.quantity_counted
                 s.item.in_stock += quantity_diff
                 line_items[s.item_id] = s.quantity_counted
+
+        # Don't need anything for emptycashbox. On those transactions no
+        # other tables are changed.
+
 
     # Just need to delete the event. All transactions will understand they
     # were deleted as well.

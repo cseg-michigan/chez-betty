@@ -2209,11 +2209,10 @@ def admin_event_undo(request):
             request.session.flash('Error: transaction already deleted', 'error')
             return HTTPFound(location=request.route_url('admin_events'))
 
-        for transaction in event.transactions:
-            # Make sure transaction is a deposit (no user check since admin doing)
-            if transaction.type not in ('cashdeposit', 'purchase', 'restock', 'inventory'):
-                request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
-                return HTTPFound(location=request.route_url('admin_events'))
+        # Make sure we support undoing that type of transaction
+        if not datalayer.can_undo_event(event):
+            request.session.flash('Error: Cannot undo that type of transaction.', 'error')
+            return HTTPFound(location=request.route_url('admin_events'))
 
         # If the checks pass, actually revert the transaction
         line_items = datalayer.undo_event(event, request.user)
