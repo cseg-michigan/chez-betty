@@ -2135,6 +2135,13 @@ def admin_events_deleted(request):
     events_deleted = Event.get_deleted()
     return {'events': events_deleted}
 
+@view_config(route_name='admin_events_cash',
+             renderer='templates/admin/events_cash.jinja2',
+             permission='admin')
+def admin_events_cash(request):
+    events = Event.get_cash_events()
+    return {'events': events}
+
 
 @view_config(route_name='admin_event',
              renderer='templates/admin/event.jinja2',

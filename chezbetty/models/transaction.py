@@ -222,6 +222,21 @@ def __total_purchase_amount(self):
             .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_purchases = __total_purchase_amount
 
+# This is in a stupid place due to circular input problems
+@classmethod
+def __get_cash_events(cls):
+    return DBSession.query(event.Event)\
+            .join(Transaction)\
+            .filter(or_(
+                      Transaction.to_account_cash_id == account.get_cash_account("chezbetty").id,
+                      Transaction.fr_account_cash_id == account.get_cash_account("chezbetty").id))\
+            .filter(event.Event.deleted==False)\
+            .order_by(desc(event.Event.timestamp)).all()
+
+event.Event.get_cash_events = __get_cash_events
+
+
+
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
     discount = Column(Numeric)
