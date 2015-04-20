@@ -273,7 +273,7 @@
 </div>
 {% endmacro %}
 
-{% macro create_cumulative_timeseries_panel(url, title) %}
+{% macro create_cumulative_timeseries_panel(url, title, series_titles, yscale) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">{{ title }}</h3>
@@ -285,27 +285,54 @@
   $(function () {
     $.getJSON("{{ url }}", function (data) {
 
-        // create the chart
-        $('#chart-{{ title|replace(" ", "") }}').highcharts('StockChart', {
-            chart: {
-                alignTicks: true
-            },
+      var series_titles = [
+        {% for st in series_titles %}
+        '{{ st }}',
+        {% endfor %}
+      ];
+      var yscale = {{ yscale }};
 
-            rangeSelector: {
-                inputEnabled: $('#chart-{{ title|replace(" ", "") }}').width() > 480,
-                selected: 1
-            },
+      var chartOptions = {
+          chart: {
+              alignTicks: true
+          },
 
-            series: [{
-                type: 'line',
-                name: 'Total',
-                data: data,
-            }],
+          rangeSelector: {
+              inputEnabled: $('#chart-{{ title|replace(" ", "") }}').width() > 480,
+              selected: 1
+          },
 
-            xAxis: {
-                ordinal: false
-            }
+          series: [],
+
+          xAxis: {
+              ordinal: false
+          }
+      };
+
+      // create individual series for each
+      var series = [];
+      if (data[0].length == 2 && yscale == 1) {
+        series.push(data);
+      } else {
+        for (var i=1; i<data[0].length; i++) {
+          series.push([]);
+        }
+        for (var j=0; j<data.length; j++) {
+          for (var i=1; i<data[0].length; i++) {
+            series[i-1].push([data[j][0], Math.round(data[j][i]/yscale)]);
+          }
+        }
+      }
+      for (var i=0; i<series.length; i++) {
+        chartOptions.series.push({
+          type: 'line',
+          name: series_titles[i],
+          data: series[i],
         });
+      }
+
+      // create the chart
+      $('#chart-{{ title|replace(" ", "") }}').highcharts('StockChart', chartOptions);
     });
 });
 </script>

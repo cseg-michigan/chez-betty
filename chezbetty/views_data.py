@@ -426,6 +426,14 @@ def admin_data_users_totals_json(request):
     return User.get_user_count_cumulative()
 
 
+# Timestamps and user debt vs balance
+@view_config(route_name='admin_data_users_balance_totals_json',
+             renderer='json',
+             permission='manage')
+def admin_data_users_balance_totals_json(request):
+    return Transaction.get_balance_total_daily()
+
+
 
 
 @view_config(route_name='admin_data_speed_items',

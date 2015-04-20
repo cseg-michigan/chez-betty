@@ -153,6 +153,28 @@ class Transaction(Base):
 
         return r.one().a or Decimal(0.0)
 
+    # Returns an array of tuples where the first item is a millisecond timestamp,
+    # the next is the total amount of debt, and the next is the total amount
+    # of stored money for users.
+    @classmethod
+    def get_balance_total_daily(cls):
+        rows = DBSession.query(cls.amount,
+                               cls.type,
+                               cls.to_account_virt_id,
+                               cls.fr_account_virt_id,
+                               event.Event.timestamp)\
+                        .join(event.Event)\
+                        .filter(or_(
+                                  cls.type=='purchase',
+                                  cls.type=='cashdeposit',
+                                  cls.type=='ccdeposit',
+                                  cls.type=='btcdeposit',
+                                  cls.type=='adjustment'
+                                ))\
+                        .order_by(event.Event.timestamp)\
+                        .all()
+        return utility.timeseries_balance_total_daily(rows)
+
 
 @limitable_all
 def __get_transactions(self):

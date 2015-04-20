@@ -139,5 +139,63 @@ def timeseries_cumulative(rows):
 
     return out
 
+# [(milliseconds, debt, user_balance), ...]
+def timeseries_balance_total_daily(rows):
 
+    # Is debt going away or coming in
+    directions = {
+        'purchase':   -1, # user balance goes down by amount
+        'cashdeposit': 1, # user balance goes up by amount
+        'ccdeposit':   1,
+        'btcdeposit':  1,
+        'adjustment':  1
+    }
+
+    user_balances = {}
+    total_debt = 0
+    total_balance = 0
+
+    out = []
+
+    for r in rows:
+        amount = r[0]
+        trtype = r[1]
+        to_uid = r[2]
+        fr_uid = r[3]
+        timest = r[4]
+        t = round(timest.replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+
+        # We get the user/pool id from whether we care about where the
+        # money came from or went
+        if directions[trtype] == -1:
+            userid = fr_uid
+        else:
+            userid = to_uid
+
+        # Calculate the new balance so we can compare it to the old
+        old_balance = user_balances.get(userid, 0)
+        new_balance = old_balance + (directions[trtype]*amount)
+        user_balances[userid] = new_balance
+
+        # Look for swings from in debt to not in debt and vice-versa.
+        # This is how we update the running totals of debt and bank holdings.
+        if old_balance < 0 and new_balance >= 0:
+            # Was in debt, now not
+            total_debt -= -1*old_balance
+            total_balance += new_balance
+        elif old_balance >= 0 and new_balance < 0:
+            # Wasn't in debt, now is
+            total_balance -= old_balance
+            total_debt += -1*new_balance
+        elif new_balance < 0:
+            # still in debt
+            total_debt += -1*directions[trtype]*amount
+        else:
+            # hey, in the black!
+            total_balance += directions[trtype]*amount
+
+        # Add to output array
+        out.append((t, round(total_debt*100), round(total_balance*100)))
+
+    return out
 

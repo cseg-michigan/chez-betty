@@ -227,7 +227,8 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_item_sales_json', '/admin/data/item/sales/{item_id}')
 
-    config.add_route('admin_data_users_totals_json', '/admin/data/users/totals')
+    config.add_route('admin_data_users_totals_json',         '/admin/data/users/totals')
+    config.add_route('admin_data_users_balance_totals_json', '/admin/data/users/balance/totals')
 
     config.add_route('admin_data_speed_items', '/admin/data/speed/items')
 
