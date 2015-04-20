@@ -11,6 +11,8 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
+import pytz
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -73,7 +75,7 @@ class InvalidGroupPeriod(Exception):
 def group(rows, period='day'):
 
     def fix_timezone(i):
-        return i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
+        return i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=pytz.timezone('America/Detroit'))
     def group_month(i):
         dt = fix_timezone(i)
         return datetime.date(dt.year, dt.month, 1)

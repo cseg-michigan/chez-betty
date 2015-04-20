@@ -59,7 +59,7 @@ def get_start(days):
     if days:
         # "now" is really midnight tonight, so we really want tomorrows date.
         # This makes the comparisons and math work so 1 day would mean today
-        now = datetime.date.today() + datetime.timedelta(days=1)
+        now = datetime.datetime.utcnow().date() + datetime.timedelta(days=1)
         delta = datetime.timedelta(days=days)
         return now - delta
     else:
@@ -67,7 +67,7 @@ def get_start(days):
         return datetime.date.min + datetime.timedelta(days=1)
 
 def get_end():
-    return datetime.date.today() + datetime.timedelta(days=1)
+    return datetime.datetime.utcnow().date() + datetime.timedelta(days=1)
 
 
 def create_x_y_from_group(group, start, end, period, process_output=lambda x: x, default=0):
@@ -346,7 +346,7 @@ def item_sale_speed(num_days, only_item_id=None):
                          .join(Transaction)\
                          .join(Event)\
                          .filter(Event.deleted==False)\
-                         .filter(Event.timestamp>start)
+                         .filter(Event.timestamp>start.replace(tzinfo=None))
     for purchase in purchases:
         item_id = purchase.item_id
         quantity = purchase.quantity

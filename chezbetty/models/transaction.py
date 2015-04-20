@@ -147,9 +147,9 @@ class Transaction(Base):
                         .filter(event.Event.deleted==False)
 
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
 
         return r.one().a or Decimal(0.0)
 
@@ -257,9 +257,9 @@ class Deposit(Transaction):
                      .order_by(event.Event.timestamp)\
                      .filter(event.Event.deleted==False)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
 
         return utility.group(r.all(), period)
 
@@ -520,9 +520,9 @@ class PurchaseLineItem(SubTransaction):
                      .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
         return utility.group(r.all(), period)
 
     @classmethod
@@ -533,9 +533,9 @@ class PurchaseLineItem(SubTransaction):
                      .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
         return utility.group(r.all(), period)
 
     @classmethod
@@ -545,9 +545,9 @@ class PurchaseLineItem(SubTransaction):
                         .join(event.Event)\
                         .filter(event.Event.deleted==False)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
 
         return r.one().p or Decimal(0.0)
 

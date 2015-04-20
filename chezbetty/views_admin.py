@@ -277,8 +277,10 @@ def admin_index(request):
     total_cash_deposits  = CashDeposit.total()
     total_btc_deposits   = BTCDeposit.total()
 
-
-    now = datetime.date.today()
+    # Get the current date that it is in the eastern time zone
+    now = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)\
+        .astimezone(tz=pytz.timezone('America/Detroit')).replace(tzinfo=None)\
+        .date()
 
     ytd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
     ytd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, 1, 1)), None)
@@ -294,12 +296,12 @@ def admin_index(request):
     mtd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
     mtd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
 
-    today_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
+    today_sales    = Purchase.total(views_data.ftz(now), None)
+    today_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(now), None)
+    today_lost     = Inventory.total(views_data.ftz(now), None)
+    today_dep      = Deposit.total(views_data.ftz(now), None)
+    today_dep_cash = CashDeposit.total(views_data.ftz(now), None)
+    today_dep_btc  = BTCDeposit.total(views_data.ftz(now), None)
 
 
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
