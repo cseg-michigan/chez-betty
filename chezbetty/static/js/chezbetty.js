@@ -60,6 +60,8 @@ function add_item_success (data) {
 
 		// First, if this is the first item hide the empty order row
 		$("#purchase-empty").hide();
+		$("#logout-button .btn-text-alt").show();
+		$("#logout-button .btn-text-default").hide();
 
 		// Check if this item is already present. In that case we only
 		// need to increment the quantity and price
@@ -103,6 +105,19 @@ function purchase_success (data) {
 		// On successful purchase, redirect the user to the transaction complete
 		// page showing the transaction.
 		window.location.replace("/event/" + data.event_id);
+	}
+}
+
+// Callback when a purchase was successful and we want to log the user out
+// afterwards.
+function purchase_andlogout_success (data) {
+	if ("error" in data) {
+		alert_error(data
+			.error);
+		enable_button($(".btn-submit-purchase"));
+	} else {
+		// Log the user out
+		window.location.replace("/");
 	}
 }
 

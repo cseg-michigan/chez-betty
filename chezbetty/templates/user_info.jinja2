@@ -44,7 +44,7 @@
         {% if active_page != "deposit" %}
         <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">{{ _('Deposit') }}</a>
         {% endif %}
-        <a class="btn btn-warning btn-lg" href="/">{{ _('Logout') }}</a>
+        <a id="logout-button" class="btn btn-warning btn-lg" href="/"><span class="btn-text-default">{{ _('Logout') }}</span><span class="btn-text-alt">{{ _('Purchase and Logout') }}</span></a>
         {% if user.role == "administrator" or user.role == "manager" %}
         <a class="btn btn-success btn-lg" href="/admin">{{ _('Admin') }}</a>
         {% endif %}
