@@ -22,6 +22,10 @@ block[h2] {
 	width: 210px;
 }
 
+block[h3] {
+	width: 320px;
+}
+
 .btn-keypad {
 	height: 100px;
 	width: 100px;
@@ -31,6 +35,11 @@ block[h2] {
 .btn-keypad-wide {
 	height: 100px;
 	width: 210px;
+	font-size: 14pt;
+}
+.btn-keypad-triplewide {
+	height: 100px;
+	width: 320px;
 	font-size: 14pt;
 }
 
@@ -48,5 +57,16 @@ block[h2] {
 .keypad-full-width {
   width: 320px;
   margin: 5px;
+}
+
+.umid-status-block {
+	width: 35px;
+	height: 35px;
+	margin-right: 3px;
+	margin-left: 3px;
+}
+
+.umid-status-blue {
+	background-color: #428bca;
 }
 

@@ -6,51 +6,109 @@
 
 {% block content %}
 
-<div class="jumbotron top">
-  <img class="pull-right" src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:120px;" />
+<style>
+body {
+  padding-bottom: 100px;
+}
+</style>
 
-  <h1>{{ _('Welcome to Chez Betty!') }}</h1>
-  <p>{{ _('The 24/7 food co-op for all members of the CSE community.') }}</p>
+<div class="row">
+  <div class="col-md-12">
+    <div class="jumbotron top">
+      <img class="pull-right" src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:120px;" />
+
+      <h1>{{ _('Welcome to Chez Betty!') }}</h1>
+      <p>{{ _('The 24/7 food co-op for all members of the CSE community.') }}</p>
+    </div>
+  </div>
 </div>
 
+<div class="row">
+  <div class="col-md-7">
 
-<div id="index-main" class="col-md-12">
-  <h2>{{ _('Swipe your M-Card to login') }}</h2>
+    <div id="front-buttons" class="buttons">
+      <a class="btn btn-default btn-huge btn-bordered" href="/items">{{ _('Item List') }}</a>
+      <a class="btn btn-default btn-huge btn-bordered" href="/item/request">{{ _('Request an Item') }}</a>
+      <a class="btn btn-default btn-huge btn-bordered" href="/about">{{ _('About') }}</a>
+      <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
+
+      {% if request.has_permission("manage") %}
+      <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Administration') }}</a>
+      {% endif %}
+    </div>
+
+    <div id="cc-banner" style="text-align:center">
+      <hr />
+      <h2>{{ _('Betty now accepts credit cards!') }}</h2>
+      <h4>
+      {{ _('To deposit using a credit card, please visit') }}
+      <span class="highlight">https://chezbetty.eecs.umich.edu/user</span>
+      {{ _('on your own computer.') }}
+      </h4>
+    </div>
+
+    {% if demo and request.has_permission("admin") %}
+    <div id="front-demo" class="buttons">
+      <div class="well">
+        <h3>Demo Mode:</h3>
+        {% for admin in admins %}
+        <a class="btn btn-default btn-huge btn-bordered" href="/purchase/{{ admin.umid }}">Login as {{ admin.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <div class="col-md-5">
+
+    <div id="index-main">
+      <h2>{{ _('Swipe your M-Card to login') }}</h2>
+    </div>
+
+    <hr />
+    <div class="or"><span>OR</span></div>
+
+    <div class="center">
+      <h3>{{ _('Enter your UMID here') }}</h3>
+    </div>
+
+    <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-keypad.css'|static_url}}" />
+
+    <div id="keypad-umid" class="center">
+      <container>
+        <container id="keypad-umid-status">
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+        </container>
+        <block><button type="button" id="btn-keypad-9" class="btn btn-default btn-keypad">9</button></block>
+        <block><button type="button" id="btn-keypad-8" class="btn btn-default btn-keypad">8</button></block>
+        <block><button type="button" id="btn-keypad-7" class="btn btn-default btn-keypad">7</button></block>
+        <block><button type="button" id="btn-keypad-6" class="btn btn-default btn-keypad">6</button></block>
+        <block><button type="button" id="btn-keypad-5" class="btn btn-default btn-keypad">5</button></block>
+        <block><button type="button" id="btn-keypad-4" class="btn btn-default btn-keypad">4</button></block>
+        <block><button type="button" id="btn-keypad-3" class="btn btn-default btn-keypad">3</button></block>
+        <block><button type="button" id="btn-keypad-2" class="btn btn-default btn-keypad">2</button></block>
+        <block><button type="button" id="btn-keypad-1" class="btn btn-default btn-keypad">1</button></block>
+        <block h3=""><button type="button" id="btn-keypad-0" class="btn btn-default btn-keypad-triplewide">0</button></block>
+      </container>
+    </div>
+
+
+
+  </div>
 </div>
 
 <div id="spinner-box"></div>
 
-<div id="front-buttons" class="col-md-12 buttons">
-  <a class="btn btn-default btn-huge btn-bordered" href="/items">{{ _('Item List') }}</a>
-  <a class="btn btn-default btn-huge btn-bordered" href="/item/request">{{ _('Request an Item') }}</a>
-  <a class="btn btn-default btn-huge btn-bordered" href="/about">{{ _('About') }}</a>
-  <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
 
-  {% if request.has_permission("manage") %}
-  <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Administration') }}</a>
-  {% endif %}
-</div>
 
-<div id="cc-banner" class="col-md-12" style="text-align:center">
-  <hr />
-  <h2>{{ _('Betty now accepts credit cards!') }}</h2>
-  <h4>
-  {{ _('To deposit using a credit card, please visit') }}
-  <span class="highlight">https://chezbetty.eecs.umich.edu/user</span>
-  {{ _('on your own computer.') }}
-  </h4>
-</div>
-
-{% if demo and request.has_permission("admin") %}
-<div id="front-demo" class="col-md-12 buttons">
-  <div class="well">
-    <h3>Demo Mode:</h3>
-    {% for admin in admins %}
-    <a class="btn btn-default btn-huge btn-bordered" href="/purchase/{{ admin.umid }}">Login as {{ admin.name }}</a>
-    {% endfor %}
-  </div>
-</div>
-{% endif %}
 
 {% endblock %}
 

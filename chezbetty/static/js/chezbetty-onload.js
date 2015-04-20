@@ -86,6 +86,56 @@ $("#keypad").on("click", "button", function () {
 	$("#keypad-total").html(format_price(output));
 });
 
+var manual_umid_enter = '';
+var manual_umid_timeout = -1;
+// Button press handler for the umid keypad
+$("#keypad-umid").on("click", "button", function () {
+
+	if (manual_umid_enter.length < 8) {
+		// If we haven't gotten enough of a UMID yet then we are cool
+		// to keep taking inputs
+
+		var value = $(this).attr("id").split("-")[2];
+		manual_umid_enter += value;
+
+		var num = manual_umid_enter.length;
+		$("#keypad-umid-status block:eq("+(8-num)+")").addClass("umid-status-blue");
+
+		if (manual_umid_enter.length == 8) {
+			$.ajax({
+				type: "POST",
+				url: "/check",
+				data: {'umid': manual_umid_enter},
+				success: function (data) {
+					if (data.status == 'success') {
+						window.location = '/purchase/' + manual_umid_enter;
+					} else {
+						clear_umid_keypad();
+					}
+				},
+				error: function (data) {
+					clear_umid_keypad();
+				},
+				dataType: "json"
+			});
+
+		} else {
+			// Want to clear things if someone gets halfway through and quits.
+			// Wait 15 seconds.
+			if (manual_umid_timeout >= 0) {
+				clearTimeout(manual_umid_timeout);
+			}
+			manual_umid_timeout = setTimeout(clear_umid_keypad, 15000);
+		}
+	}
+});
+
+function clear_umid_keypad () {
+	manual_umid_enter = '';
+	$("#keypad-umid-status").effect("shake");
+	$("#keypad-umid-status block").removeClass("umid-status-blue");
+}
+
 $(".btn-trans-showhide").click(function () {
 	var transaction_id = $(this).attr("id").split("-")[2];
 	var transaction = $("#transaction-"+transaction_id)

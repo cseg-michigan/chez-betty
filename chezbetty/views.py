@@ -121,6 +121,19 @@ def users(request):
     return {'users': users}
 
 
+@view_config(route_name='umid_check',
+             request_method='POST',
+             renderer='json',
+             permission='service')
+def umid_check(request):
+    try:
+        User.from_umid(request.POST['umid'])
+        return {'status': 'success'}
+    except:
+        return {'status': 'error'}
+
+
+
 ### Post mcard swipe
 
 @view_config(route_name='purchase', renderer='templates/purchase.jinja2', permission='service')

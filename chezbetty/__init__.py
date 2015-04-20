@@ -83,6 +83,8 @@ def main(global_config, **settings):
     config.add_route('about',               '/about')
     config.add_route('shame',               '/shame')
 
+    config.add_route('umid_check',          '/check')
+
     config.add_route('items',               '/items')
     config.add_route('item',                '/item/{barcode}/json')
     config.add_route('item_request',        '/item/request')
