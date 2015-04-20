@@ -346,7 +346,7 @@ def item_sale_speed(num_days, only_item_id=None):
                          .join(Transaction)\
                          .join(Event)\
                          .filter(Event.deleted==False)\
-                         .filter(Event.timestamp>start.replace(tzinfo=None))
+                         .filter(Event.timestamp>start)
     for purchase in purchases:
         item_id = purchase.item_id
         quantity = purchase.quantity
