@@ -12,7 +12,8 @@ from .models import box_vendor
 
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
-       and e.type != 'inventory' and e.type != 'emptycashbox':
+       and e.type != 'inventory' and e.type != 'emptycashbox' \
+       and e.type != 'donation' and e.type != 'withdrawal':
         return False
     if e.deleted:
         return False
