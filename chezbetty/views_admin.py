@@ -487,6 +487,13 @@ def admin_restock_submit(request):
     # Arrays to pass to datalayer
     items = []
 
+    # Check if we should update prices with this restock.
+    # This is useful for updating old restocks without changing the price
+    # of the current inventory.
+    update_prices = True
+    if 'restock-noprice' in request.POST:
+        update_prices = False
+
     for key,val in request.POST.items():
 
         try:
@@ -534,7 +541,8 @@ def admin_restock_submit(request):
                     box = Box.from_id(obj_id)
 
                     # Set properties from restock
-                    box.wholesale = wholesale
+                    if update_prices:
+                        box.wholesale = wholesale
                     box.bottle_dep = btldeposit
                     box.sales_tax = salestax
 
@@ -569,13 +577,14 @@ def admin_restock_submit(request):
 
 
     # Iterate the grouped items, update prices and wholesales, and then restock
-    for item,quantity,total in items_for_pricing:
-        if quantity == 0:
-            request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
-            continue
-        item.wholesale = Decimal(round(total/quantity, 4))
-        # Set the item price
-        item.price = round(item.wholesale * Decimal(1.15), 2)
+    if update_prices:
+        for item,quantity,total in items_for_pricing:
+            if quantity == 0:
+                request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
+                continue
+            item.wholesale = Decimal(round(total/quantity, 4))
+            # Set the item price
+            item.price = round(item.wholesale * Decimal(1.15), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
