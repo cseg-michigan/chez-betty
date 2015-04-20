@@ -100,6 +100,37 @@ h1 {
 	margin-top: 15px;
 }
 
+.panel-superdanger {
+	background-color: #A94442;
+}
+
+
+.panel-superdanger .panel-heading {
+	background-color: #A94442;
+  border-color: white;
+}
+
+.panel-superdanger .panel-title {
+  color: white;
+}
+
+.panel-superdanger .panel-body {
+	background-color: #c05f5d;
+}
+
+.panel-superdanger .negative {
+	background-color: white;
+	font-size: 18px;
+	padding: 5px 10px 5px 10px;
+	font-weight: bold;
+	margin: 3px;
+}
+
+.panel-superdanger .user-info-balance {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
 /* Index */
 #index-main {
 	text-align: center;

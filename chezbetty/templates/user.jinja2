@@ -1,10 +1,11 @@
 {% extends "base.jinja2" %}
 {% set active_page = 'account' %}
 {% block title %}User Information{% endblock %}
-{% block header %}{{ name }}{% endblock %}
+{% block header %}{{ user.name }}{% endblock %}
 
 {% block content %}
 
+{% set active_page = 'account' %}
 {% include "user_info.jinja2" %}
 
 {# Display the transaction history list
