@@ -693,7 +693,17 @@ def admin_btc_reconcile_post(request):
              renderer='templates/admin/inventory.jinja2',
              permission='manage')
 def admin_inventory(request):
-    items = DBSession.query(Item).order_by(Item.name).all()
+    items1 = DBSession.query(Item)\
+                      .filter(Item.enabled==True)\
+                      .filter(Item.in_stock!=0)\
+                      .order_by(Item.name).all()
+    items2 = DBSession.query(Item)\
+                      .filter(Item.enabled==True)\
+                      .filter(Item.in_stock==0)\
+                      .order_by(Item.name).all()
+    items3 = DBSession.query(Item)\
+                      .filter(Item.enabled==False)\
+                      .order_by(Item.name).all()
 
     undone_inventory = {}
     if len(request.GET) != 0:
@@ -701,7 +711,10 @@ def admin_inventory(request):
         for item_id,quantity_counted in request.GET.items():
             undone_inventory[int(item_id)] = int(quantity_counted)
 
-    return {'items': items, 'undone_inventory': undone_inventory}
+    return {'items_have': items1,
+            'items_donthave': items2,
+            'items_disabled': items3,
+            'undone_inventory': undone_inventory}
 
 
 @view_config(route_name='admin_inventory_submit',
