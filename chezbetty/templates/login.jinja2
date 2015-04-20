@@ -43,15 +43,18 @@ button {
 
 <div class="container">
 
-  <div class="col-md-4"></div>
-
-  <div class="col-md-4">
-
+  <div class="col-md-12">
     <p><a class="btn btn-default btn-lg btn-block" href="/">Home</a></p>
+  </div>
+
+
+  <div class="col-md-6">
 
     <form class="form-signin" role="form" method="post" action="/login">
       <input type="hidden" name="came_from" value="{{ came_from }}"/>
-      <h2 class="form-signin-heading">Please sign in</h2>
+      <h2 class="form-signin-heading">Please Sign In</h2>
+      <p class="lead">This isn't kerberos, so if you
+      don't have a Betty password, you need to use the other form.</p>
       {% for m in login_message %}
       <span class="label label-danger">{{ m }}</span>
       {% endfor %}
@@ -60,8 +63,13 @@ button {
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
 
+  </div>
+
+  <div class="col-md-5 col-md-offset-1">
+
     <form class="form-signin" role="form" method="post" action="/login/reset_pw">
       <h2 class="form-signin-heading">Forgot Password?</h2>
+      <p class="lead">Or never had one? Use this to get a password for your account.</p>
       {% for m in forgot_error %}
       <span class="label label-danger">{{ m }}</span>
       {% endfor %}
@@ -75,7 +83,6 @@ button {
 
   </div>
 
-  <div class="col-md-4"></div>
 
 </div>
 
