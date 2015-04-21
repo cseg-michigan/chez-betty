@@ -1012,9 +1012,7 @@ def admin_item_edit(request):
             except:
                 pass
 
-        # events.extend([e.subtransaction for e in sst])
         events.extend(sst)
-        # events.sort(key=lambda x: x.transaction.event.timestamp)
         events.sort(key=sortTransactionsByEvent)
         events_total += sst_total
 
