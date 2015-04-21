@@ -998,8 +998,24 @@ def admin_item_edit(request):
         sst, sst_total = SubSubTransaction.all_item(item.id,
                 limit=event_limit, count=True)
 
-        events.extend([e.subtransaction for e in sst])
-        events.sort(key=lambda x: x.transaction.event.timestamp)
+        def sortTransactionsByEvent(t):
+            try:
+                return t.event.timestamp
+            except:
+                pass
+            try:
+                return t.transaction.event.timestamp
+            except:
+                pass
+            try:
+                return t.subtransaction.transaction.event.timestamp
+            except:
+                pass
+
+        # events.extend([e.subtransaction for e in sst])
+        events.extend(sst)
+        # events.sort(key=lambda x: x.transaction.event.timestamp)
+        events.sort(key=sortTransactionsByEvent)
         events_total += sst_total
 
         if event_limit is None or events_total <= event_limit:

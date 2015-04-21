@@ -256,16 +256,23 @@
       </thead>
 
       <tbody>
-        {% for event in events|reverse %}
+        {% for it in events|reverse %}
+        {% if it.transaction %}
+          {% set event = it.transaction.event %}
+          {% set transaction = it.transaction %}
+        {% elif it.subtransaction %}
+          {% set event = it.subtransaction.transaction.event %}
+          {% set transaction = it.subtransaction.transaction %}
+        {% endif %}
         <tr>
-          <td>{{ button.event(event.transaction.event.id) }}</td>
-          <td>{{ event.transaction.event.timestamp|pretty_date|safe }}</td>
-          <td>{{ event.transaction.event.admin.name }}</td>
-          <td>{{ event.transaction.type }}</td>
-          {% if event.transaction.type == "inventory" %}
-          <td>{{ event.quantity_counted }}</td>
+          <td>{{ button.event(event.id) }}</td>
+          <td>{{ event.timestamp|pretty_date|safe }}</td>
+          <td>{{ event.admin.name }}</td>
+          <td>{{ transaction.type }}</td>
+          {% if transaction.type == "inventory" %}
+          <td>{{ it.quantity_counted }}</td>
           {% else %}
-          <td>{{ event.quantity }}</td>
+          <td>{{ it.quantity }}</td>
           {% endif %}
         </tr>
         {% endfor %}
