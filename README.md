@@ -34,7 +34,15 @@ development environment set up, do the following:
         # ^ *not* pyvenv ., that installed python2 in my venv for w/e reason
         source bin/activate
 
-2. Install the Python3 dependencies:
+2. Install the dependencies:
+
+        # Note, this step *must* be run before setup.py. The latter will use
+        # easy_install to install requirements instead of pip, which will
+        # break some packages (e.g. stripe). The argument should be the root
+        # directory of the project.
+        pip install -e .
+
+2. Setup the development environment
 
         python setup.py develop
 
