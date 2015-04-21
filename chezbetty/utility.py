@@ -139,7 +139,7 @@ def timeseries_cumulative(rows):
 
     return out
 
-# [(milliseconds, debt, user_balance), ...]
+# [(milliseconds, debt, bank_balance, debt/# users in debt), ...]
 def timeseries_balance_total_daily(rows):
 
     # Is debt going away or coming in
@@ -154,6 +154,7 @@ def timeseries_balance_total_daily(rows):
     user_balances = {}
     total_debt = 0
     total_balance = 0
+    users_in_debt = 0
 
     out = []
 
@@ -183,10 +184,12 @@ def timeseries_balance_total_daily(rows):
             # Was in debt, now not
             total_debt -= -1*old_balance
             total_balance += new_balance
+            users_in_debt -= 1
         elif old_balance >= 0 and new_balance < 0:
             # Wasn't in debt, now is
             total_balance -= old_balance
             total_debt += -1*new_balance
+            users_in_debt += 1
         elif new_balance < 0:
             # still in debt
             total_debt += -1*directions[trtype]*amount
@@ -195,7 +198,7 @@ def timeseries_balance_total_daily(rows):
             total_balance += directions[trtype]*amount
 
         # Add to output array
-        out.append((t, round(total_debt*100), round(total_balance*100)))
+        out.append((t, round(total_debt*100), round(total_balance*100), round((total_debt*100)/users_in_debt)))
 
     return out
 
