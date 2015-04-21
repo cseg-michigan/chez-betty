@@ -21,7 +21,19 @@ from email.mime.base import MIMEBase
 # TODO: Should probably send mail 'from' our actual server and have a local MTA
 # that forwards mails to this alias
 def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
+    msg = MIMEMultipart()
+    msg['Subject'] = SUBJECT
+    msg['From'] = FROM
+    msg['To'] = TO
+    msg.attach(MIMEText(body, 'html'))
+    print(msg.as_string())
+
     settings = get_current_registry().settings
+
+    if 'debugging' in settings:
+        if 'debugging_send_email' not in settings or settings['debugging_send_email'] != 'true':
+            print("Mail suppressed due to debug settings")
+            return
 
     if 'smtp.host' in settings:
         sm = smtplib.SMTP(host=settings['smtp.host'])
@@ -31,14 +43,7 @@ def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
     if 'smtp.username' in settings:
         sm.login(settings['smtp.username'], settings['smtp.password'])
 
-    msg = MIMEMultipart()
-    msg['Subject'] = SUBJECT
-    msg['From'] = FROM
-    msg['To'] = TO
-    msg.attach(MIMEText(body, 'html'))
-
     if 'debugging' in settings:
-        print(msg.as_string())
         if 'debugging_send_email' in settings and settings['debugging_send_email'] == 'true':
             try:
                 msg.replace_header('To', settings['debugging_send_email_to'])
@@ -46,8 +51,6 @@ def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
             except KeyError: pass
             send_to = msg['To'].split(', ')
             sm.sendmail(FROM, send_to, msg.as_string())
-        else:
-            print("Mail suppressed due to debug settings")
     else:
         send_to = msg['To'].split(', ')
         sm.sendmail(FROM, send_to, msg.as_string())
