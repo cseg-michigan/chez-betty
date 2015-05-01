@@ -6,6 +6,7 @@
 
 {% block content %}
 
+{% set active_page = 'deposit' %}
 {% include "user_info.jinja2" %}
 
 <div class="panel panel-default">
@@ -54,7 +55,28 @@
 
       <div class="col-md-4 deposit-type-col">
         <h3>{{ _('Credit Card') }}</h3>
-        <p style="text-align:center;">{{ _('Coming soon.') }}</p>
+        <div style="text-align:center">
+          <h4 style="text-align:center">{{ _('Betty now accepts credit cards!') }}</h4>
+          <hr />
+          <p>
+            {{ _('To deposit using a credit card, please visit https://chezbetty.eecs.umich.edu/user on your own computer.') }}
+          </p>
+          <hr />
+          {#
+          {% if user.has_password == False %}
+          <p>
+            {{ _('Clicking this button will email you your login and password information.') }}
+          </p>
+          {{ button.ajax_singleuse_button("Create and Email Password", "/deposit/"~user.id~"/password/create") }}
+          {% else %}
+          <p>
+            {{ _('Clicking this button will email you a new password.') }}
+          </p>
+          {{ button.ajax_singleuse_button("Reset and Email Password", "/deposit/"~user.id~"/password/reset") }}
+          {% endif %}
+          #}
+          {{ button.ajax_singleuse_button("Email me the link!", "/deposit/"~user.id~"/emailinfo") }}
+        </div>
       </div>
 
 

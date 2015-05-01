@@ -118,17 +118,17 @@ class Reconcile(Event):
 
 class Donation(Event):
     __mapper_args__ = {'polymorphic_identity': 'donation'}
-    def __init__(self, admin, notes):
+    def __init__(self, admin, notes, timestamp):
         if len(notes) < 3:
             raise NotesMissingException()
-        Event.__init__(self, admin, notes)
+        Event.__init__(self, admin, notes, timestamp)
 
 
 class Withdrawal(Event):
     __mapper_args__ = {'polymorphic_identity': 'withdrawal'}
-    def __init__(self, admin, notes):
+    def __init__(self, admin, notes, timestamp):
         if len(notes) < 3:
             raise NotesMissingException()
-        Event.__init__(self, admin, notes)
+        Event.__init__(self, admin, notes, timestamp)
 
 

@@ -26,6 +26,9 @@ from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
 
+from .utility import user_password_reset
+from .utility import send_email
+
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
@@ -117,6 +120,19 @@ def users(request):
                      .filter(User.balance < -5)\
                      .order_by(User.balance).all()
     return {'users': users}
+
+
+@view_config(route_name='umid_check',
+             request_method='POST',
+             renderer='json',
+             permission='service')
+def umid_check(request):
+    try:
+        User.from_umid(request.POST['umid'])
+        return {'status': 'success'}
+    except:
+        return {'status': 'error'}
+
 
 
 ### Post mcard swipe
@@ -218,13 +234,7 @@ def deposit(request):
             btc_html = ""
 
         # Get pools the user can deposit to
-        pools = []
-        for pool in Pool.all_by_owner(user, True):
-            pools.append(pool)
-
-        for pu in user.pools:
-            if pu.pool.enabled:
-                pools.append(pu.pool)
+        pools = Pool.all_accessable(user, True)
 
         return {'user' : user,
                 'btc'  : btc_html, 
@@ -541,6 +551,65 @@ def btc_check(request):
     except:
         return {}
 
+
+@view_config(route_name='deposit_emailinfo',
+             renderer='json',
+             permission='service')
+def deposit_emailinfo(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if not user.has_password:
+            return deposit_password_create(request)
+        send_email(TO=user.uniqname+'@umich.edu',
+                   SUBJECT='Chez Betty Credit Card Instructions',
+                   body=render('templates/email_userinfo.jinja2', {'user': user}))
+        return {'status': 'success',
+                'msg': 'Instructions emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
+
+@view_config(route_name='deposit_password_create',
+             renderer='json',
+             permission='service')
+def deposit_password_create(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if user.has_password:
+            return {'status': 'error',
+                    'msg': 'Error: User already has password.'}
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
+@view_config(route_name='deposit_password_reset',
+        renderer='json',
+        permission='service')
+def deposit_password_reset(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
 
 @view_config(route_name='deposit_new',
              request_method='POST',

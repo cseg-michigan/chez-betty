@@ -6,6 +6,7 @@
 
 {% block content %}
 
+{% set active_page = 'purchase' %}
 {% include "user_info.jinja2" %}
 
 <div class="row">
@@ -86,6 +87,7 @@
 {% endblock %}
 
 {% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-purchase.js'|static_url}}"></script>
 <script src="{{'chezbetty:static/js/chezbetty-item.js'|static_url}}"></script>
 {% endblock %}
 

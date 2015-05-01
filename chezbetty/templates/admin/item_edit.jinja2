@@ -53,9 +53,10 @@
             <dt>In Stock</dt> <dd>{{ stats.stock }}</dd>
             <dt>Num Sold</dt> <dd>{{ stats.num_sold }}</dd>
             <dt>Sale Speed</dt> <dd>{{ stats.sale_speed|float|round(3) }}</dd>
-            <dt>Days Until Out</dt> <dd>{{ stats.until_out|round(0)|int }}</dd>
+            <dt>Days Until Out</dt> <dd>{% if stats.until_out is string %}{{ stats.until_out }}{% else %}{{ stats.until_out|round(0)|int }}{% endif %}</dd>
             <dt>Num Lost</dt> <dd>{{ stats.lost }}</dd>
             <dt>Inventory Percent</dt> <dd>{{ stats.inv_percent|round(2) }}%</dd>
+            <dt>Theftiness</dt> <dd>{{ stats.theftiness|round(2) }}%</dd>
           </dl>
         </div>
         <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
@@ -256,16 +257,23 @@
       </thead>
 
       <tbody>
-        {% for event in events|reverse %}
+        {% for it in events|reverse %}
+        {% if it.transaction %}
+          {% set event = it.transaction.event %}
+          {% set transaction = it.transaction %}
+        {% elif it.subtransaction %}
+          {% set event = it.subtransaction.transaction.event %}
+          {% set transaction = it.subtransaction.transaction %}
+        {% endif %}
         <tr>
-          <td>{{ button.event(event.transaction.event.id) }}</td>
-          <td>{{ event.transaction.event.timestamp|pretty_date|safe }}</td>
-          <td>{{ event.transaction.event.admin.name }}</td>
-          <td>{{ event.transaction.type }}</td>
-          {% if event.transaction.type == "inventory" %}
-          <td>{{ event.quantity_counted }}</td>
+          <td>{{ button.event(event.id) }}</td>
+          <td>{{ event.timestamp|pretty_date|safe }}</td>
+          <td>{{ event.admin.name }}</td>
+          <td>{{ transaction.type }}</td>
+          {% if transaction.type == "inventory" %}
+          <td>{{ it.quantity_counted }}</td>
           {% else %}
-          <td>{{ event.quantity }}</td>
+          <td>{{ it.quantity }}</td>
           {% endif %}
         </tr>
         {% endfor %}

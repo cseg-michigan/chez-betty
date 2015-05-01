@@ -25,6 +25,7 @@ class Transaction(Base):
     type = Column(Enum("purchase",      # user_account -> chezbetty.        None
                        "deposit",
                        "cashdeposit",   # null         -> user_account.     null      -> cashbox.
+                       "ccdeposit",     # null         -> user_account.     null      -> chezbetty
                        "btcdeposit",    # null         -> user_account      null      -> btcbox
                        "adjustment",    # chezbetty   <-> user              None                            Yes
                        "restock",       # chezbetty    -> null              chezbetty -> null
@@ -146,11 +147,33 @@ class Transaction(Base):
                         .filter(event.Event.deleted==False)
 
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
 
         return r.one().a or Decimal(0.0)
+
+    # Returns an array of tuples where the first item is a millisecond timestamp,
+    # the next is the total amount of debt, and the next is the total amount
+    # of stored money for users.
+    @classmethod
+    def get_balance_total_daily(cls):
+        rows = DBSession.query(cls.amount,
+                               cls.type,
+                               cls.to_account_virt_id,
+                               cls.fr_account_virt_id,
+                               event.Event.timestamp)\
+                        .join(event.Event)\
+                        .filter(or_(
+                                  cls.type=='purchase',
+                                  cls.type=='cashdeposit',
+                                  cls.type=='ccdeposit',
+                                  cls.type=='btcdeposit',
+                                  cls.type=='adjustment'
+                                ))\
+                        .order_by(event.Event.timestamp)\
+                        .all()
+        return utility.timeseries_balance_total_daily(rows)
 
 
 @limitable_all
@@ -205,6 +228,7 @@ def __total_deposit_amount(self):
             .filter(and_(
                         Transaction.to_account_virt_id == self.id,
                         or_(Transaction.type == 'cashdeposit',
+                            Transaction.type == 'ccdeposit',
                             Transaction.type == 'btcdeposit')))\
             .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_deposits = __total_deposit_amount
@@ -219,6 +243,21 @@ def __total_purchase_amount(self):
                         Transaction.type == 'purchase'))\
             .filter(event.Event.deleted==False).one().total or Decimal(0.0)
 account.Account.total_purchases = __total_purchase_amount
+
+# This is in a stupid place due to circular input problems
+@classmethod
+def __get_cash_events(cls):
+    return DBSession.query(event.Event)\
+            .join(Transaction)\
+            .filter(or_(
+                      Transaction.to_account_cash_id == account.get_cash_account("chezbetty").id,
+                      Transaction.fr_account_cash_id == account.get_cash_account("chezbetty").id))\
+            .filter(event.Event.deleted==False)\
+            .order_by(desc(event.Event.timestamp)).all()
+
+event.Event.get_cash_events = __get_cash_events
+
+
 
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}
@@ -240,9 +279,9 @@ class Deposit(Transaction):
                      .order_by(event.Event.timestamp)\
                      .filter(event.Event.deleted==False)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
 
         return utility.group(r.all(), period)
 
@@ -258,13 +297,23 @@ class CashDeposit(Deposit):
         prev = cashbox_c.balance
         Transaction.__init__(self, event, None, user, None, cashbox_c, amount)
         new = cashbox_c.balance
-        if prev < CashDeposit.CONTENTS_THRESHOLD and new > CashDeposit.CONTENTS_THRESHOLD:
-            self.send_alert_email(new)
-        elif prev > CashDeposit.CONTENTS_THRESHOLD:
-            pr = int((prev - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
-            nr = int((new - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
-            if pr != nr:
-                self.send_alert_email(new, nr)
+
+        # It feels like the model should not have all of this application
+        # specific logic in it. What does sending an email have to do with
+        # representing a transaction. I think this should be moved to
+        # datalayer.py which does handle application logic.
+        try:
+            if prev < CashDeposit.CONTENTS_THRESHOLD and new > CashDeposit.CONTENTS_THRESHOLD:
+                self.send_alert_email(new)
+            elif prev > CashDeposit.CONTENTS_THRESHOLD:
+                pr = int((prev - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+                nr = int((new - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
+                if pr != nr:
+                    self.send_alert_email(new, nr)
+        except:
+            # Some error sending email. Let's not prevent the deposit from
+            # going through.
+            pass
 
     def send_alert_email(self, amount, repeat=0):
         settings = get_current_registry().settings
@@ -292,6 +341,19 @@ class CashDeposit(Deposit):
             safely ignored.</em></p>""" + body
 
         utility.send_email(TO=TO, SUBJECT=SUBJECT, body=body)
+
+
+class CCDeposit(Deposit):
+    __mapper_args__ = {'polymorphic_identity': 'ccdeposit'}
+
+    stripe_id = Column(Text)
+    cc_last4 = Column(Text)
+
+    def __init__(self, event, user, amount, stripe_id, last4):
+        chezbetty_c = account.get_cash_account("chezbetty")
+        Transaction.__init__(self, event, None, user, None, chezbetty_c, amount)
+        self.stripe_id = stripe_id
+        self.cc_last4 = last4
 
 
 class BTCDeposit(Deposit):
@@ -490,9 +552,9 @@ class PurchaseLineItem(SubTransaction):
                      .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
         return utility.group(r.all(), period)
 
     @classmethod
@@ -503,9 +565,9 @@ class PurchaseLineItem(SubTransaction):
                      .filter(event.Event.deleted==False)\
                      .order_by(event.Event.timestamp)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
         return utility.group(r.all(), period)
 
     @classmethod
@@ -515,9 +577,9 @@ class PurchaseLineItem(SubTransaction):
                         .join(event.Event)\
                         .filter(event.Event.deleted==False)
         if start:
-            r = r.filter(event.Event.timestamp>=start)
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
         if end:
-            r = r.filter(event.Event.timestamp<end)
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
 
         return r.one().p or Decimal(0.0)
 

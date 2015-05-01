@@ -83,6 +83,8 @@ def main(global_config, **settings):
     config.add_route('about',               '/about')
     config.add_route('shame',               '/shame')
 
+    config.add_route('umid_check',          '/check')
+
     config.add_route('items',               '/items')
     config.add_route('item',                '/item/{barcode}/json')
     config.add_route('item_request',        '/item/request')
@@ -98,6 +100,9 @@ def main(global_config, **settings):
     config.add_route('deposit',             '/deposit/{umid}')
     config.add_route('deposit_edit',        '/deposit/edit/{umid}/{event_id}')
     config.add_route('deposit_edit_submit', '/deposit/edit/submit')
+    config.add_route('deposit_emailinfo',   '/deposit/{user_id}/emailinfo')
+    config.add_route('deposit_password_create','/deposit/{user_id}/password/create')
+    config.add_route('deposit_password_reset', '/deposit/{user_id}/password/reset')
 
     config.add_route('btc_deposit',         '/bitcoin/deposit/{umid}/{auth_key}')
     config.add_route('btc_check',           '/bitcoin/check/{addr}')
@@ -108,13 +113,23 @@ def main(global_config, **settings):
 
     # USER ADMIN
     config.add_route('user_index',                 '/user')
+    # Map this as convenience since users will be typing manually often
+    config.add_route('user_index_slash',           '/user/')
 
     config.add_route('user_ajax_bool',             '/user/ajax/bool/{object}/{id}/{field}/{state}')
+
+    config.add_route('user_deposit_cc',            '/user/deposit_cc')
+    config.add_route('user_deposit_cc_custom',     '/user/deposit_cc/custom')
+    config.add_route('user_deposit_cc_submit',     '/user/deposit_cc/submit')
 
     config.add_route('user_pools',                 '/user/pools')
     config.add_route('user_pools_new_submit',      '/user/pools/new/submit')
     config.add_route('user_pool',                  '/user/pool/{pool_id}')
     config.add_route('user_pool_addmember_submit', '/user/pool/addmember/submit')
+    config.add_route('user_pool_changename_submit','/user/pool/changename/submit')
+
+    config.add_route('user_password_edit',         '/user/password/edit')
+    config.add_route('user_password_edit_submit',  '/user/password/edit/submit')
 
 
     # ADMIN
@@ -182,14 +197,15 @@ def main(global_config, **settings):
     config.add_route('admin_btc_reconcile',        '/admin/btc/reconcile')
     config.add_route('admin_btc_reconcile_submit', '/admin/btc/reconcile/submit')
 
-    config.add_route('admin_restocks',       '/admin/restocks')
-    config.add_route('admin_events',         '/admin/events')
-    config.add_route('admin_events_load_more','/admin/events/load_more')
-    config.add_route('admin_events_deleted', '/admin/events/deleted')
-    config.add_route('admin_event_upload',   '/admin/event/upload')
-    config.add_route('admin_event',          '/admin/event/{event_id}')
-    config.add_route('admin_event_undo',     '/admin/event/undo/{event_id}')
-    config.add_route('admin_event_receipt',  '/admin/event/receipt/{receipt_id}.pdf')
+    config.add_route('admin_restocks',         '/admin/restocks')
+    config.add_route('admin_events',           '/admin/events')
+    config.add_route('admin_events_load_more', '/admin/events/load_more')
+    config.add_route('admin_events_deleted',   '/admin/events/deleted')
+    config.add_route('admin_events_cash',      '/admin/events/cash')
+    config.add_route('admin_event_upload',     '/admin/event/upload')
+    config.add_route('admin_event',            '/admin/event/{event_id}')
+    config.add_route('admin_event_undo',       '/admin/event/undo/{event_id}')
+    config.add_route('admin_event_receipt',    '/admin/event/receipt/{receipt_id}.pdf')
 
     config.add_route('admin_password_edit',        '/admin/password/edit')
     config.add_route('admin_password_edit_submit', '/admin/password/edit/submit')
@@ -207,6 +223,8 @@ def main(global_config, **settings):
     config.add_route('admin_data_items_json',    '/admin/data/items/{period}')
     config.add_route('admin_data_sales_json',    '/admin/data/sales/{period}')
     config.add_route('admin_data_deposits_json', '/admin/data/deposits/{period}')
+    
+    config.add_route('admin_data_json_highcharts', '/admin/data/raw/{metric}/{period}')
 
     config.add_route('admin_data_items_each_json', '/admin/data/items/{period}/each')
     config.add_route('admin_data_sales_each_json', '/admin/data/sales/{period}/each')
@@ -214,7 +232,9 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_item_sales_json', '/admin/data/item/sales/{item_id}')
 
-    config.add_route('admin_data_users_totals_json', '/admin/data/users/totals')
+    config.add_route('admin_data_users_totals_json',                   '/admin/data/users/totals')
+    config.add_route('admin_data_users_balance_totals_json',           '/admin/data/users/balance/totals')
+    # config.add_route('admin_data_users_balance_totals_percapita_json', '/admin/data/users/balance/totalspc')
 
     config.add_route('admin_data_speed_items', '/admin/data/speed/items')
 
@@ -222,8 +242,9 @@ def main(global_config, **settings):
     config.add_route('dynamic_item_img', '/dynamic/item/{item_id}.jpg')
 
 
-    config.add_route('login',  '/login')
-    config.add_route('logout', '/logout')
+    config.add_route('login',          '/login')
+    config.add_route('login_reset_pw', '/login/reset_pw')
+    config.add_route('logout',         '/logout')
     config.add_request_method(get_user, "user", reify=True)
 
     # 404 Page

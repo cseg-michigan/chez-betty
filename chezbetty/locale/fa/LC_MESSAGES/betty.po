@@ -1,77 +1,74 @@
 #
-# French translations for PACKAGE package
+# Persian translations for PACKAGE package
 # This file is distributed under the same license as the PACKAGE package.
-# Pat Pannuto <ppannuto@umich.edu>, 2015.
+# Amir Rahmati <amir@rahmati.com>, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
 "POT-Creation-Date: 2015-04-07 18:36-0400\n"
-"PO-Revision-Date: 2015-04-07 18:37-0500\n"
-"Last-Translator: sanae <sanae@umich.edu>\n"
-"Language-Team: French\n"
-"Language: fr\n"
+"PO-Revision-Date: 2015-04-07 22:17-0400\n"
+"Last-Translator: Amir Rahmati <amir@rahmati.com>\n"
+"Language-Team: Persian\n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Lingua 3.9\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.7.3\n"
 
 #. Default: User is not enabled. Please contact ${email}.
 #: chezbetty/views.py:136
 msgid "user-not-enabled"
-msgstr "utilizateur-pas-activé"
+msgstr "کاربر‫-‬فعال‫-‬نشده"
 
 #. Default: Failed to read M-Card. Please try swiping again.
 #: chezbetty/views.py:173
 msgid "mcard-error"
-msgstr "erreur-mcarte"
+msgstr "ایراد‫-‬ام‌کارد"
 
 #: chezbetty/views_user.py:165
 msgid "Deposit amount must be greater than $0.00. Card NOT charged."
-msgstr ""
-"Le dépôt somme doit être supérieur à $0.00. Votre card n'est pas chargée."
+msgstr "مبلغ واریز شده باید بیشتر از صفر باشد‫.‬ کارت شارژ نشد‫.‬"
 
 #: chezbetty/templates/deposit_edit.jinja2:3
 #: chezbetty/templates/deposit_edit.jinja2:4
 msgid "Edit Deposit"
-msgstr "Modifez un dépôt"
+msgstr "ویرایش واریز"
 
 #: chezbetty/templates/deposit_edit.jinja2:16
 msgid "New Deposit Amount"
-msgstr "Nouveau dépôt somme"
+msgstr "مقدار جدید واریز"
 
 #: chezbetty/templates/deposit_edit.jinja2:28
 #: chezbetty/templates/deposit.jinja2:28
 msgid "Deposit To Your Account"
-msgstr "Déposez à votre compte"
+msgstr "واریز پول به حساب"
 
 #: chezbetty/templates/deposit_edit.jinja2:30
 #: chezbetty/templates/deposit.jinja2:30
 msgid "Deposit To %(pool_name)s Pool"
-msgstr "Déposez à %(pool_name)s"
+msgstr "واریز به حساب مشترک %(pool_name)s"
 
 #: chezbetty/templates/deposit_edit.jinja2:35
 msgid "Delete Deposit"
-msgstr "Supprimez ce dépôt"
+msgstr "حذف واریز"
 
 #: chezbetty/templates/item_request.jinja2:2
 msgid "Item Request"
-msgstr "Demande de l'Article"
+msgstr "درخواست جنس"
 
 #: chezbetty/templates/item_request.jinja2:3
 msgid "Request a New Item at Chez Betty"
-msgstr "Demandez un nouvel article"
+msgstr "از چز‌ بتی جنس جدیدی را درخواست کنید‫.‬"
 
 #: chezbetty/templates/item_request.jinja2:10
 #: chezbetty/templates/about.jinja2:13 chezbetty/templates/about.jinja2:105
 #: chezbetty/templates/shame.jinja2:10 chezbetty/templates/items.jinja2:19
 msgid "Home"
-msgstr "Accueil"
+msgstr "خانه"
 
 #: chezbetty/templates/item_request.jinja2:15
 msgid "New Item Request"
-msgstr "Demande d'un nouvel article"
+msgstr "درخواست جنس جدید"
 
 #: chezbetty/templates/item_request.jinja2:20
 msgid ""
@@ -80,6 +77,10 @@ msgid ""
 "normally shop at Costco, Meijer, and Kroger, so if those stores do not carry "
 "it, it is unlikely that Betty will either."
 msgstr ""
+"نام جنسی را که دوست دارید به لیست محصولات اضافه شود به همراه نام فروشگاهی که "
+"می‌توان جنس را در آن تهیه کرد بنویسید. ما خریدهای خود را معمولا از فروشگاه‌های "
+"کاستکو، مایر، و کروگر انجام می‌دهیم. بنابراین بعید است به درخواست‌های دیگر "
+"رسیدگی شود."
 
 #: chezbetty/templates/item_request.jinja2:26
 msgid ""
@@ -90,152 +91,159 @@ msgid ""
 "can reimburse you by just writing a check. Get in touch with us if you are "
 "interested."
 msgstr ""
+"همچنین اگر حوصله دارید این امکان وجود دارد که شما به عنوان فروشنده در چز بتی"
+"فعالیت کنید. مثلا هنگام خرید هفتگی از اجناسی که دوست دارید تعداد بیشتری تهیه"
+"کنید و آن را به چز بتی اضافه کنید تا ببینید چه‌طور فروش می‌رود."
+"این کار (مخصوصا برای تعداد اجناس کم) بسیار آسان است و ما می‌توانیم مبلغ "
+"پرداختی شما را به صورت چک بانکی به شما بازگردانیم. در صورت علاقه به همکاری "
+"با ما تماس بگیرید."
+
 
 #: chezbetty/templates/item_request.jinja2:38
 msgid "Submit Request"
-msgstr "Soumis Demande"
+msgstr "ارسال درخواست"
 
 #: chezbetty/templates/deposit.jinja2:3 chezbetty/templates/deposit.jinja2:4
 #: chezbetty/templates/deposit.jinja2:13
 #: chezbetty/templates/user_info.jinja2:45
 #: chezbetty/templates/deposit_complete.jinja2:12
 msgid "Deposit"
-msgstr "Déposez"
+msgstr "واریز"
 
 #: chezbetty/templates/deposit.jinja2:21
 msgid "Cash"
-msgstr "Les Espèces"
+msgstr "پول نقد"
 
 #: chezbetty/templates/deposit.jinja2:22
 msgid "Your Deposit Limit: %(limit)s"
-msgstr "Vous pouvez déposer jusqu'a %(limit)s"
+msgstr "محدودیت واریز‫:‬ %(limit)s"
 
 #: chezbetty/templates/deposit.jinja2:45
 msgid "Bitcoin"
-msgstr "Bitcoin"
+msgstr "بیت‌کوین"
 
 #: chezbetty/templates/deposit.jinja2:56
 msgid "Credit Card"
-msgstr "Carte de Crédit"
+msgstr "کارت‌اعتباری"
 
 #: chezbetty/templates/deposit.jinja2:58 chezbetty/templates/index.jinja2:36
 msgid "Betty now accepts credit cards!"
-msgstr "Betty accepte les cartes de crédit!"
+msgstr "امکان پذیرش کارت اعتباری اضافه شد‫!‬"
 
 #: chezbetty/templates/deposit.jinja2:61 chezbetty/templates/index.jinja2:38
 msgid ""
 "To deposit using a credit card, please visit chezbetty.eecs.umich.edu/user "
 "in your browser."
 msgstr ""
-"Pour déposer avec une carte de crédit, s'il vous plaît visitez chezbetty."
-"eecs.umich.edu dans votre navigateur Web."
+"برای واریز پول از طریق کارت اعتباری، لطفا در مرورگر خود به آدرس "
+"chezbetty.eecs.umich.edu/user رجوع کنید."
 
 #: chezbetty/templates/purchase.jinja2:3 chezbetty/templates/purchase.jinja2:4
 #: chezbetty/templates/user_info.jinja2:39
 msgid "Purchase"
-msgstr "Achat"
+msgstr "خرید"
 
 #: chezbetty/templates/purchase.jinja2:17
 #: chezbetty/templates/purchase_complete.jinja2:13
 msgid "Order Summary"
-msgstr "Sommaire du Commande"
+msgstr "خلاصه سفارش"
 
 #: chezbetty/templates/purchase.jinja2:34 chezbetty/templates/user.jinja2:45
 #: chezbetty/templates/items.jinja2:36 chezbetty/templates/items.jinja2:61
 #: chezbetty/templates/items.jinja2:84
 #: chezbetty/templates/purchase_complete.jinja2:20
 msgid "Item"
-msgstr "Article"
+msgstr "جنس"
 
 #: chezbetty/templates/purchase.jinja2:35 chezbetty/templates/user.jinja2:46
 #: chezbetty/templates/purchase_complete.jinja2:21
 msgid "Quantity"
-msgstr "Quantité"
+msgstr "تعداد"
 
 #: chezbetty/templates/purchase.jinja2:36 chezbetty/templates/user.jinja2:47
 #: chezbetty/templates/purchase_complete.jinja2:22
 msgid "Item Price"
-msgstr "Prix"
+msgstr "قیمت جنس"
 
 #: chezbetty/templates/purchase.jinja2:37 chezbetty/templates/user.jinja2:48
 #: chezbetty/templates/purchase_complete.jinja2:23
 msgid "Total Price"
-msgstr "Prix Total"
+msgstr "قیمت کل"
 
 #: chezbetty/templates/purchase.jinja2:47
 msgid "Order Empty"
-msgstr "Commande Vide"
+msgstr "سبد شما خالی‌است"
 
 #: chezbetty/templates/purchase.jinja2:48
 msgid "Scan an item to begin"
-msgstr "Commencez par scanner un article"
+msgstr "برای شروع، جنس اول را اسکن کنید‫.‬"
 
 #: chezbetty/templates/purchase.jinja2:57 chezbetty/templates/user.jinja2:67
 #: chezbetty/templates/purchase_complete.jinja2:42
 msgid "Subtotal"
-msgstr "Sous total"
+msgstr "جمع جزء"
 
 #: chezbetty/templates/purchase.jinja2:61
 msgid "Good Standing Discount"
-msgstr "Réduction pour Patrons en Règle"
+msgstr "تخفیف خوش‌حسابی"
 
 #: chezbetty/templates/purchase.jinja2:67 chezbetty/templates/user.jinja2:76
 #: chezbetty/templates/purchase_complete.jinja2:53
 msgid "Total"
-msgstr "Total"
+msgstr "مجموع کل"
 
 #: chezbetty/templates/purchase.jinja2:78
 msgid "Pay With Your User Account"
-msgstr "Payez avec votre compte"
+msgstr "با حساب کاربری خود پرداخت کنید"
 
 #: chezbetty/templates/purchase.jinja2:80
 msgid "Pay With %(pool_name)s Pool"
-msgstr "Payez avec %(pool_name)s"
+msgstr "با حساب مشترک %(pool_name)s پرداخت کنید‫.‬"
 
 #: chezbetty/templates/user_info.jinja2:6
 msgid "Customer"
-msgstr "Patron"
+msgstr "مشتری"
 
 #: chezbetty/templates/user_info.jinja2:11 chezbetty/templates/shame.jinja2:23
 msgid "Name"
-msgstr "Nom"
+msgstr "نام"
 
 #: chezbetty/templates/user_info.jinja2:14 chezbetty/templates/shame.jinja2:25
 #: chezbetty/templates/user/deposit_cc.jinja2:23
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:26
 #: chezbetty/templates/user/index.jinja2:18
 msgid "Account Balance"
-msgstr "Solde de compte"
+msgstr "موجودی حساب"
 
 #: chezbetty/templates/user_info.jinja2:18
 #: chezbetty/templates/user/deposit_cc.jinja2:31
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:33
 msgid "%(pool_name)s Balance"
-msgstr "%(pool_name)s solde de compte"
+msgstr "موجودی %(pool_name)s"
 
 #: chezbetty/templates/user_info.jinja2:35
 msgid "Links"
-msgstr "Actions"
+msgstr "لینک‌ها"
 
 #: chezbetty/templates/user_info.jinja2:42
 msgid "Account"
-msgstr "Compte"
+msgstr "حساب"
 
 #: chezbetty/templates/user_info.jinja2:47
 msgid "Logout"
-msgstr "Déconnexion"
+msgstr "خروج"
 
 #: chezbetty/templates/user_info.jinja2:49
 msgid "Admin"
-msgstr "Administrateur"
+msgstr "مدیریت"
 
 #: chezbetty/templates/base.jinja2:61 chezbetty/templates/base.jinja2:72
 msgid "Hi %(name)s,"
-msgstr "Salut %(name)s,"
+msgstr "سلام %(name)s"
 
 #: chezbetty/templates/base.jinja2:62
 msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
-msgstr "Vous devez Betty %(big_debt)s actuellement.  C'est beaucoup d'argent!"
+msgstr "شما در حال حاضر به بتی %(big_debt)s بدهکارید‫.‬ با این وضع ما به زودی ورشکست می‌شویم‫!‬"
 
 #: chezbetty/templates/base.jinja2:64
 msgid ""
@@ -243,72 +251,71 @@ msgid ""
 "if people owe Betty lots of money, it's hard to keep things in stock. Please "
 "try to pay Betty back soon!"
 msgstr ""
-"Nous somes heureux que vous aimez Betty.  Nous sommes content de vous offrir "
-"une petite marge de credit, mais si les gens doivent Betty beaucoup "
-"d'argent, c'est difficile de garder beaucoup en stock. Essayez de rembourser "
-"Betty bientôt, svp!"
+"از خرید شما از بتی متشکریم. ما خوشحال می‌شویم که به شما مقدار کمی جنس نسیه بدهیم "
+"ولی اگر افراد زیادی به بتی بدهکار باشند در خرید اجناس دچار مشکل می‌شویم."
+"لطفا سعی کنید بدهی خود را در اسرع وقت با بتی تصویه کنید."
 
 #: chezbetty/templates/base.jinja2:73
 msgid "You currently owe Betty %(debt)s."
-msgstr "Vous devez Betty %(debt)s actuellement."
+msgstr "شما در حال حاضر %(debt)s به بتی بدهکارید‫.‬"
 
 #: chezbetty/templates/base.jinja2:74
 msgid "Please try to pay Betty back soon, thanks!"
-msgstr "Essayez de rembourser Betty bientôt, s'il vous plaît!"
+msgstr "لطفا سعی کنید بدهی خود را در اسرع وقت با بتی تصویه کنید. با تشکر‫!‬"
 
 #: chezbetty/templates/user.jinja2:14
 msgid "Transaction History"
-msgstr "Histoire des transactions"
+msgstr "تاریخچه تراکنش‌ها"
 
 #: chezbetty/templates/user.jinja2:32
 msgid "Purchase totaling %(amount)s"
-msgstr "Achat pour %(amount)s"
+msgstr "مبلغ کل خرید %(amount)s"
 
 #: chezbetty/templates/user.jinja2:33 chezbetty/templates/user.jinja2:101
 #: chezbetty/templates/user.jinja2:110
 msgid "touch to show"
-msgstr "touchez pour afficher"
+msgstr "برای نمایش "
 
 #: chezbetty/templates/user.jinja2:34
 msgid "touch to hide"
-msgstr "touchez pour masquer"
+msgstr "برای پنهان کردن لمس کنید‫.‬"
 
 #: chezbetty/templates/user.jinja2:71
 #: chezbetty/templates/purchase_complete.jinja2:46
 msgid "Discounts"
-msgstr "Réductions"
+msgstr "تخفیف‌ها"
 
 #: chezbetty/templates/user.jinja2:86
 msgid "Deposit of %(amount)s"
-msgstr "Dépôt de %(amount)s"
+msgstr "واریز مبلغ %(amount)s"
 
 #: chezbetty/templates/user.jinja2:93
 msgid "Credit Card Deposit of %(amount)s"
-msgstr "Dépôt de Carte de Crédit de %(amount)s"
+msgstr "واریز مبلغ %(amount)s از طریق کارت اعتباری"
 
 #: chezbetty/templates/user.jinja2:94
 msgid "Card ending in %(last4)s"
-msgstr "Carte fini à %(last4)s"
+msgstr "کارت با چهار رقم آخر %(last4)s"
 
 #: chezbetty/templates/user.jinja2:101
 msgid "Adjustment of %(amount)s by %(admin_name)s "
-msgstr "Adjustement de %(amount)s par %(admin_name)s"
+msgstr "اصلاح مبلغ %(amount)s توسط %(admin_name)s انجام شد‫.‬"
 
 #: chezbetty/templates/user.jinja2:110
 msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
-msgstr "Dépôt de BTC de %(amount_in_usd)s (%(amount_in_btc)s)"
+msgstr "واریز %(amount_in_btc)s بیت‌کوین به ارزش %(amount_in_usd)s"
 
 #: chezbetty/templates/user.jinja2:126
 msgid "No transactions."
-msgstr "Pas de transactions"
+msgstr "تراکنشی وجود ندارد‫.‬"
 
 #: chezbetty/templates/user.jinja2:130
 msgid "Show All"
-msgstr "Montrez tout"
+msgstr "همه را نمایش بده"
 
 #: chezbetty/templates/about.jinja2:2 chezbetty/templates/about.jinja2:3
 msgid "About Chez Betty"
-msgstr "À propos de Chez Betty"
+msgstr "درباره چز بتی"
 
 #: chezbetty/templates/about.jinja2:8
 msgid ""
@@ -316,57 +323,51 @@ msgid ""
 "faculty, and staff in Computer Science at the University of Michigan. The "
 "name \"Chez Betty\" is an homage to Chez Bob, a similar system at UCSD."
 msgstr ""
-"Chez Betty est une coopérative utilizant le système d'honneur pour les "
-"etudiants diplômés, la faculté, et le personnel au Informatique a "
-"L'Université de Michigan.  Le nom  \"Chez Betty\" est une homage à Chez Bob, "
-"une système similaire à UCSD."
+"چز بتی یک تعاونی مواد‌غذایی برای دانشجویان، اساتید، و کارکنان دانشکده کامپیوتر "
+"دانشگاه میشیگان است که بر اساس اصل اعتماد پایه گذاری شده است. "
+"نام «چز بتی» از سیستم مشابهی به نام «چز باب» در دانشگاه سن‌دیگو الهام گرفته شده است."
 
-# http://www.nakedtranslations.com/en/2003/acronyms
 #: chezbetty/templates/about.jinja2:16
 msgid "FAQ"
-msgstr "FAQ"
+msgstr "سوالات متداول"
 
 #: chezbetty/templates/about.jinja2:18
 msgid "Touch questions to show/hide."
-msgstr "Touchez les questions pour les montrer/cacher."
+msgstr "برای نمایش یا پنهان کردن جواب‌ها، سوال‌ها را لمس کنید‫.‬"
 
 #: chezbetty/templates/about.jinja2:22
 msgid "Who are the awesome people who run Chez Betty?"
-msgstr "Qui sont les gens géniaux qui dirigent Chez Betty?"
+msgstr "افراد با مرامی که وظیفه چرخاندن چز بتی را به عهده دارند چه کسانی هستند؟"
 
 #: chezbetty/templates/about.jinja2:24
 msgid "Chez Betty is run by CSEG, the CSE graduate student group."
-msgstr ""
-"Chez Betty est dirigée par DIGL (Diplômés de l'Informatique et Genie "
-"Logiciel)."
+msgstr "چز بتی توسط CSEG که ارگان دانشجویی دانشکده کامپیوتر است اداره می‌شود‫.‬"
 
 #: chezbetty/templates/about.jinja2:25
 msgid ""
 "Currently, Betty is primarily maintained by Brad Campbell, Pat Pannuto, and "
 "Zakir Durumeriç"
-msgstr ""
-"Actuellement, Betty est principallement entretient par Brad Campbell, Pat "
-"Pannuto et Zakir Durumeriç"
+msgstr "در حال حاضر زحمات اصلی بتی بر دوش برد کمپبل، پت پنوتو، و زکیر دورومریک است‫.‬"
 
 #: chezbetty/templates/about.jinja2:28
 msgid "How to Use Betty like a Pro"
-msgstr "Comment Utilizer Betty Comme un Pro"
+msgstr "چگونه به بهترین شکل از بتی استفاده کنیم؟"
 
 #: chezbetty/templates/about.jinja2:30
 msgid "Keep a positive balance."
-msgstr "Gardez un solde positif."
+msgstr "همیشه موجودی حساب خود را بیشتر از صفر حفظ کنید‫.‬"
 
 #: chezbetty/templates/about.jinja2:31
 msgid ""
 "Tracking down debtors sucks for us and for you. You don't want to end up on "
 "the Wall of Shame!"
 msgstr ""
-"Nous n'aiment pas poursuivre les débiteurs, et vous non plus. Vous ne "
-"voudriez pas se trouver sur le Mur de la Honte!"
+"دنبال بدهکارها افتادن هم برای ما و هم برای شما زجرآور است. "
+"سعی کنید در لیست بدحساب‌ها وارد نشوید!"
 
 #: chezbetty/templates/about.jinja2:33
 msgid "Take advantage of the Bank of Betty."
-msgstr "Profitez de la Banque de Betty."
+msgstr "از فواید بانک بتی استفاده کنید‫.‬"
 
 #: chezbetty/templates/about.jinja2:34
 msgid ""
@@ -374,13 +375,14 @@ msgid ""
 "$20 to use until that runs out. Remembering cash every time you want to use "
 "Betty is no fun."
 msgstr ""
-"Les grands utilizateurs normalement déposent 100$ par année environ.  La "
-"majorité dépose 20$ pour utilizer jusqu'à c'est fini. Ce n'est pas amusant "
-"de se souvenir de porter l'argent chaque fois qu'on utilize Betty."
+"مشتری‌های دائمی ما معمولا واریز پول را به صورت سالیانه انجام می‌دهند و هربار صد دلار "
+"به حساب خود واریز می‌کنند. مشتری‌های دیگر معمولا حساب خود را هربار با یک بیست دلاری "
+"شارژ می‌کنند. به یاد داشته باشید بدهکار بودن به بتی کار خوبی نیست."
+
 
 #: chezbetty/templates/about.jinja2:36
 msgid "Help restock."
-msgstr "Aidez a réapprovisionner."
+msgstr "در پرکردن قفسه‌ها به ما کمک کنید‫.‬"
 
 #: chezbetty/templates/about.jinja2:37
 msgid ""
@@ -388,70 +390,65 @@ msgid ""
 "put a warm one in to get cold (though, don't put it in front!). If you "
 "finish a box of food, grab a full box and replace it."
 msgstr ""
-"Betty est dirigée par des bénévoles qui ont de la temps limitée.  Si vous "
-"prenez une boisson froide, remplace-la avec une boisson chaude (mais ne la "
-"mettez pas au devant!) Si vous finissez une boîte de nourriture, remplace-la "
-"avec une pleine."
+"بتی توسط داوطلبانی اداره می‌شود که وقت محدودی دارند. لطفا اگر نوشیدنی از یخچال "
+"برمی‌دارید آن را جایگزین کنید تا همیشه نوشیدنی خنک موجود باشد. یا اگر جعبه غذایی "
+"خالی می‌شود، آن را با یک جعبه پر جایگزین کنید. مرسی!"
 
 #: chezbetty/templates/about.jinja2:42
 msgid "How do I buy things from Chez Betty?"
-msgstr "Comment acheter de Chez Betty?"
+msgstr "چگونه از بتی خرید کنیم؟"
 
 #: chezbetty/templates/about.jinja2:45
 msgid "Log in to Chez Betty by swiping your MCard at the terminal."
-msgstr "Connectez à Chez Betty en passant votre MCarte au terminal."
+msgstr "با کشیدن ام‫-‬کارت خود وارد حساب کاربریتان شوید‫.‬"
 
 #: chezbetty/templates/about.jinja2:47
 msgid "Accounts are tied to your UMID."
-msgstr "Les comptes sont attachés a vos IDUMs."
+msgstr "حساب کاربری شما به شماره دانشجوییتان متصل است‫.‬"
 
 #: chezbetty/templates/about.jinja2:48
 msgid ""
 "A new account is automatically created for first-time users on the the fly "
 "the first time you log in."
 msgstr ""
-"Une nouvelle compte est creée automatiquement pour les utilizateurs la "
-"premèire fois qu'on ouvre une session."
+"برای کاربران که تا به حال وارد سیستم نشده‌اند حساب جدیدی به صورت خودکار به وجود می‌آید."
 
 #: chezbetty/templates/about.jinja2:50
 msgid "Look at your Account Balance. If you're low, deposit some money."
-msgstr "Regardez votre solde.  Si c'est bas, versez de l'argent."
+msgstr "به موجودی حساب خود توجه کنید‫.‬اگر موجودیتان کم است لطفا حسابتان را شارژ کنید‫.‬"
 
 #: chezbetty/templates/about.jinja2:52
 msgid ""
 "Every user has an account with Chez Betty that keeps track of how much money "
 "they've put in."
-msgstr ""
-"Chaque utilizateur a une compte avec Chez Betty qui suit combien d'argent "
-"ils ont versés"
+msgstr "هر فرد حساب کاربری منحصر به فردی در چز بتی دارد که میزان موجودیش را حفظ می‌کند‫.‬"
 
 #: chezbetty/templates/about.jinja2:53
 msgid ""
 "Betty doesn't make change, instead excess money stays in your account for "
 "your next transaction."
 msgstr ""
-"Betty ne fait pas la monnaie, plutôt l'argent extra reste dans votre compte "
-"pour la prochaine transaction."
+"بتی پول خرد به شما باز نمی‌گرداند. بقیه پول شما برای خرید بعدی در حسابتان باقی می‌ماند."
 
 #: chezbetty/templates/about.jinja2:54
 msgid "You can run into the red, see below."
-msgstr "Vous pouvez vous mettre dans le rouge, voyez à bas."
+msgstr "شما می‌توانید از بتی نسیه بگیرید‫.‬ برای اطلاعات دیگر به سوال‌های بعدی رجوع کنید‫.‬"
 
 #: chezbetty/templates/about.jinja2:56
 msgid "Grab what you'd like from Chez Betty and scan your items."
-msgstr "Prenez ceux que vous voulez de Chez Betty et scannez vos articles."
+msgstr "اجناس مورد نظر خود را برداشته و اسکن کنید‫.‬"
 
 #: chezbetty/templates/about.jinja2:57
 msgid "Touch \"Submit Purchase\" and you're done!"
-msgstr "Touchez \"Achetez\" et vous êtes fini!"
+msgstr "در آخر دکمه «ثبت خرید» را فشار دهید‫.‬"
 
 #: chezbetty/templates/about.jinja2:61
 msgid "Wait... Couldn't people steal from this really easily?"
-msgstr "Attend..., on pourrait facilement voler, non?"
+msgstr "وایسا ببینم‫…‬ این جوری که می‌شه راحت از بتی دزدی کرد؟‫!‬"
 
 #: chezbetty/templates/about.jinja2:63
 msgid "Yes. (But please don't)."
-msgstr "Oui. (Mais, s'il vous plaît, non)."
+msgstr "بله، ولی مرامی نکنید‫!‬"
 
 #: chezbetty/templates/about.jinja2:64
 msgid ""
@@ -460,14 +457,14 @@ msgid ""
 "used to cover the inevitable losses. If too many people take advantage of "
 "Betty's trusting nature, the service will have to shut down :(."
 msgstr ""
-"L'idée, c'est de donner une service commode aux membres de la communauté "
-"informatique de UM.  Betty fait un profit petit de chaque vente, un portion "
-"qui sera utilizé pour couvrir les pertes inévitables.  Si trop de gens "
-"abusent la confiance de Betty, la service devrait se fermer :("
+"هدف ما از به راه انداختن این سیستم خدمت به اعضای دانشکده کامپیوتر است. "
+"ما از هر فروش سودی کمی کسب می‌کنیم که بخشی از آن صرف پرداخت ضررهایمان می‌شود. "
+"اگر افراد زیادی از اعتماد بتی سوء استفاده کنند متاسفانه چاره‌ای جز پلمپ "
+"تعاونی نخواهیم داشت."
 
 #: chezbetty/templates/about.jinja2:67
 msgid "Tell me more about my Chez Betty account?"
-msgstr "Dites-moi plus au sujet de ma compte Chez Betty?"
+msgstr "حساب کاربری من به چه درد می‌خورد؟"
 
 #: chezbetty/templates/about.jinja2:69
 msgid ""
@@ -476,17 +473,14 @@ msgid ""
 "that each user has an account with Betty. You can put in $20 (or however "
 "much) at a time and use that balance until it runs out."
 msgstr ""
-"Chez Betty vend des articles presque au même coût (normallement une marge de "
-"15%). Puisque personne n'aime la petite monnaie et Betty est en libre-"
-"service,chaque utilizateur tient une compte avec Betty. Vous pouvez mettre "
-"20$ (ou n'importecombien) chaque fois et utilizer cette somme jusqu'à c'est "
-"finie."
+"بتی اجناس خود را با سود بسیار کم (معمولا حدود ۱۵٪) به فروش می‌رساند. از آنجایی که "
+"بتی یک سرویس خودکار است و امکان بازگرداندن پول خرد را ندارد بقیه پول واریز شده "
+"را در حساب شما برای خرید‌های بعدی نگهداری می‌کند. شما می‌توانید مبلغی (مثلا ۲۰ دلار) "
+"به حساب خود واریز کنید و به تدریج از آن استفاده کنید."
 
 #: chezbetty/templates/about.jinja2:75
 msgid "What if I don't have any money / Can my account balance go negative?"
-msgstr ""
-"Quoi faire si je n'ai pas d'argent/Peut la balance de ma compte devenir "
-"negatif?"
+msgstr "اگر پول نداشتم چی؟ آیا می‌شود از بتی نسیه گرفت؟"
 
 #: chezbetty/templates/about.jinja2:77
 msgid ""
@@ -496,16 +490,14 @@ msgid ""
 "incentivizing folks to steal. There is a <a href=\"/shame\">Wall of Shame</"
 "a> for persons who owe Betty more than $5."
 msgstr ""
-"Oui. Chez Betty vous permet de dépenser plus que ce que vous ayez sous "
-"l'assumption que vous rembourseriez Betty éventuellement.  L'idée c'es que "
-"vous pourriez prendre des choses quand vous auriez besoin et vous souvenir "
-"de ceux que vous la doit, pourque les gens n'auront pas raison de voler.  Il "
-"y a un <a href=\"/shame\">Mur de la Honte</a> pour ceux qui doivent Betty "
-"plus que 5$."
+"بله. بتی با این پیش‌فرض که شما بدهی خود را در آینده نزدیک پرداخت می‌کنید به شما "
+"نسیه می‌دهد. هدف بتی این است که کاربران بتوانند در صورت همراه نداشتن پول هم از "
+"سرویس بتی بهره‌مند شوند. برای دیدن لیست افرادی که بیشتر از ۵ دلار به بتی بدهکارند "
+"به  <a href=\"/shame\">لیست بدحساب‌ها‪</‬a‪>‬ مراجعه کنید."
 
 #: chezbetty/templates/about.jinja2:85
 msgid "How does Betty set prices?"
-msgstr "Comment Betty fixe-elle les prix?"
+msgstr "بتی چگونه اجناس را قیمت‌گذاری می‌کند؟"
 
 #: chezbetty/templates/about.jinja2:87
 msgid ""
@@ -513,21 +505,16 @@ msgid ""
 "interested in the actual algorithm, check out Betty's source code at github."
 "com/um-cseg/chez-betty."
 msgstr ""
-"Betty vend des articles un peu plus que la prix de gros, normalement une "
-"marge de 15%. Si l'algorithme vous intéresse, regardez la code source à "
-"github.com/um-cseg/chez-betty."
+"چز بتی اجناس خود را با سود اندکی ‫(‬معمولا ۱۵٪‫)‬ نسبت به کلی فروشی به فروش می‌رساند‫.‬"
+"لطفا برای اطلاعات بیشتر به کد سیستم در آدرس github‪.‬com‪/‬um‪-‬cseg‪/‬chez‪-‬betty مراجعه کنید."
 
 #: chezbetty/templates/about.jinja2:90
-msgid ""
-"Current wholesale and Betty prices are always available on <a href=\"/items"
-"\">the items page</a>."
-msgstr ""
-"Les prix de gros et de Betty sont toujours disponibles sur <a href=\"/items"
-"\">la page d'articles</a>."
+msgid "Current wholesale and Betty prices are always available on <a href=\"/items\">the items page</a>."
+msgstr "لیست قیمت‌های کلی‌فروشی و بتی را می‌توانید در ‪<a href=\"/items\">‬اینجا‪</‬a‪>‬ مشاهده کنید."
 
 #: chezbetty/templates/about.jinja2:93
 msgid "What does Betty do with her profits?"
-msgstr "Que fait Betty avec ses profits?"
+msgstr "بتی با سودی که به دست می‌آورد چه می‌کند؟"
 
 #: chezbetty/templates/about.jinja2:95
 msgid ""
@@ -537,124 +524,122 @@ msgid ""
 "g. new ping pong paddles and balls), or to throw events (e.g. bar nights) "
 "for CSEG."
 msgstr ""
-"Premièrement, Betty doit payer ses dettes (par ex. aucun pertes subit par "
-"des utilizateurs malhônets). Les profits qui restent sont ajoutés au fond "
-"général de DIGL. C'est utilizé pour les aménagements de Betty, pour acheter "
-"les besoins generaux (par ex. des raquettes et balles de ping pong) ou pour "
-"organizer des rencontres (par ex. des soirées au bar) pour DIGL."
+"بتی قبل از هرکاری بدهی‌های خود را اعم از دزدی‌های پیش‌آمده پرداخت می‌کند. "
+"هرگونه فواید مازاد باقی‌مانده به حساب CSEG واریز می‌شود. این پول سپس برای "
+"گسترش بتی، خریدهای دانشکده‌ای (مثل راکت پینگ‌پنگ) و مراسم دانشکده‌ای استفاده می‌شود."
+
 
 #: chezbetty/templates/about.jinja2:100
 msgid ""
 "If you have more questions / concerns, please feel free to talk to the CSEG "
 "officers."
 msgstr ""
-"Si vous avez plus de questions ou d'inquiétudes, n'hesitez pas de parler "
-"avec les responsables de DIGL."
+"اگر سوال یا درخواست دیگری دارید با مسئولان CSEG تماس بگیرید."
 
 #: chezbetty/templates/shame.jinja2:2 chezbetty/templates/shame.jinja2:3
 #: chezbetty/templates/index.jinja2:27
 msgid "Wall of Shame"
-msgstr "Mur de la Honte"
+msgstr "‌لیست بدحساب‌ها"
 
 #: chezbetty/templates/shame.jinja2:13
 msgid "These users owe Chez Betty more than $5."
-msgstr "Ces utilizateurs doivent Chez Betty plus que 5$."
+msgstr "این افراد بیشتر از ۵ دلار به بتی بدهکارند‫.‬"
 
 #: chezbetty/templates/shame.jinja2:17
 msgid "Users in Debt"
-msgstr "Utilizateurs en Dette"
+msgstr "کاربران بدهکار"
 
 #: chezbetty/templates/shame.jinja2:24
 msgid "uniqname"
-msgstr "uniqnom"
+msgstr "نام کاربری"
 
 #: chezbetty/templates/deposit_complete.jinja2:20
 msgid "Old Balance"
-msgstr "Solde du compte ancienne"
+msgstr "موجودی قدیم"
 
 #: chezbetty/templates/deposit_complete.jinja2:23
 msgid "Deposit Amount"
-msgstr "Dépôt"
+msgstr "مبلغ واریز شده"
 
 #: chezbetty/templates/deposit_complete.jinja2:26
 msgid "New Balance"
-msgstr "Nouvel solde du compte"
+msgstr "موجودی جدید"
 
 #: chezbetty/templates/deposit_complete.jinja2:29
 msgid "Transaction"
-msgstr "Transaction"
+msgstr "تراکنش"
 
 #: chezbetty/templates/deposit_complete.jinja2:35
 msgid "Thank you!"
-msgstr "Merci Beaucoup!"
+msgstr "مرسی‫!‬"
 
 #: chezbetty/templates/deposit_complete.jinja2:38
 msgid "You successfully deposited %(amount)s into your account"
-msgstr "Vous avez déposé %(amount)s à votre compte"
+msgstr "مبلغ %(amount)s با موفقیت به حساب شما واریز گشت"
 
 #: chezbetty/templates/deposit_complete.jinja2:41
 msgid "You successfully deposited %(amount)s in the %(pool_name)s Pool"
-msgstr "Vous avez déposé %(amount)s à %(pool_name)s"
+msgstr "مبلغ %(amount)s با موفقیت به حساب مشترک %(pool_name)s واریز گردید"
 
 #: chezbetty/templates/deposit_complete.jinja2:50
 msgid "Edit this Deposit"
-msgstr "Modifez ce dépôt"
+msgstr "مبلغ واریز شده را تغییر دهید"
 
 #: chezbetty/templates/items.jinja2:2 chezbetty/templates/items.jinja2:13
 msgid "Items"
-msgstr "Articles"
+msgstr "اجناس"
 
 #: chezbetty/templates/items.jinja2:3
 msgid "Items at Chez Betty"
-msgstr "Articles à Chez Betty"
+msgstr "انبار چز بتی"
 
 #: chezbetty/templates/items.jinja2:7
 msgid "All that Betty has to offer."
-msgstr "Tout ce que Betty a à offrir."
+msgstr "لیست تمام اجناس موجود در فروشگاه"
 
 #: chezbetty/templates/items.jinja2:20 chezbetty/templates/index.jinja2:25
 msgid "Request an Item"
-msgstr "Demandez quelque chose"
+msgstr "درخواست جنس"
 
 #: chezbetty/templates/items.jinja2:22
 msgid "Touch columns to change sort order."
-msgstr "Touchez une collonne pour changer l'ordre de triage."
+msgstr "با لمس هر ستون ترتیب اجناس را تغییر دهید‫.‬"
 
 #: chezbetty/templates/items.jinja2:25
 msgid "Top"
-msgstr "Haut"
+msgstr "اول"
 
 #: chezbetty/templates/items.jinja2:26
 msgid "Up"
-msgstr "Monter"
+msgstr "بالا"
 
 #: chezbetty/templates/items.jinja2:27
 msgid "Down"
-msgstr "Descendre"
+msgstr "پایین"
 
 #: chezbetty/templates/items.jinja2:28
 msgid "Bottom"
-msgstr "Bas"
+msgstr "آخر"
 
 #: chezbetty/templates/items.jinja2:37
 msgid "In Stock"
-msgstr "En Stock"
+msgstr "تعداد موجودی"
 
 #: chezbetty/templates/items.jinja2:38
 msgid "Wholesale"
-msgstr "Prix de gros"
+msgstr "قیمت کلی‌فروشی"
 
 #: chezbetty/templates/items.jinja2:39
 msgid "Price"
-msgstr "Prix"
+msgstr "قیمت ما"
 
 #: chezbetty/templates/items.jinja2:56
 msgid "Temporarily Out-of-Stock Items:"
-msgstr "Articles Temporairement Pas en Stock:"
+msgstr "اجناسی که موقتا تمام شده‌اند‫:‬"
 
 #: chezbetty/templates/items.jinja2:75
 msgid "Discontinued Items:"
-msgstr "Articles Arrêtés"
+msgstr "اجناسی که از دور خارج شده‌اند‫:‬"
 
 #: chezbetty/templates/items.jinja2:77
 msgid ""
@@ -662,75 +647,73 @@ msgid ""
 "more. If you would like to request the return ofa discontinued item, please "
 "e-mail chez-betty@umich.edu."
 msgstr ""
-"Betty arrête les articles qui ne vendent pas bien ou qui noud ne pouvons "
-"plus achêter. Si vous vouliez demander le retour d'un article arrêté,s'il "
-"vous plaît envoyez un e-mail à chez-betty@umich.edu"
+"بتی اجناسی را که خوب فروش نمی‌روند از دور خارج می‌کند. اگر می‌خواهید یکی از این "
+"اجناس به فروشگاه برگردند با ایمیل chez-betty@umich.edu تماس بگیرید. "
 
 #: chezbetty/templates/purchase_complete.jinja2:3
 #: chezbetty/templates/purchase_complete.jinja2:4
 msgid "Purchase Complete"
-msgstr "Achat fini"
+msgstr "خرید انجام شد"
 
 #: chezbetty/templates/purchase_complete.jinja2:55
 msgid "(Paid with your user account)"
-msgstr "Payé avec votre compte"
+msgstr "‫(‬با حساب کاربری پرداخت شد‫)‬"
 
 #: chezbetty/templates/purchase_complete.jinja2:57
 msgid "(Paid with %(pool_name)s Pool)"
-msgstr "(Payé avec la compte commun %(pool_name)s)"
+msgstr "‫(‬با حساب مشترک %(pool_name)s پرداخت شد‫)‬"
 
 #: chezbetty/templates/purchase_complete.jinja2:68
 msgid "If this was a mistake, touch here to undo this transaction."
-msgstr "Si c'etait une erreur, touchez içi pour annuler cette transaction."
+msgstr "اگر اشتباهی صورت گرفته با لمس اینجا تراکنش را بازگردانید‫.‬"
 
 #: chezbetty/templates/index.jinja2:12
 msgid "Welcome to Chez Betty!"
-msgstr "Bienvenue à Chez Betty!"
+msgstr "به چز بتی خوش آمدید‫!‬"
 
 #: chezbetty/templates/index.jinja2:13
 msgid "The 24/7 food co-op for all members of the CSE community."
-msgstr "La coopérative pour l'ensemble de CSE."
+msgstr "چز بتی یک تعاونی اغذیه ۲۴ ساعته برای تمام اعضای دانشکده کامپیوتر است‫.‬"
 
 #: chezbetty/templates/index.jinja2:18
 msgid "Swipe your M-Card to login"
-msgstr "Glissez votre MCard pour vous identifier "
+msgstr "برای ورود به سیستم ام‫-‬کارت خود را بکشید"
 
 #: chezbetty/templates/index.jinja2:24
 msgid "Item List"
-msgstr "Liste des articles"
+msgstr "لیست اجناس"
 
 #: chezbetty/templates/index.jinja2:26
 msgid "About"
-msgstr "À propos"
+msgstr "درباره ما"
 
 #: chezbetty/templates/index.jinja2:30
 msgid "Administration"
-msgstr "Administration"
+msgstr "مدیریت"
 
 #: chezbetty/templates/index.jinja2:62
 msgid "Can you help translate Betty? E-mail chez-betty@umich.edu."
-msgstr "Pouvez-vous aider à traduire Betty? Email chez-betty@umich.edu."
+msgstr "آیا می‌توانید در اضافه کردن زبان های دیگر به ما کمک کنید؟ به chez-betty@umich.edu ایمیل بزنید‫.‬ "
 
 #: chezbetty/templates/user/deposit_cc.jinja2:4
 #: chezbetty/templates/user/deposit_cc.jinja2:7
 msgid "Credit Card Deposit"
-msgstr "Dépot de Carte de Crédit"
+msgstr "واریز با کارت اعتابری"
 
 #: chezbetty/templates/user/deposit_cc.jinja2:14
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:14
 msgid "We use stripe to process credit card transactions."
-msgstr ""
-"Nous utilisons stripe pour traiter les transactions par carte de crédit."
+msgstr "ما از استرایپ برای پردازش کارت اعتباری استفاده می‌کنیم‫.‬"
 
 #: chezbetty/templates/user/deposit_cc.jinja2:15
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:15
 msgid "Stripe charges 2.9% + $0.30 for each transaction."
-msgstr "Stripe perçoit une taxe de 2.9% + $0.30 pour chaque transaction."
+msgstr "استرایپ برای هر تراکنش مبلغ۲،۹٪ ‫+‬ ۳۰ سنت را به عنوان کارمزد از شما می‌گیرد‫.‬"
 
 #: chezbetty/templates/user/deposit_cc.jinja2:16
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:16
 msgid "We pass this charge directly onto you."
-msgstr "Nous donnons cette charge directement sur vous."
+msgstr "ما هزینه تراکنش را مستقیما از شما دریافت می‌کنیم‫.‬"
 
 #: chezbetty/templates/user/deposit_cc.jinja2:17
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:17
@@ -738,22 +721,13 @@ msgid ""
 "That is, if you wish to deposit $20 to your account, we will charge your "
 "card 20 + (20*0.029 + 0.30) = $20.88."
 msgstr ""
-"C'est, si vous voulez déposer $20 à votre compte, nous vous facturerons "
-"votre carte de crédit 20 + (20*0.029 + 0.30) = $20.88."
+"در واقع اگر بخواهید کارت خود را ۲۰ دلار شارژ کنید مبلغ ۲۰،۸۸ از حساب شما برداشت می‌شود."
 
 #: chezbetty/templates/user/deposit_cc.jinja2:48
 msgid "User Account"
-msgstr "Utilisateur Compte"
+msgstr "حساب کاربری"
 
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:4
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:7
 msgid "Custom Credit Card Deposit"
-msgstr "Dépôt personnalisée de carte de crédit"
-
-#, fuzzy
-#~ msgid "%(pool_name)s Pool Balance"
-#~ msgstr "Payez avec %(pool_name)s"
-
-#, fuzzy
-#~ msgid "Coming soon."
-#~ msgstr "Bientôt..."
+msgstr "واریز مقدار دیگر از طریق کارت اعتباری"

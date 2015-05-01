@@ -5,3 +5,12 @@
 {% macro delete(object, field, id) %}
 <button type="button" id="btn-delete-{{ object }}-{{ field }}-{{ id }}-true" class="btn btn-danger button-delete ajax-bool-btn delete-entry" data-parent="{{ object }}-{{ id }}">X</button>
 {% endmacro %}
+
+{# Button that can only be clicked once. Will create an AJAX request to the
+   URL specified. Javascript will handle the response. If success, the button
+   will be removed and banner displayed. If failure, button will stay and error
+   will be displayed.
+ #}
+{% macro ajax_singleuse_button(button_text, ajax_url, id) %}
+<button type="button" class="btn btn-info btn-ajax_singleuse" data-url="{{ ajax_url }}">{{ button_text }}</button>
+{% endmacro %}

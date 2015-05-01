@@ -59,15 +59,15 @@ def get_start(days):
     if days:
         # "now" is really midnight tonight, so we really want tomorrows date.
         # This makes the comparisons and math work so 1 day would mean today
-        now = datetime.date.today() + datetime.timedelta(days=1)
+        now = datetime.datetime.utcnow().date() + datetime.timedelta(days=1)
         delta = datetime.timedelta(days=days)
         return now - delta
     else:
-        # Offset the min by one day so timezone offsets are not an issue
-        return datetime.date.min + datetime.timedelta(days=1)
+        # Hard code in when Betty started
+        return datetime.date(year=2014, month=7, day=8)
 
 def get_end():
-    return datetime.date.today() + datetime.timedelta(days=1)
+    return datetime.datetime.utcnow().date() + datetime.timedelta(days=1)
 
 
 def create_x_y_from_group(group, start, end, period, process_output=lambda x: x, default=0):
@@ -109,6 +109,16 @@ def create_x_y_from_group(group, start, end, period, process_output=lambda x: x,
         ptr += dt
     return x,y
 
+def datetime_to_timestamps (data, process_output=lambda x: x):
+    out = []
+    for d in data:
+        t = round(datetime.datetime(year=d[0].year, month=d[0].month, day=d[0].day, hour=12)\
+                  .replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        # t = round(datetime.datetime.combine(d[0], datetime.datetime.min.time())\
+        #           .replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        out.append((t, process_output(d[1])))
+    return out
+
 
 # Get x,y for some data metric
 #
@@ -138,6 +148,27 @@ def admin_data_period_range(start, end, metric, period):
 
 def admin_data_period(num_days, metric, period):
     return admin_data_period_range(get_start(num_days), get_end(), metric, period)
+
+def admin_data_highcharts_period(metric, period):
+    start = get_start(0)
+    end = get_end()
+    if metric == 'items':
+        data = PurchaseLineItem.quantity_by_period(period, start=ftz(start), end=ftz(end))
+        return datetime_to_timestamps(data)
+    elif metric == 'sales':
+        data = PurchaseLineItem.virtual_revenue_by_period(period, start=ftz(start), end=ftz(end))
+        return datetime_to_timestamps(data, float)
+    elif metric == 'deposits':
+        data = Deposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
+        return datetime_to_timestamps(data, float)
+    elif metric == 'deposits_cash':
+        data = CashDeposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
+        return datetime_to_timestamps(data, float)
+    elif metric == 'deposits_btc':
+        data = BTCDeposit.deposits_by_period('day', start=ftz(start), end=ftz(end))
+        return datetime_to_timestamps(data, float)
+    else:
+        raise(InvalidMetric(metric))
 
 
 ###
@@ -230,6 +261,21 @@ def create_json(request, metric, period):
         return {'status': 'error'}
 
 
+def create_highcharts_json(request, metric, period):
+    try:
+        return admin_data_highcharts_period(metric, period)
+    except ValueError:
+        return {'status': 'error'}
+    except utility.InvalidGroupPeriod as e:
+        return {'status': 'error',
+                'message': 'Invalid period for grouping data: {}'.format(e)}
+    except InvalidMetric as e:
+        return {'status': 'error',
+                'message': 'Invalid metric for requesting data: {}'.format(e)}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error'}
+
 def create_dict_to_date(metric, period):
     now = datetime.date.today()
 
@@ -308,7 +354,7 @@ def item_sale_speed(num_days, only_item_id=None):
         status = item.in_stock>0
 
         if item.id not in data_onsale:
-            data_onsale[item.id] = {'days_on_sale': 0, 
+            data_onsale[item.id] = {'days_on_sale': 0,
                                     'date_in_stock': None,
                                     'num_sold': 0}
 
@@ -361,7 +407,10 @@ def item_sale_speed(num_days, only_item_id=None):
         data[itemid] = item_data['num_sold'] / item_data['days_on_sale']
 
     if only_item_id:
-        return data[only_item_id]
+        if only_item_id in data:
+            return data[only_item_id]
+        else:
+            return 0
     else:
         return data
 
@@ -380,6 +429,13 @@ def admin_data_items_json(request):
              permission='manage')
 def admin_data_sales_json(request):
     return create_json(request, 'sales', request.matchdict['period'])
+
+
+@view_config(route_name='admin_data_json_highcharts',
+             renderer='json',
+             permission='manage')
+def admin_data_json_highcharts(request):
+    return create_highcharts_json(request, request.matchdict['metric'], request.matchdict['period'])
 
 
 @view_config(route_name='admin_data_deposits_json',
@@ -426,6 +482,46 @@ def admin_data_users_totals_json(request):
     return User.get_user_count_cumulative()
 
 
+# Timestamps and user debt, bank balance, debt/# users in debt
+@view_config(route_name='admin_data_users_balance_totals_json',
+             renderer='json',
+             permission='manage')
+def admin_data_users_balance_totals_json(request):
+    return Transaction.get_balance_total_daily()
+
+
+# # Timestamps and user debt, "bank balance", debt/user
+# @view_config(route_name='admin_data_users_balance_totals_percapita_json',
+#              renderer='json',
+#              permission='manage')
+# def admin_data_users_balance_totals_percapita_json(request):
+#     debt = Transaction.get_balance_total_daily()
+#     users = User.get_user_count_cumulative()
+
+#     di = 0
+#     ui = 0
+#     next_user_time = users[ui][0]
+#     user_count = users[ui][1]
+#     out = []
+
+#     for rec in debt:
+#         timestamp = rec[0]
+#         debt = rec[1]
+#         balance = rec[2]
+
+#         # Look for the correct number of users
+#         while timestamp > next_user_time:
+#             ui += 1
+#             if ui >= len(users):
+#                 break
+#             next_user_time = users[ui][0]
+#             user_count = users[ui][1]
+
+#         debt_per_capita = debt/user_count
+
+#         out.append((timestamp, debt, balance, debt_per_capita))
+
+#     return out
 
 
 @view_config(route_name='admin_data_speed_items',

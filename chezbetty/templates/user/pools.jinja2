@@ -24,21 +24,56 @@ from.</p>
       <thead>
         <tr>
           <th>Pool Name</th>
-          <th>Number of Users</th>
+          <th style="width:20%;">Number of Users</th>
+          <th style="width:20%;">Balance</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% set any_disabled_hack = [] %}
+        {% for pool in my_pools %}
+        {% if pool.enabled %}
+        <tr>
+          <td>{{ pool|make_user_link|safe }}</td>
+          <td>{{ pool.users|length }}</td>
+          <td>{{ pool.balance|format_currency|safe }}</td>
+        </tr>
+        {% else %}
+        {% if any_disabled_hack.append(1) %}{% endif %}
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if any_disabled_hack %}
+    <hr />
+    <h3>Disabled Pools</h3>
+    <p>Disabled pools cannot be used by any users. To enable a disabled pool,
+    click on the pool to change its settings. To transfer the balance from a
+    disabled pool, please e-mail <a href='mailto:chez-betty@umich.edu'>chez-betty@umich.edu</a>.</p>
+    <table id="my-pools" class="table table-bordered">
+
+      <thead>
+        <tr>
+          <th>Pool Name</th>
+          <th style="width:20%;">Number of Users</th>
           <th style="width:20%;">Balance</th>
         </tr>
       </thead>
 
       <tbody>
         {% for pool in my_pools %}
+        {% if not pool.enabled %}
         <tr>
           <td>{{ pool|make_user_link|safe }}</td>
           <td>{{ pool.users|length }}</td>
           <td>{{ pool.balance|format_currency|safe }}</td>
         </tr>
+        {% endif %}
         {% endfor %}
       </tbody>
     </table>
+    {% endif %}
 
   </div>
 </div>
@@ -55,6 +90,7 @@ from.</p>
       <thead>
         <tr>
           <th>Pool Name</th>
+          <th style="width:20%;">Pool Owner</th>
           <th style="width:20%;">Balance</th>
         </tr>
       </thead>
@@ -63,6 +99,7 @@ from.</p>
         {% for pu in user.pools %}
         <tr>
           <td>{{ pu.pool.name }} {% if pu.enabled == False or pu.pool.enabled == False %}(Currently Disabled){% endif %}</td>
+          <td>{{ pu.pool.get_owner_name() }}</td>
           <td>{{ pu.pool.balance|format_currency|safe }}</td>
         </tr>
         {% endfor %}

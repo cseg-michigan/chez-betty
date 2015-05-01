@@ -39,6 +39,7 @@ from .models.tag import Tag
 from .models.item_tag import ItemTag
 
 from .utility import send_email
+from .utility import user_password_reset
 
 from .jinja2_filters import format_currency
 
@@ -46,6 +47,7 @@ from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
+import transaction
 
 # Used for generating barcodes
 from reportlab.graphics.barcode import code39
@@ -275,8 +277,10 @@ def admin_index(request):
     total_cash_deposits  = CashDeposit.total()
     total_btc_deposits   = BTCDeposit.total()
 
-
-    now = datetime.date.today()
+    # Get the current date that it is in the eastern time zone
+    now = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)\
+        .astimezone(tz=pytz.timezone('America/Detroit')).replace(tzinfo=None)\
+        .date()
 
     ytd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
     ytd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, 1, 1)), None)
@@ -292,12 +296,12 @@ def admin_index(request):
     mtd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
     mtd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
 
-    today_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
-    today_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, now.day)), None)
+    today_sales    = Purchase.total(views_data.ftz(now), None)
+    today_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(now), None)
+    today_lost     = Inventory.total(views_data.ftz(now), None)
+    today_dep      = Deposit.total(views_data.ftz(now), None)
+    today_dep_cash = CashDeposit.total(views_data.ftz(now), None)
+    today_dep_btc  = BTCDeposit.total(views_data.ftz(now), None)
 
 
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
@@ -485,6 +489,13 @@ def admin_restock_submit(request):
     # Arrays to pass to datalayer
     items = []
 
+    # Check if we should update prices with this restock.
+    # This is useful for updating old restocks without changing the price
+    # of the current inventory.
+    update_prices = True
+    if 'restock-noprice' in request.POST:
+        update_prices = False
+
     for key,val in request.POST.items():
 
         try:
@@ -532,7 +543,8 @@ def admin_restock_submit(request):
                     box = Box.from_id(obj_id)
 
                     # Set properties from restock
-                    box.wholesale = wholesale
+                    if update_prices:
+                        box.wholesale = wholesale
                     box.bottle_dep = btldeposit
                     box.sales_tax = salestax
 
@@ -567,13 +579,14 @@ def admin_restock_submit(request):
 
 
     # Iterate the grouped items, update prices and wholesales, and then restock
-    for item,quantity,total in items_for_pricing:
-        if quantity == 0:
-            request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
-            continue
-        item.wholesale = Decimal(round(total/quantity, 4))
-        # Set the item price
-        item.price = round(item.wholesale * Decimal(1.15), 2)
+    if update_prices:
+        for item,quantity,total in items_for_pricing:
+            if quantity == 0:
+                request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
+                continue
+            item.wholesale = Decimal(round(total/quantity, 4))
+            # Set the item price
+            item.price = round(item.wholesale * Decimal(1.15), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
@@ -680,7 +693,17 @@ def admin_btc_reconcile_post(request):
              renderer='templates/admin/inventory.jinja2',
              permission='manage')
 def admin_inventory(request):
-    items = DBSession.query(Item).order_by(Item.name).all()
+    items1 = DBSession.query(Item)\
+                      .filter(Item.enabled==True)\
+                      .filter(Item.in_stock!=0)\
+                      .order_by(Item.name).all()
+    items2 = DBSession.query(Item)\
+                      .filter(Item.enabled==True)\
+                      .filter(Item.in_stock==0)\
+                      .order_by(Item.name).all()
+    items3 = DBSession.query(Item)\
+                      .filter(Item.enabled==False)\
+                      .order_by(Item.name).all()
 
     undone_inventory = {}
     if len(request.GET) != 0:
@@ -688,7 +711,10 @@ def admin_inventory(request):
         for item_id,quantity_counted in request.GET.items():
             undone_inventory[int(item_id)] = int(quantity_counted)
 
-    return {'items': items, 'undone_inventory': undone_inventory}
+    return {'items_have': items1,
+            'items_donthave': items2,
+            'items_disabled': items3,
+            'undone_inventory': undone_inventory}
 
 
 @view_config(route_name='admin_inventory_submit',
@@ -890,6 +916,23 @@ def admin_items_edit(request):
 
         item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
+        #
+        # Calculate "theftiness" which is:
+        #
+        #                number stolen
+        #  theftiness = ---------------
+        #                 number sold
+        #
+        if not item.number_sold:
+            if not item.number_lost or item.number_lost < 0:
+                # Both 0, just put this at 0.
+                item.theftiness = 0.0
+            else:
+                # Haven't sold any, but at least one stolen. Bad!
+                item.theftiness = 100.0
+        else:
+            item.theftiness = ((item.number_lost or 0.0)/item.number_sold) * 100.0
+
     return {'items': items}
 
 
@@ -972,8 +1015,22 @@ def admin_item_edit(request):
         sst, sst_total = SubSubTransaction.all_item(item.id,
                 limit=event_limit, count=True)
 
-        events.extend([e.subtransaction for e in sst])
-        events.sort(key=lambda x: x.transaction.event.timestamp)
+        def sortTransactionsByEvent(t):
+            try:
+                return t.event.timestamp
+            except:
+                pass
+            try:
+                return t.transaction.event.timestamp
+            except:
+                pass
+            try:
+                return t.subtransaction.transaction.event.timestamp
+            except:
+                pass
+
+        events.extend(sst)
+        events.sort(key=sortTransactionsByEvent)
         events_total += sst_total
 
         if event_limit is None or events_total <= event_limit:
@@ -1007,6 +1064,15 @@ def admin_item_edit(request):
 
         inventory_total = Item.total_inventory_wholesale()
         stats['inv_percent'] = ((item.wholesale * item.in_stock) / inventory_total) * 100
+
+        # Theftiness
+        if stats['num_sold'] == 0:
+            if stats['lost'] <= 0:
+                stats['theftiness'] = 0.0
+            else:
+                stats['theftiness'] = 100.0
+        else:
+            stats['theftiness'] = (stats['lost']/stats['num_sold']) * 100.0
 
         # Don't display vendors that already have an item number in the add
         # new vendor item number section
@@ -1724,14 +1790,6 @@ def admin_user_balance_edit_submit(request):
         request.session.flash('Must include a reason', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
-def _admin_user_password_reset(user):
-    password = user.random_password()
-    send_email(TO=user.uniqname+'@umich.edu',
-               SUBJECT='Chez Betty Login',
-               body=render('templates/admin/email_password.jinja2', {'user': user, 'password': password}))
-    return {'status': 'success',
-            'msg': 'Password set and emailed to user.'}
-
 @view_config(route_name='admin_user_password_create',
              renderer='json',
              permission='admin')
@@ -1741,7 +1799,9 @@ def admin_user_password_create(request):
         if user.has_password:
             return {'status': 'error',
                     'msg': 'Error: User already has password.'}
-        return _admin_user_password_reset(user)
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to user.'}
     except NoResultFound:
         return {'status': 'error',
                 'msg': 'Could not find user.'}
@@ -1756,7 +1816,9 @@ def admin_user_password_create(request):
 def admin_user_password_reset(request):
     try:
         user = User.from_id(int(request.matchdict['user_id']))
-        return _admin_user_password_reset(user)
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to user.'}
     except NoResultFound:
         return {'status': 'error',
                 'msg': 'Could not find user.'}
@@ -1875,7 +1937,20 @@ def admin_cash_donation(request):
 def admin_cash_donation_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
-        datalayer.add_donation(amount, request.POST['notes'], request.user)
+
+        # Look for custom date
+        try:
+            if request.POST['donation-date']:
+                event_date = datetime.datetime.strptime(request.POST['donation-date'].strip(),
+                    '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            else:
+                event_date = None
+        except Exception as e:
+            if request.debug: raise(e)
+            # Could not parse date
+            event_date = None
+
+        datalayer.add_donation(amount, request.POST['notes'], request.user, event_date)
 
         request.session.flash('Donation recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
@@ -1904,7 +1979,20 @@ def admin_cash_withdrawal(request):
 def admin_cash_withdrawal_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
-        datalayer.add_withdrawal(amount, request.POST['notes'], request.user)
+
+        # Look for custom date
+        try:
+            if request.POST['withdrawal-date']:
+                event_date = datetime.datetime.strptime(request.POST['withdrawal-date'].strip(),
+                    '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            else:
+                event_date = None
+        except Exception as e:
+            if request.debug: raise(e)
+            # Could not parse date
+            event_date = None
+
+        datalayer.add_withdrawal(amount, request.POST['notes'], request.user, event_date)
 
         request.session.flash('Withdrawal recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
@@ -2137,6 +2225,13 @@ def admin_events_deleted(request):
     events_deleted = Event.get_deleted()
     return {'events': events_deleted}
 
+@view_config(route_name='admin_events_cash',
+             renderer='templates/admin/events_cash.jinja2',
+             permission='admin')
+def admin_events_cash(request):
+    events = Event.get_cash_events()
+    return {'events': events}
+
 
 @view_config(route_name='admin_event',
              renderer='templates/admin/event.jinja2',
@@ -2204,11 +2299,10 @@ def admin_event_undo(request):
             request.session.flash('Error: transaction already deleted', 'error')
             return HTTPFound(location=request.route_url('admin_events'))
 
-        for transaction in event.transactions:
-            # Make sure transaction is a deposit (no user check since admin doing)
-            if transaction.type not in ('cashdeposit', 'purchase', 'restock', 'inventory'):
-                request.session.flash('Error: Only deposits and purchases may be undone.', 'error')
-                return HTTPFound(location=request.route_url('admin_events'))
+        # Make sure we support undoing that type of transaction
+        if not datalayer.can_undo_event(event):
+            request.session.flash('Error: Cannot undo that type of transaction.', 'error')
+            return HTTPFound(location=request.route_url('admin_events'))
 
         # If the checks pass, actually revert the transaction
         line_items = datalayer.undo_event(event, request.user)
@@ -2349,8 +2443,13 @@ def login(request):
     login_url = request.resource_url(request.context, 'login')
     referrer = request.url
     if referrer == login_url:
-        referrer = '/' # never use the login form itself as came_from
+        # never use the login form itself as referrer; assume /user for now
+        referrer = request.resource_url(request.context, 'user')
+    reset_pw_url = request.resource_url(request.context, 'login', 'reset_pw')
     came_from = request.params.get('came_from', referrer)
+    if came_from == reset_pw_url:
+        # never user reset_pw action as came_from; assume /user for now
+        came_from = request.resource_url(request.context, 'user')
     message = login = password = ''
     if 'login' in request.params:
         login = request.params['login']
@@ -2366,13 +2465,47 @@ def login(request):
             message = 'Login failed. Incorrect username or password.',
 
     return dict(
-        message = message,
+        login_message = message,
         url = request.application_url + '/login',
         came_from = came_from,
         login = login,
         password = password
     )
 
+@view_config(route_name='login_reset_pw',
+             request_method='POST',
+             renderer='templates/login.jinja2')
+def login_reset_pw(request):
+    login_url = request.resource_url(request.context, 'login')
+    login_reset_url = request.resource_url(request.context, 'login_reset_pw')
+    referrer = request.url
+    if referrer == login_url or referrer == login_reset_url:
+        referrer = '/' # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+
+    succ = '',
+    err = '',
+
+    # This will create a user automatically if they do not already exist
+    try:
+        with transaction.manager:
+            user = User.from_umid(request.POST['umid'])
+        user = DBSession.merge(user)
+
+        if request.POST['uniqname'] != user.uniqname:
+            raise __user.InvalidUserException()
+    except:
+        err = 'Bad uniqname or umid',
+    else:
+        user_password_reset(user)
+        succ = ('Password set and emailed to {}@umich.edu.'.format(user.uniqname),)
+
+    return dict(
+        forgot_error = err,
+        forgot_success = succ,
+        url = request.application_url + '/login',
+        came_from = came_from,
+    )
 
 @view_config(route_name='logout')
 def logout(request):

@@ -29,6 +29,7 @@
   <script src="{{'chezbetty:static/js/lib/datetimepicker/jquery.datetimepicker.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/highstock/highstock.js'|static_url}}"></script>
 
+  <script src="{{'chezbetty:static/js/chezbetty-common.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/chezbetty-admin.js'|static_url}}"></script>
 
   <title>{% if request.debug %}[ DEBUG ]{% endif %} {% block title %}{% endblock %} | Chez Betty Admin</title>
@@ -100,6 +101,7 @@
 {% endblock %}
 
 <script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
+<script src="{{'chezbetty:static/js/chezbetty-common-onload.js'|static_url}}"></script>
 {% block onload %}
 {% endblock %}
 

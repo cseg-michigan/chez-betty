@@ -31,6 +31,7 @@
           <th {% if sort=="daysuntilout" %}data-defaultsort="{{ dir }}"{% endif %}>Days Until Out</th>
           <th {% if sort=="lost" %}data-defaultsort="{{ dir }}"{% endif %}>Num Lost</th>
           <th {% if sort=="inventorypercent" %}data-defaultsort="{{ dir }}"{% endif %}>Inventory Percent</th>
+          <th {% if sort=="theftiness" %}data-defaultsort="{{ dir }}"{% endif %}>Theftiness</th>
           <th>Enabled</th>
         </tr>
       </thead>
@@ -59,6 +60,7 @@
           {% set markup = (((item.price / item.wholesale)|float - 1.0) * 100.0)|round(2) %}
         {% endif %}
 
+
         <tr id="item-{{ item.id }}" class="edit-item-row {% if item.enabled == False %} disabled-row {% endif %}">
 
           <td><a href="/admin/item/edit/{{ item.id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a></td>
@@ -72,6 +74,7 @@
           <td data-value="{% if item.days_until_out == None %}100000{% else %}{{ item.days_until_out }}{% endif %}">{% if item.days_until_out == None %}Inf{% else %}{{ item.days_until_out|int }}{% endif %}</td>
           <td>{{ item.number_lost|int }}</td>
           <td data-value="{{ item.inventory_percent|round(2) }}">{{ item.inventory_percent|round(2) }}%</td>
+          <td data-value="{{ item.theftiness|round(2) }}">{{ item.theftiness|round(2) }}%</td>
           <td>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</td>
         </tr>
         {% endfor %}

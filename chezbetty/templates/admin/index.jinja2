@@ -466,7 +466,25 @@
 
 <div class="row">
   <div class="col-md-12">
-  {{ graph.create_cumulative_timeseries_panel("/admin/data/users/totals", "Total Users") }}
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/users/totals", "Total Users", ['Users'], [1]) }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/users/balance/totals", "Total Balances", ['User Debt', 'User Bank Balance', 'Debt per User (in $0.01)'], [100, 100, 1]) }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/raw/sales/day", "Sales Per Day", ['Sales'], [1]) }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/raw/deposits/day", "Deposits Per Day", ['Deposits'], [1]) }}
   </div>
 </div>
 

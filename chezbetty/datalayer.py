@@ -12,7 +12,8 @@ from .models import box_vendor
 
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
-       and e.type != 'inventory':
+       and e.type != 'inventory' and e.type != 'emptycashbox' \
+       and e.type != 'donation' and e.type != 'withdrawal':
         return False
     if e.deleted:
         return False
@@ -66,6 +67,10 @@ def undo_event(e, user):
                 quantity_diff = s.quantity - s.quantity_counted
                 s.item.in_stock += quantity_diff
                 line_items[s.item_id] = s.quantity_counted
+
+        # Don't need anything for emptycashbox. On those transactions no
+        # other tables are changed.
+
 
     # Just need to delete the event. All transactions will understand they
     # were deleted as well.
@@ -154,6 +159,24 @@ def deposit(user, account, amount):
     DBSession.add(e)
     DBSession.flush()
     t = transaction.CashDeposit(e, account, amount)
+    DBSession.add(t)
+    return dict(prev=prev,
+                new=user.balance,
+                amount=amount,
+                transaction=t,
+                event=e)
+
+
+# Call this when a credit card transaction deposits money into an account
+def cc_deposit(user, account, amount, txn_id, last4):
+    assert(amount > 0.0)
+    assert(hasattr(user, "id"))
+
+    prev = user.balance
+    e = event.Deposit(user)
+    DBSession.add(e)
+    DBSession.flush()
+    t = transaction.CCDeposit(e, account, amount, txn_id, last4)
     DBSession.add(t)
     return dict(prev=prev,
                 new=user.balance,
@@ -364,8 +387,8 @@ def reconcile_misc(amount, notes, admin):
 
 
 # Call this to make a cash donation to Chez Betty
-def add_donation(amount, notes, admin):
-    e = event.Donation(admin, notes)
+def add_donation(amount, notes, admin, timestamp=None):
+    e = event.Donation(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Donation(e, amount)
@@ -374,8 +397,8 @@ def add_donation(amount, notes, admin):
 
 
 # Call this to withdraw cash funds from Chez Betty into another account
-def add_withdrawal(amount, notes, admin):
-    e = event.Withdrawal(admin, notes)
+def add_withdrawal(amount, notes, admin, timestamp=None):
+    e = event.Withdrawal(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Withdrawal(e, amount)

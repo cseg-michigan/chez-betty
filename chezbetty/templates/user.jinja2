@@ -1,10 +1,11 @@
 {% extends "base.jinja2" %}
 {% set active_page = 'account' %}
 {% block title %}User Information{% endblock %}
-{% block header %}{{ name }}{% endblock %}
+{% block header %}{{ user.name }}{% endblock %}
 
 {% block content %}
 
+{% set active_page = 'account' %}
 {% include "user_info.jinja2" %}
 
 {# Display the transaction history list
@@ -84,6 +85,14 @@
         {% elif transaction.type == "cashdeposit" %}
 
         {{ _('Deposit of %(amount)s')|format(amount=transaction.amount|format_currency)|safe }}
+
+        <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
+
+
+        {% elif transaction.type == 'ccdeposit' %}
+
+        {{ _('Credit Card Deposit of %(amount)s')|format(amount=transaction.amount|format_currency)|safe }}
+        <small>{{ _('Card ending in %(last4)s')|format(last4=transaction.cc_last4) }}</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 

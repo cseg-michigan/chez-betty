@@ -1,7 +1,7 @@
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-5">
     
-    <div class="panel panel-default">
+    <div class="panel {% if user.balance < -5 %}panel-superdanger{% else %}panel-default{% endif %}">
       <div class="panel-heading">
         <h3 class="panel-title">{{ _('Customer') }}</h3>
       </div>
@@ -11,8 +11,13 @@
           <dt>{{ _('Name') }}</dt>
           <dd>{{ user.name }}</dd>
 
-          <dt>{{ _('Account Balance') }}</dt>
-          <dd>{{ user.balance|format_currency|safe }}</dd>
+          <dt class="user-info-balance">{{ _('Account Balance') }}</dt>
+          <dd class="user-info-balance">{{ user.balance|format_currency|safe }}</dd>
+
+          {% if account_type == "pool" %}
+          <dt>{{ _('%(pool_name)s Balance')|format(pool_name=pool.name) }}</dt>
+          <dd>{{ pool.balance|format_currency|safe }}</dd>
+          {% endif %}
         </dl>
 
         <div id="account-total-start" class="hidden">
@@ -23,23 +28,23 @@
     </div>
 
   </div>
-  <div class="col-md-6">
+  <div class="col-md-7">
 
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">{{ _('Links') }}</h3>
       </div>
       <div class="panel-body buttons">
-        {% if page != "purchase" %}
+        {% if active_page != "purchase" %}
         <a class="btn btn-primary btn-lg" href="/purchase/{{ user.umid }}">{{ _('Purchase') }}</a>
         {% endif %}
-        {% if page != "account" %}
+        {% if active_page != "account" %}
         <a class="btn btn-primary btn-lg" href="/profile/{{ user.umid }}">{{ _('Account') }}</a>
         {% endif %}
-        {% if page != "deposit" %}
+        {% if active_page != "deposit" %}
         <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">{{ _('Deposit') }}</a>
         {% endif %}
-        <a class="btn btn-warning btn-lg" href="/">{{ _('Logout') }}</a>
+        <a id="logout-button" class="btn btn-warning btn-lg" href="/"><span class="btn-text-default">{{ _('Logout') }}</span><span class="btn-text-alt">{{ _('Purchase and Logout') }}</span></a>
         {% if user.role == "administrator" or user.role == "manager" %}
         <a class="btn btn-success btn-lg" href="/admin">{{ _('Admin') }}</a>
         {% endif %}

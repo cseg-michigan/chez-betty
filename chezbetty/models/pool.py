@@ -1,5 +1,6 @@
 import os
 from .model import *
+from .user import User
 from . import account
 from chezbetty import utility
 
@@ -18,6 +19,9 @@ class Pool(account.Account):
         self.name = name
         self.balance = 0.0
 
+    def get_owner_name(self):
+        return User.from_id(self.owner).name
+
     @classmethod
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
@@ -35,6 +39,20 @@ class Pool(account.Account):
         if only_enabled:
             q.filter(cls.enabled==True)
         return q.all()
+
+    @classmethod
+    def all_accessable(cls, user, only_enabled=False):
+        # Get all pools the user can access
+        pools = []
+        for pool in Pool.all_by_owner(user, only_enabled):
+            if not only_enabled or pool.enabled:
+                pools.append(pool)
+
+        for pu in user.pools:
+            if not only_enabled or pu.pool.enabled:
+                pools.append(pu.pool)
+
+        return pools
 
     @classmethod
     def count(cls):
