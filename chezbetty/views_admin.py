@@ -2443,8 +2443,14 @@ def login(request):
     login_url = request.resource_url(request.context, 'login')
     referrer = request.url
     if referrer == login_url:
-        referrer = '/' # never use the login form itself as came_from
+        # never use the login form itself as referrer
+        referrer = request.resource_url(request.context)
+
+    reset_pw_url = request.resource_url(request.context, 'login', 'reset_pw')
     came_from = request.params.get('came_from', referrer)
+    if came_from == reset_pw_url:
+        # never user reset_pw action as came_from
+        came_from = request.resource_url(request.context)
     message = login = password = ''
     if 'login' in request.params:
         login = request.params['login']

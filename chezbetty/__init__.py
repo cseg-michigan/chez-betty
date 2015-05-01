@@ -100,6 +100,7 @@ def main(global_config, **settings):
     config.add_route('deposit',             '/deposit/{umid}')
     config.add_route('deposit_edit',        '/deposit/edit/{umid}/{event_id}')
     config.add_route('deposit_edit_submit', '/deposit/edit/submit')
+    config.add_route('deposit_emailinfo',   '/deposit/{user_id}/emailinfo')
     config.add_route('deposit_password_create','/deposit/{user_id}/password/create')
     config.add_route('deposit_password_reset', '/deposit/{user_id}/password/reset')
 

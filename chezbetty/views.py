@@ -27,6 +27,7 @@ from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
 
 from .utility import user_password_reset
+from .utility import send_email
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -549,6 +550,28 @@ def btc_check(request):
         return {"event_id": deposit.event.id}
     except:
         return {}
+
+
+@view_config(route_name='deposit_emailinfo',
+             renderer='json',
+             permission='service')
+def deposit_emailinfo(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if not user.has_password:
+            return deposit_password_create(request)
+        send_email(TO=user.uniqname+'@umich.edu',
+                   SUBJECT='Chez Betty Credit Card Instructions',
+                   body=render('templates/email_userinfo.jinja2', {'user': user}))
+        return {'status': 'success',
+                'msg': 'Instructions emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
 
 
 @view_config(route_name='deposit_password_create',

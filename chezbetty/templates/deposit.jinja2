@@ -62,6 +62,7 @@
             {{ _('To deposit using a credit card, please visit https://chezbetty.eecs.umich.edu/user on your own computer.') }}
           </p>
           <hr />
+          {#
           {% if user.has_password == False %}
           <p>
             {{ _('Clicking this button will email you your login and password information.') }}
@@ -73,6 +74,8 @@
           </p>
           {{ button.ajax_singleuse_button("Reset and Email Password", "/deposit/"~user.id~"/password/reset") }}
           {% endif %}
+          #}
+          {{ button.ajax_singleuse_button("Email me the link!", "/deposit/"~user.id~"/emailinfo") }}
         </div>
       </div>
 
