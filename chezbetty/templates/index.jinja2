@@ -2,7 +2,16 @@
 {% block title %}Home{% endblock %}
 
 
-{% block top %}{% endblock %}
+{% block top %}
+<style>
+@media (min-width: 992px) {
+  .container {
+    width: 1800px;
+  }
+}
+</style>
+
+{% endblock %}
 
 {% block content %}
 
@@ -13,56 +22,64 @@ body {
 </style>
 
 <div class="row">
-  <div class="col-md-12">
-    <div class="jumbotron top">
-      <img class="pull-right" src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:120px;" />
+  <div class="col-md-8">
 
-      <h1>{{ _('Welcome to Chez Betty!') }}</h1>
-      <p>{{ _('The 24/7 food co-op for all members of the CSE community.') }}</p>
-    </div>
-  </div>
-</div>
 
-<div class="row">
-  <div class="col-md-7">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="jumbotron top">
+          <img class="pull-right" src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:120px;" />
 
-    <div id="front-buttons" class="buttons">
-      <a class="btn btn-default btn-huge btn-bordered" href="/items">{{ _('Item List') }}</a>
-      <a class="btn btn-default btn-huge btn-bordered" href="/item/request">{{ _('Request an Item') }}</a>
-      <a class="btn btn-default btn-huge btn-bordered" href="/about">{{ _('About') }}</a>
-      <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
-
-      {% if request.has_permission("manage") %}
-      <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Administration') }}</a>
-      {% endif %}
-    </div>
-
-    <div id="cc-banner" style="text-align:center">
-      <hr />
-      <h2>{{ _('Betty now accepts credit cards!') }}</h2>
-      <h4>
-      {{ _('To deposit using a credit card, please visit') }}
-      <span class="highlight">https://chezbetty.eecs.umich.edu/user</span>
-      {{ _('on your own computer.') }}
-      </h4>
-    </div>
-
-    {% if demo and request.has_permission("admin") %}
-    <div id="front-demo" class="buttons">
-      <div class="well">
-        <h3>Demo Mode:</h3>
-        {% for admin in admins %}
-        <a class="btn btn-default btn-huge btn-bordered" href="/purchase/{{ admin.umid }}">Login as {{ admin.name }}</a>
-        {% endfor %}
+          <h1>{{ _('Welcome to Chez Betty!') }}</h1>
+          <p>{{ _('The 24/7 food co-op for all members of the CSE community.') }}</p>
+        </div>
       </div>
     </div>
-    {% endif %}
+
+
+    <div class="row">
+      <div class="col-md-12">
+
+        <div id="front-buttons" class="buttons">
+          <a class="btn btn-default btn-huge btn-bordered" href="/items">{{ _('Item List') }}</a>
+          <a class="btn btn-default btn-huge btn-bordered" href="/item/request">{{ _('Request an Item') }}</a>
+          <a class="btn btn-default btn-huge btn-bordered" href="/about">{{ _('About') }}</a>
+          <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
+
+          {% if request.has_permission("manage") %}
+          <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Administration') }}</a>
+          {% endif %}
+        </div>
+
+        <div id="cc-banner" style="text-align:center">
+          <hr />
+          <h2>{{ _('Betty now accepts credit cards!') }}</h2>
+          <h4>
+          {{ _('To deposit using a credit card, please visit') }}
+          <span class="highlight">https://chezbetty.eecs.umich.edu/user</span>
+          {{ _('on your own computer.') }}
+          </h4>
+        </div>
+
+        {% if demo and request.has_permission("admin") %}
+        <div id="front-demo" class="buttons">
+          <div class="well">
+            <h3>Demo Mode:</h3>
+            {% for admin in admins %}
+            <a class="btn btn-default btn-huge btn-bordered" href="/purchase/{{ admin.umid }}">Login as {{ admin.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
 
   </div>
 
-  <div class="col-md-5">
+  <div class="col-md-4">
 
-    <div id="index-main">
+    <div id="index-main" style="margin-top:150px;">
       <h2>{{ _('Swipe your M-Card to login') }}</h2>
     </div>
 
