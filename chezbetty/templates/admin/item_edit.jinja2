@@ -56,6 +56,7 @@
             <dt>Days Until Out</dt> <dd>{% if stats.until_out is string %}{{ stats.until_out }}{% else %}{{ stats.until_out|round(0)|int }}{% endif %}</dd>
             <dt>Num Lost</dt> <dd>{{ stats.lost }}</dd>
             <dt>Inventory Percent</dt> <dd>{{ stats.inv_percent|round(2) }}%</dd>
+            <dt>Theftiness</dt> <dd>{{ stats.theftiness|round(2) }}%</dd>
           </dl>
         </div>
         <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">

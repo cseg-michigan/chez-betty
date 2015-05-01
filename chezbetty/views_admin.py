@@ -916,6 +916,23 @@ def admin_items_edit(request):
 
         item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
+        #
+        # Calculate "theftiness" which is:
+        #
+        #                number stolen
+        #  theftiness = ---------------
+        #                 number sold
+        #
+        if not item.number_sold:
+            if not item.number_lost or item.number_lost < 0:
+                # Both 0, just put this at 0.
+                item.theftiness = 0.0
+            else:
+                # Haven't sold any, but at least one stolen. Bad!
+                item.theftiness = 100.0
+        else:
+            item.theftiness = ((item.number_lost or 0.0)/item.number_sold) * 100.0
+
     return {'items': items}
 
 
@@ -1047,6 +1064,15 @@ def admin_item_edit(request):
 
         inventory_total = Item.total_inventory_wholesale()
         stats['inv_percent'] = ((item.wholesale * item.in_stock) / inventory_total) * 100
+
+        # Theftiness
+        if stats['num_sold'] == 0:
+            if stats['lost'] <= 0:
+                stats['theftiness'] = 0.0
+            else:
+                stats['theftiness'] = 100.0
+        else:
+            stats['theftiness'] = (stats['lost']/stats['num_sold']) * 100.0
 
         # Don't display vendors that already have an item number in the add
         # new vendor item number section

@@ -354,7 +354,7 @@ def item_sale_speed(num_days, only_item_id=None):
         status = item.in_stock>0
 
         if item.id not in data_onsale:
-            data_onsale[item.id] = {'days_on_sale': 0, 
+            data_onsale[item.id] = {'days_on_sale': 0,
                                     'date_in_stock': None,
                                     'num_sold': 0}
 
@@ -407,7 +407,10 @@ def item_sale_speed(num_days, only_item_id=None):
         data[itemid] = item_data['num_sold'] / item_data['days_on_sale']
 
     if only_item_id:
-        return data[only_item_id]
+        if only_item_id in data:
+            return data[only_item_id]
+        else:
+            return 0
     else:
         return data
 
