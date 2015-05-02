@@ -31,7 +31,7 @@ $(".ajax-bool-btn").on('click', function () {
 });
 
 function toggle_state_success (data) {
-	var parent = $("#"+$(this).attr("data-parent"))
+	var parent = $("#"+$(this).attr("data-parent"));
 
 	if ($(this).hasClass('require-refresh')) {
 		location.reload();
@@ -55,7 +55,7 @@ function toggle_state_fail (data) {
 function toggle_enabled (type, btn) {
 	btn_type = btn.attr("id").split("-")[1];
 	id = btn.attr("id").split("-")[3];
-	row = $("#"+type+"-" + id)
+	row = $("#"+type+"-" + id);
 
 	if (btn_type == "disable") {
 
@@ -116,7 +116,7 @@ function tweet_char_count () {
   } else {
     $('#tweet-char-count').css('color', 'red');
   }
-};
+}
 
 $("#tweet").on('change keyup paste input propertychange', tweet_char_count);
 
@@ -327,7 +327,7 @@ $("#new-box-table").on("input", "input:text", function () {
 		name += " (" + volume.replace(/ /g, "") + ")";
 	}
 	if (quantity.length) {
-		name += " " + quantity + " Pack"
+		name += " " + quantity + " Pack";
 	}
 	$("#box-name").val(name);
 });
@@ -406,7 +406,7 @@ $(".request-delete").click(function () {
 		success: request_delete_success,
 		error: request_delete_fail
 	});
-})
+});
 
 
 
@@ -534,7 +534,7 @@ $('.filterable').each(function (table_index) {
 							}
 
 						}
-					})
+					});
 				});
 
 			var elements = [];
