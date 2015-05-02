@@ -30,7 +30,7 @@ def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
 
     settings = get_current_registry().settings
 
-    if 'debugging' in settings:
+    if 'debugging' in settings and bool(int(settings['debugging'])):
         if 'debugging_send_email' not in settings or settings['debugging_send_email'] != 'true':
             print("Mail suppressed due to debug settings")
             return
