@@ -1,6 +1,8 @@
 Chez Betty
 ==========
 
+[![Code Climate](https://codeclimate.com/github/um-cseg/chez-betty/badges/gpa.svg)](https://codeclimate.com/github/um-cseg/chez-betty)
+
 Chez Betty is a mini, cooperative food store where users can deposit money to their account
 and use it to purchase food and other items. The system is linked
 to the UMich ldap server so users can swipe their M-Card to login.
