@@ -57,7 +57,7 @@ function toggle_enabled (type, btn) {
 	id = btn.attr("id").split("-")[3];
 	row = $("#"+type+"-" + id);
 
-	if (btn_type == "disable") {
+	if (btn_type === "disable") {
 
 		// Mark the row to be disabled upon submit
 		row.children("#"+type+"-enabled-"+id).val("0");
@@ -71,7 +71,7 @@ function toggle_enabled (type, btn) {
 		// Display the undo button
 		$("#btn-enable-"+type+"-" + id).show();
 
-	} else if (btn_type == "enable") {
+	} else if (btn_type === "enable") {
 
 		// Mark the user as enabled
 		row.children("#"+type+"-enabled-"+id).val("1");
@@ -96,7 +96,7 @@ $(".ajaxed_field").each(function ajaxed_each (index) {
 		url: url,
 		context: this,
 		success: function ajaxed_field_success (data) {
-			$(this).html(data['html']);
+			$(this).html(data.html);
 		},
 		error: function ajaxed_field_error (data) {
 			$(this).text('<Error>');
@@ -455,7 +455,7 @@ function tag_connected_success (data) {
 	$("#tag-"+data['arg2']).remove();
 
 	$("#item-existing-tags").append(' <button type="button" \
-		class="btn btn-default" data-item-tag-id="' + data['item_tag_id'] + '">'
+		class="btn btn-default" data-item-tag-id="' + data['item_tag_id'] + '">' \
 		+ data['tag_name'] + '</button>');
 }
 
