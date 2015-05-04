@@ -39,6 +39,7 @@ from .models.tag import Tag
 from .models.item_tag import ItemTag
 
 from .utility import send_email
+from .utility import send_bcc_email
 from .utility import user_password_reset
 
 from .jinja2_filters import format_currency
@@ -1857,8 +1858,8 @@ def admin_users_email_all(request):
     users = User.all()
     text = request.POST['text']
 
-    send_email(
-            TO='@umich.edu, '.join(users) + '@umich.edu',
+    send_bcc_email(
+            BCC='@umich.edu, '.join(map(lambda x: x.uniqname, users)) + '@umich.edu',
             SUBJECT='A message from Chez Betty',
             body=text
             )

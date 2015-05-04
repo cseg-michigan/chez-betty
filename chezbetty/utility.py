@@ -18,16 +18,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 
-# TODO: Should probably send mail 'from' our actual server and have a local MTA
-# that forwards mails to this alias
-def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
-    msg = MIMEMultipart()
-    msg['Subject'] = SUBJECT
-    msg['From'] = FROM
-    msg['To'] = TO
-    msg.attach(MIMEText(body, 'html'))
-    print(msg.as_string())
-
+def _send_email(msg):
     settings = get_current_registry().settings
 
     if 'debugging' in settings and bool(int(settings['debugging'])):
@@ -43,18 +34,57 @@ def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
     if 'smtp.username' in settings:
         sm.login(settings['smtp.username'], settings['smtp.password'])
 
+    def gen_sendto(msg):
+        send_to = []
+        if 'To' in msg:
+            send_to += msg['To'].split(', ')
+        if 'CC' in msg:
+            send_to += msg['CC'].split(', ')
+        if 'BCC' in msg:
+            send_to += msg['BCC'].split(', ')
+        return send_to
+
+
     if 'debugging' in settings:
         if 'debugging_send_email' in settings and settings['debugging_send_email'] == 'true':
             try:
                 msg.replace_header('To', settings['debugging_send_email_to'])
-                print("DEBUG: e-mail destination overidden to {}".format(msg['To']))
+                print("DEBUG: e-mail TO overidden to {}".format(msg['To']))
             except KeyError: pass
-            send_to = msg['To'].split(', ')
+            try:
+                msg.replace_header('CC', settings['debugging_send_email_to'])
+                print("DEBUG: e-mail CC overidden to {}".format(msg['CC']))
+            except KeyError: pass
+            try:
+                msg.replace_header('BCC', settings['debugging_send_email_to'])
+                print("DEBUG: e-mail BCC overidden to {}".format(msg['BCC']))
+            except KeyError: pass
+            send_to = gen_sendto(msg)
             sm.sendmail(FROM, send_to, msg.as_string())
     else:
-        send_to = msg['To'].split(', ')
+        send_to = gen_sendto(msg)
         sm.sendmail(FROM, send_to, msg.as_string())
     sm.quit()
+
+
+def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
+    msg = MIMEMultipart()
+    msg['Subject'] = SUBJECT
+    msg['From'] = FROM
+    msg['To'] = TO
+    msg.attach(MIMEText(body, 'html'))
+    print(msg.as_string())
+    _send_email(msg)
+
+
+def send_bcc_email(BCC, SUBJECT, body, FROM='chez-betty@umich.edu'):
+    msg = MIMEMultipart()
+    msg['Subject'] = SUBJECT
+    msg['From'] = FROM
+    msg['BCC'] = BCC
+    msg.attach(MIMEText(body, 'html'))
+    print(msg.as_string())
+    _send_email(msg)
 
 
 def user_password_reset(user):
