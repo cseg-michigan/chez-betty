@@ -10,9 +10,10 @@
 {% block content %}
 
 <h2>Email All Deadbeat Users</h2>
-<p>Send an email to users who are more than $20.00 in debt to Chez Betty
-encouraging them to settle up.</p>
 <form role="form" action="/admin/users/email/deadbeats" method="post">
+  <p>Send an email to users who are more than
+  $<input name="threshold" value="20.00"> in debt to Chez Betty encouraging
+  them to settle up.</p>
   <button type="submit" class="btn btn-success">Email Deadbeat Users</button>
 </form>
 

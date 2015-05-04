@@ -1839,12 +1839,20 @@ def admin_users_email(request):
              request_method='POST',
              permission='admin')
 def admin_users_email_deadbeats(request):
-    deadbeats = DBSession.query(User).filter(User.enabled).filter(User.balance<-20.0).all()
+    threshold = float(request.POST['threshold'])
+    if threshold < 0:
+        request.session.flash('Threshold should be >= 0', 'error')
+        return HTTPFound(location=request.route_url('admin_users_email'))
+    deadbeats = DBSession.query(User).\
+            filter(User.enabled).\
+            filter(User.balance < -threshold).\
+            all()
     for deadbeat in deadbeats:
         send_email(
                 TO=deadbeat.uniqname+'@umich.edu',
                 SUBJECT='Chez Betty Balance',
-                body=render('templates/admin/email_deadbeats.jinja2', {'user': deadbeat})
+                body=render('templates/admin/email_deadbeats.jinja2',
+                    {'user': deadbeat, 'threshold': threshold})
                 )
 
     request.session.flash('Deadbeat users emailed.', 'success')
