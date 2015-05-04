@@ -4,6 +4,8 @@ from .models import user
 from .models import account
 from .models import pool
 
+import jinja2
+
 from sh import ErrorReturnCode, git
 
 def format_currency(value):
@@ -52,3 +54,4 @@ def add_git_version(s):
 		return ' v'+git.describe('--tags').strip()
 	except ErrorReturnCode:
 		pass
+

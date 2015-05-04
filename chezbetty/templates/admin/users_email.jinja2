@@ -14,6 +14,10 @@
   <p>Send an email to users who are more than
   $<input name="threshold" value="20.00"> in debt to Chez Betty encouraging
   them to settle up.</p>
+  <div class="well">
+{% set user = {'name': '<< name >>', 'balance': '<< balance >>'} %}
+{% include "email_deadbeats.jinja2" %}
+  </div>
   <button type="submit" class="btn btn-success">Email Deadbeat Users</button>
 </form>
 
