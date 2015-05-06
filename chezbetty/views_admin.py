@@ -1903,12 +1903,12 @@ def admin_users_email_oneperson(request):
              permission='admin')
 def admin_users_email_all(request):
     users = User.all()
-    text = request.POST['text']
 
     send_bcc_email(
             BCC='@umich.edu, '.join(map(lambda x: x.uniqname, users)) + '@umich.edu',
-            SUBJECT='A message from Chez Betty',
-            body=text
+            SUBJECT  = request.POST['subject'],
+            body     = request.POST['body'],
+            encoding = request.POST['encoding'],
             )
 
     request.session.flash('All users emailed.', 'success')
