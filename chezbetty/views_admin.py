@@ -1835,6 +1835,26 @@ def admin_users_email(request):
     return {}
 
 
+@view_config(route_name='admin_users_email_endofsemester',
+             request_method='POST',
+             permission='admin')
+def admin_users_email_endofsemester(request):
+    deadbeats = DBSession.query(User).\
+            filter(User.enabled).\
+            filter(User.balance < 0).\
+            all()
+    for deadbeat in deadbeats:
+        send_email(
+                TO=deadbeat.uniqname+'@umich.edu',
+                SUBJECT='Chez Betty Balance',
+                body=render('templates/admin/email_endofsemester.jinja2',
+                    {'user': deadbeat})
+                )
+
+    request.session.flash('Users with negative balances emailed.', 'success')
+    return HTTPFound(location=request.route_url('admin_index'))
+
+
 @view_config(route_name='admin_users_email_deadbeats',
              request_method='POST',
              permission='admin')

@@ -21,6 +21,18 @@
   <button type="submit" class="btn btn-success">Email Deadbeat Users</button>
 </form>
 
+<h2>End of Semester Email</h2>
+<form role="form" action="/admin/users/email/endofsemester" method="post">
+  <p>Sends an email to all users who are in debt to Betty encouraging
+  them to settle up.</p>
+  <div class="well">
+{% set user = {'name': '<< name >>', 'balance': '<< balance >>'} %}
+{% include "email_endofsemester.jinja2" %}
+  </div>
+  <button type="submit" class="btn btn-success">Send End of Semester Email</button>
+</form>
+
+
 <h2>Email All Users</h2>
 <p>Send an email to all users</p>
 
