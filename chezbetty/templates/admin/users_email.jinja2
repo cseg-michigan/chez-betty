@@ -25,7 +25,8 @@
 
 <h2>End of Semester Email</h2>
 <form role="form" action="/admin/users/email/endofsemester" method="post">
-  <p>Sends an email to all users who are in debt to Betty encouraging
+  <p>Send an email to all users who are more than
+  $<input name="threshold" value="2.00"> in debt to Chez Betty encouraging
   them to settle up.</p>
   <div class="well">
 {% set user = {'name': '<< name >>', 'balance': '<< balance >>'} %}

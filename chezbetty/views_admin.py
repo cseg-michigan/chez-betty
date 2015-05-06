@@ -1840,9 +1840,13 @@ def admin_users_email(request):
              request_method='POST',
              permission='admin')
 def admin_users_email_endofsemester(request):
+    threshold = float(request.POST['threshold'])
+    if threshold < 0:
+        request.session.flash('Threshold should be >= 0', 'error')
+        return HTTPFound(location=request.route_url('admin_users_email'))
     deadbeats = DBSession.query(User).\
             filter(User.enabled).\
-            filter(User.balance < 0).\
+            filter(User.balance < -threshold).\
             all()
     for deadbeat in deadbeats:
         send_email(
@@ -1852,7 +1856,8 @@ def admin_users_email_endofsemester(request):
                     {'user': deadbeat})
                 )
 
-    request.session.flash('Users with negative balances emailed.', 'success')
+    request.session.flash('{} user(s) with balances under {} emailed.'.\
+            format(len(deadbeats), threshold), 'success')
     return HTTPFound(location=request.route_url('admin_index'))
 
 
