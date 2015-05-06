@@ -45,7 +45,7 @@ def _send_email(msg):
         return send_to
 
 
-    if 'debugging' in settings:
+    if 'debugging' in settings and bool(int(settings['debugging'])):
         if 'debugging_send_email' in settings and settings['debugging_send_email'] == 'true':
             try:
                 msg.replace_header('To', settings['debugging_send_email_to'])

@@ -334,7 +334,7 @@ class CashDeposit(Deposit):
             <p><strong>But seriously, you should probably go empty the cashbox
             like, right meow.</strong></p>"""
 
-        if 'debugging' in settings:
+        if 'debugging' in settings and bool(int(settings['debugging'])):
             SUBJECT = '[ DEBUG_MODE ] ' + SUBJECT
             body = """
             <p><em>This message was sent from a debugging session and may be
