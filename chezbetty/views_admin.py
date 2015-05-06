@@ -1832,7 +1832,8 @@ def admin_user_password_reset(request):
              renderer='templates/admin/users_email.jinja2',
              permission='admin')
 def admin_users_email(request):
-    return {}
+    users = DBSession.query(User).order_by(User.name).all()
+    return {'users': users}
 
 
 @view_config(route_name='admin_users_email_endofsemester',
@@ -1877,6 +1878,24 @@ def admin_users_email_deadbeats(request):
 
     request.session.flash('Deadbeat users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
+
+
+@view_config(route_name='admin_users_email_oneperson',
+             request_method='POST',
+             permission='admin')
+def admin_users_email_oneperson(request):
+    user = User.from_id(int(request.POST['user']))
+    to = user.uniqname+'@umich.edu'
+
+    send_email(
+            TO       = to,
+            SUBJECT  = request.POST['subject'],
+            body     = request.POST['body'],
+            encoding = request.POST['encoding'],
+            )
+
+    request.session.flash('E-mail sent to ' + to, 'success')
+    return HTTPFound(location=request.route_url('admin_users_email'))
 
 
 @view_config(route_name='admin_users_email_all',

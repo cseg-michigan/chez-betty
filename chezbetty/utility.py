@@ -18,7 +18,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 
-def _send_email(msg):
+def _send_email(msg, FROM):
     settings = get_current_registry().settings
 
     if 'debugging' in settings and bool(int(settings['debugging'])):
@@ -67,24 +67,36 @@ def _send_email(msg):
     sm.quit()
 
 
-def send_email(TO, SUBJECT, body, FROM='chez-betty@umich.edu'):
+def send_email(TO, SUBJECT, body,
+        FROM='chez-betty@umich.edu',
+        encoding='html',
+        ):
     msg = MIMEMultipart()
     msg['Subject'] = SUBJECT
     msg['From'] = FROM
     msg['To'] = TO
-    msg.attach(MIMEText(body, 'html'))
+    if encoding == 'text':
+        msg.attach(MIMEText(body))
+    else:
+        msg.attach(MIMEText(body, encoding))
     print(msg.as_string())
-    _send_email(msg)
+    _send_email(msg, FROM)
 
 
-def send_bcc_email(BCC, SUBJECT, body, FROM='chez-betty@umich.edu'):
+def send_bcc_email(BCC, SUBJECT, body,
+        FROM='chez-betty@umich.edu',
+        encoding='html',
+        ):
     msg = MIMEMultipart()
     msg['Subject'] = SUBJECT
     msg['From'] = FROM
     msg['BCC'] = BCC
-    msg.attach(MIMEText(body, 'html'))
+    if encoding == 'text':
+        msg.attach(MIMEText(body))
+    else:
+        msg.attach(MIMEText(body, encoding))
     print(msg.as_string())
-    _send_email(msg)
+    _send_email(msg, FROM)
 
 
 def user_password_reset(user):
