@@ -51,7 +51,7 @@ def make_user_link(obj, str_len=0):
 
 def add_git_version(s):
 	try:
-		return ' v'+git.describe('--tags').strip()
+		return ' '+git.describe('--tags').strip()
 	except ErrorReturnCode:
 		pass
 
