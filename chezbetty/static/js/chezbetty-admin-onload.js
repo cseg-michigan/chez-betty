@@ -455,7 +455,7 @@ function tag_connected_success (data) {
 	$("#tag-"+data['arg2']).remove();
 
 	$("#item-existing-tags").append(' <button type="button" \
-		class="btn btn-default" data-item-tag-id="' + data['item_tag_id'] + '">' \
+		class="btn btn-default" data-item-tag-id="' + data['item_tag_id'] + '">'
 		+ data['tag_name'] + '</button>');
 }
 
