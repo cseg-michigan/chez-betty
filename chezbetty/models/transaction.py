@@ -289,8 +289,8 @@ class Deposit(Transaction):
 class CashDeposit(Deposit):
     __mapper_args__ = {'polymorphic_identity': 'cashdeposit'}
 
-    CONTENTS_THRESHOLD = 300
-    REPEAT_THRESHOLD = 50
+    CONTENTS_THRESHOLD = 1000
+    REPEAT_THRESHOLD = 100
 
     def __init__(self, event, user, amount):
         cashbox_c = account.get_cash_account("cashbox")
