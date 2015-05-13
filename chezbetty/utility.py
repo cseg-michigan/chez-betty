@@ -105,6 +105,14 @@ def user_password_reset(user):
                SUBJECT='Chez Betty Login',
                body=render('templates/admin/email_password.jinja2', {'user': user, 'password': password}))
 
+def notify_pool_out_of_credit(owner, pool):
+    send_email(
+            TO=owner.uniqname+'@umich.edu',
+            SUBJECT='[Chez Betty] Credit limit reached for {} pool'.format(pool.name),
+            body=render('templates/admin/email_pool_credit_limit.jinja2',
+                {'pool': pool, 'owner': owner})
+            )
+
 
 def string_to_qrcode(s):
     factory = qrcode.image.svg.SvgPathImage

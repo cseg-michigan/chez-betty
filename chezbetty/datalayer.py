@@ -2,6 +2,8 @@ from .models.model import *
 from .models import event
 from .models import transaction
 from .models import account
+from .models.pool import Pool
+from .models.user import User
 from .models import request
 from .models import receipt
 from .models.item import Item
@@ -9,6 +11,8 @@ from .models.box import Box
 from .models import box_item
 from .models import item_vendor
 from .models import box_vendor
+
+from .utility import notify_pool_out_of_credit
 
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
@@ -145,6 +149,12 @@ def purchase(user, account, items):
     if discount:
         amount = amount - (amount * discount)
     t.update_amount(amount)
+
+    if isinstance(account, Pool):
+        if account.balance < (account.credit_limit * -1):
+            owner = User.from_id(account.owner)
+            notify_pool_out_of_credit(owner, account)
+
     return t
 
 
