@@ -11,7 +11,7 @@ class Pool(account.Account):
 
     id           = Column(Integer, ForeignKey("accounts.id"), primary_key=True)
     owner        = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    credit_limit = Column(Numeric, nullable=False, default=20)
+    credit_limit = Column(Numeric, nullable=False, default=0)
     enabled      = Column(Boolean, nullable=False, default=True)
 
     def __init__(self, owner, name):
