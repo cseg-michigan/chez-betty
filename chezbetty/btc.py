@@ -1,5 +1,7 @@
 
 import urllib
+import urllib.error
+import urllib.request
 import time
 import json
 import hashlib
@@ -44,9 +46,9 @@ class Bitcoin(object):
             return json.loads(str(res_s, 'utf-8'))
 
         except urllib.error.HTTPError as e:
-            raise BTCException("Could not load HTTP")
+            raise BTCException("Could not load HTTP url %s: %s, %s" % (url, str(e), e.read()))
         except urllib.error.URLError as e:
-            raise BTCException("General urllib failure")
+            raise BTCException("General urllib failure: %s" % (str(e)))
 
 
     @staticmethod
@@ -66,8 +68,8 @@ class Bitcoin(object):
 
         cb_url = cb_url.format(Bitcoin.HOSTNAME)
 
-        obj = Bitcoin.req("https://coinbase.com/api/v1/account/generate_receive_address",
-                      '{"address": {"callback_url": "%s/%s/%s", "label": "%s"}' % (cb_url, umid, auth_key, umid))
+        obj = Bitcoin.req("https://api.coinbase.com/v1/addresses",
+                      '{"address": {"callback_url": "%s/%s/%s", "label": "%s"}}' % (cb_url, umid, auth_key, umid))
 
         if not(obj['success']):
             raise BTCException("Could not get address: %s" % umid)
