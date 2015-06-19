@@ -49,11 +49,13 @@
 
 </form>
 
-
+<hr />
 
 <form role="form" action="/admin/tweet/submit" method="post">
-  Tweet: <textarea class="form-control" id="tweet" name="tweet" value=""></textarea>
-  <button type="submit" class="btn btn-success">Post Tweet</button>
+  <h3>Twitter: <a href="http://twitter.com/umchezbetty/">@umchezbetty</a></h3>
+    <textarea class="form-control" id="tweet" name="tweet" value=""></textarea>
+    <p id="tweet-char-count">Characters Remaining: 140</p>
+    <button type="submit" class="btn btn-success">Post Tweet</button>
 </form>
 
 {% endblock %}

@@ -1,3 +1,4 @@
+*~
 chezbetty/__pycache__/*
 chezbetty.egg-info/*
 chezbetty/scripts/__pycache__/*
@@ -10,8 +11,10 @@ chezbetty.sqlite
 chezbetty/.Python
 include/
 lib/
+lib64
 local
 sessions/
 bower_components/
 *backup*.sql
 RELEASE-VERSION
+*.mo

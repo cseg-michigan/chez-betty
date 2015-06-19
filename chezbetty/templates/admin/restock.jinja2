@@ -99,10 +99,17 @@
 
   <div>
     Set custom time for this restock or leave blank to use current time:<br />
-    <input type="text" id="restock-date" name="restock-date">
+    <input type="text" id="restock-date" name="restock-date" class="event-date-picker">
   </div>
 
-  <button type="submit" id="restock-button" class="btn btn-success">Restock Items</button>
+  <div>
+    Do NOT update item prices with this restock: 
+    <input type="checkbox" id="restock-noprice" name="restock-noprice">
+  </div>
+
+  <div style="margin-top:15px;">
+    <button type="submit" id="restock-button" class="btn btn-success">Restock Items</button>
+  </div>
 
 </form>
 

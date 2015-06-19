@@ -1,0 +1,46 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'pools' %}
+{% block title %}Pools{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Pools</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/items/edit/submit" method="post" id="form-edit-items">
+
+  <div id="edit-items">
+
+    <table class="table sortable">
+
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Member Count</th>
+          <th class="right">Balance</th>
+          <th class="right">Credit Limit</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% for pool in pools %}
+
+        <tr id="pool-{{ pool.id }}" class="pool-row {% if pool.enabled == False %}disabled-row{% endif %}">
+          <td>{{ pool|make_link|safe }}</td>
+          <td>{{ pool.users|length }}</td>
+          <td class="right">{{ pool.balance|format_currency|safe }}</td>
+          <td class="right">{{ pool.credit_limit|format_currency|safe }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+    </table>
+
+  </div>
+
+</form>
+
+{% endblock %}

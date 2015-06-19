@@ -14,6 +14,7 @@ from .models import btcdeposit
 from .models import event
 from .models import item
 from .models import item_vendor
+from .models import item_tag
 from .models import receipt
 from .models import request
 from .models import transaction
@@ -21,6 +22,8 @@ from .models import user
 from .models import vendor
 from .models import pool
 from .models import pool_user
+from .models import tag
+from .models import tag_relations
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
@@ -41,6 +44,7 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     config = Configurator(settings=settings,
                           root_factory="chezbetty.models.model.RootFactory")
+    config.add_translation_dirs('chezbetty:locale/')
 
     def debug(request):
         if 'debugging' in request.registry.settings:
@@ -70,40 +74,72 @@ def main(global_config, **settings):
 
     config.add_static_view('static', 'static', cache_max_age=3600)
 
-    config.add_route('index', '/')
+    config.add_route('exception_view',      '/exception')
 
-    config.add_route('about', '/about')
-    config.add_route('shame', '/shame')
+    config.add_route('index',               '/')
 
-    config.add_route('items',            '/items')
-    config.add_route('item',             '/item/{barcode}/json')
-    config.add_route('item_request',     '/item/request')
-    config.add_route('item_request_new', '/item/request/new')
-    config.add_route('item_request_by_id', '/item/request/by_id/{id}')
+    config.add_route('lang',                '/lang-{code}')
 
-    config.add_route('user',         '/user/{umid}')
+    config.add_route('about',               '/about')
+    config.add_route('shame',               '/shame')
 
-    config.add_route('purchase_new', '/purchase/new')
-    config.add_route('purchase',     '/purchase/{umid}')
+    config.add_route('umid_check',          '/check')
+
+    config.add_route('items',               '/items')
+    config.add_route('item',                '/item/{barcode}/json')
+    config.add_route('item_request',        '/item/request')
+    config.add_route('item_request_new',    '/item/request/new')
+    config.add_route('item_request_by_id',  '/item/request/by_id/{id}')
+
+    config.add_route('user',                '/profile/{umid}')
+
+    config.add_route('purchase_new',        '/purchase/new')
+    config.add_route('purchase',            '/purchase/{umid}')
 
     config.add_route('deposit_new',         '/deposit/new')
     config.add_route('deposit',             '/deposit/{umid}')
     config.add_route('deposit_edit',        '/deposit/edit/{umid}/{event_id}')
     config.add_route('deposit_edit_submit', '/deposit/edit/submit')
+    config.add_route('deposit_emailinfo',   '/deposit/{user_id}/emailinfo')
+    config.add_route('deposit_password_create','/deposit/{user_id}/password/create')
+    config.add_route('deposit_password_reset', '/deposit/{user_id}/password/reset')
 
-    config.add_route('btc_deposit',  '/bitcoin/deposit/{umid}/{auth_key}')
-    config.add_route('btc_check',    '/bitcoin/check/{addr}')
+    config.add_route('btc_deposit',         '/bitcoin/deposit/{umid}/{auth_key}')
+    config.add_route('btc_check',           '/bitcoin/check/{addr}')
 
-    config.add_route('event',        '/event/{event_id}')
-    config.add_route('event_undo',   '/event/undo/{umid}/{event_id}')
+    config.add_route('event',               '/event/{event_id}')
+    config.add_route('event_undo',          '/event/undo/{umid}/{event_id}')
 
-    config.add_route('pools',        '/pools/{umid}')
+
+    # USER ADMIN
+    config.add_route('user_index',                 '/user')
+    # Map this as convenience since users will be typing manually often
+    config.add_route('user_index_slash',           '/user/')
+
+    config.add_route('user_ajax_bool',             '/user/ajax/bool/{object}/{id}/{field}/{state}')
+
+    config.add_route('user_deposit_cc',            '/user/deposit_cc')
+    config.add_route('user_deposit_cc_custom',     '/user/deposit_cc/custom')
+    config.add_route('user_deposit_cc_submit',     '/user/deposit_cc/submit')
+
+    config.add_route('user_pools',                 '/user/pools')
+    config.add_route('user_pools_new_submit',      '/user/pools/new/submit')
+    config.add_route('user_pool',                  '/user/pool/{pool_id}')
+    config.add_route('user_pool_addmember_submit', '/user/pool/addmember/submit')
+    config.add_route('user_pool_changename_submit','/user/pool/changename/submit')
+
+    config.add_route('user_password_edit',         '/user/password/edit')
+    config.add_route('user_password_edit_submit',  '/user/password/edit/submit')
 
 
     # ADMIN
-    config.add_route('admin_index',     '/admin')
+    config.add_route('admin_index',             '/admin')
 
-    config.add_route('admin_ajax_bool',  '/admin/ajax/bool/{object}/{id}/{field}/{state}')
+    config.add_route('admin_ajax_bool',         '/admin/ajax/bool/{object}/{id}/{field}/{state}')
+    config.add_route('admin_ajax_new',          '/admin/ajax/new/{object}/{arg}')
+    config.add_route('admin_ajax_connection',   '/admin/ajax/connection/{object1}/{object2}/{arg1}/{arg2}')
+
+    config.add_route('admin_ajaxed_field',      '/admin/ajax/field/{field}')
 
     config.add_route('admin_item_barcode_json', '/admin/item/{barcode}/json')
     config.add_route('admin_item_search_json',  '/admin/item/search/{search}/json')
@@ -136,11 +172,19 @@ def main(global_config, **settings):
     config.add_route('admin_users_edit',               '/admin/users/edit')
     config.add_route('admin_users_edit_submit',        '/admin/users/edit/submit')
     config.add_route('admin_users_email',              '/admin/users/email')
+    config.add_route('admin_users_email_endofsemester','/admin/users/email/endofsemester')
     config.add_route('admin_users_email_deadbeats',    '/admin/users/email/deadbeats')
+    config.add_route('admin_users_email_oneperson',    '/admin/users/email/oneperson')
     config.add_route('admin_users_email_all',          '/admin/users/email/all')
     config.add_route('admin_user',                     '/admin/user/{user_id}')
     config.add_route('admin_user_balance_edit',        '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit', '/admin/user/balance/edit/submit')
+    config.add_route('admin_user_password_create',     '/admin/user/{user_id}/password/create')
+    config.add_route('admin_user_password_reset',      '/admin/user/{user_id}/password/reset')
+
+    config.add_route('admin_pools',                    '/admin/pools')
+    config.add_route('admin_pool',                     '/admin/pool/{pool_id}')
+    config.add_route('admin_pool_addmember_submit',    '/admin/pool/addmember/submit')
 
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',  '/admin/cash/reconcile/submit')
@@ -155,12 +199,15 @@ def main(global_config, **settings):
     config.add_route('admin_btc_reconcile',        '/admin/btc/reconcile')
     config.add_route('admin_btc_reconcile_submit', '/admin/btc/reconcile/submit')
 
-    config.add_route('admin_events',         '/admin/events')
-    config.add_route('admin_events_deleted', '/admin/events/deleted')
-    config.add_route('admin_event_upload',   '/admin/event/upload')
-    config.add_route('admin_event',          '/admin/event/{event_id}')
-    config.add_route('admin_event_undo',     '/admin/event/undo/{event_id}')
-    config.add_route('admin_event_receipt',  '/admin/event/receipt/{receipt_id}.pdf')
+    config.add_route('admin_restocks',         '/admin/restocks')
+    config.add_route('admin_events',           '/admin/events')
+    config.add_route('admin_events_load_more', '/admin/events/load_more')
+    config.add_route('admin_events_deleted',   '/admin/events/deleted')
+    config.add_route('admin_events_cash',      '/admin/events/cash')
+    config.add_route('admin_event_upload',     '/admin/event/upload')
+    config.add_route('admin_event',            '/admin/event/{event_id}')
+    config.add_route('admin_event_undo',       '/admin/event/undo/{event_id}')
+    config.add_route('admin_event_receipt',    '/admin/event/receipt/{receipt_id}.pdf')
 
     config.add_route('admin_password_edit',        '/admin/password/edit')
     config.add_route('admin_password_edit_submit', '/admin/password/edit/submit')
@@ -178,6 +225,8 @@ def main(global_config, **settings):
     config.add_route('admin_data_items_json',    '/admin/data/items/{period}')
     config.add_route('admin_data_sales_json',    '/admin/data/sales/{period}')
     config.add_route('admin_data_deposits_json', '/admin/data/deposits/{period}')
+    
+    config.add_route('admin_data_json_highcharts', '/admin/data/raw/{metric}/{period}')
 
     config.add_route('admin_data_items_each_json', '/admin/data/items/{period}/each')
     config.add_route('admin_data_sales_each_json', '/admin/data/sales/{period}/each')
@@ -185,20 +234,28 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_item_sales_json', '/admin/data/item/sales/{item_id}')
 
-    config.add_route('admin_data_users_totals_json', '/admin/data/users/totals')
+    config.add_route('admin_data_users_totals_json',                   '/admin/data/users/totals')
+    config.add_route('admin_data_users_balance_totals_json',           '/admin/data/users/balance/totals')
+    # config.add_route('admin_data_users_balance_totals_percapita_json', '/admin/data/users/balance/totalspc')
 
     config.add_route('admin_data_speed_items', '/admin/data/speed/items')
 
+    # DYNAMIC CONTENT
+    config.add_route('dynamic_item_img', '/dynamic/item/{item_id}.jpg')
 
-    config.add_route('login',  '/login')
-    config.add_route('logout', '/logout')
+
+    config.add_route('login',          '/login')
+    config.add_route('login_reset_pw', '/login/reset_pw')
+    config.add_route('logout',         '/logout')
     config.add_request_method(get_user, "user", reify=True)
 
     # 404 Page
     config.add_view(notfound, context='pyramid.httpexceptions.HTTPNotFound')
 
     config.scan(".views")
+    config.scan(".views_user")
     config.scan(".views_admin")
     config.scan(".views_data")
+    config.scan(".views_dynamic")
 
     return config.make_wsgi_app()

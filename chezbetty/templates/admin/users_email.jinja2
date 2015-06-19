@@ -10,18 +10,87 @@
 {% block content %}
 
 <h2>Email All Deadbeat Users</h2>
-<p>Send an email to users who are more than $20.00 in debt to Chez Betty
-encouraging them to settle up.</p>
 <form role="form" action="/admin/users/email/deadbeats" method="post">
+  <p>Send an email to users who are more than
+  $<input name="threshold" value="20.00"> in debt to Chez Betty encouraging
+  them to settle up.</p>
+  <div class="well">
+{% set user = {'name': '<< name >>', 'balance': '<< balance >>'} %}
+{% include "email_deadbeats.jinja2" %}
+  </div>
   <button type="submit" class="btn btn-success">Email Deadbeat Users</button>
 </form>
+
+<hr />
+
+<h2>End of Semester Email</h2>
+<form role="form" action="/admin/users/email/endofsemester" method="post">
+  <p>Send an email to all users who are more than
+  $<input name="threshold" value="2.00"> in debt to Chez Betty encouraging
+  them to settle up.</p>
+  <div class="well">
+{% set user = {'name': '<< name >>', 'balance': '<< balance >>'} %}
+{% include "email_endofsemester.jinja2" %}
+  </div>
+  <button type="submit" class="btn btn-success">Send End of Semester Email</button>
+</form>
+
+<hr />
+
+<h2>Email Specific User</h2>
+<form role="form" action="/admin/users/email/oneperson" method="post">
+<p>Send an email to a specific user from Betty.</p>
+
+<dl class="dl-horizontal">
+  <dt>To</dt>
+  <dd>
+  <select name="user" class="form-control">
+    {% for user in users %}
+    <option value="{{ user.id }}">{{ user.name~" ("~user.uniqname~")" }}</option>
+    {% endfor %}
+  </select>
+  </dd>
+  <dt>Subject</dt>
+  <dd> <input class="form-control" name="subject" value="A message from Chez Betty"> </dd>
+  <dt>Body</dt>
+  <dd> <textarea class="form-control" name="body"></textarea> </dd>
+  <hr />
+  <dt>Encoding</dt>
+  <dd> <select name="encoding" class="form-control">
+    <option value="text" selected>Plain text</option>
+    <option value="html">HTML Formatted text</option>
+  </select>
+  <p style="font-style: italic;">Recall with HTML formatted text all whitespace
+  (critically line breaks) will be removed. You need to add explicit &lt;p&gt;, 
+  &lt;h1&gt;, etc tags.</p>
+  </dd>
+</dl>
+
+  <button type="submit" class="btn btn-success">Email Selected User</button>
+</form>
+
+<hr />
 
 <h2>Email All Users</h2>
 <p>Send an email to all users</p>
 
 <form role="form" action="/admin/users/email/all" method="post">
-
-  <textarea class="form-control" id="email-all-text" name="text"></textarea>
+<dl class="dl-horizontal">
+  <dt>Subject</dt>
+  <dd> <input class="form-control" name="subject" value="A message from Chez Betty"> </dd>
+  <dt>Body</dt>
+  <dd> <textarea class="form-control" name="body"></textarea> </dd>
+  <hr />
+  <dt>Encoding</dt>
+  <dd> <select name="encoding" class="form-control">
+    <option value="text" selected>Plain text</option>
+    <option value="html">HTML Formatted text</option>
+  </select>
+  <p style="font-style: italic;">Recall with HTML formatted text all whitespace
+  (critically line breaks) will be removed. You need to add explicit &lt;p&gt;, 
+  &lt;h1&gt;, etc tags.</p>
+  </dd>
+</dl>
 
   <button type="submit" class="btn btn-success">Email All Users</button>
 </form>

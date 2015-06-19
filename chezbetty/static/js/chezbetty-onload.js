@@ -10,70 +10,9 @@ $(".date").each(function (index) {
 	$(this).text(s);
 });
 
-// Click handler to remove an item from a purchase.
-$("#purchase_table tbody").on("click", ".btn-remove-item", function () {
-	$(this).parent().parent().slideUp().remove();
-
-	// Check if the cart is empty and put the "Empty Order" row back in
-	if ($("#purchase_table tbody tr:visible").length == 0) {
-		$("#purchase-empty").show();
-	}
-
-	// Re-calculate the total
-	calculate_total();
-});
-
-// Click handler to remove an item from a purchase.
-$("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
-	quantity = parseInt($(this).parent().find("span").text()) - 1;
-	$(this).parent().find("span").text(quantity);
-	if (quantity < 2) {
-		$(this).hide();
-	}
-
-	item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
-	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
-});
-
-// Click handler to submit a purchase.
-$("#btn-submit-purchase").click(function () {
-	$(this).blur();
-	alert_clear();
-
-	disable_button($(this));
-
-	// Bundle all of the product ids and quantities into an object to send
-	// to the server. Also include the purchasing user.
-	purchase = {};
-	purchase.umid = $("#user-umid").text();
-
-	item_count = 0;
-	$(".purchase-item").each(function (index) {
-		id = $(this).attr("id");
-		quantity = parseInt($(this).children(".item-quantity").text());
-		pid = id.split('-')[2];
-		purchase[pid] = quantity;
-		item_count++;
-	});
-
-	if (item_count == 0) {
-		alert_error("You must purchase at least one item.");
-		enable_button($(this));
-	} else {
-		// Post the order to the server
-		$.ajax({
-			type: "POST",
-			url: "/purchase/new",
-			data: purchase,
-			success: purchase_success,
-			error: purchase_error,
-			dataType: "json"
-		});
-	}
-});
 
 // Click handler to submit a deposit.
-$("#btn-submit-deposit").click(function () {
+$(".btn-submit-deposit").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -82,6 +21,13 @@ $("#btn-submit-deposit").click(function () {
 	deposit = {};
 	deposit.umid = $("#user-umid").text();
 	deposit.amount = strip_price($("#keypad-total").text());
+
+	// What account to deposit to?
+	fields = $(this).attr("id").split("-");
+	deposit.account = fields[2];
+	if (deposit.account == "pool") {
+		deposit.pool_id = fields["3"];
+	}
 
 	// Post the deposit to the server
 	$.ajax({
@@ -95,7 +41,7 @@ $("#btn-submit-deposit").click(function () {
 });
 
 // Click handler to submit a deposit.
-$("#btn-edit-deposit").click(function () {
+$(".btn-edit-deposit").click(function () {
 	$(this).blur();
 	alert_clear();
 
@@ -105,6 +51,13 @@ $("#btn-edit-deposit").click(function () {
 	deposit.umid = $("#user-umid").text();
 	deposit.amount = strip_price($("#keypad-total").text());
 	deposit.old_event_id = $("#event_id").text();
+
+	// What account to deposit to?
+	fields = $(this).attr("id").split("-");
+	deposit.account = fields[2];
+	if (deposit.account == "pool") {
+		deposit.pool_id = fields["3"];
+	}
 
 	// Post the deposit to the server
 	$.ajax({
@@ -133,16 +86,68 @@ $("#keypad").on("click", "button", function () {
 	$("#keypad-total").html(format_price(output));
 });
 
+var manual_umid_enter = '';
+var manual_umid_timeout = -1;
+// Button press handler for the umid keypad
+$("#keypad-umid").on("click", "button", function () {
+
+	if (manual_umid_enter.length < 8) {
+		// If we haven't gotten enough of a UMID yet then we are cool
+		// to keep taking inputs
+
+		var value = $(this).attr("id").split("-")[2];
+		manual_umid_enter += value;
+
+		var num = manual_umid_enter.length;
+		$("#keypad-umid-status block:eq("+(8-num)+")").addClass("umid-status-blue");
+
+		if (manual_umid_enter.length == 8) {
+			$.ajax({
+				type: "POST",
+				url: "/check",
+				data: {'umid': manual_umid_enter},
+				success: function (data) {
+					if (data.status == 'success') {
+						window.location = '/purchase/' + manual_umid_enter;
+					} else {
+						clear_umid_keypad();
+					}
+				},
+				error: function (data) {
+					clear_umid_keypad();
+				},
+				dataType: "json"
+			});
+
+		} else {
+			// Want to clear things if someone gets halfway through and quits.
+			// Wait 15 seconds.
+			if (manual_umid_timeout >= 0) {
+				clearTimeout(manual_umid_timeout);
+			}
+			manual_umid_timeout = setTimeout(clear_umid_keypad, 15000);
+		}
+	}
+});
+
+function clear_umid_keypad () {
+	manual_umid_enter = '';
+	$("#keypad-umid-status").effect("shake");
+	$("#keypad-umid-status block").removeClass("umid-status-blue");
+}
+
 $(".btn-trans-showhide").click(function () {
 	var transaction_id = $(this).attr("id").split("-")[2];
 	var transaction = $("#transaction-"+transaction_id)
 
 	if (transaction.is(":visible")) {
 		transaction.hide();
-		$("#transaction-small-"+transaction_id).text("touch to show");
+		$("#transaction-small-tohide-"+transaction_id).hide();
+		$("#transaction-small-toshow-"+transaction_id).show();
 	} else {
 		transaction.show();
-		$("#transaction-small-"+transaction_id).text("touch to hide");
+		$("#transaction-small-tohide-"+transaction_id).show();
+		$("#transaction-small-toshow-"+transaction_id).hide();
 	}
 });
 
@@ -158,14 +163,13 @@ $(".faq-q").click(function() {
 
 
 
-
-
-
-$(".keyboard-wanted").keyboard({
-  layout : 'qwerty',
-  tabNavigation : true,
-  enterNavigation : true,
-});
+if (onscreen_keyboard) {
+	$(".keyboard-wanted").keyboard({
+	  layout : 'qwerty',
+	  tabNavigation : true,
+	  enterNavigation : true,
+	});
+}
 
 var scrollStep = 100;
 

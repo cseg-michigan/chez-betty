@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+  <link rel="shortcut icon" type="image/png" href="{{'chezbetty:static/chezbetty_32px.png'|static_url}}" />
   {% block head %}
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap/bootstrap.min.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap-switch/bootstrap-switch.min.css'|static_url}}" />
@@ -29,6 +29,7 @@
   <script src="{{'chezbetty:static/js/lib/datetimepicker/jquery.datetimepicker.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/highstock/highstock.js'|static_url}}"></script>
 
+  <script src="{{'chezbetty:static/js/chezbetty-common.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/chezbetty-admin.js'|static_url}}"></script>
 
   <title>{% if request.debug %}[ DEBUG ]{% endif %} {% block title %}{% endblock %} | Chez Betty Admin</title>
@@ -100,7 +101,18 @@
 {% endblock %}
 
 <script src="{{'chezbetty:static/js/chezbetty-admin-onload.js'|static_url}}"></script>
+<script src="{{'chezbetty:static/js/chezbetty-common-onload.js'|static_url}}"></script>
 {% block onload %}
 {% endblock %}
 
+  <!-- Google Analytics tracker -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-55624000-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>

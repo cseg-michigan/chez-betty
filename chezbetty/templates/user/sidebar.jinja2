@@ -1,0 +1,12 @@
+<ul class="nav nav-sidebar">
+  <li {% if active_page == 'index' %}class="active"{% endif %}><a href="/user">Index</a></li>
+  <li {% if active_page == 'deposit_cc' %}class="active"{% endif %}><a href="/user/deposit_cc">Credit Card Deposit</a></li>
+</ul>
+<ul class="nav nav-sidebar">
+  <li><span>Manage Your Pools</span></li>
+  <li {% if active_page == 'pools' %}class="active"{% endif %}><a href="/user/pools">Pools</a></li>
+</ul>
+<ul class="nav nav-sidebar">
+  <li><span>Administrative</span></li>
+  <li {% if active_page == 'password_edit' %}class="active"{% endif %}><a href="/user/password/edit">Edit Password</a></li>
+</ul>

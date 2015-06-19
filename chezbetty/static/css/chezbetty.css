@@ -27,11 +27,38 @@
 
 .positive {}
 
+.highlight {
+	background-color: #fffacd;
+	padding: 2px 5px 2px 5px;
+}
+
+.center {
+	text-align: center;
+}
+
 
 /* Buttons */
 .btn-huge {
 	padding: 20px 30px;
 	font-size: 18pt;
+}
+
+.btn-submit-purchase {
+	width: 100%;
+	height: 100px;
+	margin-bottom: 20px;
+}
+
+.btn-submit-deposit {
+	width: 100%;
+	height: 60px;
+	margin-bottom: 15px;
+}
+
+.btn-edit-deposit, .btn-delete-deposit {
+	width: 100%;
+	height: 80px;
+	margin-bottom: 15px;
 }
 
 .buttons a {
@@ -40,6 +67,10 @@
 
 #front-buttons {
 	text-align: center;
+}
+
+#front-buttons .btn-huge {
+	margin-bottom: 15px;
 }
 
 #front-demo {
@@ -68,6 +99,10 @@ h1 {
 	background-color: #fff;
 }
 
+#cc-banner h4 {
+	line-height: 1.2em;
+}
+
 /* Alerts */
 #alerts {
 	margin-top: 10px;
@@ -77,10 +112,52 @@ h1 {
 	margin-top: 15px;
 }
 
+.panel-superdanger {
+	background-color: #A94442;
+}
+
+
+.panel-superdanger .panel-heading {
+	background-color: #A94442;
+  border-color: white;
+}
+
+.panel-superdanger .panel-title {
+  color: white;
+}
+
+.panel-superdanger .panel-body {
+	background-color: #c05f5d;
+}
+
+.panel-superdanger .negative {
+	background-color: white;
+	font-size: 18px;
+	padding: 5px 10px 5px 10px;
+	font-weight: bold;
+	margin: 3px;
+}
+
+.panel-superdanger .user-info-balance {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
 /* Index */
 #index-main {
 	text-align: center;
-	padding-bottom: 40px;
+	padding-bottom: 20px;
+}
+
+.or {
+	margin-top:-40px;
+	text-align: center;
+	font-size: 2em;
+	color: #bbb;
+}
+.or span {
+	padding: 15px;
+	background-color: white;
 }
 
 .top {
@@ -114,9 +191,13 @@ h1 {
 .purchase-item {
 }
 
-#purchase-total {
+#purchase-total, #purchase-subtotal, #purchase-discount, #purchase-discount-percent {
 	text-align: right;
 	font-weight: bold;
+}
+
+#purchase-discount, #purchase-discount-percent {
+  color: red;
 }
 
 /* Items */
@@ -214,3 +295,6 @@ h1 {
 	font-size: 34px;
 }
 
+.btn-text-alt {
+	display: none;
+}

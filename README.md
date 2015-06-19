@@ -1,12 +1,14 @@
 Chez Betty
 ==========
 
+[![Code Climate](https://codeclimate.com/github/um-cseg/chez-betty/badges/gpa.svg)](https://codeclimate.com/github/um-cseg/chez-betty)
+
 Chez Betty is a mini, cooperative food store where users can deposit money to their account
 and use it to purchase food and other items. The system is linked
 to the UMich ldap server so users can swipe their M-Card to login.
 
 UMich version is an homage to UCSD's [Chez Bob](http://chezbob.ucsd.edu/).
-Chez Betty runs [here](http://chezbetty.zakird.com).
+Chez Betty runs [here](http://chezbetty.eecs.umich.edu).
 
 Chez Betty is written as a Python web app designed to run on a server with
 a browser based user interface. It supports cash and bitcoin deposits. The
@@ -28,10 +30,21 @@ development environment set up, do the following:
 1. Setup virtualenv with Python3:
 
         cd chez-betty
-        virtualenv .
+        # virtualenv .
+        # Python3.3 or later:
+        python3 -m venv .
+        # ^ *not* pyvenv ., that installed python2 in my venv for w/e reason
         source bin/activate
 
-2. Install the Python3 dependencies:
+2. Install the dependencies:
+
+        # Note, this step *must* be run before setup.py. The latter will use
+        # easy_install to install requirements instead of pip, which will
+        # break some packages (e.g. stripe). The argument should be the root
+        # directory of the project.
+        pip install -e .
+
+2. Setup the development environment
 
         python setup.py develop
 

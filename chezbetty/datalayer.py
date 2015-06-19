@@ -2,6 +2,8 @@ from .models.model import *
 from .models import event
 from .models import transaction
 from .models import account
+from .models.pool import Pool
+from .models.user import User
 from .models import request
 from .models import receipt
 from .models.item import Item
@@ -10,9 +12,12 @@ from .models import box_item
 from .models import item_vendor
 from .models import box_vendor
 
+from .utility import notify_pool_out_of_credit
+
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
-       and e.type != 'inventory':
+       and e.type != 'inventory' and e.type != 'emptycashbox' \
+       and e.type != 'donation' and e.type != 'withdrawal':
         return False
     if e.deleted:
         return False
@@ -67,6 +72,10 @@ def undo_event(e, user):
                 s.item.in_stock += quantity_diff
                 line_items[s.item_id] = s.quantity_counted
 
+        # Don't need anything for emptycashbox. On those transactions no
+        # other tables are changed.
+
+
     # Just need to delete the event. All transactions will understand they
     # were deleted as well.
     e.delete(user)
@@ -116,14 +125,17 @@ def new_request(user, request_text):
 
 
 # Call this to let a user purchase items
-def purchase(user, items):
+def purchase(user, account, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
+
+    # TODO: Parameterize
+    discount = Decimal(0.05) if user.balance > 20.0 else None
 
     e = event.Purchase(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Purchase(e, user)
+    t = transaction.Purchase(e, account, discount)
     DBSession.add(t)
     DBSession.flush()
     amount = Decimal(0.0)
@@ -134,13 +146,21 @@ def purchase(user, items):
                                            item.price, item.wholesale)
         DBSession.add(pli)
         amount += line_amount
+    if discount:
+        amount = amount - (amount * discount)
     t.update_amount(amount)
+
+    if isinstance(account, Pool):
+        if account.balance < (account.credit_limit * -1):
+            owner = User.from_id(account.owner)
+            notify_pool_out_of_credit(owner, account)
+
     return t
 
 
 # Call this when a user puts money in the dropbox and needs to deposit it
 # to their account
-def deposit(user, amount):
+def deposit(user, account, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
 
@@ -148,7 +168,25 @@ def deposit(user, amount):
     e = event.Deposit(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.CashDeposit(e, user, amount)
+    t = transaction.CashDeposit(e, account, amount)
+    DBSession.add(t)
+    return dict(prev=prev,
+                new=user.balance,
+                amount=amount,
+                transaction=t,
+                event=e)
+
+
+# Call this when a credit card transaction deposits money into an account
+def cc_deposit(user, account, amount, txn_id, last4):
+    assert(amount > 0.0)
+    assert(hasattr(user, "id"))
+
+    prev = user.balance
+    e = event.Deposit(user)
+    DBSession.add(e)
+    DBSession.flush()
+    t = transaction.CCDeposit(e, account, amount, txn_id, last4)
     DBSession.add(t)
     return dict(prev=prev,
                 new=user.balance,
@@ -359,8 +397,8 @@ def reconcile_misc(amount, notes, admin):
 
 
 # Call this to make a cash donation to Chez Betty
-def add_donation(amount, notes, admin):
-    e = event.Donation(admin, notes)
+def add_donation(amount, notes, admin, timestamp=None):
+    e = event.Donation(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Donation(e, amount)
@@ -369,8 +407,8 @@ def add_donation(amount, notes, admin):
 
 
 # Call this to withdraw cash funds from Chez Betty into another account
-def add_withdrawal(amount, notes, admin):
-    e = event.Withdrawal(admin, notes)
+def add_withdrawal(amount, notes, admin, timestamp=None):
+    e = event.Withdrawal(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Withdrawal(e, amount)

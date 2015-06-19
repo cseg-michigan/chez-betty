@@ -39,10 +39,17 @@ class Event(Base):
         return DBSession.query(cls).filter(cls.id == id).one()
 
     @classmethod
-    def all(cls):
-        return DBSession.query(cls)\
-                        .filter(cls.deleted == False)\
-                        .order_by(cls.id).all()
+    @limitable_all
+    def all(cls, trans_type=None):
+        if not trans_type:
+            return DBSession.query(cls)\
+                            .filter(cls.deleted == False)\
+                            .order_by(desc(cls.id))
+        else:
+            return DBSession.query(cls)\
+                            .filter(cls.deleted == False)\
+                            .filter(cls.type==trans_type)\
+                            .order_by(desc(cls.id))
 
     @classmethod
     def some(cls, count):
@@ -111,17 +118,17 @@ class Reconcile(Event):
 
 class Donation(Event):
     __mapper_args__ = {'polymorphic_identity': 'donation'}
-    def __init__(self, admin, notes):
+    def __init__(self, admin, notes, timestamp):
         if len(notes) < 3:
             raise NotesMissingException()
-        Event.__init__(self, admin, notes)
+        Event.__init__(self, admin, notes, timestamp)
 
 
 class Withdrawal(Event):
     __mapper_args__ = {'polymorphic_identity': 'withdrawal'}
-    def __init__(self, admin, notes):
+    def __init__(self, admin, notes, timestamp):
         if len(notes) < 3:
             raise NotesMissingException()
-        Event.__init__(self, admin, notes)
+        Event.__init__(self, admin, notes, timestamp)
 
 

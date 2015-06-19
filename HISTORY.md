@@ -1,6 +1,10 @@
 History of Chez Betty
 =====================
 
+- March 2015: Betty bought a freezer. After placing an ice cream order
+with the Nestle rep at Kroger, Betty needed more space for frozen items.
+Even with the expanded capacity, ice cream remains one of the fastest
+sellers.
 - July 10, 2014: One of the coolers from the Foo Bar is brought up to the
 grad lounge and becomes cold storage for Chez Betty drinks.
 - July 8, 2014: Chez Betty is installed in 2817 BBB. After a Costco run, adding

@@ -1,9 +1,10 @@
 <nav class="navbar navbar-default" role="navigation">
   <div class="collapse navbar-collapse">
     <ul class="nav navbar-nav">
-      <li><a {% if sub_active_page == 'index' %}class="active"{% endif %} href="/admin/events">All Transactions</a></li>
+      <li><a {% if sub_active_page == 'index' %}class="active"{% endif %} href="/admin/events?limit=0">All Transactions</a></li>
       {% if request.has_permission("admin") %}
       <li><a {% if sub_active_page == 'deleted' %}class="active"{% endif %} href="/admin/events/deleted">Deleted Transactions</a></li>
+      <li><a {% if sub_active_page == 'cash' %}class="active"{% endif %} href="/admin/events/cash">Cash Transactions</a></li>
       {% endif %}
     </ul>
   </div>

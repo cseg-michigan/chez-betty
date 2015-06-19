@@ -1,15 +1,15 @@
 {% extends "base.jinja2" %}
+{% set active_page = 'deposit_complete' %}
 {% block title %}Deposit Complete{% endblock %}
 {% block header %}Deposit Complete{% endblock %}
 
 {% block content %}
 
-{% set page = 'deposit' %}
 {% include "user_info.jinja2" %}
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Deposit Result</h3>
+    <h3 class="panel-title">{{ _('Deposit') }}</h3>
   </div>
   <div class="panel-body">
 
@@ -17,29 +17,37 @@
 
       {% if deposit.type == "btcdeposit" %}
       <dl class="dl-horizontal">
-        <dt>Old Balance</dt>
+        <dt>{{ _("Old Balance") }}</dt>
         <dd>{{ prev_balance|format_currency|safe }}</dd>
 
-        <dt>Deposit</dt>
+        <dt>{{ _("Deposit Amount") }}</dt>
         <dd>{{ deposit.amount_btc }} BTC ({{ deposit.amount|format_currency|safe }})</dd>
 
-        <dt>New Balance</dt>
+        <dt>{{ _("New Balance") }}</dt>
         <dd>{{ user.balance|format_currency|safe }}</dd>
 
-        <dt>Transaction</dt>
+        <dt>{{ _("Transaction") }}</dt>
         <dd>{{ deposit.img|safe }}<br/>{{ deposit.btctransaction }}</dd>
       </dl>
-      
+
       {% elif deposit.type == "cashdeposit" %}
       <div class="deposit-cash">
-        <span class="deposit-thankyou">Thank you!</span>
+        <span class="deposit-thankyou">{{ _("Thank you!") }}</span>
         <p class="deposit-info">
-          You successfully deposited <span class="deposit-amount">{{ deposit.amount|format_currency|safe }}</span>
-          into your account.
+          {% if account_type == "user" %}
+          {{ _("You successfully deposited %(amount)s into your account")|
+             format(amount='<span class="deposit-amount">'+deposit.amount|format_currency+'</span>')|safe }}
+          {% elif account_type == "pool" %}
+          {{ _("You successfully deposited %(amount)s in the %(pool_name)s Pool")|
+             format(
+               amount='<span class="deposit-amount">'+deposit.amount|format_currency+'</span>',
+               pool_name=pool.name,
+             )|safe }}
+          {% endif %}
         </p>
 
         <a class="btn btn-primary btn-huge" href="/deposit/edit/{{ user.umid }}/{{ event.id }}">
-          Edit this Deposit
+          {{ _('Edit this Deposit') }}
         </a>
       </div>
 
@@ -51,6 +59,8 @@
 </div>
 
 {% endblock %}
+
+{% set timeout = 1000*30 %}
 
 {% block onload %}
 <script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>

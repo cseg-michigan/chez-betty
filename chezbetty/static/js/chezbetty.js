@@ -60,6 +60,8 @@ function add_item_success (data) {
 
 		// First, if this is the first item hide the empty order row
 		$("#purchase-empty").hide();
+		$("#logout-button .btn-text-alt").show();
+		$("#logout-button .btn-text-default").hide();
 
 		// Check if this item is already present. In that case we only
 		// need to increment the quantity and price
@@ -96,7 +98,7 @@ function add_item_fail () {
 function purchase_success (data) {
 	if ("error" in data) {
 		alert_error(data.error);
-		enable_button($("#btn-submit-purchase"));
+		enable_button($(".btn-submit-purchase"));
 	} else if ("redirect_url" in data) {
 		window.location.replace(data.redirect_url);
 	} else {
@@ -106,18 +108,31 @@ function purchase_success (data) {
 	}
 }
 
+// Callback when a purchase was successful and we want to log the user out
+// afterwards.
+function purchase_andlogout_success (data) {
+	if ("error" in data) {
+		alert_error(data
+			.error);
+		enable_button($(".btn-submit-purchase"));
+	} else {
+		// Log the user out
+		window.location.replace("/");
+	}
+}
+
 // Callback when a purchase fails for some reason
 function purchase_error () {
 	alert_error("Failed to complete purchase. Perhaps try again?");
-	enable_button($("#btn-submit-purchase"));
+	enable_button($(".btn-submit-purchase"));
 }
 
 // Callback when a deposit POST was successful
 function deposit_success (data) {
 	if ("error" in data) {
 		alert_error(data.error);
-		enable_button($("#btn-submit-deposit"));
-		enable_button($("#btn-edit-deposit"));
+		enable_button($(".btn-submit-deposit"));
+		enable_button($(".btn-edit-deposit"));
 		//$("#keypad-total").html(format_price(0.0));
 	} else if ("redirect_url" in data) {
 		window.location.replace(data.redirect_url);
@@ -131,8 +146,8 @@ function deposit_success (data) {
 // Callback when a deposit fails for some reason
 function deposit_error () {
 	alert_error("Failed to complete deposit. Perhaps try again?");
-	enable_button($("#btn-submit-deposit"));
-	enable_button($("#btn-edit-deposit"));
+	enable_button($(".btn-submit-deposit"));
+	enable_button($(".btn-edit-deposit"));
 	$("#keypad-total").html(format_price(0.0));
 }
 
@@ -157,6 +172,22 @@ function calculate_total () {
 			total += line_total;
 		}
 	});
+
+	var discount_td = $("#purchase-discount");
+	if (typeof discount_td !== 'undefined') {
+		var discount_percent_td = $("#purchase-discount-percent");
+		var discount_percent_str = discount_percent_td.text().slice(1,-2);
+		var discount_percent = parseFloat(discount_percent_str) * .01;
+		var discount = total * discount_percent;
+
+		$("#purchase-subtotal").html(format_price(total));
+
+		// basic sanity check
+		if ((total - discount) > 0) {
+			total = total - discount;
+			discount_td.html('(' + format_price(discount) + ')');
+		}
+	}
 
 	$("#purchase-total").html(format_price(total));
 }

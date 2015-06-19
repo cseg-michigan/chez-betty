@@ -17,7 +17,8 @@ class Receipt(Base):
     def __init__(self, event, user, receipt, deleted=False):
         self.event_id = event.id
         self.user_id  = user.id
-        self.receipt  = receipt
+        receipt.seek(0)
+        self.receipt  = receipt.read()
         self.deleted  = deleted
 
     @classmethod

@@ -7,6 +7,7 @@
     <canvas id="chart-{{ title|replace(" ", "") }}" height="400"></canvas>
 
 <script>
+  /*
   function* color_factory() {
     var i = 0;
     var colors = [
@@ -22,6 +23,33 @@
       yield colors[i];
       i = (i + 1) % colors.length;
     }
+  }
+  */
+  // Work around patchy generator support by emulating the interface
+  function color_factory() {
+    var r = function cf_int() {
+    };
+
+    r.next = function() {
+      var colors = [
+        "rgba(56, 108, 176, 1)",  //"#386cb0",
+        "rgba(127, 201, 127, 1)", //"#7fc97f",
+        "rgba(240, 2, 127, 1)",   //"#f0027f",
+        "rgba(255, 255, 153, 1)", //"#ffff99",
+        "rgba(253, 192, 134, 1)", //"#fdc086",
+        "rgba(190, 174, 212, 1)", //"#beaed4",
+        ];
+      if (typeof this.idx == 'undefined') {
+        this.idx = 0;
+      }
+      if (this.idx >= colors.length) {
+        this.idx = 0;
+      }
+      this.idx += 1;
+      var hack = {value: colors[this.idx-1]};
+      return hack;
+    };
+    return r;
   }
 
   var cf1 = color_factory();
@@ -245,42 +273,70 @@
 </div>
 {% endmacro %}
 
-{% macro create_cumulative_timeseries_panel(url, title) %}
+{% macro create_cumulative_timeseries_panel(url, title, series_titles, yscales) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">{{ title }}</h3>
   </div>
   <div class="panel-body">
-    <div id="chart-{{ title|replace(" ", "") }}" style="width:100%; height:400px;"></canvas>
+    <div id="chart-{{ title|replace(" ", "") }}" style="width:100%; height:400px;">
 
 <script>
   $(function () {
     $.getJSON("{{ url }}", function (data) {
 
-        // create the chart
-        $('#chart-{{ title|replace(" ", "") }}').highcharts('StockChart', {
-            chart: {
-                alignTicks: true
-            },
+      var series_titles = [
+        {% for st in series_titles %}
+        '{{ st }}',
+        {% endfor %}
+      ];
+      var yscales = {{ yscales }};
 
-            rangeSelector: {
-                inputEnabled: $('#chart-{{ title|replace(" ", "") }}').width() > 480,
-                selected: 1
-            },
+      var chartOptions = {
+          chart: {
+              alignTicks: true
+          },
 
-            series: [{
-                type: 'line',
-                name: 'Total',
-                data: data,
-            }],
+          rangeSelector: {
+              inputEnabled: $('#chart-{{ title|replace(" ", "") }}').width() > 480,
+              selected: 1
+          },
 
-            xAxis: {
-                ordinal: false
-            }
+          series: [],
+
+          xAxis: {
+              ordinal: false
+          }
+      };
+
+      // create individual series for each
+      var series = [];
+      if (data[0].length == 2 && yscales[0] == 1) {
+        series.push(data);
+      } else {
+        for (var i=1; i<data[0].length; i++) {
+          series.push([]);
+        }
+        for (var j=0; j<data.length; j++) {
+          for (var i=1; i<data[0].length; i++) {
+            series[i-1].push([data[j][0], Math.round(data[j][i]/yscales[i-1])]);
+          }
+        }
+      }
+      for (var i=0; i<series.length; i++) {
+        chartOptions.series.push({
+          type: 'line',
+          name: series_titles[i],
+          data: series[i],
         });
+      }
+
+      // create the chart
+      $('#chart-{{ title|replace(" ", "") }}').highcharts('StockChart', chartOptions);
     });
 });
 </script>
     </div>
+  </div>
 </div>
 {% endmacro %}

@@ -1,17 +1,18 @@
 {% extends "base.jinja2" %}
+{% set active_page = 'account' %}
 {% block title %}User Information{% endblock %}
 {% block header %}{{ user.name }}{% endblock %}
 
 {% block content %}
 
-{% set page = 'account' %}
+{% set active_page = 'account' %}
 {% include "user_info.jinja2" %}
 
 {# Display the transaction history list
  #}
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Transaction History</h3>
+    <h3 class="panel-title">{{ _('Transaction History') }}</h3>
   </div>
   <div class="panel-body">
 
@@ -20,7 +21,7 @@
 
       {# Iterate all of the transactions in the user's history.
        #}
-      {% for transaction in transactions|reverse %}
+      {% for transaction in transactions %}
 
       <li id="btn-trans-{{ transaction.id }}" class="list-group-item btn-trans-showhide">
 
@@ -29,7 +30,9 @@
          #}
         {% if transaction.type == "purchase" %}
 
-        Purchase totaling {{ transaction.amount|format_currency|safe }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        {{ _('Purchase totaling %(amount)s')|format(amount=transaction.amount|format_currency)|safe }}
+        <small id="transaction-small-toshow-{{ transaction.id }}">{{ _('touch to show') }}</small>
+        <small id="transaction-small-tohide-{{ transaction.id }}" style="display:none;">{{ _('touch to hide') }}</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
@@ -40,10 +43,10 @@
 
             <thead>
               <tr>
-                <th class="item-title">Item Name</th>
-                <th class="item-quantity" style="width: 15%;">Quantity</th>
-                <th class="item-price" style="width: 15%;">Item Price</th>
-                <th class="item-total" style="width: 15%;">Total Price</th>
+                <th class="item-title">{{ _('Item') }}</th>
+                <th class="item-quantity" style="width: 15%;">{{ _('Quantity') }}</th>
+                <th class="item-price" style="width: 15%;">{{ _('Item Price') }}</th>
+                <th class="item-total" style="width: 15%;">{{ _('Total Price') }}</th>
               </tr>
             </thead>
 
@@ -59,7 +62,19 @@
             </tbody>
 
             <tfoot>
-              <td colspan="3"><b>Total</b></td>
+              {% if transaction.discount %}
+              {% set subtotal = transaction.amount / (1-transaction.discount) %}
+              <tr>
+                <td colspan="3"><b>{{ _('Subtotal') }}</b></td>
+                <td id="purchase-subtotal">{{ subtotal|format_currency|safe }}</td>
+              </tr>
+              <tr>
+                <td><b>{{ _('Discounts') }}</b></td>
+                <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(transaction.discount*100) }}%)</td>
+                <td id="purchase-discount">({{ (subtotal * transaction.discount)|format_currency|safe }})</td>
+              </tr>
+              {% endif %}
+              <td colspan="3"><b>{{ _('Total') }}</b></td>
               <td class="item-total"><b>{{ transaction.amount|format_currency|safe }}</b></td>
             </tfoot>
 
@@ -69,14 +84,22 @@
 
         {% elif transaction.type == "cashdeposit" %}
 
-        Deposit of {{ transaction.amount|format_currency|safe }}
+        {{ _('Deposit of %(amount)s')|format(amount=transaction.amount|format_currency)|safe }}
+
+        <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
+
+
+        {% elif transaction.type == 'ccdeposit' %}
+
+        {{ _('Credit Card Deposit of %(amount)s')|format(amount=transaction.amount|format_currency)|safe }}
+        <small>{{ _('Card ending in %(last4)s')|format(last4=transaction.cc_last4) }}</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
 
         {% elif transaction.type == "adjustment" %}
 
-        Adjustment of {{ transaction.amount }} by {{ transaction.event.admin.name }} <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        {{ _('Adjustment of %(amount)s by %(admin_name)s ')|format(amount=transaction.amount|format_currency, admin_name=transaction.event.admin.name)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
         <div id="transaction-{{ transaction.id }}" class="user-transaction-detail" style="display:none;">
@@ -85,7 +108,7 @@
 
         {% elif transaction.type == "btcdeposit" %}
 
-        BTC Deposit of {{ transaction.amount }} ({{ transaction.amount_btc|safe }} BTC) <small id="transaction-small-{{ transaction.id }}">touch to show</small>
+        {{ _('BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) ')|format(amount_in_usd=transaction.amount, amount_in_btc=transaction.amount_btc)|safe }} <small id="transaction-small-{{ transaction.id }}">{{ _('touch to show') }}</small>
 
         <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
 
@@ -101,8 +124,11 @@
 
       {% if transactions|length == 0 %}
       <li class="list-group-item">
-        No transactions.
+        {{ _('No transactions.') }}
       </li>
+      {% elif transactions|length < transactions_count %}
+      <hr />
+      <a class="btn btn-default btn-lg pull-right" href="/profile/{{ user.umid }}?limit=0">{{ _('Show All') }}</a>
       {% endif %}
 
     </ul>

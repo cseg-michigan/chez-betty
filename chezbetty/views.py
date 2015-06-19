@@ -6,6 +6,9 @@ from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config, forbidden_view_config
 
+from pyramid.i18n import TranslationStringFactory
+_ = TranslationStringFactory('betty')
+
 from sqlalchemy.sql import func
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm.exc import NoResultFound
@@ -23,14 +26,35 @@ from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
 
+from .utility import user_password_reset
+from .utility import send_email
+
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
 import binascii
+import transaction
+
+import traceback
 
 class DepositException(Exception):
     pass
+
+
+###
+### Catch-all error page
+###
+
+@view_config(route_name='exception_view', renderer='templates/exception.jinja2')
+def exception_view(request):
+    return {}
+
+@view_config(context=Exception)
+def exception_view_handler(context, request):
+    print('An unknown error occurred:')
+    traceback.print_exc()
+    return HTTPFound(location=request.route_url('exception_view'))
 
 
 ###
@@ -38,6 +62,14 @@ class DepositException(Exception):
 ###
 
 ### No login needed
+
+@view_config(route_name='lang')
+def lang(request):
+    code = request.matchdict['code']
+    response = Response()
+    response.set_cookie('_LOCALE_', value=code, max_age=15*60) # reset lang after 15min
+
+    return HTTPFound(location='/', headers=response.headers)
 
 @view_config(route_name='index', renderer='templates/index.jinja2')
 def index(request):
@@ -90,6 +122,19 @@ def users(request):
     return {'users': users}
 
 
+@view_config(route_name='umid_check',
+             request_method='POST',
+             renderer='json',
+             permission='service')
+def umid_check(request):
+    try:
+        User.from_umid(request.POST['umid'])
+        return {'status': 'success'}
+    except:
+        return {'status': 'error'}
+
+
+
 ### Post mcard swipe
 
 @view_config(route_name='purchase', renderer='templates/purchase.jinja2', permission='service')
@@ -98,10 +143,15 @@ def purchase(request):
         if len(request.matchdict['umid']) != 8:
             raise __user.InvalidUserException()
 
-        user = User.from_umid(request.matchdict['umid'])
+        with transaction.manager:
+            user = User.from_umid(request.matchdict['umid'])
+        user = DBSession.merge(user)
         if not user.enabled:
-            request.session.flash('User is not enabled. Please contact {}.'\
-                .format(request.registry.settings['chezbetty.email']), 'error')
+            request.session.flash(_(
+                'user-not-enabled',
+                default='User is not enabled. Please contact ${email}.',
+                mapping={'email':request.registry.settings['chezbetty.email']},
+                ), 'error')
             return HTTPFound(location=request.route_url('index'))
 
         # For Demo mode:
@@ -118,10 +168,26 @@ def purchase(request):
                 existing_items += render('templates/item_row.jinja2',
                     {'item': item, 'quantity': int(quantity)})
 
-        return {'user': user, 'items': items, 'existing_items': existing_items}
+        # Figure out if any pools can be used to pay for this purchase
+        pools = []
+        for pool in Pool.all_by_owner(user, True):
+            if pool.balance > (pool.credit_limit * -1):
+                pools.append(pool)
+
+        for pu in user.pools:
+            if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
+                pools.append(pu.pool)
+
+        return {'user': user,
+                'items': items,
+                'existing_items': existing_items,
+                'pools': pools}
 
     except __user.InvalidUserException as e:
-        request.session.flash('Invalid M-Card swipe. Please try again.', 'error')
+        request.session.flash(_(
+            'mcard-error',
+            default='Failed to read M-Card. Please try swiping again.',
+            ), 'error')
         return HTTPFound(location=request.route_url('index'))
 
 
@@ -133,15 +199,12 @@ def user(request):
             request.session.flash('User not permitted to purchase items.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
-        # Iterate through all of the events that the user was the to_account
-        # or fr_account on in the transactions
-        transactions = []
-        for event in user.events:
-            for transaction in event.transactions:
-                transactions.append(transaction)
-
+        transactions,count = limitable_request(
+                request, user.get_transactions, limit=20, count=True)
         return {'user': user,
-                'transactions': transactions}
+                'transactions': transactions,
+                'transactions_count': count,
+                }
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -170,7 +233,12 @@ def deposit(request):
         except BTCException as e:
             btc_html = ""
 
-        return {'user': user, 'btc' : btc_html}
+        # Get pools the user can deposit to
+        pools = Pool.all_accessable(user, True)
+
+        return {'user' : user,
+                'btc'  : btc_html, 
+                'pools': pools}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -189,9 +257,19 @@ def deposit_edit(request):
             request.session.flash('Can only edit a cash deposit.', 'error')
             return HTTPFound(location=request.route_url('index'))
 
+        # Get pools the user can deposit to
+        pools = []
+        for pool in Pool.all_by_owner(user, True):
+            pools.append(pool)
+
+        for pu in user.pools:
+            if pu.pool.enabled:
+                pools.append(pu.pool)
+
         return {'user': user,
                 'old_event': event,
-                'old_deposit': event.transactions[0]}
+                'old_deposit': event.transactions[0], 
+                'pools': pools}
 
     except __user.InvalidUserException as e:
         request.session.flash('Invalid User ID.', 'error')
@@ -206,33 +284,35 @@ def deposit_edit(request):
 
 @view_config(route_name='event', permission='service')
 def event(request):
-
     try:
         event = Event.from_id(request.matchdict['event_id'])
         transaction = event.transactions[0]
+        user = User.from_id(event.user_id)
 
         # Choose which page to show based on the type of event
         if event.type == 'deposit':
             # View the deposit success page
-
-            user = DBSession.query(User) \
-                .filter(User.id==transaction.to_account_virt_id).one()
-
             prev_balance = user.balance - transaction.amount
 
-            request.session.flash('Success! The deposit was added successfully', 'success')
+            if transaction.to_account_virt_id == user.id:
+                account_type = 'user'
+                pool = None
+            else:
+                account_type = 'pool'
+                pool = Pool.from_id(transaction.to_account_virt_id)
+
             return render_to_response('templates/deposit_complete.jinja2',
                 {'deposit': transaction,
                  'user': user,
                  'event': event,
-                 'prev_balance': prev_balance}, request)
+                 'prev_balance': prev_balance, 
+                 'account_type': account_type,
+                 'pool': pool}, request)
 
         elif event.type == 'purchase':
             # View the purchase success page
-            user = DBSession.query(User) \
-                .filter(User.id==transaction.fr_account_virt_id).one()
-
             order = {'total': transaction.amount,
+                     'discount': transaction.discount,
                      'items': []}
             for subtrans in transaction.subtransactions:
                 item = {}
@@ -242,11 +322,21 @@ def event(request):
                 item['total_price'] = subtrans.amount
                 order['items'].append(item)
 
+            if transaction.fr_account_virt_id == user.id:
+                account_type = 'user'
+                pool = None
+            else:
+                account_type = 'pool'
+                pool = Pool.from_id(transaction.fr_account_virt_id)
+
             request.session.flash('Success! The purchase was added successfully', 'success')
             return render_to_response('templates/purchase_complete.jinja2',
                 {'user': user,
                  'event': event,
-                 'order': order}, request)
+                 'order': order,
+                 'transaction': transaction,
+                 'account_type': account_type,
+                 'pool': pool}, request)
 
     except NoResultFound as e:
         # TODO: add generic failure page
@@ -276,10 +366,7 @@ def event_undo(request):
         # Make sure that the user who is requesting the deposit was the one who
         # actually placed the deposit.
         try:
-            if transaction.type == 'cashdeposit':
-                user = User.from_id(transaction.to_account_virt_id)
-            elif transaction.type == 'purchase':
-                user = User.from_id(transaction.fr_account_virt_id)
+            user = User.from_id(event.user_id)
         except:
             request.session.flash('Error: Invalid user for transaction.', 'error')
             return HTTPFound(location=request.route_url('index'))
@@ -305,26 +392,6 @@ def event_undo(request):
         return HTTPFound(location=request.route_url('purchase', umid=user.umid, _query=line_items))
     else:
         assert(False and "Should not be able to get here?")
-
-
-@view_config(route_name='pools',
-             renderer='templates/pool.jinja2',
-             permission='service')
-def pools(request):
-    try:
-        user = User.from_umid(request.matchdict['umid'])
-
-        my_pools = Pool.all_by_owner(user)
-        their_pools = user.pools
-
-        return {'user': user,
-                'my_pools': my_pools}
-
-    except Exception as e:
-        if request.debug: raise(e)
-        request.session.flash('Error finding user.', 'error')
-        return HTTPFound(location=request.route_url('index'))
-
 
 
 ###
@@ -396,16 +463,25 @@ def purchase_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
 
+        ignored_keys = ['umid', 'account', 'pool_id']
+
         # Bundle all purchase items
         items = {}
         for item_id,quantity in request.POST.items():
-            if item_id == 'umid':
+            if item_id in ignored_keys:
                 continue
             item = Item.from_id(int(item_id))
             items[item] = int(quantity)
 
-        # Commit the purchase
-        purchase = datalayer.purchase(user, items)
+        # What should pay for this?
+        # Note: should do a bunch of checking to make sure all of this
+        # is kosher. But given our locked down single terminal, we're just
+        # going to skip all of that.
+        if request.POST['account'] == 'user':
+            purchase = datalayer.purchase(user, user, items)
+        elif request.POST['account'] == 'pool':
+            pool = Pool.from_id(int(request.POST['pool_id']))
+            purchase = datalayer.purchase(user, pool, items)
 
         # Return the committed transaction ID
         return {'event_id': purchase.event.id}
@@ -477,6 +553,65 @@ def btc_check(request):
         return {}
 
 
+@view_config(route_name='deposit_emailinfo',
+             renderer='json',
+             permission='service')
+def deposit_emailinfo(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if not user.has_password:
+            return deposit_password_create(request)
+        send_email(TO=user.uniqname+'@umich.edu',
+                   SUBJECT='Chez Betty Credit Card Instructions',
+                   body=render('templates/email_userinfo.jinja2', {'user': user}))
+        return {'status': 'success',
+                'msg': 'Instructions emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
+
+@view_config(route_name='deposit_password_create',
+             renderer='json',
+             permission='service')
+def deposit_password_create(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        if user.has_password:
+            return {'status': 'error',
+                    'msg': 'Error: User already has password.'}
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
+@view_config(route_name='deposit_password_reset',
+        renderer='json',
+        permission='service')
+def deposit_password_reset(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        user_password_reset(user)
+        return {'status': 'success',
+                'msg': 'Password set and emailed to {}@umich.edu.'.format(user.uniqname)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
 @view_config(route_name='deposit_new',
              request_method='POST',
              renderer='json',
@@ -485,6 +620,7 @@ def deposit_new(request):
     try:
         user = User.from_umid(request.POST['umid'])
         amount = Decimal(request.POST['amount'])
+        account = request.POST['account']
 
         # Check if the deposit amount is too great.
         # This if block could be tighter, but this is easier to understand
@@ -499,7 +635,13 @@ def deposit_new(request):
             # deposit
             raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
 
-        deposit = datalayer.deposit(user, amount)
+        if amount <= 0.0:
+            raise DepositException('Deposit amount must be greater than $0.00')
+
+        if account == 'user':
+            deposit = datalayer.deposit(user, user, amount)
+        elif account == 'pool':
+            deposit = datalayer.deposit(user, Pool.from_id(request.POST['pool_id']), amount)
 
         # Return a JSON blob of the transaction ID so the client can redirect to
         # the deposit success page
@@ -529,7 +671,8 @@ def deposit_edit_submit(request):
 
         if old_event.type != 'deposit' or \
            old_event.transactions[0].type != 'cashdeposit' or \
-           old_event.transactions[0].to_account_virt_id != user.id:
+           (old_event.transactions[0].to_account_virt_id != user.id and \
+            old_event.user_id != user.id):
            # Something went wrong, can't undo this deposit
            raise DepositException('Cannot undo that deposit')
 

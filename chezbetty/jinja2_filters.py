@@ -2,6 +2,11 @@ from .models import box
 from .models import item
 from .models import user
 from .models import account
+from .models import pool
+
+import jinja2
+
+from sh import ErrorReturnCode, git
 
 def format_currency(value):
 	try:
@@ -32,6 +37,21 @@ def make_link(obj, str_len=0):
 	elif type(obj) is item.Item:
 		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	elif type(obj) is user.User:
-		return '<a href="/user/{}">{}</a>'.format(obj.umid, shorten(obj.name, str_len))
+		return '<a href="/admin/user/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
+	elif type(obj) is pool.Pool:
+		return '<a href="/admin/pool/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	else:
 		return obj.name
+
+def make_user_link(obj, str_len=0):
+	if type(obj) is pool.Pool:
+		return '<a href="/user/pool/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
+	else:
+		return obj.name
+
+def add_git_version(s):
+	try:
+		return ' '+git.describe('--tags').strip()
+	except ErrorReturnCode:
+		pass
+

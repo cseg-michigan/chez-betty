@@ -21,12 +21,19 @@
     </thead>
 
     <tbody>
-      {% for item in items %}
+      {% for group in [('Items We Should Have', items_have), ('Items We Do Not Have',items_donthave), ('Disabled Items',items_disabled)] %}
+
+      <tr>
+        <td colspan="3"><h3>{{ group[0] }}</td>
+      </tr>
+
+      {% for item in group[1] %}
       <tr id="item-{{ item.id }}">
         <td>{{ item|make_link|safe }}</td>
         <td>{{ item.in_stock }}</td>
         <td><input type="text" class="form-control numeric" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value="{{ undone_inventory[item.id] }}"></td>
       </tr>
+      {% endfor %}
       {% endfor %}
     </tbody>
 
