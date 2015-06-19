@@ -231,6 +231,7 @@ def deposit(request):
             DBSession.add(e)
             DBSession.flush()
         except BTCException as e:
+            print('BTC error: %s' % str(e))
             btc_html = ""
 
         # Get pools the user can deposit to
