@@ -216,7 +216,7 @@ def __events(self):
                             event.Event.type == "deposit"),
                         event.Event.user_id == self.id)))\
             .filter(event.Event.deleted==False)\
-            .order_by(event.Event.timestamp)\
+            .order_by(desc(event.Event.timestamp))\
             .all()
 account.Account.events = __events
 

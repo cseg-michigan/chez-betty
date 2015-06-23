@@ -430,7 +430,7 @@
           </thead>
           <tbody>
             {% for e in events %}
-            {% for t in e.transactions|reverse %}
+            {% for t in e.transactions %}
             <tr>
               <td>{{ button.event(e.id) }}</td>
               <td>{{ e.timestamp|pretty_date|safe }}</td>
