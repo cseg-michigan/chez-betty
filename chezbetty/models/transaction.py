@@ -498,7 +498,7 @@ class SubTransaction(Base):
                         .join(event.Event)\
                         .filter(cls.item_id == id)\
                         .filter(event.Event.deleted==False)\
-                        .order_by(cls.id)
+                        .order_by(desc(event.Event.timestamp))
 
     @classmethod
     @limitable_all
@@ -509,7 +509,7 @@ class SubTransaction(Base):
                         .filter(cls.item_id == id)\
                         .filter(event.Event.deleted==False)\
                         .filter(event.Event.type=="purchase")\
-                        .order_by(cls.id)
+                        .order_by(desc(event.Event.timestamp))
 
     @classmethod
     @limitable_all
@@ -520,7 +520,7 @@ class SubTransaction(Base):
                         .filter(cls.item_id == id)\
                         .filter(event.Event.deleted==False)\
                         .filter(or_(event.Event.type=="inventory", event.Event.type =="restock"))\
-                        .order_by(cls.id)
+                        .order_by(desc(event.Event.timestamp))
 
     @classmethod
     @limitable_all
@@ -529,13 +529,15 @@ class SubTransaction(Base):
             return DBSession.query(cls)\
                             .join(Transaction)\
                             .join(event.Event)\
-                            .filter(event.Event.deleted==False)
+                            .filter(event.Event.deleted==False)\
+                            .order_by(desc(event.Event.timestamp))
         else:
             return DBSession.query(cls)\
                             .join(Transaction)\
                             .join(event.Event)\
                             .filter(cls.type==trans_type)\
-                            .filter(event.Event.deleted==False)
+                            .filter(event.Event.deleted==False)\
+                            .order_by(desc(event.Event.timestamp))
 
 class PurchaseLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}

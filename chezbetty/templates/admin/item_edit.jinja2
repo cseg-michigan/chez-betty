@@ -225,7 +225,7 @@
       </thead>
 
       <tbody>
-        {% for purchase in purchases|reverse %}
+        {% for purchase in purchases %}
         <tr>
           <td>{{ button.event(purchase.transaction.event.id) }}</td>
           <td>{{ purchase.transaction.event.timestamp|pretty_date|safe }}</td>
@@ -257,7 +257,7 @@
       </thead>
 
       <tbody>
-        {% for it in events|reverse %}
+        {% for it in events %}
         {% if it.transaction %}
           {% set event = it.transaction.event %}
           {% set transaction = it.transaction %}
