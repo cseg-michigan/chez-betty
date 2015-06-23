@@ -201,8 +201,8 @@ account.Account.get_transactions = __get_transactions
 account.Account.transactions = __transactions
 
 # This is in a stupid place due to circular input problems
-@property
-def __events(self):
+@limitable_all
+def __get_events(self):
     return object_session(self).query(event.Event)\
             .join(Transaction)\
             .filter(or_(
@@ -216,8 +216,13 @@ def __events(self):
                             event.Event.type == "deposit"),
                         event.Event.user_id == self.id)))\
             .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp))\
-            .all()
+            .order_by(desc(event.Event.timestamp))
+
+@property
+def __events(self):
+    return __get_events(self).all()
+
+account.Account.get_events = __get_events
 account.Account.events = __events
 
 # This is in a stupid place due to circular input problems

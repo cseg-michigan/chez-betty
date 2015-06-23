@@ -1753,8 +1753,17 @@ def admin_users_edit_submit(request):
 def admin_user(request):
     try:
         user = User.from_id(request.matchdict['user_id'])
+
+        transactions,count = limitable_request(
+                request, user.get_transactions, limit=20, count=True)
+
+        events, events_total = limitable_request(
+                request, user.get_events, prefix='event', limit=10, count=True)
+
         my_pools = Pool.all_by_owner(user)
         return {'user': user,
+                'events': events,
+                'events_total': events_total,
                 'my_pools': my_pools}
     except Exception as e:
         if request.debug: raise(e)

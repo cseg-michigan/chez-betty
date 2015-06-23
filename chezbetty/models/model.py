@@ -75,14 +75,27 @@ def limitable_all(fn_being_decorated):
     return wrapped_fn
 
 # Helper that checks for common get parameters for limitable queries
-def limitable_request(request, fn, limit=None, count=False):
+def limitable_request(request, fn, prefix=None, limit=None, count=False):
+    if prefix:
+        limit_str = prefix + '_limit'
+        offset_str = prefix + '_offset'
+    else:
+        limit_str = 'limit'
+        offset_str = 'offset'
     try:
-        LIMIT  = int(request.GET['limit' ]) if 'limit'  in request.GET else limit
+        LIMIT  = int(request.GET[limit_str ]) if limit_str  in request.GET else limit
     except ValueError:
         LIMIT  = limit
     try:
-        OFFSET = int(request.GET['offset']) if 'offset' in request.GET else None
+        OFFSET = int(request.GET[offset_str]) if offset_str in request.GET else None
     except ValueError:
         OFFSET = None
-    return fn(limit=LIMIT, offset=OFFSET, count=count)
+
+    if count:
+        r, r_tot = fn(limit=LIMIT, offset=OFFSET, count=count)
+        if LIMIT is None or r_tot <= LIMIT:
+            r_tot = None
+        return r, r_tot
+    else:
+        return fn(limit=LIMIT, offset=OFFSET, count=count)
 

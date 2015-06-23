@@ -113,7 +113,7 @@
 
       <tbody>
 
-        {% for event in user.events %}
+        {% for event in events %}
 
         <tr>
           <td>{{ button.event(event.id) }}</td>
@@ -123,9 +123,15 @@
         </tr>
 
         {% endfor %}
-
       </tbody>
     </table>
+
+    {% if events_total %}
+    <a href="/admin/user/{{ user.id }}?event_limit=0#event_history">
+      Displaying 1-{{ events|length }} of {{ events_total }}. Click to show all.</p>
+    </a>
+    {% endif %}
+
   </div>
 </div>
 
