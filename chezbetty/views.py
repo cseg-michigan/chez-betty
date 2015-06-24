@@ -539,6 +539,7 @@ def btc_deposit(request):
     ret = "addr: %s, amount: %s, txid: %s, created_at: %s, txhash: %s, exchange = $%s/BTC"\
            % (addr, amount_btc, txid, created_at, txhash, usd_per_btc)
     datalayer.bitcoin_deposit(user, amount_usd, txhash, addr, amount_btc)
+    DBSession.delete(pending)
     print(ret)
 
     return {}
