@@ -12,8 +12,8 @@
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap-switch/bootstrap-switch.min.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap-sortable/bootstrap-sortable.css'|static_url}}" />
   {# <link rel="stylesheet" href="{{'chezbetty:static/css/lib/keyboard/keyboard.css'|static_url}}" /> #}
-  {# <link rel="stylesheet" href="{{'chezbetty:static/css/lib/jquery-ui/jquery-ui.min.css'|static_url}}" /> #}
-  {# <link rel="stylesheet" href="{{'chezbetty:static/css/lib/datetimepicker/jquery.datetimepicker.css'|static_url}}" /> #}
+  <link rel="stylesheet" href="{{'chezbetty:static/css/lib/jquery-ui/jquery-ui.min.css'|static_url}}" />
+  <link rel="stylesheet" href="{{'chezbetty:static/css/lib/datetimepicker/jquery.datetimepicker.css'|static_url}}" />
 
   <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-user.css'|static_url}}" />
 
@@ -26,7 +26,7 @@
   {# <script src="{{'chezbetty:static/js/lib/keyboard/jquery.keyboard.min.js'|static_url}}"></script> #}
   {# <script src="{{'chezbetty:static/js/lib/Chart.js/Chart.min.js'|static_url}}"></script> #}
   {# <script src="{{'chezbetty:static/js/lib/barcoder/barcoder.js'|static_url}}"></script> #}
-  {# <script src="{{'chezbetty:static/js/lib/datetimepicker/jquery.datetimepicker.js'|static_url}}"></script> #}
+  <script src="{{'chezbetty:static/js/lib/datetimepicker/jquery.datetimepicker.js'|static_url}}"></script>
   {# <script src="{{'chezbetty:static/js/lib/highstock/highstock.js'|static_url}}"></script> #}
 
   <script src="{{'chezbetty:static/js/chezbetty-common.js'|static_url}}"></script>
@@ -90,6 +90,16 @@
 {% block onload %}
 {% endblock %}
 
+  <!-- Google Analytics tracker -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-55624000-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
 
 </html>

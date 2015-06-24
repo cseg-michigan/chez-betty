@@ -176,8 +176,7 @@ class Transaction(Base):
         return utility.timeseries_balance_total_daily(rows)
 
 
-@limitable_all
-def __get_transactions(self):
+def __get_transactions_query(self):
     return object_session(self).query(Transaction)\
             .join(event.Event)\
             .filter(or_(
@@ -193,10 +192,15 @@ def __get_transactions(self):
             .filter(event.Event.deleted==False)\
             .order_by(desc(event.Event.timestamp))\
 
+@limitable_all
+def __get_transactions(self):
+    return __get_transactions_query(self)
+
 @property
 def __transactions(self):
     return __get_transactions(self)
 
+account.Account.get_transactions_query = __get_transactions_query
 account.Account.get_transactions = __get_transactions
 account.Account.transactions = __transactions
 

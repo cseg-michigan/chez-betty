@@ -20,7 +20,7 @@ from .models.user import User
 from .models.item import Item
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
+from .models.transaction import Transaction, Deposit, CashDeposit, CCDeposit, BTCDeposit, Purchase
 from .models.transaction import Inventory, InventoryLineItem
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
@@ -46,6 +46,7 @@ import uuid
 import math
 import pytz
 import traceback
+import arrow
 
 ###
 ### User Admin
@@ -252,7 +253,54 @@ def user_pool(request):
             request.session.flash('You do not have permission to view that pool.', 'error')
             return HTTPFound(location=request.route_url('user_pools'))
 
+        # Web library native date format: 2015/06/19 19:00
+        # DO NOT CHANGE: The datetimepicker has a bug and tries to parse the
+        #                prepopulated value before reading the format string,
+        #                which means you have to use its native format string
+        TS_FORMAT = 'YYYY/MM/DD HH:mm'
+        if 'history-end' not in request.GET:
+            request.GET['history-end'] =\
+                    arrow.now()\
+                    .replace(hours=+1)\
+                    .floor('hour')\
+                    .format(TS_FORMAT)
+        if 'history-start' not in request.GET:
+            request.GET['history-start'] =\
+                    arrow.get(request.GET['history-end'], TS_FORMAT)\
+                    .replace(months=-1)\
+                    .format(TS_FORMAT)
+
+        start = arrow.get(request.GET['history-start'], TS_FORMAT)
+        end   = arrow.get(request.GET['history-end'],   TS_FORMAT)
+
+        query = pool.get_transactions_query()
+        query = query\
+                .filter(event.Event.timestamp > start.datetime)\
+                .filter(event.Event.timestamp < end.datetime)
+
+        for t in ('purchase', 'adjustment'):
+            if 'history-filter-'+t in request.GET:
+                print("SKIP", t)
+                query = query.filter(event.Event.type!=t)
+        for t in ('cashdeposit', 'ccdeposit', 'btcdeposit'):
+            if 'history-filter-'+t in request.GET:
+                print("SKIP", t)
+                query = query.filter(Transaction.type!=t)
+        transactions = query.all()
+
+        withdrawls  = query.filter(event.Event.type=='purchase').all()
+        deposits    = query.filter(event.Event.type=='deposit').all()
+        adjustments = query.filter(event.Event.type=='adjustment').all()
+
+        withdrawls  = sum(w.amount for w in withdrawls)
+        deposits    = sum(d.amount for d in deposits)
+        adjustments = sum(a.amount for a in adjustments) if len(adjustments) else None
+
         return {'user': request.user,
+                'transactions': transactions,
+                'withdrawls': withdrawls,
+                'deposits': deposits,
+                'adjustments': adjustments,
                 'pool': pool}
     except Exception as e:
         if request.debug: raise(e)

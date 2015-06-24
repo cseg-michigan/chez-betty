@@ -49,3 +49,16 @@ function toggle_state_success (data) {
 function toggle_state_fail (data) {
 	alert_error("Failed to save toggle state.");
 }
+
+// What the fuck shitty library? Why would you (a) not just initialize your damn
+// self to the current <input value=DATE> or (b) let me do that in your initializer?
+//
+// Bonus bug #2: Must use the native format since the 'format' key is not
+// respected during initialization.
+$(".event-date-picker").each(function() {
+	$(this).datetimepicker({
+		inline: true,
+		startDate: $(this).value,
+		startTime: $(this).value,
+	});
+});

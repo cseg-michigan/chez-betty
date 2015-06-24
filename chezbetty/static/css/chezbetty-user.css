@@ -72,6 +72,7 @@ body {
 }
 
 
+
 /*
  * Main content
  */
@@ -174,3 +175,59 @@ tfoot tr td {
   display: none;
 }
 
+.alternating-list-item:nth-child(odd) {
+	background-color: #ffe;
+}
+.alternating-list-item:nth-child(even) {
+	background-color: #eef;
+}
+
+
+/* need !important to override bootstrap's decoloring on print, which still
+ * doesn't work in chrome, but at least FF has some color; whatever */
+.money-in {
+  background-color: #efe !important;
+}
+.money-out {
+  background-color: #fee !important;
+}
+
+
+/*
+ * Print controls
+ *
+ * n.b. must be last to override all previous settings
+ */
+@media print {
+  body * {
+    font-size: 8pt;
+  }
+  body {
+    padding: 0px;
+  }
+
+  h3 {
+    font-size: 12pt;
+  }
+
+  :not(.showInPrint) {
+    display: none;
+  }
+
+  .sidebar {
+    margin: 0px;
+    padding: 0px;
+    width: 0%;
+    height: 0%;
+  }
+  .navbar {
+    margin: 0px;
+    padding: 0px;
+    width: 0%;
+    height: 0%;
+  }
+  .main {
+    margin: 0px;
+    padding: 0px;
+  }
+}

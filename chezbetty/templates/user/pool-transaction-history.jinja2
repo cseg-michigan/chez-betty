@@ -1,0 +1,129 @@
+<center><h3>Transaction history for {{ pool.name }} from {{ request.GET['history-start'].split('-')[0] }} to {{ request.GET['history-end'].split('-')[0] }}.</h3></center>
+
+<ul id="event-history" class="list-group">
+
+  {% for transaction in transactions %}
+
+  <li
+  id="btn-trans-{{ transaction.id }}"
+  class="list-group-item {% if transaction.type == "purchase" %}money-out{% elif transaction.type != "adjustment"%}money-in{%endif%}"
+  >
+
+    {# Choose what content to display based on the type of transaction
+     # it is.
+     #}
+    {% if transaction.type == "purchase" %}
+
+    <p>
+      {{ _('Purchase totaling %(amount)s by %(name)s')|format(amount=transaction.amount|format_currency, name=transaction.event.user.name)|safe }}
+      <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
+    </p>
+
+    <small>
+      <div id="transaction-{{ transaction.id }}" class="user-transaction-detail">
+        <table class="table table-bordered">
+
+          <thead>
+            <tr>
+              <th class="item-title">{{ _('Item') }}</th>
+              <th class="item-quantity" style="width: 15%;">{{ _('Quantity') }}</th>
+              <th class="item-price" style="width: 15%;">{{ _('Item Price') }}</th>
+              <th class="item-total" style="width: 15%;">{{ _('Total Price') }}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for line_item in transaction.subtransactions %}
+            <tr class="purchase-item">
+              <td class="item-title">{{ line_item.item.name }}</td>
+              <td class="item-quantity">{{ line_item.quantity }}</td>
+              <td class="item-price">{{ line_item.price|format_currency|safe }}</td>
+              <td class="item-total">{{ line_item.amount|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+          <tfoot>
+            {% if transaction.discount %}
+            {% set subtotal = transaction.amount / (1-transaction.discount) %}
+            <tr>
+              <td colspan="3"><b>{{ _('Subtotal') }}</b></td>
+              <td id="purchase-subtotal">{{ subtotal|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td><b>{{ _('Discounts') }}</b></td>
+              <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(transaction.discount*100) }}%)</td>
+              <td id="purchase-discount">({{ (subtotal * transaction.discount)|format_currency|safe }})</td>
+            </tr>
+            {% endif %}
+            <td colspan="3"><b>{{ _('Total') }}</b></td>
+            <td class="item-total"><b>{{ transaction.amount|format_currency|safe }}</b></td>
+          </tfoot>
+
+        </table>
+      </div>
+    </small>
+
+
+    {% elif transaction.type == "cashdeposit" %}
+
+    {{ _('Deposit of %(amount)s by %(name)s')|format(amount=transaction.amount|format_currency, name=transaction.event.user.name)|safe }}
+
+    <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
+
+    {% elif transaction.type == 'ccdeposit' %}
+
+    {{ _('Credit Card Deposit of %(amount)s by %(name)s')|format(amount=transaction.amount|format_currency, name=transaction.event.user.name)|safe }}
+    <small>{{ _('Card ending in %(last4)s')|format(last4=transaction.cc_last4) }}</small>
+
+    <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
+
+    {% elif transaction.type == "adjustment" %}
+
+    {{ _('Adjustment of %(amount)s by %(admin_name)s ')|format(amount=transaction.amount|format_currency, admin_name=transaction.event.admin.name)|safe }}
+    <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
+
+    <div id="transaction-{{ transaction.id }}" class="user-transaction-detail">
+      Notes: {{ transaction.event.notes }}
+    </div>
+
+    {% elif transaction.type == "btcdeposit" %}
+
+    {{ _('BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) by %(name)s')|format(amount_in_usd=transaction.amount, amount_in_btc=transaction.amount_btc, name=transaction.event.user.name)|safe }}
+
+    <span class="pull-right">{{ transaction.event.timestamp|pretty_date|safe }}</span>
+
+    <div id="transaction-{{ transaction.id }}" class="user-transaction-detail">
+      {{ transaction.img|safe }}
+    </div>
+
+    {% endif %}
+
+  </li>
+
+  {% endfor %}
+
+  {% if transactions|length == 0 %}
+  <li class="list-group-item">
+    {{ _('No transactions.') }}
+  </li>
+  {% endif %}
+
+</ul>
+
+{% if transactions|length != 0 %}
+<div class="pull-right" style="padding-right: 10px;">
+  <dl class="dl-horizontal">
+    <dt>Total Withdrawals</dt><dd style="text-align: right">{{ withdrawls|format_currency|safe }}</dd>
+    <dt>Total Deposits</dt><dd style="text-align: right">{{ deposits|format_currency|safe }}</dd>
+    {% if adjustments is not none %}
+    <dt>Total Adjustments</dt><dd style="text-align: right">{{ adjustments|format_currency|safe }}</dd>
+    {% else %}
+    {% set adjustments = 0 %}
+    {% endif %}
+    <hr />
+    <dt>Total</dt><dd style="text-align: right">{{ (deposits - withdrawls + adjustments)|format_currency|safe }}</dd>
+  </dl>
+</div>
+{% endif %}
+

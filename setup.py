@@ -31,6 +31,7 @@ requires = [
     'babel',
     'lingua',
     'stripe',
+    'arrow',
     ]
 
 setup(name='chezbetty',

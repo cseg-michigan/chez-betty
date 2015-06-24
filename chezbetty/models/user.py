@@ -207,6 +207,13 @@ def get_user(request):
     return DBSession.query(User).filter(User.uniqname == login).one()
 
 
+# This is in a stupid place due to circular input problems
+@property
+def __user_from_foreign_key(self):
+    return User.from_id(self.user_id)
+event.Event.user = __user_from_foreign_key
+
+
 def groupfinder(userid, request):
     user = User.from_uniqname(userid)
     if user.role == "user":
