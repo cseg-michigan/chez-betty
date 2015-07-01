@@ -60,6 +60,12 @@ function add_item_success (data) {
 
 		// First, if this is the first item hide the empty order row
 		$("#purchase-empty").hide();
+		if ($("#logout-button").attr('data-cb-href-default') === undefined) {
+			$("#logout-button").attr('data-cb-href-default', $("#logout-button").attr("href"));
+		}
+		if ($("#logout-button").attr('data-cb-href-alt') !== undefined) {
+			$("#logout-button").attr('href', $("#logout-button").attr("data-cb-href-alt"));
+		}
 		$("#logout-button .btn-text-alt").show();
 		$("#logout-button .btn-text-default").hide();
 
@@ -116,8 +122,8 @@ function purchase_andlogout_success (data) {
 			.error);
 		enable_button($(".btn-submit-purchase"));
 	} else {
-		// Log the user out
-		window.location.replace("/");
+		// Follow the link from the button's href
+		window.location.replace($(this).attr('href'));
 	}
 }
 

@@ -9,6 +9,9 @@ $("#purchase_table tbody").on("click", ".btn-remove-item", function () {
 		$("#purchase-empty").show();
 
 		// Make the logout button normal again
+		if ($("#logout-button").attr('data-cb-href-default') !== undefined) {
+			$("#logout-button").attr('href', $("#logout-button").attr("data-cb-href-default"));
+		}
 		$("#logout-button .btn-text-alt").hide();
 		$("#logout-button .btn-text-default").show();
 	}
@@ -72,6 +75,7 @@ function submit_purchase (this_btn, success_cb, error_cb) {
 			type: "POST",
 			url: "/purchase/new",
 			data: purchase,
+			context: this_btn,
 			success: success_cb,
 			error: error_cb,
 			dataType: "json"

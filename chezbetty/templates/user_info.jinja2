@@ -44,7 +44,11 @@
         {% if active_page != "deposit" %}
         <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">{{ _('Deposit') }}</a>
         {% endif %}
+        {% if user.balance < -5 %}
+        <a id="logout-button" class="btn btn-warning btn-lg" href="/" data-cb-href-alt="/deposit/{{ user.umid }}"><span class="btn-text-default">{{ _('Logout') }}</span><span class="btn-text-alt">{{ _('Purchase then Deposit') }}</span></a>
+        {% else %}
         <a id="logout-button" class="btn btn-warning btn-lg" href="/"><span class="btn-text-default">{{ _('Logout') }}</span><span class="btn-text-alt">{{ _('Purchase and Logout') }}</span></a>
+        {% endif %}
         {% if user.role == "administrator" or user.role == "manager" %}
         <a class="btn btn-success btn-lg" href="/admin">{{ _('Admin') }}</a>
         {% endif %}
