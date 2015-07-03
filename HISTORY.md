@@ -1,6 +1,8 @@
 History of Chez Betty
 =====================
 
+- May 20, 2015: Betty bought the triple-wide fridge for $1200. Took 6 or so people
+to get it into 2909, but actually cold drinks made it worth it.
 - March 2015: Betty bought a freezer. After placing an ice cream order
 with the Nestle rep at Kroger, Betty needed more space for frozen items.
 Even with the expanded capacity, ice cream remains one of the fastest
