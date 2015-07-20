@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/keyboard/keyboard.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/jquery-ui/jquery-ui.min.css'|static_url}}" />
 
-  <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty.css'|static_url}}" />
+  <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-terminal.css'|static_url}}" />
 
   <script src="{{'chezbetty:static/js/lib/jquery/jquery.min.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/jquery-ui/jquery-ui.min.js'|static_url}}"></script>
@@ -24,7 +24,7 @@
   <script src="{{'chezbetty:static/js/lib/keyboard/jquery.keyboard.min.js'|static_url}}"></script>
 
   <script src="{{'chezbetty:static/js/chezbetty-common.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/chezbetty.js'|static_url}}"></script>
+  <script src="{{'chezbetty:static/js/chezbetty-terminal.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/chezbetty-dragscroll.js'|static_url}}"></script>
 
   <title>{% if request.debug %}[ DEBUG ]{% endif %} {% block title %}{% endblock %} | Chez Betty</title>
@@ -52,6 +52,31 @@
 
     {% set active_page = active_page|default('index') -%}
     {#{% include 'navbar.html' %}#}
+
+    {% if active_page not in ('deposit', 'deposit_edit') %}
+    {% if user %}
+    {% if user.balance < -50 %}
+    <div class="alert alert-danger" role="alert">
+      <div class="container">
+        <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
+        <h3>{{ _("You currently owe Betty %(big_debt)s. That's a lot of money!")|
+                 format(big_debt=user.balance|format_currency)|safe }}</h3>
+        <p>{{ _("We're glad you like Betty. We're happy to extend a small line "
+        "of credit, but if people owe Betty lots of money, it's hard to keep "
+        "things in stock. Please try to pay Betty back soon!") }}</p>
+      </div>
+    </div>
+    {% elif user.balance < -20 %}
+    <div class="alert alert-warning" role="alert">
+      <div class="container">
+        <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
+        <p>{{ _("You currently owe Betty %(debt)s.")|format(debt=user.balance|format_currency)|safe }}</p>
+        <p>{{ _('Please try to pay Betty back soon, thanks!') }}</p>
+      </div>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% endif %}
 
     <div id="alerts" class="container">
       {% block alerts %}

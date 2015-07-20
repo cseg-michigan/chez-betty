@@ -36,16 +36,16 @@
       </div>
       <div class="panel-body buttons">
         {% if active_page != "purchase" %}
-        <a class="btn btn-primary btn-lg" href="/purchase/{{ user.umid }}">{{ _('Purchase') }}</a>
+        <a class="btn btn-primary btn-lg" href="/terminal/purchase/{{ user.umid }}">{{ _('Purchase') }}</a>
         {% endif %}
         {% if active_page != "account" %}
-        <a class="btn btn-primary btn-lg" href="/profile/{{ user.umid }}">{{ _('Account') }}</a>
+        <a class="btn btn-primary btn-lg" href="/terminal/profile/{{ user.umid }}">{{ _('Account') }}</a>
         {% endif %}
         {% if active_page != "deposit" %}
-        <a class="btn btn-primary btn-lg" href="/deposit/{{ user.umid }}">{{ _('Deposit') }}</a>
+        <a class="btn btn-primary btn-lg" href="/terminal/deposit/{{ user.umid }}">{{ _('Deposit') }}</a>
         {% endif %}
         {% if user.balance < -5 %}
-        <a id="logout-button" class="btn btn-warning btn-lg" href="/" data-cb-href-alt="/deposit/{{ user.umid }}"><span class="btn-text-default">{{ _('Logout') }}</span><span class="btn-text-alt">{{ _('Purchase then Deposit') }}</span></a>
+        <a id="logout-button" class="btn btn-warning btn-lg" href="/" data-cb-href-alt="/terminal/deposit/{{ user.umid }}"><span class="btn-text-default">{{ _('Logout') }}</span><span class="btn-text-alt">{{ _('Purchase then Deposit') }}</span></a>
         {% else %}
         <a id="logout-button" class="btn btn-warning btn-lg" href="/"><span class="btn-text-default">{{ _('Logout') }}</span><span class="btn-text-alt">{{ _('Purchase and Logout') }}</span></a>
         {% endif %}

@@ -32,7 +32,7 @@ $(".btn-submit-deposit").click(function () {
 	// Post the deposit to the server
 	$.ajax({
 		type: "POST",
-		url: "/deposit/new",
+		url: "/terminal/deposit/new",
 		data: deposit,
 		success: deposit_success,
 		error: deposit_error,
@@ -62,7 +62,7 @@ $(".btn-edit-deposit").click(function () {
 	// Post the deposit to the server
 	$.ajax({
 		type: "POST",
-		url: "/deposit/edit/submit",
+		url: "/terminal/deposit/edit/submit",
 		data: deposit,
 		success: deposit_success,
 		error: deposit_error,
@@ -104,11 +104,11 @@ $("#keypad-umid").on("click", "button", function () {
 		if (manual_umid_enter.length == 8) {
 			$.ajax({
 				type: "POST",
-				url: "/check",
+				url: "/terminal/check",
 				data: {'umid': manual_umid_enter},
 				success: function (data) {
 					if (data.status == 'success') {
-						window.location = '/purchase/' + manual_umid_enter;
+						window.location = '/terminal/purchase/' + manual_umid_enter;
 					} else {
 						clear_umid_keypad();
 					}

@@ -67,15 +67,15 @@
           <p>
             {{ _('Clicking this button will email you your login and password information.') }}
           </p>
-          {{ button.ajax_singleuse_button("Create and Email Password", "/deposit/"~user.id~"/password/create") }}
+          {{ button.ajax_singleuse_button("Create and Email Password", "/terminal/deposit/"~user.id~"/password/create") }}
           {% else %}
           <p>
             {{ _('Clicking this button will email you a new password.') }}
           </p>
-          {{ button.ajax_singleuse_button("Reset and Email Password", "/deposit/"~user.id~"/password/reset") }}
+          {{ button.ajax_singleuse_button("Reset and Email Password", "/terminal/deposit/"~user.id~"/password/reset") }}
           {% endif %}
           #}
-          {{ button.ajax_singleuse_button("Email me the link!", "/deposit/"~user.id~"/emailinfo") }}
+          {{ button.ajax_singleuse_button("Email me the link!", "/terminal/deposit/"~user.id~"/emailinfo") }}
         </div>
       </div>
 

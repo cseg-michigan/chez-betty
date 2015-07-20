@@ -73,7 +73,7 @@ function submit_purchase (this_btn, success_cb, error_cb) {
 		// Post the order to the server
 		$.ajax({
 			type: "POST",
-			url: "/purchase/new",
+			url: "/terminal/purchase/new",
 			data: purchase,
 			context: this_btn,
 			success: success_cb,

@@ -83,32 +83,34 @@ def main(global_config, **settings):
     config.add_route('about',               '/about')
     config.add_route('shame',               '/shame')
 
-    config.add_route('umid_check',          '/check')
-
     config.add_route('items',               '/items')
-    config.add_route('item',                '/item/{barcode}/json')
     config.add_route('item_request',        '/item/request')
     config.add_route('item_request_new',    '/item/request/new')
     config.add_route('item_request_by_id',  '/item/request/by_id/{id}')
 
-    config.add_route('user',                '/profile/{umid}')
 
-    config.add_route('purchase_new',        '/purchase/new')
-    config.add_route('purchase',            '/purchase/{umid}')
+    # TERMINAL VIEWS
+    config.add_route('user',                '/terminal/profile/{umid}')
 
-    config.add_route('deposit_new',         '/deposit/new')
-    config.add_route('deposit',             '/deposit/{umid}')
-    config.add_route('deposit_edit',        '/deposit/edit/{umid}/{event_id}')
-    config.add_route('deposit_edit_submit', '/deposit/edit/submit')
-    config.add_route('deposit_emailinfo',   '/deposit/{user_id}/emailinfo')
-    config.add_route('deposit_password_create','/deposit/{user_id}/password/create')
-    config.add_route('deposit_password_reset', '/deposit/{user_id}/password/reset')
+    config.add_route('umid_check',          '/terminal/check')
 
-    config.add_route('btc_deposit',         '/bitcoin/deposit/{umid}/{auth_key}')
-    config.add_route('btc_check',           '/bitcoin/check/{addr}')
+    config.add_route('purchase_new',        '/terminal/purchase/new')
+    config.add_route('purchase',            '/terminal/purchase/{umid}')
+    config.add_route('purchase_item_row',   '/terminal/purchase/item/{barcode}/json')
 
-    config.add_route('event',               '/event/{event_id}')
-    config.add_route('event_undo',          '/event/undo/{umid}/{event_id}')
+    config.add_route('deposit_new',         '/terminal/deposit/new')
+    config.add_route('deposit',             '/terminal/deposit/{umid}')
+    config.add_route('deposit_edit',        '/terminal/deposit/edit/{umid}/{event_id}')
+    config.add_route('deposit_edit_submit', '/terminal/deposit/edit/submit')
+    config.add_route('deposit_emailinfo',   '/terminal/deposit/{user_id}/emailinfo')
+    config.add_route('deposit_password_create','/terminal/deposit/{user_id}/password/create')
+    config.add_route('deposit_password_reset', '/terminal/deposit/{user_id}/password/reset')
+
+    config.add_route('btc_deposit',         '/terminal/bitcoin/deposit/{umid}/{auth_key}')
+    config.add_route('btc_check',           '/terminal/bitcoin/check/{addr}')
+
+    config.add_route('event',               '/terminal/event/{event_id}')
+    config.add_route('event_undo',          '/terminal/event/undo/{umid}/{event_id}')
 
 
     # USER ADMIN
@@ -253,6 +255,7 @@ def main(global_config, **settings):
     config.add_view(notfound, context='pyramid.httpexceptions.HTTPNotFound')
 
     config.scan(".views")
+    config.scan(".views_terminal")
     config.scan(".views_user")
     config.scan(".views_admin")
     config.scan(".views_data")

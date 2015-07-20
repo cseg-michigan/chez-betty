@@ -1,4 +1,3 @@
-
 /* Align dollar amounts nicely */
 .item-stock {
 	text-align: right;
@@ -13,10 +12,6 @@
 }
 
 .item-total {
-	text-align: right;
-}
-
-.right {
 	text-align: right;
 }
 
@@ -41,24 +36,6 @@
 .btn-huge {
 	padding: 20px 30px;
 	font-size: 18pt;
-}
-
-.btn-submit-purchase {
-	width: 100%;
-	height: 100px;
-	margin-bottom: 20px;
-}
-
-.btn-submit-deposit {
-	width: 100%;
-	height: 60px;
-	margin-bottom: 15px;
-}
-
-.btn-edit-deposit, .btn-delete-deposit {
-	width: 100%;
-	height: 80px;
-	margin-bottom: 15px;
 }
 
 .buttons a {
@@ -112,37 +89,6 @@ h1 {
 	margin-top: 15px;
 }
 
-.panel-superdanger {
-	background-color: #A94442;
-}
-
-
-.panel-superdanger .panel-heading {
-	background-color: #A94442;
-  border-color: white;
-}
-
-.panel-superdanger .panel-title {
-  color: white;
-}
-
-.panel-superdanger .panel-body {
-	background-color: #c05f5d;
-}
-
-.panel-superdanger .negative {
-	background-color: white;
-	font-size: 18px;
-	padding: 5px 10px 5px 10px;
-	font-weight: bold;
-	margin: 3px;
-}
-
-.panel-superdanger .user-info-balance {
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
-
 /* Index */
 #index-main {
 	text-align: center;
@@ -179,122 +125,9 @@ h1 {
 	padding: 0;
 }
 
-/* Purchase */
-#purchase-empty {
-	text-align: center;
-}
-
-#purchase-empty td {
-	padding: 30px 0;
-}
-
-.purchase-item {
-}
-
-#purchase-total, #purchase-subtotal, #purchase-discount, #purchase-discount-percent {
-	text-align: right;
-	font-weight: bold;
-}
-
-#purchase-discount, #purchase-discount-percent {
-  color: red;
-}
-
 /* Items */
 
 .top-button {
 	margin-bottom: 15px;
 }
 
-/* User */
-
-.user-transaction-detail {
-	margin-top: 10px;
-}
-
-#transaction-history small {
-	color: #ccc;
-	padding-left: 10px;
-}
-
-/* Deposit */
-
-.wrapper {
-	position: relative;
-}
-
-.line {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: 1px;
-	background: #ccc;
-	z-index: 1;
-}
-
-.wordwrapper {
-	text-align: center;
-	vertical-align: middle;
-	height: 35px;
-	width:40px;
-	position: absolute;
-	right: 68%;
-	top: 50%;
-	margin-top: -20px;
-	margin-left: -8px;
-	z-index: 2;
-}
-
-.wordwrapper-first-third {
-	left: 32.2%;
-}
-
-.wordwrapper-second-third {
-	left: 66.5%;
-}
-
-.word {
-	color: #ccc;
-	text-transform: uppercase;
-	letter-spacing: 1px;
-	padding: 3px;
-	font: bold 12px arial,sans-serif;
-	background: #fff;
-	font-size: 20px;
-}
-
-.line-first-third {
-	left: 33%;
-}
-
-.line-second-third {
-	left: 67.5%;
-}
-
-.deposit-type-col h3 {
-	text-align: center;
-	font-weight: bold;
-}
-
-.deposit-thankyou {
-	font-size: 48px;
-}
-
-.deposit-info {
-	font-size: 28px;
-	margin-top: 10px;
-	margin-bottom: 20px;
-}
-
-.deposit-cash {
-	text-align: center;
-}
-
-.deposit-amount {
-	color: #3071a9;
-	font-size: 34px;
-}
-
-.btn-text-alt {
-	display: none;
-}
