@@ -86,7 +86,6 @@ def main(global_config, **settings):
     config.add_route('items',               '/items')
     config.add_route('item_request',        '/item/request')
     config.add_route('item_request_new',    '/item/request/new')
-    config.add_route('item_request_by_id',  '/item/request/by_id/{id}')
 
 
     # TERMINAL VIEWS

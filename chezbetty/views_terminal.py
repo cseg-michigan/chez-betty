@@ -371,13 +371,6 @@ def item_request_new(request):
         request.session.flash('Error adding request.', 'error')
         return HTTPFound(location=request.route_url('index'))
 
-@view_config(route_name='item_request_by_id')
-def item_request_by_id(request):
-    item = Item.from_id(request.matchdict['id'])
-    datalayer.new_request(None, item.name)
-    request.session.flash('Request for {} added successfully'.format(item.name), 'success')
-    return HTTPFound(location=request.route_url('index'))
-
 @view_config(route_name='purchase_new',
              request_method='POST',
              renderer='json',
