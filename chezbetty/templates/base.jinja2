@@ -104,9 +104,11 @@
   {% endblock %}
 
   {% set timeout = timeout|default(60*1000*5) -%}
+  {% if timeout %}
   <script>
     setTimeout(function(){window.location.replace("/");}, {{ timeout }});
   </script>
+  {% endif %}
 
   <!-- Google Analytics tracker -->
   <script>

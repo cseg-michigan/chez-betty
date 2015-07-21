@@ -28,6 +28,7 @@ from .models.pool import Pool
 
 from .utility import user_password_reset
 from .utility import send_email
+from .utility import post_stripe_payment
 
 from pyramid.security import Allow, Everyone, remember, forget
 
@@ -116,3 +117,40 @@ def users(request):
                      .filter(User.balance < -5)\
                      .order_by(User.balance).all()
     return {'users': users}
+
+
+@view_config(route_name='paydebt', renderer='templates/paydebt.jinja2')
+def paydebt(request):
+    uniqname = request.matchdict['uniqname']
+    user = User.from_uniqname(uniqname, local_only=True)
+    return {
+            'user': user,
+            'stripe_pk': request.registry.settings['stripe.publishable_key'],
+            }
+
+@view_config(route_name='paydebt_submit',
+             request_method='POST',
+             renderer='json',
+             )
+def paydebt_submit(request):
+    uniqname = request.matchdict['uniqname']
+    user = User.from_uniqname(uniqname, local_only=True)
+
+    print(request.POST)
+
+    token = request.POST['stripeToken']
+    amount = float(request.POST['betty_amount'])
+    total_cents = int(request.POST['betty_total_cents'])
+
+    post_stripe_payment(
+            datalayer,
+            request,
+            token,
+            amount,
+            total_cents,
+            user,
+            user,
+            )
+
+    return {}
+

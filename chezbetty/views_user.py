@@ -36,12 +36,13 @@ from .models.receipt import Receipt
 from .models.pool import Pool
 from .models.pool_user import PoolUser
 
+from .utility import post_stripe_payment
+
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
 from .btc import Bitcoin, BTCException
 
-import stripe
 import uuid
 import math
 import pytz
@@ -132,9 +133,6 @@ def user_deposit_cc_custom(request):
              request_method='POST',
              permission='user')
 def user_deposit_cc_submit(request):
-    # See http://stripe.com/docs/tutorials/charges
-    stripe.api_key = request.registry.settings['stripe.secret_key']
-
     token = request.POST['stripeToken']
     amount = float(request.POST['betty_amount'])
     total_cents = int(request.POST['betty_total_cents'])
@@ -155,61 +153,15 @@ def user_deposit_cc_submit(request):
         request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
         return HTTPFound(location=request.route_url('user_index'))
 
-    charge = (amount + 0.3) / 0.971
-    fee = charge - amount
-    if total_cents != int(round((amount + fee)*100)):
-        request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
-        return HTTPFound(location=request.route_url('user_index'))
-    amount = Decimal(amount)
-
-    if amount <= 0.0:
-        request.session.flash(
-                _('Deposit amount must be greater than $0.00. Card NOT charged.'),
-                'error'
-                )
-        return HTTPFound(location=request.route_url('user_index'))
-
-    try:
-        charge = stripe.Charge.create(
-                amount = total_cents,
-                currency="usd",
-                source=token,
-                description=request.user.uniqname+'@umich.edu'
-                )
-
-    except stripe.CardError as e:
-        traceback.print_exc()
-        request.session.flash('Card error processing transaction. Card NOT charged.', 'error')
-        return HTTPFound(location=request.route_url('user_index'))
-    except stripe.StripeError as e:
-        traceback.print_exc()
-        request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
-        request.session.flash('Please e-mail chezbetty@umich.edu so we can correct this error', 'error')
-        return HTTPFound(location=request.route_url('user_index'))
-
-    try:
-        if to_account == 'user':
-            deposit = datalayer.cc_deposit(
-                    request.user,
-                    request.user,
-                    amount,
-                    charge['id'],
-                    charge['source']['last4'])
-        else:
-            deposit = datalayer.cc_deposit(
-                    request.user,
-                    pool,
-                    amount,
-                    charge['id'],
-                    charge['source']['last4'])
-
-        request.session.flash('Deposit added successfully.', 'success')
-
-    except Exception as e:
-        traceback.print_exc()
-        request.session.flash('A unknown error has occured.', 'error')
-        request.session.flash('Your card HAS been charged, but your account HAS NOT been credited.', 'error')
-        request.session.flash('Please e-mail chezbetty@umich.edu so we can correct this error', 'error')
+    post_stripe_payment(
+            datalayer,
+            request,
+            token,
+            amount,
+            total_cents,
+            request.user,
+            request.user if to_account == 'user' else pool,
+            )
 
     return HTTPFound(location=request.route_url('user_index'))
 

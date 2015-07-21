@@ -1,0 +1,118 @@
+{% set timeout = 0 %}
+{% extends "base.jinja2" %}
+{% block title %}Pay Debt{% endblock %}
+
+{% set amount = -(user.balance|float) %}
+
+{% set charge = (amount + 0.3) / 0.971 %}
+{% set fee = charge - amount %}
+{% set total_cents = (charge*100)|round|int %}
+
+{% block content %}
+
+<h1>Pay Debt</h1>
+<hr />
+
+{% if user.balance < 0 %}
+
+<h3>
+{{ _('We use stripe to process credit card transactions.') }}
+</h3>
+<p>
+{{ _('Stripe charges 2.9% + $0.30 for each transaction.') }}
+{{ _('We pass this charge directly onto you.') }}
+</p>
+
+<h3>
+  {{ _('Your current balance is %(balance)s and your card will be charged %(charge)s.')|format(balance=user.balance|format_currency,charge=charge|format_currency)|safe }}
+</h3>
+
+<hr />
+
+<button id="pay_btn" class="btn btn-success btn-huge">Pay Debt</button>
+
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script>
+var handler = StripeCheckout.configure({
+  key: '{{ stripe_pk }}',
+  image: '{{"chezbetty:static/chezbetty_1000px.jpg"|static_url}}',
+  token: function(token) {
+    console.log(token);
+    // Callback w/ token.id to create a charge and token.email
+    $.ajax({
+      type: "POST",
+      url: "/paydebt/{{ user.uniqname }}/submit",
+      data: {
+        stripeToken: token.id,
+        betty_amount: '{{ amount }}',
+        betty_total_cents: '{{ total_cents }}'
+        },
+      success: function () {
+        window.location.reload();
+      },
+      error: function (e) {
+        console.log(e);
+        alert("Error posting data to server");
+      },
+      dataType: "json"
+    });
+  },
+  name: 'Chez Betty',
+  description: '${{ "%0.2f"|format(amount) }} Deposit (${{ "%0.2f"|format(total_cents/100) }} Charge)',
+  amount: {{ total_cents }},
+  email: '{{ user.uniqname }}@umich.edu',
+});
+
+$('#pay_btn').on('click', function(e) {
+  handler.open();
+  e.preventDefault();
+});
+
+$(window).on('popstate', function() {
+  handler.close();
+});
+</script>
+
+<hr />
+
+<a href="/user">{{ _('For more options and transaction history, log in to your user account') }}</a>
+
+{#
+<form action="/user/deposit_cc/submit" method="POST">
+<input type="hidden" name="betty_amount" value="{{ amount }}">
+<input type="hidden" name="betty_total_cents" value="{{ total_cents }}">
+<input type="hidden" name="betty_to_account" value="{{ account }}" class="cc-betty-to-account">
+<script
+  id="cc-script-{{ amount }}"
+  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+  data-key="{{ stripe_pk }}"
+  data-amount="{{ total_cents }}"
+  data-name="Chez Betty"
+  data-description="${{ '%0.2f'|format(amount) }} Deposit (${{ '%0.2f'|format(total_cents/100) }} Charge)"
+  data-image="{{'chezbetty:static/chezbetty_1000px.jpg'|static_url}}">
+</script>
+</form>
+#}
+
+
+{% else %} {# user.balance >= 0 #}
+
+<h3>
+  {{ _('You currently do not owe Chez Betty any money.') }}
+</h3>
+<h3>
+  {{ _('Thank you for paying your debts.') }}
+</h3>
+<hr />
+
+<a href="/user" class="btn btn-success btn-huge">
+  {{ _('Log into your user account') }}
+</a>
+<a href="/" class="btn btn-default btn-huge pull-right">
+  {{ _('Chez Betty Home') }}
+</a>
+
+{% endif %}
+
+{% endblock %}
+

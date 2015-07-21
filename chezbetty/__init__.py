@@ -87,6 +87,8 @@ def main(global_config, **settings):
     config.add_route('item_request',        '/item/request')
     config.add_route('item_request_new',    '/item/request/new')
 
+    config.add_route('paydebt',             '/paydebt/{uniqname}')
+    config.add_route('paydebt_submit',      '/paydebt/{uniqname}/submit')
 
     # TERMINAL VIEWS
     config.add_route('user',                '/terminal/profile/{umid}')
