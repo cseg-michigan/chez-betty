@@ -15,7 +15,7 @@
   $<input name="threshold" value="20.00"> in debt to Chez Betty encouraging
   them to settle up.</p>
   <div class="well">
-{% set user = {'name': '<< name >>', 'balance': '<< balance >>'} %}
+{% set user = {'name': '<< name >>', 'balance': '<< balance >>', 'uniqname': '<< uniqname >> '} %}
 {% include "email_deadbeats.jinja2" %}
   </div>
   <button type="submit" class="btn btn-success">Email Deadbeat Users</button>
@@ -29,7 +29,7 @@
   $<input name="threshold" value="2.00"> in debt to Chez Betty encouraging
   them to settle up.</p>
   <div class="well">
-{% set user = {'name': '<< name >>', 'balance': '<< balance >>'} %}
+{% set user = {'name': '<< name >>', 'balance': '<< balance >>', 'uniqname': '<< uniqname >> '} %}
 {% include "email_endofsemester.jinja2" %}
   </div>
   <button type="submit" class="btn btn-success">Send End of Semester Email</button>
