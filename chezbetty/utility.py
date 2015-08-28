@@ -1,7 +1,10 @@
 import datetime
+from decimal import Decimal
 import itertools
 import qrcode
 import qrcode.image.svg
+import stripe
+import traceback
 
 from pyramid.renderers import render
 from pyramid.threadlocal import get_current_registry
@@ -254,4 +257,68 @@ def timeseries_balance_total_daily(rows):
         out.append((t, round(total_debt*100), round(total_balance*100), round((total_debt*100)/users_in_debt)))
 
     return out
+
+def post_stripe_payment(
+        datalayer, # Need to pass as argument to avoid circular import, ugh
+        request,
+        token,
+        amount,
+        total_cents,
+        account_making_payment,
+        account_depositing_into,
+        ):
+    # See http://stripe.com/docs/tutorials/charges
+    stripe.api_key = request.registry.settings['stripe.secret_key']
+
+    charge = (amount + 0.3) / 0.971
+    fee = charge - amount
+    if total_cents != int(round((amount + fee)*100)):
+        print("Stripe total mismatch. total_cents {} != {}".format(
+            total_cents, int(round((amount + fee)*100))))
+        request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
+        return False
+    amount = Decimal(amount)
+
+    if amount <= 0.0:
+        request.session.flash(
+                _('Deposit amount must be greater than $0.00. Card NOT charged.'),
+                'error'
+                )
+        return False
+
+    try:
+        charge = stripe.Charge.create(
+                amount = total_cents,
+                currency="usd",
+                source=token,
+                description=account_making_payment.uniqname+'@umich.edu'
+                )
+
+    except stripe.CardError as e:
+        traceback.print_exc()
+        request.session.flash('Card error processing transaction. Card NOT charged.', 'error')
+        return False
+    except stripe.StripeError as e:
+        traceback.print_exc()
+        request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
+        request.session.flash('Please e-mail chezbetty@umich.edu so we can correct this error', 'error')
+        return False
+
+    try:
+        deposit = datalayer.cc_deposit(
+                account_making_payment,
+                account_depositing_into,
+                amount,
+                charge['id'],
+                charge['source']['last4'])
+
+        request.session.flash('Deposit added successfully.', 'success')
+
+    except Exception as e:
+        traceback.print_exc()
+        request.session.flash('A unknown error has occured.', 'error')
+        request.session.flash('Your card HAS been charged, but your account HAS NOT been credited.', 'error')
+        request.session.flash('Please e-mail chezbetty@umich.edu so we can correct this error', 'error')
+
+    return True
 
