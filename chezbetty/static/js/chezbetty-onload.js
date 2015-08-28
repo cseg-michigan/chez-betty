@@ -96,10 +96,21 @@ $("#keypad-umid").on("click", "button", function () {
 		// to keep taking inputs
 
 		var value = $(this).attr("id").split("-")[2];
-		manual_umid_enter += value;
+		if (value == 'del') {
+			var num = manual_umid_enter.length;
+			if (num == 0) {
+				return;
+			}
+			$("#keypad-umid-status block:eq("+(8-num)+")").removeClass("umid-status-blue");
+			manual_umid_enter = manual_umid_enter.slice(0, -1);
+		} else if (value == 'clear') {
+			clear_umid_keypad();
+		} else {
+			manual_umid_enter += value;
 
-		var num = manual_umid_enter.length;
-		$("#keypad-umid-status block:eq("+(8-num)+")").addClass("umid-status-blue");
+			var num = manual_umid_enter.length;
+			$("#keypad-umid-status block:eq("+(8-num)+")").addClass("umid-status-blue");
+		}
 
 		if (manual_umid_enter.length == 8) {
 			$.ajax({
@@ -114,18 +125,23 @@ $("#keypad-umid").on("click", "button", function () {
 					}
 				},
 				error: function (data) {
+					if (manual_umid_timeout >= 0) {
+						clearTimeout(manual_umid_timeout);
+					}
 					clear_umid_keypad();
 				},
 				dataType: "json"
 			});
 
 		} else {
-			// Want to clear things if someone gets halfway through and quits.
-			// Wait 15 seconds.
 			if (manual_umid_timeout >= 0) {
 				clearTimeout(manual_umid_timeout);
 			}
-			manual_umid_timeout = setTimeout(clear_umid_keypad, 15000);
+			if (manual_umid_enter.length) {
+				// Want to clear things if someone gets halfway through and quits.
+				// Wait 15 seconds.
+				manual_umid_timeout = setTimeout(clear_umid_keypad, 15000);
+			}
 		}
 	}
 });
