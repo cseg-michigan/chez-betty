@@ -13,7 +13,7 @@
 <h1>Pay Debt</h1>
 <hr />
 
-{% if user.balance < 0 %}
+{% if user.balance <= -0.01 %}
 
 <h3>
 {{ _('We use stripe to process credit card transactions.') }}
