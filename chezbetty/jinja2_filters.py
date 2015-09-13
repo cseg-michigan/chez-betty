@@ -4,6 +4,7 @@ from .models import user
 from .models import account
 from .models import pool
 
+import arrow
 import jinja2
 
 from sh import ErrorReturnCode, git
@@ -18,9 +19,15 @@ def format_currency(value):
 	else:
 		return '<span class="positive">${:,.2f}</span>'.format(value)
 
-# This should be done client side
+# Convert UTC datetime object from the database to the local time
+# of the Chez Betty instance.
+# TODO: pass the timezone in to this somehow, but for now we just go
+# with eastern. Sorry.
 def pretty_date(datetime_obj):
-	return '<span class="date">{}</span>'.format(datetime_obj.strftime('%m/%d/%Y %I:%M:%S %p UTC'))
+	eastern = arrow.get(datetime_obj).to('US/Eastern')
+	eastern_date = eastern.format('MMM D, YYYY')
+	eastern_time = eastern.format('hh:mm A')
+	return '<span class="prettydate">{} at {}</span>'.format(eastern_date, eastern_time)
 
 # Shorten a string to l length
 def shorten(s, l):

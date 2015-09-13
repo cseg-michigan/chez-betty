@@ -32,7 +32,6 @@
           <th {% if sort=="lost" %}data-defaultsort="{{ dir }}"{% endif %}>Num Lost</th>
           <th {% if sort=="inventorypercent" %}data-defaultsort="{{ dir }}"{% endif %}>Inventory Percent</th>
           <th {% if sort=="theftiness" %}data-defaultsort="{{ dir }}"{% endif %}>Theftiness</th>
-          <th>Enabled</th>
         </tr>
       </thead>
 
@@ -75,7 +74,6 @@
           <td>{{ item.number_lost|int }}</td>
           <td data-value="{{ item.inventory_percent|round(2) }}">{{ item.inventory_percent|round(2) }}%</td>
           <td data-value="{{ item.theftiness|round(2) }}">{{ item.theftiness|round(2) }}%</td>
-          <td>{{ button.onoff_switch("item", "enabled", item.id, item.enabled) }}</td>
         </tr>
         {% endfor %}
       </tbody>

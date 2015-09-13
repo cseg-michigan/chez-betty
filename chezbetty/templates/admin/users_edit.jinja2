@@ -14,7 +14,7 @@
 
 <form role="form" action="/admin/users/edit/submit" method="post">
 
-  <table class="table sortable filterable">
+  <table class="table sortable">
 
     <thead>
       <tr class="user-list-header">
@@ -23,7 +23,6 @@
         <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
         <th {% if sort=="balance" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
         <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
-        <th>Enabled</th>
       </tr>
     </thead>
 
@@ -41,7 +40,6 @@
         </td>
         <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
         <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>
-        <td>{{ button.onoff_switch("user", "enabled", user.id, user.enabled) }}</td>
       </tr>
       {% endfor %}
     </tbody>
