@@ -17,7 +17,7 @@ pyramid.includes =
 
 debugging = 1
 
-# Supress actually sending e-mails in debug mode by default. If e-mail is enabled and
+# Suppress actually sending e-mails in debug mode by default. If e-mail is enabled and
 # a replacement e-mail address specified, all e-mail will only go to the debug address
 debugging_send_email = false
 debugging_send_email_to = youraccount@testing.com
@@ -59,6 +59,12 @@ bitcoin.coinbase_api_secret = aabb
 # for charges made on test keys.
 stripe.publishable_key = aabb
 stripe.secret_key = aabb
+
+# Get these from creating a twitter app
+twitter.api_key = aabb
+twitter.api_secret = aabb
+twitter.access_token = aabb
+twitter.access_token_secret = aabb
 
 # By default, the toolbar only appears for clients from IP addresses
 # '127.0.0.1' and '::1'.
