@@ -900,7 +900,11 @@ def admin_items_edit(request):
         for sbi in sb.box.items:
             if sbi.item_id not in stocked_amount:
                 stocked_amount[sbi.item_id] = 0
-            stocked_amount[sbi.item_id] += (sbi.percentage * sb.amount)
+            try:
+                percentage = sbi.percentage / Decimal(100.0)
+            except:
+                percentage = 0
+            stocked_amount[sbi.item_id] += (percentage * sb.amount)
 
     # Get the sale speed
     sale_speeds = views_data.item_sale_speed(30)
@@ -1080,10 +1084,27 @@ def admin_item_edit(request):
         stats['stock'] = item.in_stock
 
         stats['num_sold'] = 0
+        stats['sold_amount'] = 0
         purchased_items = PurchaseLineItem.all()
         for pi in purchased_items:
             if pi.item_id == item.id:
                 stats['num_sold'] += pi.quantity
+                stats['sold_amount'] += pi.amount
+
+        stats['stocked_amount'] = 0
+        stocked_items = RestockLineItem.all()
+        for si in stocked_items:
+            if si.item_id == item.id:
+                stats['stocked_amount'] += si.amount
+        stocked_boxes = RestockLineBox.all()
+        for sb in stocked_boxes:
+            for sbi in sb.box.items:
+                if sbi.item_id == item.id:
+                    try:
+                        percentage = sbi.percentage / Decimal(100.0)
+                    except:
+                        percentage = 0.0
+                    stats['stocked_amount'] += (percentage * sb.amount)
 
         stats['sale_speed'] = views_data.item_sale_speed(30, item.id)
 
@@ -1111,6 +1132,9 @@ def admin_item_edit(request):
                 stats['theftiness'] = 100.0
         else:
             stats['theftiness'] = (stats['lost']/stats['num_sold']) * 100.0
+
+        # Profit
+        stats['profit'] = stats['sold_amount'] - (stats['stocked_amount'] - (item.wholesale * item.in_stock))
 
         # Don't display vendors that already have an item number in the add
         # new vendor item number section

@@ -57,6 +57,7 @@
             <dt>Num Lost</dt> <dd>{{ stats.lost }}</dd>
             <dt>Inventory Percent</dt> <dd>{{ stats.inv_percent|round(2) }}%</dd>
             <dt>Theftiness</dt> <dd>{{ stats.theftiness|round(2) }}%</dd>
+            <dt>Profit</dt> <dd>{{ stats.profit|format_currency|safe }}</dd>
           </dl>
         </div>
         <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
