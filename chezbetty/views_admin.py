@@ -21,7 +21,7 @@ from .models.item import Item, ItemImage
 from .models.box import Box
 from .models.box_item import BoxItem
 from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
-from .models.transaction import Inventory, InventoryLineItem
+from .models.transaction import Inventory, InventoryLineItem, RestockLineItem, RestockLineBox
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
@@ -868,12 +868,17 @@ def admin_items_edit(request):
     items = items_active + items_inactive
 
     # Calculate the number sold here (much faster)
+    # Also calculate how much each sale was worth to us
     purchased_items = PurchaseLineItem.all()
     purchased_quantities = {}
+    purchased_amount = {}
     for pi in purchased_items:
         if pi.item_id not in purchased_quantities:
             purchased_quantities[pi.item_id] = 0
+        if pi.item_id not in purchased_amount:
+            purchased_amount[pi.item_id] = 0
         purchased_quantities[pi.item_id] += pi.quantity
+        purchased_amount[pi.item_id] += pi.amount
 
     # Calculate the number lost here (much faster)
     lost_items = InventoryLineItem.all()
@@ -882,6 +887,20 @@ def admin_items_edit(request):
         if li.item_id not in lost_quantities:
             lost_quantities[li.item_id] = 0
         lost_quantities[li.item_id] += (li.quantity - li.quantity_counted)
+
+    # Calculate the amount we have paid to the store for all items
+    stocked_items = RestockLineItem.all()
+    stocked_amount = {}
+    for si in stocked_items:
+        if si.item_id not in stocked_amount:
+            stocked_amount[si.item_id] = 0
+        stocked_amount[si.item_id] += si.amount
+    stocked_boxes = RestockLineBox.all()
+    for sb in stocked_boxes:
+        for sbi in sb.box.items:
+            if sbi.item_id not in stocked_amount:
+                stocked_amount[sbi.item_id] = 0
+            stocked_amount[sbi.item_id] += (sbi.percentage * sb.amount)
 
     # Get the sale speed
     sale_speeds = views_data.item_sale_speed(30)
@@ -917,7 +936,6 @@ def admin_items_edit(request):
 
         item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
-        #
         # Calculate "theftiness" which is:
         #
         #                number stolen
@@ -933,6 +951,25 @@ def admin_items_edit(request):
                 item.theftiness = 100.0
         else:
             item.theftiness = ((item.number_lost or 0.0)/item.number_sold) * 100.0
+
+
+        # Calculate profit which is:
+        #
+        #  profit = (num_sold * price) - ((num_purchased - num_in_stock) * wholesale)
+        #
+        # Note: this is not perfect for two reasons.
+        #       1. when calculating how much we paid to the store for each item
+        #          in a box, we use the current box division percents, not
+        #          necessarily the ones used when we restocked the box.
+        #       2. We just use the current wholesale price for calculating
+        #          how much we have in stock. This may not be the same as what
+        #          we actually paid. Therefore, this will only be correct when
+        #          stock==0.
+        if item.id not in stocked_amount:
+            stocked_amount[item.id] = 0
+        if item.id not in purchased_amount:
+            purchased_amount[item.id] = 0
+        item.profit = purchased_amount[item.id] - (stocked_amount[item.id] - (item.wholesale * item.in_stock))
 
     return {'items': items}
 

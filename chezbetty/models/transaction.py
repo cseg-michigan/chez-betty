@@ -702,12 +702,12 @@ class SubSubTransaction(Base):
 
     @classmethod
     @limitable_all
-    def all_item(cls, id):
+    def all_item(cls, item_id):
         return DBSession.query(cls)\
                         .join(SubTransaction)\
                         .join(Transaction)\
                         .join(event.Event)\
-                        .filter(cls.item_id == id)\
+                        .filter(cls.item_id == item_id)\
                         .filter(event.Event.deleted==False)\
                         .order_by(cls.id)
 
