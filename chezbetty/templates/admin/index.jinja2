@@ -105,6 +105,10 @@
               <td>Inventory (Price)</td>
               <td class="right">{{ inventory.price|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>Estimated Net</td>
+              <td class="right">{{ estimated_net|format_currency|safe }}</td>
+            </tr>
 
           </tbody>
         </table>
@@ -191,6 +195,10 @@
               <td>YTD Total BTC Deposits</td>
               <td class="right">{{ ytd_dep_btc|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>YTD Total CC Deposits</td>
+              <td class="right">{{ ytd_dep_cc|format_currency|safe }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -228,6 +236,10 @@
             <tr>
               <td>MTD Total BTC Deposits</td>
               <td class="right">{{ mtd_dep_btc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total CC Deposits</td>
+              <td class="right">{{ mtd_dep_cc|format_currency|safe }}</td>
             </tr>
           </tbody>
         </table>
@@ -267,6 +279,10 @@
               <td>BTC Deposits</td>
               <td class="right">{{ today_dep_btc|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>CC Deposits</td>
+              <td class="right">{{ today_dep_cc|format_currency|safe }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -304,12 +320,16 @@
               <td class="right">{{ ((total_inventory_lost / restock.balance)*100)|round(2) }}%</td>
             </tr>
             <tr>
-              <td>Total Deposits</td>
-              <td class="right">{{ total_deposits|format_currency|safe }}</td>
+              <td>% Lost</td>
+              <td class="right">{{ (((total_inventory_lost - cashbox_net - btcbox_net) / restock.balance)*100)|round(2) }}%</td>
             </tr>
             <tr>
-              <td>Projected Profit</td>
-              <td class="right">{{ ((inventory.price - users_balance) + chezbetty_cash.balance + cashbox.balance + btcbox.balance)|format_currency|safe }}</td>
+              <td>Total CC Deposits</td>
+              <td class="right">{{ total_cc_deposits|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Total Deposits</td>
+              <td class="right">{{ total_deposits|format_currency|safe }}</td>
             </tr>
           </tbody>
         </table>

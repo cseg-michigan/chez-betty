@@ -20,7 +20,7 @@ from .models.user import User
 from .models.item import Item, ItemImage
 from .models.box import Box
 from .models.box_item import BoxItem
-from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, Purchase
+from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, CCDeposit, Purchase
 from .models.transaction import Inventory, InventoryLineItem, RestockLineItem, RestockLineBox
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
 from .models.account import Account, VirtualAccount, CashAccount
@@ -270,6 +270,10 @@ def admin_index(request):
     cashbox_net = cashbox_found.balance - cashbox_lost.balance
     btcbox_net = btcbox_found.balance - btcbox_lost.balance
     chezbetty_net = chezbetty_found.balance - chezbetty_lost.balance
+    # Our "shut it down" balance. Basically what we would have left over if
+    # refunded all account holders, defaulted on our loan, and sold all inventory
+    # for what we paid for it.
+    estimated_net = chezbetty_cash.balance + cashbox.balance + btcbox.balance - held_for_users + inventory.wholesale
 
     total_sales          = Purchase.total()
     profit_on_sales      = PurchaseLineItem.profit_on_sales()
@@ -277,6 +281,7 @@ def admin_index(request):
     total_deposits       = Deposit.total()
     total_cash_deposits  = CashDeposit.total()
     total_btc_deposits   = BTCDeposit.total()
+    total_cc_deposits    = CCDeposit.total()
 
     # Get the current date that it is in the eastern time zone
     now = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)\
@@ -289,6 +294,7 @@ def admin_index(request):
     ytd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
     ytd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
     ytd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_dep_cc   = CCDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
 
     mtd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
     mtd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
@@ -296,6 +302,7 @@ def admin_index(request):
     mtd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
     mtd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
     mtd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_dep_cc   = CCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
 
     today_sales    = Purchase.total(views_data.ftz(now), None)
     today_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(now), None)
@@ -303,6 +310,7 @@ def admin_index(request):
     today_dep      = Deposit.total(views_data.ftz(now), None)
     today_dep_cash = CashDeposit.total(views_data.ftz(now), None)
     today_dep_btc  = BTCDeposit.total(views_data.ftz(now), None)
+    today_dep_cc   = CCDeposit.total(views_data.ftz(now), None)
 
 
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
@@ -332,6 +340,7 @@ def admin_index(request):
                 cashbox_net=cashbox_net,
                 btcbox_net=btcbox_net,
                 chezbetty_net=chezbetty_net,
+                estimated_net=estimated_net,
                 restock=restock,
                 donation=donation,
                 withdrawal=withdrawal,
@@ -343,24 +352,28 @@ def admin_index(request):
                 total_deposits=total_deposits,
                 total_cash_deposits=total_cash_deposits,
                 total_btc_deposits=total_btc_deposits,
+                total_cc_deposits=total_cc_deposits,
                 ytd_sales=ytd_sales,
                 ytd_profit=ytd_profit,
                 ytd_lost=ytd_lost,
                 ytd_dep=ytd_dep,
                 ytd_dep_cash=ytd_dep_cash,
                 ytd_dep_btc=ytd_dep_btc,
+                ytd_dep_cc=ytd_dep_cc,
                 mtd_sales=mtd_sales,
                 mtd_profit=mtd_profit,
                 mtd_lost=mtd_lost,
                 mtd_dep=mtd_dep,
                 mtd_dep_cash=mtd_dep_cash,
                 mtd_dep_btc=mtd_dep_btc,
+                mtd_dep_cc=mtd_dep_cc,
                 today_sales=today_sales,
                 today_profit=today_profit,
                 today_lost=today_lost,
                 today_dep=today_dep,
                 today_dep_cash=today_dep_cash,
                 today_dep_btc=today_dep_btc,
+                today_dep_cc=today_dep_cc,
                 graph_items_day=views_data.create_dict('items', 'day', 21),
                 graph_sales_day=views_data.create_dict('sales', 'day', 21),
                 graph_deposits_day=graph_deposits_day)
