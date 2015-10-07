@@ -8,6 +8,11 @@
 {% set fee = charge - amount %}
 {% set total_cents = (charge*100)|round|int %}
 
+{% set t_amount = amount + 25 %}
+{% set t_charge = (t_amount + 0.3) / 0.971 %}
+{% set t_fee = t_charge - t_amount %}
+{% set t_total_cents = (t_charge*100)|round|int %}
+
 {% block content %}
 
 <h1>Pay Debt</h1>
@@ -75,7 +80,60 @@ $(window).on('popstate', function() {
 
 <hr />
 
+<p>
+{{ _('We encourage users to keep a positive balance (you even get a discount!).') }}
+</p>
+<p>
+{{ _('If you are still around, please strongly consider paying up to a positive balance.') }}
+</p>
+<button id="pay_t_btn" class="btn btn-success btn-huge">{{ _('Pay to $25 Balance') }}</button>
+
+<script>
+var t_handler = StripeCheckout.configure({
+  key: '{{ stripe_pk }}',
+  image: '{{"chezbetty:static/chezbetty_1000px.jpg"|static_url}}',
+  token: function(token) {
+    console.log(token);
+    // Callback w/ token.id to create a charge and token.email
+    $.ajax({
+      type: "POST",
+      url: "/paydebt/{{ user.uniqname }}/submit",
+      data: {
+        stripeToken: token.id,
+        betty_amount: '{{ t_amount }}',
+        betty_total_cents: '{{ t_total_cents }}'
+        },
+      success: function () {
+        window.location.reload();
+      },
+      error: function (e) {
+        console.log(e);
+        alert("Error posting data to server");
+      },
+      dataType: "json"
+    });
+  },
+  name: 'Chez Betty',
+  description: '${{ "%0.2f"|format(t_amount) }} Deposit (${{ "%0.2f"|format(t_total_cents/100) }} Charge)',
+  amount: {{ t_total_cents }},
+  email: '{{ user.uniqname }}@umich.edu',
+});
+
+$('#pay_t_btn').on('click', function(e) {
+  t_handler.open();
+  e.preventDefault();
+});
+
+$(window).on('popstate', function() {
+  t_handler.close();
+});
+</script>
+
+<hr />
+
+<h3>
 <a href="/user">{{ _('For more options and transaction history, log in to your user account') }}</a>
+</h3>
 
 {#
 <form action="/user/deposit_cc/submit" method="POST">
