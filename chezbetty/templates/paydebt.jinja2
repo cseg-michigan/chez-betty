@@ -65,7 +65,6 @@ var handler = StripeCheckout.configure({
   name: 'Chez Betty',
   description: '${{ "%0.2f"|format(amount) }} Deposit (${{ "%0.2f"|format(total_cents/100) }} Charge)',
   amount: {{ total_cents }},
-  email: '{{ user.uniqname }}@umich.edu',
 });
 
 $('#pay_btn').on('click', function(e) {
@@ -116,7 +115,6 @@ var t_handler = StripeCheckout.configure({
   name: 'Chez Betty',
   description: '${{ "%0.2f"|format(t_amount) }} Deposit (${{ "%0.2f"|format(t_total_cents/100) }} Charge)',
   amount: {{ t_total_cents }},
-  email: '{{ user.uniqname }}@umich.edu',
 });
 
 $('#pay_t_btn').on('click', function(e) {
