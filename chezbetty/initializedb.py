@@ -133,7 +133,7 @@ def main(argv=sys.argv):
                 )
         DBSession.add(coke_box)
         DBSession.flush()
-        DBSession.add(BoxItem(coke_box, coke, 32))
+        DBSession.add(BoxItem(coke_box, coke, 32, 100))
 
 if __name__ == "__main__":
     main()
