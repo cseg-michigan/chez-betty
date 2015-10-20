@@ -402,10 +402,15 @@ class Adjustment(Transaction):
 
 class Restock(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'restock'}
-    def __init__(self, event):
+
+    # Additional cost that should get distributed over the entire restock
+    amount_restock_cost = Column(Numeric, nullable=True)
+
+    def __init__(self, event, global_cost):
         chezbetty_v = account.get_virt_account("chezbetty")
         chezbetty_c = account.get_cash_account("chezbetty")
         Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, None, Decimal(0.0))
+        self.amount_restock_cost = global_cost
 
 
 class Inventory(Transaction):

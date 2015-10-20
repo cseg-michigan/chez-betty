@@ -43,6 +43,14 @@
         <td colspan="3"></td>
       </tr>
       <tr>
+        <td colspan="6">Subtotal</td>
+        <td id="restock-subtotal">$0.00</td>
+      </tr>
+      <tr>
+        <td colspan="6">Global Cost</td>
+        <td><input type="text" id="restock-globalcost" class="form-control numeric" name="restock-globalcost" value="{{ global_cost }}"></td>
+      </tr>
+      <tr>
         <td colspan="6">Total</td>
         <td id="restock-total">$0.00</td>
       </tr>
@@ -103,7 +111,7 @@
   </div>
 
   <div>
-    Do NOT update item prices with this restock: 
+    Do NOT update item prices with this restock:
     <input type="checkbox" id="restock-noprice" name="restock-noprice">
   </div>
 

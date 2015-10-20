@@ -453,33 +453,39 @@ def admin_item_search_json(request):
 def admin_restock(request):
     restock_items = ''
     index = 0
+    global_cost = 0.0
     if len(request.GET) != 0:
         for index,packed_values in request.GET.items():
             values = packed_values.split(',')
-            line_values = {}
-            line_type = values[0]
-            line_id = int(values[1])
-            line_values['quantity'] = int(values[2])
-            line_values['wholesale'] = float(values[3])
-            line_values['coupon'] = float(values[4] if values[4] != 'None' else 0)
-            line_values['salestax'] = values[5] == 'True'
-            line_values['btldeposit'] = values[6] == 'True'
+            if len(values) == 1:
+                # This is the global cost value
+                global_cost = round(float(values[0]), 2)
+            else:
+                line_values = {}
+                line_type = values[0]
+                line_id = int(values[1])
+                line_values['quantity'] = int(values[2])
+                line_values['wholesale'] = float(values[3])
+                line_values['coupon'] = float(values[4] if values[4] != 'None' else 0)
+                line_values['salestax'] = values[5] == 'True'
+                line_values['btldeposit'] = values[6] == 'True'
 
-            if line_type == 'item':
-                item = Item.from_id(line_id)
-                box = None
-            elif line_type == 'box':
-                item = None
-                box = Box.from_id(line_id)
+                if line_type == 'item':
+                    item = Item.from_id(line_id)
+                    box = None
+                elif line_type == 'box':
+                    item = None
+                    box = Box.from_id(line_id)
 
-            restock_line = render('templates/admin/restock_row.jinja2',
-                {'item': item, 'box': box, 'line': line_values})
-            restock_items += restock_line.replace('-X', '-{}'.format(index))
+                restock_line = render('templates/admin/restock_row.jinja2',
+                    {'item': item, 'box': box, 'line': line_values})
+                restock_items += restock_line.replace('-X', '-{}'.format(index))
 
     return {'items': Item.all_force(),
             'boxes': Box.all(),
             'restock_items': restock_items,
-            'restock_rows': int(index)+1}
+            'restock_rows': int(index)+1,
+            'global_cost': global_cost}
 
 
 @view_config(route_name='admin_restock_submit',
@@ -489,9 +495,14 @@ def admin_restock_submit(request):
 
     # Array of (Item, quantity, total) tuples
     items_for_pricing = []
+    # Keep track of the total number of items being restocked. We use
+    # this to divide up the "global cost" to each item.
+    total_items_restocked = 0
 
     # Add an item to the array or update its totals
     def add_item(item, quantity, total):
+        nonlocal total_items_restocked
+        total_items_restocked += quantity
         for i in range(len(items_for_pricing)):
             if items_for_pricing[i][0].id == item.id:
                 items_for_pricing[i][1] += quantity
@@ -509,6 +520,11 @@ def admin_restock_submit(request):
     update_prices = True
     if 'restock-noprice' in request.POST:
         update_prices = False
+
+    # Check for a global cost that should be applied across all items.
+    # Note: this can be negative to reflect a discount of some kind applied to
+    # all items.
+    global_cost = float(request.POST['restock-globalcost'] or 0.0)
 
     for key,val in request.POST.items():
 
@@ -592,13 +608,18 @@ def admin_restock_submit(request):
             continue
 
 
+    # Now that we've iterated all items to be restocked, calculate
+    # how much we are going to add to the price of each item to make
+    # up for the "global cost" (or discount).
+    global_cost_item_addition = global_cost / total_items_restocked
+
     # Iterate the grouped items, update prices and wholesales, and then restock
     if update_prices:
         for item,quantity,total in items_for_pricing:
             if quantity == 0:
                 request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
                 continue
-            item.wholesale = Decimal(round(total/quantity, 4))
+            item.wholesale = Decimal(round((total/quantity) + global_cost_item_addition, 4))
             # Set the item price
             item.price = round(item.wholesale * Decimal(1.15), 2)
 
@@ -618,7 +639,7 @@ def admin_restock_submit(request):
         restock_date = None
 
     try:
-        e = datalayer.restock(items, request.user, restock_date)
+        e = datalayer.restock(items, global_cost, request.user, restock_date)
         request.session.flash('Restock complete.', 'success')
         return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
     except Exception as e:

@@ -48,22 +48,28 @@ def undo_event(e, user):
                 Item.from_id(s.item_id).in_stock += s.quantity
 
         elif t.type == 'restock':
+            # Include the global cost so we can repopulate the box on the
+            # restock page.
+            line_items[0] = '{}'.format(t.amount_restock_cost)
+
             # Add all of the boxes and items to the return list
             # Also remove the stock this restock added to each item
             for i,s in zip(range(len(t.subtransactions)), t.subtransactions):
                 if s.type == 'restocklineitem':
                     item = Item.from_id(s.item_id)
-                    line_items[i] = '{},{},{},{},{},{},{}'.format(
+                    line_items[i+1] = '{},{},{},{},{},{},{}'.format(
                         'item', s.item_id, s.quantity, s.wholesale,
                         s.coupon_amount, s.sales_tax, s.bottle_deposit)
                     item.in_stock -= s.quantity
                 elif s.type == 'restocklinebox':
-                    line_items[i] = '{},{},{},{},{},{},{}'.format(
+                    line_items[i+1] = '{},{},{},{},{},{},{}'.format(
                         'box', s.box_id, s.quantity, s.wholesale,
                         s.coupon_amount, s.sales_tax, s.bottle_deposit)
                     for ss in s.subsubtransactions:
                         item = Item.from_id(ss.item_id)
                         item.in_stock -= ss.quantity
+
+
 
         elif t.type == 'inventory':
             # Change the stock of all the items by reversing the inventory count
@@ -223,14 +229,15 @@ def adjust_user_balance(user, adjustment, notes, admin):
 
 
 # Call this when an admin restocks chezbetty
-def restock(items, admin, timestamp=None):
+def restock(items, global_cost, admin, timestamp=None):
     e = event.Restock(admin, timestamp)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Restock(e)
+    t = transaction.Restock(e, Decimal(global_cost))
     DBSession.add(t)
     DBSession.flush()
-    amount = Decimal(0.0)
+    # Start with the global cost when calculating the total amount
+    amount = Decimal(global_cost)
 
     # Add all of the items as subtransactions
     for thing, quantity, total, wholesale, coupon, salestax, btldeposit in items:
@@ -342,7 +349,7 @@ def cashbox_to_bank(amount, admin):
 
     t = transaction.EmptyCashBox(e, amount)
     DBSession.add(t)
-    
+
 
 # Call this when bitcoins are converted to USD
 def reconcile_bitcoins(amount, admin, expected_amount=None):
