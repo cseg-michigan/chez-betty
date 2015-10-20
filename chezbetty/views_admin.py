@@ -1927,6 +1927,9 @@ def admin_users_email_endofsemester(request):
     if threshold < 0:
         request.session.flash('Threshold should be >= 0', 'error')
         return HTTPFound(location=request.route_url('admin_users_email'))
+    # Work around storing balances as floats so we don't bug people with -$0.00
+    if threshold < 0.01:
+        threshold = 0.01
     deadbeats = DBSession.query(User).\
             filter(User.enabled).\
             filter(User.balance < -threshold).\
@@ -1952,6 +1955,9 @@ def admin_users_email_deadbeats(request):
     if threshold < 0:
         request.session.flash('Threshold should be >= 0', 'error')
         return HTTPFound(location=request.route_url('admin_users_email'))
+    # Work around storing balances as floats so we don't bug people with -$0.00
+    if threshold < 0.01:
+        threshold = 0.01
     deadbeats = DBSession.query(User).\
             filter(User.enabled).\
             filter(User.balance < -threshold).\
