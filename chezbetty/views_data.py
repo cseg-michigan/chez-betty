@@ -43,7 +43,6 @@ from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
 from . import utility
-import pytz
 import arrow
 
 class InvalidMetric(Exception):
@@ -51,9 +50,10 @@ class InvalidMetric(Exception):
 
 # fix_timezone
 def ftz(i):
-    if type(i) is datetime.date:
-        i = datetime.datetime(i.year, i.month, i.day)
-    return pytz.timezone('America/Detroit').localize(i).astimezone(tz=pytz.timezone('UTC'))
+    return i
+    #if type(i) is datetime.date:
+    #    i = datetime.datetime(i.year, i.month, i.day)
+    #return pytz.timezone('America/Detroit').localize(i).astimezone(tz=pytz.timezone('UTC'))
 
 
 def get_start(days):
@@ -93,7 +93,7 @@ def create_x_y_from_group(group, start, end, period, process_output=lambda x: x,
 
     for d,total in group:
         # Fill in days with no data
-        while ptr < datetime.date(d.year, d.month, d.day):
+        while ptr < arrow.get(datetime.date(d.year, d.month, d.day)):
             x.append(fmt_str.format(ptr.year, ptr.month, ptr.day))
             y.append(default)
             ptr += dt
@@ -113,8 +113,16 @@ def create_x_y_from_group(group, start, end, period, process_output=lambda x: x,
 def datetime_to_timestamps (data, process_output=lambda x: x):
     out = []
     for d in data:
-        t = round(datetime.datetime(year=d[0].year, month=d[0].month, day=d[0].day, hour=12)\
-                  .replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        t = arrow.get(
+                datetime.datetime(
+                    year=d[0].year,
+                    month=d[0].month,
+                    day=d[0].day,
+                    hour=12,
+                    )
+                ).timestamp * 1000
+        #t = round(datetime.datetime(year=d[0].year, month=d[0].month, day=d[0].day, hour=12)\
+        #          .replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
         # t = round(datetime.datetime.combine(d[0], datetime.datetime.min.time())\
         #           .replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
         out.append((t, process_output(d[1])))
@@ -281,9 +289,9 @@ def create_dict_to_date(metric, period):
     now = datetime.date.today()
 
     if period == 'month':
-        start = datetime.date(now.year, now.month, 1)
+        start = arrow.get(datetime.date(now.year, now.month, 1))
     elif period == 'year':
-        start = datetime.date(now.year, 1, 1)
+        start = arrow.get(datetime.date(now.year, 1, 1))
 
     xs,ys = admin_data_period_range(start, get_end(), metric, period)
 
@@ -342,7 +350,7 @@ def item_sale_speed(num_days, only_item_id=None):
     data_onsale = {}
 
     start = get_start(num_days)
-    start_datetime = datetime.datetime(start.year, start.month, start.day)
+    start_datetime = arrow.get(datetime.datetime(start.year, start.month, start.day))
 
     start_padding = get_start(num_days*3)
     start_str = start_padding.strftime('%Y-%m-%d 0:0')
@@ -383,7 +391,7 @@ def item_sale_speed(num_days, only_item_id=None):
 
     for item_id,item_data in data_onsale.items():
         if item_data['date_in_stock'] != None:
-            tdelta = datetime.datetime.now() - item_data['date_in_stock']
+            tdelta = arrow.now() - item_data['date_in_stock']
             item_data['days_on_sale'] += tdelta.days
             #print('{}: {}'.format(item_id, tdelta.days))
 

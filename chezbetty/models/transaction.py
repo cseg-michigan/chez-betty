@@ -147,9 +147,9 @@ class Transaction(Base):
                         .filter(event.Event.deleted==False)
 
         if start:
-            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
+            r = r.filter(event.Event.timestamp>=start)
         if end:
-            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
+            r = r.filter(event.Event.timestamp<end)
 
         return r.one().a or Decimal(0.0)
 

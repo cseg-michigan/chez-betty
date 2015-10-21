@@ -58,6 +58,7 @@ from reportlab.lib.units import mm, inch
 from reportlab.pdfgen import canvas
 
 import abbreviate
+import arrow
 import uuid
 import twitter
 import traceback
@@ -284,33 +285,31 @@ def admin_index(request):
     total_cc_deposits    = CCDeposit.total()
 
     # Get the current date that it is in the eastern time zone
-    now = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)\
-        .astimezone(tz=pytz.timezone('America/Detroit')).replace(tzinfo=None)\
-        .date()
+    now = arrow.now()
 
-    ytd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
-    ytd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, 1, 1)), None)
-    ytd_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
-    ytd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
-    ytd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
-    ytd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
-    ytd_dep_cc   = CCDeposit.total(views_data.ftz(datetime.date(now.year, 1, 1)), None)
+    ytd_sales    = Purchase.total(now.replace(month=1,day=1), None)
+    ytd_profit   = PurchaseLineItem.profit_on_sales(now.replace(month=1,day=1), None)
+    ytd_lost     = Inventory.total(now.replace(month=1,day=1), None)
+    ytd_dep      = Deposit.total(now.replace(month=1,day=1), None)
+    ytd_dep_cash = CashDeposit.total(now.replace(month=1,day=1), None)
+    ytd_dep_btc  = BTCDeposit.total(now.replace(month=1,day=1), None)
+    ytd_dep_cc   = CCDeposit.total(now.replace(month=1,day=1), None)
 
-    mtd_sales    = Purchase.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
-    mtd_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
-    mtd_lost     = Inventory.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
-    mtd_dep      = Deposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
-    mtd_dep_cash = CashDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
-    mtd_dep_btc  = BTCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
-    mtd_dep_cc   = CCDeposit.total(views_data.ftz(datetime.date(now.year, now.month, 1)), None)
+    mtd_sales    = Purchase.total(now.replace(day=1), None)
+    mtd_profit   = PurchaseLineItem.profit_on_sales(now.replace(day=1), None)
+    mtd_lost     = Inventory.total(now.replace(day=1), None)
+    mtd_dep      = Deposit.total(now.replace(day=1), None)
+    mtd_dep_cash = CashDeposit.total(now.replace(day=1), None)
+    mtd_dep_btc  = BTCDeposit.total(now.replace(day=1), None)
+    mtd_dep_cc   = CCDeposit.total(now.replace(day=1), None)
 
-    today_sales    = Purchase.total(views_data.ftz(now), None)
-    today_profit   = PurchaseLineItem.profit_on_sales(views_data.ftz(now), None)
-    today_lost     = Inventory.total(views_data.ftz(now), None)
-    today_dep      = Deposit.total(views_data.ftz(now), None)
-    today_dep_cash = CashDeposit.total(views_data.ftz(now), None)
-    today_dep_btc  = BTCDeposit.total(views_data.ftz(now), None)
-    today_dep_cc   = CCDeposit.total(views_data.ftz(now), None)
+    today_sales    = Purchase.total(now, None)
+    today_profit   = PurchaseLineItem.profit_on_sales(now, None)
+    today_lost     = Inventory.total(now, None)
+    today_dep      = Deposit.total(now, None)
+    today_dep_cash = CashDeposit.total(now, None)
+    today_dep_btc  = BTCDeposit.total(now, None)
+    today_dep_cc   = CCDeposit.total(now, None)
 
 
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
