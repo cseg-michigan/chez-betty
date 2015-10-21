@@ -1,10 +1,12 @@
 from .model import *
 
+from sqlalchemy_utils import ArrowType
+
 class Request(Base):
     __tablename__ = 'requests'
 
     id        = Column(Integer, primary_key=True, nullable=False)
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    timestamp = Column(ArrowType, nullable=False, default=datetime.datetime.utcnow)
     user_id   = Column(Integer, ForeignKey("users.id"), nullable=True) # user that made the request
     request   = Column(Text)
     enabled   = Column(Boolean, default=True, nullable=False)

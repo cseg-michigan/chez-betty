@@ -16,7 +16,7 @@ class Event(Base):
     notes     = Column(Text)
 
     deleted           = Column(Boolean, default=False, nullable=False)
-    deleted_timestamp = Column(DateTime, nullable=True)
+    deleted_timestamp = Column(ArrowType, nullable=True)
     deleted_user_id   = Column(Integer, ForeignKey("users.id"), nullable=True) # user that deleted the event
 
     type = Column(Enum("purchase", "deposit", "adjustment", "restock",

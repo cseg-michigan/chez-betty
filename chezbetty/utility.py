@@ -1,4 +1,3 @@
-import datetime
 from decimal import Decimal
 import itertools
 import qrcode
@@ -131,13 +130,13 @@ class InvalidGroupPeriod(Exception):
 def group(rows, period='day'):
 
     def fix_timezone(i):
-        return i.timestamp.replace(tzinfo=datetime.timezone.utc).astimezone(tz=pytz.timezone('America/Detroit'))
+        return i.timestamp.to('America/Detroit')
     def group_month(i):
         dt = fix_timezone(i)
-        return datetime.date(dt.year, dt.month, 1)
+        return dt.replace(day=1)
     def group_year(i):
         dt = fix_timezone(i)
-        return datetime.date(dt.year, 1, 1)
+        return dt.replace(month=1,day=1)
 
     if period == 'day':
         group_function = lambda i: fix_timezone(i).date()
@@ -190,7 +189,7 @@ def timeseries_cumulative(rows):
             total += 1
         else:
             total += r[1]
-        t = round(r[0].replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        t = r[0].timestamp*1000
         out.append((t, total))
 
     return out

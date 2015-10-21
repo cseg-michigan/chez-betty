@@ -5,9 +5,11 @@ import datetime
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import mapper, attributes, object_mapper
 from sqlalchemy.orm.exc import UnmappedColumnError
-from sqlalchemy import Table, Column, ForeignKeyConstraint, Integer, DateTime, ForeignKey
+from sqlalchemy import Table, Column, ForeignKeyConstraint, Integer, ForeignKey
 from sqlalchemy import event
 from sqlalchemy.orm.properties import RelationshipProperty
+
+from sqlalchemy_utils import ArrowType
 
 def col_references_table(col, table):
     for fk in col.foreign_keys:
@@ -70,7 +72,7 @@ def _history_mapper(local_mapper):
         # history row was created.
         # This column is optional and can be omitted.
         model_name = cls.__name__.lower()
-        cols.append(Column('%s_changed_at' % model_name, DateTime,
+        cols.append(Column('%s_changed_at' % model_name, ArrowType,
                             default=datetime.datetime.utcnow,
                             info=version_meta))
         cols.append(Column('%s_changed_by' % model_name, Integer, ForeignKey("users.id"),

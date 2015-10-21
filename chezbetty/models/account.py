@@ -1,5 +1,7 @@
 from .model import *
 
+from sqlalchemy_utils import ArrowType
+
 class Account(Versioned, Base):
     __tablename__ = "accounts"
 
@@ -7,7 +9,7 @@ class Account(Versioned, Base):
     type       = Column(Enum("user", "virtual", "cash", "pool", name="account_type"), nullable=False)
     name       = Column(String(255), nullable=False)
     balance    = Column(Numeric, nullable=False)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(ArrowType, default=datetime.datetime.utcnow)
 
     __mapper_args__ = {'polymorphic_on': type}
 

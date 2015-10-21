@@ -354,6 +354,9 @@ def item_sale_speed(num_days, only_item_id=None):
 
     start_padding = get_start(num_days*3)
     start_str = start_padding.strftime('%Y-%m-%d 0:0')
+    # This gets a little hairy b/c we circumvent sqlalchemy here. This means
+    # that timestamps aren't automatically converted into arrow objects, so we
+    # have to do it ourselves everywhere we access them
     items = DBSession.execute("SELECT * FROM items_history\
                                WHERE item_changed_at>'{}'\
                                ORDER BY item_changed_at ASC".format(start_str))
@@ -362,12 +365,14 @@ def item_sale_speed(num_days, only_item_id=None):
     for item in items:
         status = item.in_stock>0
 
+        item_changed_at = arrow.get(item.item_changed_at)
+
         if item.id not in data_onsale:
             data_onsale[item.id] = {'days_on_sale': 0,
                                     'date_in_stock': None,
                                     'num_sold': 0}
 
-        if item.item_changed_at < start_datetime:
+        if item_changed_at < start_datetime:
             # We need to figure out if the item started in stock at the
             # beginning of the time period.
             if status == True:
@@ -377,13 +382,13 @@ def item_sale_speed(num_days, only_item_id=None):
 
         elif (status == True) and (data_onsale[item.id]['date_in_stock'] == None):
             # item is in stock now and wasn't before
-            data_onsale[item.id]['date_in_stock'] = item.item_changed_at
+            data_onsale[item.id]['date_in_stock'] = item_changed_at
 
         elif (status == False) and (data_onsale[item.id]['date_in_stock'] != None):
             # Item is now out of stock
 
             # calculate time difference
-            tdelta = item.item_changed_at - data_onsale[item.id]['date_in_stock']
+            tdelta = item_changed_at - data_onsale[item.id]['date_in_stock']
             data_onsale[item.id]['days_on_sale'] += tdelta.days
             #print('{}: {}'.format(item.id, tdelta))
 

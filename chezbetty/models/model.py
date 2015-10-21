@@ -11,7 +11,6 @@ from sqlalchemy import (
     Numeric,
     Text,
     Enum,
-    DateTime,
     ForeignKey,
     Boolean,
     LargeBinary,
