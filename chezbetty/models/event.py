@@ -2,6 +2,8 @@ from .model import *
 from . import account
 from . import item
 
+from sqlalchemy_utils import ArrowType
+
 class NotesMissingException(Exception):
     pass
 
@@ -9,7 +11,7 @@ class Event(Base):
     __tablename__ = 'events'
 
     id        = Column(Integer, primary_key=True, nullable=False)
-    timestamp = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    timestamp = Column(ArrowType, nullable=False, default=datetime.datetime.utcnow)
     user_id   = Column(Integer, ForeignKey("users.id"), nullable=False) # user that performed the event
     notes     = Column(Text)
 

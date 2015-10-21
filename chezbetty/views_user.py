@@ -53,6 +53,63 @@ import arrow
 ### User Admin
 ###
 
+
+### Common helper code
+
+def transaction_history_queries(request, user_or_pool):
+    # Web library native date format: 2015/06/19 19:00
+    # DO NOT CHANGE: The datetimepicker has a bug and tries to parse the
+    #                prepopulated value before reading the format string,
+    #                which means you have to use its native format string
+    TS_FORMAT = 'YYYY/MM/DD HH:mm'
+    if 'history-end' not in request.GET:
+        request.GET['history-end'] =\
+                arrow.now()\
+                .replace(hours=+1)\
+                .floor('hour')\
+                .format(TS_FORMAT)
+    if 'history-start' not in request.GET:
+        request.GET['history-start'] =\
+                arrow.get(request.GET['history-end'], TS_FORMAT)\
+                .replace(months=-1)\
+                .format(TS_FORMAT)
+
+    start = arrow.get(request.GET['history-start'], TS_FORMAT)
+    end   = arrow.get(request.GET['history-end'],   TS_FORMAT)
+    start = start.replace(tzinfo='US/Eastern')
+    end   = end  .replace(tzinfo='US/Eastern')
+    start = start.to('utc')
+    end   = end  .to('utc')
+
+    query = user_or_pool.get_transactions_query()
+    query = query\
+            .filter(event.Event.timestamp > start.datetime)\
+            .filter(event.Event.timestamp < end.datetime)
+
+    for t in ('purchase', 'adjustment'):
+        if 'history-filter-'+t in request.GET:
+            query = query.filter(event.Event.type!=t)
+    for t in ('cashdeposit', 'ccdeposit', 'btcdeposit'):
+        if 'history-filter-'+t in request.GET:
+            query = query.filter(Transaction.type!=t)
+    transactions = query.all()
+
+    withdrawls  = query.filter(event.Event.type=='purchase').all()
+    deposits    = query.filter(event.Event.type=='deposit').all()
+    adjustments = query.filter(event.Event.type=='adjustment').all()
+
+    withdrawls  = sum(w.amount for w in withdrawls)
+    deposits    = sum(d.amount for d in deposits)
+    adjustments = sum(a.amount for a in adjustments) if len(adjustments) else None
+
+    return {'transactions': transactions,
+            'withdrawls': withdrawls,
+            'deposits': deposits,
+            'adjustments': adjustments,
+            }
+
+
+
 @view_config(route_name='user_ajax_bool',
              permission='user')
 def user_ajax_bool(request):
@@ -85,8 +142,11 @@ def user_ajax_bool(request):
              renderer='templates/user/index.jinja2',
              permission='user')
 def user_index(request):
-    return {'user': request.user,
-            'my_pools': Pool.all_by_owner(request.user)}
+    r = transaction_history_queries(request, request.user)
+    r['user'] = request.user
+    r['my_pools'] = Pool.all_by_owner(request.user)
+
+    return r
 
 @view_config(route_name='user_index_slash',
              renderer='templates/user/index.jinja2',
@@ -205,55 +265,11 @@ def user_pool(request):
             request.session.flash('You do not have permission to view that pool.', 'error')
             return HTTPFound(location=request.route_url('user_pools'))
 
-        # Web library native date format: 2015/06/19 19:00
-        # DO NOT CHANGE: The datetimepicker has a bug and tries to parse the
-        #                prepopulated value before reading the format string,
-        #                which means you have to use its native format string
-        TS_FORMAT = 'YYYY/MM/DD HH:mm'
-        if 'history-end' not in request.GET:
-            request.GET['history-end'] =\
-                    arrow.now()\
-                    .replace(hours=+1)\
-                    .floor('hour')\
-                    .format(TS_FORMAT)
-        if 'history-start' not in request.GET:
-            request.GET['history-start'] =\
-                    arrow.get(request.GET['history-end'], TS_FORMAT)\
-                    .replace(months=-1)\
-                    .format(TS_FORMAT)
+        r = transaction_history_queries(request, pool)
+        r['user'] = request.user
+        r['pool'] = pool
 
-        start = arrow.get(request.GET['history-start'], TS_FORMAT)
-        end   = arrow.get(request.GET['history-end'],   TS_FORMAT)
-
-        query = pool.get_transactions_query()
-        query = query\
-                .filter(event.Event.timestamp > start.datetime)\
-                .filter(event.Event.timestamp < end.datetime)
-
-        for t in ('purchase', 'adjustment'):
-            if 'history-filter-'+t in request.GET:
-                print("SKIP", t)
-                query = query.filter(event.Event.type!=t)
-        for t in ('cashdeposit', 'ccdeposit', 'btcdeposit'):
-            if 'history-filter-'+t in request.GET:
-                print("SKIP", t)
-                query = query.filter(Transaction.type!=t)
-        transactions = query.all()
-
-        withdrawls  = query.filter(event.Event.type=='purchase').all()
-        deposits    = query.filter(event.Event.type=='deposit').all()
-        adjustments = query.filter(event.Event.type=='adjustment').all()
-
-        withdrawls  = sum(w.amount for w in withdrawls)
-        deposits    = sum(d.amount for d in deposits)
-        adjustments = sum(a.amount for a in adjustments) if len(adjustments) else None
-
-        return {'user': request.user,
-                'transactions': transactions,
-                'withdrawls': withdrawls,
-                'deposits': deposits,
-                'adjustments': adjustments,
-                'pool': pool}
+        return r
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Could not load pool.', 'error')

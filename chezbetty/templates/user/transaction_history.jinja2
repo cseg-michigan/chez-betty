@@ -1,0 +1,85 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Transaction History
+      <span class="pull-right"><a href="#" onclick="window.print()">Print</a></span>
+    </h3>
+  </div>
+  <div class="panel-body">
+
+    {% if pool %}
+    <form role="form" action="/user/pool/{{ pool.id }}" method="get">
+    {% else %}
+    <form role="form" action="/user" method="get">
+    {% endif %}
+      <div class="row" onclick="$('#history-apply').show()"> {# TEMPORARY HACK #}
+        <div class="col-lg-4 col-sm-12">
+          <h4>Filter event types:</h4>
+          <br />
+          <dl class="dl-horizontal">
+{% macro filter_button(display, param) -%}
+<dt>{{ display }}</dt>
+<dd>
+<input
+  type="checkbox"
+  data-inverse="true"
+  data-on-text="OFF"
+  data-on-color="default"
+  data-off-text="ON"
+  data-off-color="primary"
+  {% if 'history-filter-'+param in request.GET %}checked{%endif%}
+  name="history-filter-{{ param }}"
+  class="user-switch history-filter"
+/>
+</dd>
+{%- endmacro %}
+            {{ filter_button('Purchases',            'purchase') }}
+            {{ filter_button('Cash Deposits',        'cashdeposit') }}
+            {{ filter_button('Credit Card Deposits', 'ccdeposit') }}
+            {{ filter_button('BTC Deposits',         'btcdeposit') }}
+            {{ filter_button('Admin Adjustments',    'adjustment') }}
+          </dl>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <h4>Start Date:</h4>
+          <input type="text" id="history-start" name="history-start" class="event-date-picker" value="{{ request.GET['history-start'] }}"/>
+        </div>
+        <div class="col-lg-4 col-sm-12">
+          <h4>End Date:</h4>
+          <input type="text" id="history-end" name="history-end" class="event-date-picker" value="{{ request.GET['history-end'] }}"/>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success btn-block" id="history-apply" style="display: none;">Apply new filters</button>
+    </form>
+
+    <hr />
+    <div id="print-root">
+{% include "transaction_history_detail.jinja2" %}
+    </div>
+
+  </div>
+</div>
+
+{% block onload %}
+{# This js is used only on this page. It doesn't make sense to pull it into
+a separate js file. #}
+<script>
+$("#history-start").datetimepicker({
+    onChangeDateTime: function () {
+      $("#history-apply").show();
+    },
+});
+$("#history-end").datetimepicker({
+    onChangeDateTime: function () {
+      $("#history-apply").show();
+    },
+});
+$('.history-filter').on('switchChange.bootstrapSwitch', function() {
+    $("#history-apply").show();
+});
+
+$('#print-root').addClass("showInPrint");
+$('#print-root').parents().addClass("showInPrint");
+$('#print-root').find('*').addClass("showInPrint");
+</script>
+{% endblock %}
+

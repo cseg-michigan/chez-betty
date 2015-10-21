@@ -220,7 +220,7 @@ def timeseries_balance_total_daily(rows):
         to_uid = r[2]
         fr_uid = r[3]
         timest = r[4]
-        t = round(timest.replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        t = timest.timestamp*1000
 
         # We get the user/pool id from whether we care about where the
         # money came from or went

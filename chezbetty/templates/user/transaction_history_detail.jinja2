@@ -1,4 +1,4 @@
-<center><h3>Transaction history for {{ pool.name }} from {{ request.GET['history-start'].split('-')[0] }} to {{ request.GET['history-end'].split('-')[0] }}.</h3></center>
+<center class="onlyInPrint"><h3>Transaction history for {{ name }} from {{ request.GET['history-start'].split('-')[0] }} to {{ request.GET['history-end'].split('-')[0] }}</h3></center>
 
 <ul id="event-history" class="list-group">
 
@@ -121,8 +121,10 @@
     {% else %}
     {% set adjustments = 0 %}
     {% endif %}
+    {#
     <hr />
     <dt>Total</dt><dd style="text-align: right">{{ (deposits - withdrawls + adjustments)|format_currency|safe }}</dd>
+    #}
   </dl>
 </div>
 {% endif %}

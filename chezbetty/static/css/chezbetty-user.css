@@ -7,6 +7,9 @@ body {
   padding-top: 50px;
 }
 
+.onlyInPrint {
+  display: none;
+}
 
 /*
  * Global add-ons
@@ -215,6 +218,10 @@ tfoot tr td {
 
   :not(.showInPrint) {
     display: none;
+  }
+
+  .onlyInPrint {
+    display: inline;
   }
 
   .sidebar {
