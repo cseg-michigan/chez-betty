@@ -22,6 +22,7 @@
     <div class="row wrapper">
       <div class="col-md-2"></div>
       <div class="col-md-4">
+        <div id="keypad-total" class="well well-sm keypad-full-width">${{ '%0.2f'| format(keypad_val|float) }}</div>
         {% include "keypad.jinja2" %}
       </div>
       <div class="col-md-4" style="padding-top:10px;">
