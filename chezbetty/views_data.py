@@ -44,6 +44,7 @@ from reportlab.pdfgen import canvas
 
 from . import utility
 import pytz
+import arrow
 
 class InvalidMetric(Exception):
     pass
@@ -59,15 +60,15 @@ def get_start(days):
     if days:
         # "now" is really midnight tonight, so we really want tomorrows date.
         # This makes the comparisons and math work so 1 day would mean today
-        now = datetime.datetime.utcnow().date() + datetime.timedelta(days=1)
+        now = arrow.utcnow() + datetime.timedelta(days=1)
         delta = datetime.timedelta(days=days)
         return now - delta
     else:
         # Hard code in when Betty started
-        return datetime.date(year=2014, month=7, day=8)
+        return arrow.get(datetime.date(year=2014, month=7, day=8))
 
 def get_end():
-    return datetime.datetime.utcnow().date() + datetime.timedelta(days=1)
+    return arrow.utcnow() + datetime.timedelta(days=1)
 
 
 def create_x_y_from_group(group, start, end, period, process_output=lambda x: x, default=0):
@@ -312,7 +313,7 @@ def create_item_sales_json(request, item_id):
     totals = []
     total = 0
     for s in sales:
-        tstamp = round(s[1].timestamp.replace(tzinfo=datetime.timezone.utc).timestamp()*1000)
+        tstamp = s[1].timestamp.timestamp*1000
         individual.append((tstamp, s[0].quantity))
         total += s[0].quantity
         totals.append((tstamp, total))
