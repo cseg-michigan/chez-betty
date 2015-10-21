@@ -32,6 +32,7 @@ requires = [
     'lingua',
     'stripe',
     'arrow',
+    'sqlalchemy_utils',
     ]
 
 setup(name='chezbetty',
