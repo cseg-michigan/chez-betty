@@ -70,6 +70,20 @@ $(".btn-edit-deposit").click(function () {
 	});
 });
 
+// Button press handler for the default deposit amount buttons
+$("#default_values_wrapper").on("click", "button", function() {
+	var value = $(this).attr("id").split("-")[2];
+
+	if (value == "custom") {
+		$("#default_values_wrapper").hide();
+		$("#keypad_wrapper").show();
+		$("#keypad-total").html(format_price(0.0));
+		return;
+	}
+
+	$("#keypad-total").html(format_price(parseFloat(value)));
+});
+
 // Button press handler for the keypad
 $("#keypad").on("click", "button", function () {
 	var input = full_strip_price($("#keypad-total").text());

@@ -21,7 +21,17 @@
           <div class="col-md-12">
             <h3>{{ _('Cash') }}</h3>
             <h5 style="margin-left: 10px;">{{ _('Your Deposit Limit: %(limit)s')|format(limit=user.deposit_limit|format_currency)|safe }}</h5>
-            {% include "keypad.jinja2" %}
+            {% set keypad_val = keypad_val|default(0.00) %}
+            <div id="keypad-total" class="well well-sm keypad-full-width">${{ '%0.2f'| format(keypad_val|float) }}</div>
+            <div id="default_values_wrapper">
+              <button type="button" id="btn-default-100"    class="btn btn-default btn-lg btn-default-deposit">$100</button>
+              <button type="button" id="btn-default-20"     class="btn btn-default btn-lg btn-default-deposit">$20</button>
+              <button type="button" id="btn-default-5"      class="btn btn-default btn-lg btn-default-deposit">$5</button>
+              <button type="button" id="btn-default-custom" class="btn btn-default btn-lg btn-default-deposit">{{ _('Custom Amount') }}</button>
+            </div>
+            <div id="keypad_wrapper" style="display: none;">
+              {% include "keypad.jinja2" %}
+            </div>
           </div>
         </div>
         <div class="row">
