@@ -191,6 +191,9 @@ tfoot tr td {
 .money-out {
   background-color: #fee !important;
 }
+.user-transaction-detail {
+  background-color: #fff !important;
+}
 
 
 /*
