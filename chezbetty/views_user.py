@@ -333,6 +333,9 @@ def user_pool_changename_submit(request):
         pool_name = request.POST['newname'].strip()
         if len(pool_name) > 255:
             pool_name = pool_name[0:255]
+        if len(pool_name) < 5:
+            request.session.flash('Pool names must be at least 5 letters long', 'error')
+            return HTTPFound(location=request.route_url('user_pool', pool_id=int(pool.id)))
 
         pool.name = pool_name
 
