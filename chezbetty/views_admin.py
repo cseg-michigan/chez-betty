@@ -888,7 +888,7 @@ def admin_items_add_submit(request):
         flat['item_count'] = len(error_items)
         return HTTPFound(location=request.route_url('admin_items_add', _query=flat))
     else:
-        return HTTPFound(location=request.route_url('admin_items_edit'))
+        return HTTPFound(location=request.route_url('admin_items_add'))
 
 
 @view_config(route_name='admin_items_edit',
