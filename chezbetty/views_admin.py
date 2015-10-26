@@ -287,6 +287,9 @@ def admin_index(request):
     # Get the current date that it is in the eastern time zone
     now = arrow.now()
 
+    # Walk back to the beginning of the day for all these statistics
+    now = now.replace(hour=0, minute=0, seconds=0)
+
     ytd_sales    = Purchase.total(now.replace(month=1,day=1), None)
     ytd_profit   = PurchaseLineItem.profit_on_sales(now.replace(month=1,day=1), None)
     ytd_lost     = Inventory.total(now.replace(month=1,day=1), None)
