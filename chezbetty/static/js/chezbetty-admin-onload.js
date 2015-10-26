@@ -189,46 +189,6 @@ $(".edit-announcement-row").on("click", "button", function () {
 	toggle_enabled("announcement", $(this));
 });
 
-// Add a new row to the add items form
-$("#btn-items-add-row").click(function () {
-
-	// Instead of counting each time, just keep the number of lines around
-	// in a hidden element.
-	var item_lines_count = parseInt($("#new-items-number").val());
-
-	// Copy row 0 to create a new row
-	container = $("#new-item-0").clone().attr("id", "new-item-"+item_lines_count);
-	container.find("input").each(function (index) {
-		// Update the ID to the next number
-		id = $(this).attr("id");
-		name_pieces = id.split("-");
-		name_pieces[name_pieces.length-1] = item_lines_count;
-		new_id = name_pieces.join("-");
-		$(this).attr("id", new_id);
-		$(this).attr("name", new_id);
-		if ($(this).is(":checkbox")) {
-			// Reset the checkmark so new products are enabled by default
-			$(this).prop("checked", "checked");
-		} else {
-			// Clear the value if there is text in the first row already
-			$(this).val("");
-		}
-		if (name_pieces[1] == 'barcode') {
-			$(this).on("input", barcode_check_fn);
-			// Since we clone the input, we need to trigger to clear its coloring
-			$(this).trigger("input");
-		}
-	});
-
-	// Add the new row to the page
-	$("#new-items").append(container);
-
-	// Update the number of new items to be added
-	$("#new-items-number").val(item_lines_count+1);
-
-	attach_keypad();
-});
-
 barcode_check_fn = function () {
 	var validator = new Barcoder();
 
