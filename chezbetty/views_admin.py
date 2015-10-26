@@ -2053,6 +2053,19 @@ def admin_pool(request):
         request.session.flash('Unable to find pool.', 'error')
         return HTTPFound(location=request.route_url('admin_pools'))
 
+@view_config(route_name='admin_pool_name',
+             request_method='POST',
+             renderer='json',
+             permission='admin')
+def admin_pool_name(request):
+    pool = Pool.from_id(int(request.POST['pool']))
+    pool.name = request.POST['name']
+
+    return {
+            'status': 'success',
+            'msg': 'Pool name updated successfully.',
+            'value': request.POST['name'],
+            }
 
 @view_config(route_name='admin_pool_addmember_submit',
              request_method='POST',

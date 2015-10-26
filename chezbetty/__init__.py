@@ -187,6 +187,7 @@ def main(global_config, **settings):
 
     config.add_route('admin_pools',                    '/admin/pools')
     config.add_route('admin_pool',                     '/admin/pool/{pool_id}')
+    config.add_route('admin_pool_name',                '/admin/pool/{pool_id}/name')
     config.add_route('admin_pool_addmember_submit',    '/admin/pool/addmember/submit')
 
     config.add_route('admin_cash_reconcile',         '/admin/cash/reconcile')

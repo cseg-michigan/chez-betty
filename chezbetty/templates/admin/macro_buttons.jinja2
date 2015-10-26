@@ -22,3 +22,9 @@
 {% macro ajax_singleuse_button(button_text, ajax_url, id) %}
 <button type="button" class="btn btn-info btn-ajax_singleuse" data-url="{{ ajax_url }}">{{ button_text }}</button>
 {% endmacro %}
+
+{% macro ajax_saveable_input(initial_value, ajax_url, id) %}
+<input type="text" class="form-content input-ajax_savefield" id="{{ id }}-input" data-initial="{{ initial_value }}" name="{{ id }}" value="{{ initial_value }}" />
+<button type="button" class="btn btn-info btn-ajax_savefield" style="display: none;" id="{{ id }}-btn" data-url="{{ ajax_url }}">Save</button>
+{% endmacro %}
+

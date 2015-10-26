@@ -241,6 +241,9 @@ def user_pools_new_submit(request):
         pool_name = request.POST['pool-name'].strip()
         if len(pool_name) > 255:
             pool_name = pool_name[0:255]
+        if len(pool_name) < 5:
+            request.session.flash('Pool names must be at least 5 letters long', 'error')
+            return HTTPFound(location=request.route_url('user_pools'))
 
         pool = Pool(request.user, pool_name)
         DBSession.add(pool)
