@@ -24,7 +24,6 @@
           <th style="width: 5%"></th>
           <th>Name</th>
           <th style="width: 20%">Box Wholesale</th>
-          <th style="width: 10%">Enable</th>
         </tr>
       </thead>
 
@@ -37,7 +36,6 @@
           <td>{{ button.box(box.id) }}</td>
           <td>{{ box|make_link|safe }}</td>
           <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
-          <td>{{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -54,7 +52,6 @@
           <th style="width: 5%"></th>
           <th>Name</th>
           <th style="width: 20%">Box Wholesale</th>
-          <th style="width: 10%">Enable</th>
         </tr>
       </thead>
 
@@ -67,7 +64,6 @@
           <td>{{ button.box(box.id) }}</td>
           <td>{{ box|make_link|safe }}</td>
           <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
-          <td>{{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}</td>
         </tr>
         {% endfor %}
       </tbody>
