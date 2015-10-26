@@ -151,7 +151,7 @@ $("#new-item").click(function () {
 				// Clear the value if there is text in the first row already
 				$(this).val("");
 			}
-			if (name_pieces[3] == 'barcode') {
+			if (name_pieces[2] == 'barcode') {
 				$(this).on("input", barcode_check_fn);
 				// Since we clone the input, we need to trigger to clear its coloring
 				$(this).trigger("input");
