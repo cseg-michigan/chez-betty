@@ -1,3 +1,5 @@
+import functools
+
 from .models.model import *
 from .models import event
 from .models import transaction
@@ -13,6 +15,33 @@ from .models import item_vendor
 from .models import box_vendor
 
 from .utility import notify_pool_out_of_credit
+from .utility import notify_new_top_wall_of_shame
+
+
+def top_debtor_wrapper(fn):
+    '''Wrapper function for transactions that watches for a new top debtor.
+
+    Should wrap any function that creates a purchase or deposit transaction.
+    Can't put this inside the Transaction class b/c the add/flush operations are
+    at a higher level.'''
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        # Record top debtor before new transaction
+        old_top_debtor = DBSession.query(User).order_by(User.balance).limit(1).one()
+
+        # Execute transaction. Txn function should call add() and flush()
+        ret = fn(*args, **kwargs)
+
+        # Check whether the top debtor has changed
+        new_top_debtor = DBSession.query(User).order_by(User.balance).limit(1).one()
+        print(old_top_debtor, new_top_debtor)
+        if new_top_debtor != old_top_debtor:
+            notify_new_top_wall_of_shame(new_top_debtor)
+
+        return ret
+
+    return wrapper
+
 
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
@@ -131,6 +160,7 @@ def new_request(user, request_text):
 
 
 # Call this to let a user purchase items
+@top_debtor_wrapper
 def purchase(user, account, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
@@ -166,6 +196,7 @@ def purchase(user, account, items):
 
 # Call this when a user puts money in the dropbox and needs to deposit it
 # to their account
+@top_debtor_wrapper
 def deposit(user, account, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
@@ -184,6 +215,7 @@ def deposit(user, account, amount):
 
 
 # Call this when a credit card transaction deposits money into an account
+@top_debtor_wrapper
 def cc_deposit(user, account, amount, txn_id, last4):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
@@ -202,6 +234,7 @@ def cc_deposit(user, account, amount, txn_id, last4):
 
 
 # Call this to deposit bitcoins to the user account
+@top_debtor_wrapper
 def bitcoin_deposit(user, amount, btc_transaction, address, amount_btc):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
@@ -219,6 +252,7 @@ def bitcoin_deposit(user, amount, btc_transaction, address, amount_btc):
 
 
 # Call this to adjust a user's balance
+@top_debtor_wrapper
 def adjust_user_balance(user, adjustment, notes, admin):
     e = event.Adjustment(admin, notes)
     DBSession.add(e)

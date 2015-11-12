@@ -1,0 +1,25 @@
+<p>Hi {{ user.name }},</p>
+
+<p>
+You are now number one on the <a href="https://chezbetty.eecs.umich.edu/shame">Wall of Shame</a>.
+Your Betty balance is {{ user.balance|format_currency|safe }}, more debt than any other user.
+</p>
+
+<p>
+As the top debtor, we would like to request that you please pay Betty back as soon as possible.
+You can <a href="https://chezbetty.eecs.umich.edu/paydebt/{{ user.uniqname }}">pay online in one click</a>.
+To view your full transaction history and other information,
+<a href="https://chezbetty.eecs.umich.edu/user">login to your Betty account</a>.
+</p>
+
+<p>
+As a final note, we strongly encourage users to keep a positive balance instead of accumulating debt.
+We give a 5% discount to any user with $20 or more in their account.
+Please consider paying to a positive balance so that you do not end up right back on the Wall of Shame.
+</p>
+
+<p>Thanks for being a loyal Betty user!</p>
+
+<br />
+<p>- Chez Betty</p>
+

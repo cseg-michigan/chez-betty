@@ -107,6 +107,20 @@ def user_password_reset(user):
                SUBJECT='Chez Betty Login',
                body=render('templates/admin/email_password.jinja2', {'user': user, 'password': password}))
 
+def notify_new_top_wall_of_shame(user):
+    # First, double-check to make sure this user is in enough debt to be on the
+    # wall of shame
+    # TODO: This threshold should be a configurable parameter
+    if user.balance > -5:
+        print("Suppressed new wall of shame e-mail b/c user is under the limit")
+        return
+    send_email(
+            TO=user.uniqname+'@umich.edu',
+            SUBJECT='[Chez Betty] You are on top of the Wall of Shame! :(',
+            body=render('templates/admin/email_new_top_wall_of_shame.jinja2',
+                {'user': user})
+            )
+
 def notify_pool_out_of_credit(owner, pool):
     send_email(
             TO=owner.uniqname+'@umich.edu',
