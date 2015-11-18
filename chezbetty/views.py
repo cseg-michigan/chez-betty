@@ -49,8 +49,24 @@ def exception_view(request):
 
 @view_config(context=Exception)
 def exception_view_handler(context, request):
+    print('-'*80)
     print('An unknown error occurred:')
+    print('\t** Some potentially useful information:')
+    try:
+        print('\t** request {}'.format(request))
+        print('\t** client_addr {}'.format(request.client_addr))
+        print('\t** authenticated_userid {}'.format(request.authenticated_userid))
+        print('\t** GET {}'.format(request.GET))
+        print('\t** POST {}'.format(request.POST))
+        print('\t** url {}'.format(request.url))
+        print('\t** user_agent {}'.format(request.user_agent))
+        print('\t** headers.environ {}'.format(request.headers.environ))
+        print('\t** referer {}'.format(request.referer))
+        print('\t** body {}'.format(request.body))
+    except:
+        pass
     traceback.print_exc()
+    print('-'*80)
     return HTTPFound(location=request.route_url('exception_view'))
 
 
