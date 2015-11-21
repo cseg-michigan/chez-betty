@@ -5,7 +5,7 @@ function submit_input () {
 		// This looks like an M-Card
 		umid = keyboard_input.slice(8, 16);
 
-		window.location.replace("/terminal/purchase/" + umid);
+		window.location.replace("/terminal/swipe/" + umid);
 	} else {
 		clear_spinner();
 	}

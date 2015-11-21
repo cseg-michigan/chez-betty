@@ -135,6 +135,7 @@ $("#keypad-umid").on("click", "button", function () {
 					if (data.status == 'success') {
 						window.location = '/terminal/purchase/' + manual_umid_enter;
 					} else {
+						alert_error("First time using Betty? You need to swipe your MCard the first time you log in.");
 						clear_umid_keypad();
 					}
 				},

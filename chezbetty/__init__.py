@@ -95,6 +95,7 @@ def main(global_config, **settings):
 
     config.add_route('umid_check',          '/terminal/check')
 
+    config.add_route('swipe',               '/terminal/swipe/{umid}')
     config.add_route('purchase_new',        '/terminal/purchase/new')
     config.add_route('purchase',            '/terminal/purchase/{umid}')
     config.add_route('purchase_item_row',   '/terminal/purchase/item/{barcode}/json')

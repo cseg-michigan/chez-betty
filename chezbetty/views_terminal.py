@@ -59,6 +59,18 @@ def umid_check(request):
 
 ### Post mcard swipe
 
+@view_config(route_name='swipe', permission='service')
+def swipe(request):
+    try:
+        user = User.from_umid(request.matchdict['umid'], create_if_never_seen=True)
+    except __user.InvalidUserException as e:
+        request.session.flash(_(
+            'mcard-error',
+            default='Failed to read M-Card. Please try swiping again.',
+            ), 'error')
+        return HTTPFound(location=request.route_url('index'))
+    return HTTPFound(location=request.route_url('purchase', umid=request.matchdict['umid']))
+
 @view_config(route_name='purchase', renderer='templates/terminal/purchase.jinja2', permission='service')
 def purchase(request):
     try:

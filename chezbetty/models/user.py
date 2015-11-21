@@ -113,11 +113,14 @@ class User(account.Account):
         return u
 
     @classmethod
-    def from_umid(cls, umid):
+    def from_umid(cls, umid, create_if_never_seen=False):
         u = DBSession.query(cls).filter(cls.umid == umid).first()
         if not u:
-            u = cls(**cls.__ldap.lookup_umid(umid))
-            DBSession.add(u)
+            if create_if_never_seen:
+                u = cls(**cls.__ldap.lookup_umid(umid))
+                DBSession.add(u)
+            else:
+                raise InvalidUserException()
         return u
 
     @classmethod
