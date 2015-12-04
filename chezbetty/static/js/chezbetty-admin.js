@@ -76,7 +76,7 @@ function add_item_fail () {
 function add_item (barcode) {
 	$.ajax({
 		dataType: "json",
-		url: "/admin/item/"+barcode+"/json",
+		url: "/admin/item/barcode/"+barcode+"/json",
 		success: add_item_success,
 		error: add_item_fail
 	});
@@ -196,10 +196,10 @@ function user_purchase_add_item_fail () {
 	alert_error("AJAX lookup failed.");
 }
 
-function user_purchase_add_item (barcode) {
+function user_purchase_add_item (id) {
 	$.ajax({
 		dataType: "json",
-		url: "/admin/item/"+barcode+"/json",
+		url: "/admin/item/id/"+id+"/json",
 		success: user_purchase_add_item_success,
 		error: user_purchase_add_item_fail
 	});
@@ -219,7 +219,7 @@ function search_item_only_success (data) {
 			$("#user-search-notice-item").text("No matches found.");
 		} else if (data.matches.length == 1 && data.matches[0][0] == 'item') {
 			// One match just add it
-			user_purchase_add_item(data.matches[0][2]);
+			user_purchase_add_item(data.matches[0][3]);
 			$("#user-search-notice-item").text("One match found. Added.");
 		} else {
 			for (i=0; i<data.matches.length; i++) {
@@ -233,7 +233,7 @@ function search_item_only_success (data) {
 						splits[splits.length-1] = i+1;
 						new_id = splits.join("-");
 						$(this).attr("id", new_id);
-						$(this).attr("data-item", data.matches[i][2]);
+						$(this).attr("data-item", data.matches[i][3]);
 					});
 					new_row.find(".user-search-row-item-name").text(data.matches[i][0] + ": " + data.matches[i][1]);
 					new_row.addClass("user-search-item-addedrows");

@@ -418,6 +418,25 @@ def admin_item_barcode_json(request):
             return {'status': 'error'}
 
 
+@view_config(route_name='admin_item_id_json',
+             renderer='json',
+             permission='manage')
+def admin_item_id_json(request):
+    try:
+        item = Item.from_id(request.matchdict['id'])
+        return {'status': 'success',
+                'type':   'item',
+                'id':     item.id,
+                'name':   item.name,
+                'price':  float(item.price)}
+
+    except Exception as e:
+        if request.debug:
+            raise(e)
+        else:
+            return {'status': 'error'}
+
+
 @view_config(route_name='admin_item_search_json',
              renderer='json',
              permission='manage')
@@ -431,16 +450,16 @@ def admin_item_search_json(request):
         ret = {'matches': []}
 
         for b in boxes:
-            ret['matches'].append(('box', b.name, b.barcode))
+            ret['matches'].append(('box', b.name, b.barcode, b.id))
 
         for bv in box_vendors:
-            ret['matches'].append(('box', bv.box.name, bv.box.barcode))
+            ret['matches'].append(('box', bv.box.name, bv.box.barcode, bv.box.id))
 
         for i in items:
-            ret['matches'].append(('item', i.name, i.barcode))
+            ret['matches'].append(('item', i.name, i.barcode, i.id))
 
         for iv in item_vendors:
-            ret['matches'].append(('item', iv.item.name, iv.item.barcode))
+            ret['matches'].append(('item', iv.item.name, iv.item.barcode, iv.item.id))
 
         ret['status'] = 'success'
 
