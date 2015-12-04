@@ -1942,8 +1942,9 @@ def admin_user_purchase_add_submit(request):
                     item_id = int(fields[5])
                     quantity = int(value)
 
-                    item = Item.from_id(item_id)
-                    items[item] = quantity
+                    if quantity > 0:
+                        item = Item.from_id(item_id)
+                        items[item] = quantity
 
         if len(items) == 0:
             # Nothing to purchase?
