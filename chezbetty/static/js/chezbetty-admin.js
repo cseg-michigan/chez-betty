@@ -109,9 +109,7 @@ function search_item_success (data) {
 					$(this).attr("id", new_id);
 					$(this).attr("data-item", data.matches[i][2]);
 				});
-				new_row.find(".restock-search-row-name").each(function () {
-					$(this).text(data.matches[i][0] + ": " + data.matches[i][1]);
-				});
+				new_row.find(".restock-search-row-name").text(data.matches[i][0] + ": " + data.matches[i][1]);
 				new_row.addClass("restock-search-addedrows");
 				new_row.show();
 
@@ -134,6 +132,182 @@ function search_item (search_str) {
 		error: search_item_fail
 	});
 }
+
+
+/******************************************************************************/
+// USER PURCHASE ADD
+// manually add purchase to user account
+/******************************************************************************/
+
+// Calculate the line totals and purchase total for user purchase add
+function user_purchase_recalculate_totals () {
+	var total = 0;
+	$("#user-purchase-add-table-items tr:visible").each(function (index) {
+		var quantity = parseInt($(this).find('.user-purchase-add-item-quantity').val());
+		var price = parseFloat(strip_price($(this).find('.user-purchase-add-item-price').text()));
+
+		// Update line total
+		var line_total = quantity*price;
+		$(this).find('.user-purchase-add-item-total').html(format_price(line_total));
+
+		// Update running total
+		total += line_total;
+	});
+
+	// Insert global total
+	$("#user-purchase-add-items-total").html(format_price(total));
+}
+
+// Callback when adding an item to the user purchase succeeds
+function user_purchase_add_item_success (data) {
+	if (data.status != "success") {
+		if (data.status == "unknown_barcode") {
+			alert_error("Could not find that item.");
+		} else {
+			alert_error("Error occurred.");
+		}
+	} else {
+		// Make sure this item isn't already on the list
+		if ($("#user-purchase-add-item-"+data.type+"-" + data.id).length == 0) {
+			// Add a new item
+
+			new_row = $("#user-purchase-add-item").clone().attr("id", "user-purchase-add-item-"+data.type+"-" + data.id);
+			new_row.find('.user-purchase-add-item-quantity').attr("name", "user-purchase-add-item-"+data.type+"-" + data.id);
+			new_row.find(".user-purchase-add-item-title").text(data.name);
+			new_row.find(".user-purchase-add-item-price").text(data.price);
+			new_row.show();
+
+			$("#user-purchase-add-table-items").append(new_row);
+
+		} else {
+			// Already have this item in the table
+			// Take another barcode scan as an increase in quantity
+			row_obj = $("#user-purchase-add-item-"+data.type+"-"+data.id+":last");
+			quantity_obj = row_obj.find(".user-purchase-add-item-quantity");
+			quantity_obj.val(parseInt(quantity_obj.val()) + 1);
+		}
+
+		user_purchase_recalculate_totals();
+	}
+}
+
+// Callback when adding to cart fails.
+function user_purchase_add_item_fail () {
+	alert_error("AJAX lookup failed.");
+}
+
+function user_purchase_add_item (barcode) {
+	$.ajax({
+		dataType: "json",
+		url: "/admin/item/"+barcode+"/json",
+		success: user_purchase_add_item_success,
+		error: user_purchase_add_item_fail
+	});
+}
+
+// Callback when adding an item to the restock succeeds
+function search_item_only_success (data) {
+	alert_clear();
+	$("#user-search-notice-item").text("");
+	$(".user-search-item-addedrows").remove();
+
+	if (data.status != "success") {
+		alert_error("Error occurred.");
+	} else {
+		if (data.matches.length == 0) {
+			// No matches tell user
+			$("#user-search-notice-item").text("No matches found.");
+		} else if (data.matches.length == 1 && data.matches[0][0] == 'item') {
+			// One match just add it
+			user_purchase_add_item(data.matches[0][2]);
+			$("#user-search-notice-item").text("One match found. Added.");
+		} else {
+			for (i=0; i<data.matches.length; i++) {
+				if (data.matches[i][0] == 'item') {
+					// Only look at items, not boxes
+
+					var new_row = $("#user-search-item-row-0").clone().attr("id", "user-search-item-row-"+(i+1));
+					new_row.find("button").each(function (index) {
+						start_id = $(this).attr("id");
+						splits = start_id.split("-");
+						splits[splits.length-1] = i+1;
+						new_id = splits.join("-");
+						$(this).attr("id", new_id);
+						$(this).attr("data-item", data.matches[i][2]);
+					});
+					new_row.find(".user-search-row-item-name").text(data.matches[i][0] + ": " + data.matches[i][1]);
+					new_row.addClass("user-search-item-addedrows");
+					new_row.show();
+
+					$("#user-search-table-items").append(new_row);
+				}
+			}
+		}
+	}
+}
+
+// Callback when adding to cart fails.
+function search_item_only_fail () {
+	alert_error("AJAX lookup failed.");
+}
+
+function search_item_only (search_str) {
+	$.ajax({
+		dataType: "json",
+		url: "/admin/item/search/"+search_str+"/json",
+		success: search_item_only_success,
+		error: search_item_only_fail
+	});
+}
+
+// Callback when adding an item to the restock succeeds
+function search_user_success (data) {
+	alert_clear();
+	$("#user-search-notice").text("");
+	$(".user-search-addedrows").remove();
+
+	if (data.status != "success") {
+		alert_error("Error occurred.");
+	} else {
+		if (data.matches.length == 0) {
+			// No matches tell user
+			$("#user-search-notice").text("No matches found.");
+		} else {
+			for (i=0; i<data.matches.length; i++) {
+				var new_row = $("#user-search-row-0").clone().attr("id", "user-search-row-"+(i+1));
+				new_row.find("input[type=radio]").val(data.matches[i].id);
+				if (i == 0) {
+					new_row.find("input[type=radio]").attr('checked', 'checked');
+				}
+				new_row.find(".user-search-row-name").text(data.matches[i].name);
+				new_row.find(".user-search-row-uniqname").text(data.matches[i].uniqname);
+				new_row.find(".user-search-row-umid").text(data.matches[i].umid);
+				new_row.addClass("user-search-addedrows");
+				new_row.show();
+
+				$("#user-search-table").append(new_row);
+			}
+		}
+	}
+}
+
+// Callback when adding to cart fails.
+function search_user_fail () {
+	alert_error("AJAX lookup failed.");
+}
+
+function search_user (search_str) {
+	$.ajax({
+		dataType: "json",
+		url: "/admin/user/search/"+search_str+"/json",
+		success: search_user_success,
+		error: search_user_fail
+	});
+}
+
+/******************************************************************************/
+// RESTOCK
+/******************************************************************************/
 
 function restock_update_line_total (row_id) {
 	var row_obj = $("#restock-"+row_id);

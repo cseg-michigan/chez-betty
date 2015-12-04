@@ -1,0 +1,93 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'user_purchase_add' %}
+{% block title %}Add User Purchase{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Add User Purchase</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/user/purchase/add/submit" method="post">
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <td>User:</td>
+        <td>
+          <input type="text" id="user-purchase-add-search-user" class="form-control">
+          <span id="user-search-notice"></span>
+          <table id="user-search-table" style="width: 100%">
+            <tr id="user-search-row-0" class="user-search-row" style="display:none;">
+              <td>
+                <input type="radio" name="user-search-choice" value="userid">
+              </td>
+              <td class="user-search-row-name">Name</td>
+              <td class="user-search-row-uniqname">Uniqname</td>
+              <td class="user-search-row-umid">UMID</td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <button type="button" id="user-purchase-add-search-user-button" class="btn btn-success">Search User</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <td>Item:</td>
+        <td>
+          <input type="text" id="user-purchase-add-search-item" class="form-control">
+          <span id="user-search-notice-item"></span>
+          <table id="user-search-table-items" style="width: 100%">
+            <tr id="user-search-item-row-0" class="user-search-row" style="display:none;">
+              <td class="user-search-row-item-name">Name</td>
+              <td>
+                <button type="button" id="user-search-item-row-button-0" class="btn btn-default user-search-item-row-button">Add</button>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <button type="button" id="user-purchase-add-search-item-button" class="btn btn-success">Search Item</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="table table-bordered" id="user-purchase-add-table">
+    <thead>
+      <tr>
+        <th>{{ _('Item') }}</th>
+        <th style="width: 10%">{{ _('Quantity') }}</th>
+        <th style="width: 10%">{{ _('Item Price') }}</th>
+        <th style="width: 10%">{{ _('Total Price') }}</th>
+      </tr>
+    </thead>
+
+    <tbody id="user-purchase-add-table-items">
+      <tr id="user-purchase-add-item" style="display:none;">
+        <td class="user-purchase-add-item-title">Name</td>
+        <td>                                     <input type="text" class="user-purchase-add-item-quantity form-control" value="1"></td>
+        <td class="user-purchase-add-item-price">Price</td>
+        <td class="user-purchase-add-item-total">Total</td>
+      </tr>
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <td colspan="3"><b>{{ _('Total') }}</b></td>
+        <td id="user-purchase-add-items-total">$0.00</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <button type="submit" class="btn btn-success">Submit Purchase</button>
+
+</form>
+
+{% endblock %}

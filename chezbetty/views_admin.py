@@ -391,7 +391,9 @@ def admin_item_barcode_json(request):
         return {'status': 'success',
                 'type':   'item',
                 'data':   html,
-                'id':     item.id}
+                'id':     item.id,
+                'name':   item.name,
+                'price':  float(item.price)}
     except NoResultFound:
         try:
             box = Box.from_barcode(request.matchdict['barcode'])
@@ -447,6 +449,34 @@ def admin_item_search_json(request):
     except Exception as e:
         if request.debug: raise(e)
         return {'status': 'error'}
+
+
+
+@view_config(route_name='admin_user_search_json',
+             renderer='json',
+             permission='manage')
+def admin_user_search_json(request):
+    try:
+        users = User.from_fuzzy(request.matchdict['search'])
+
+        ret = {'matches': []}
+
+        for u in users:
+            ret['matches'].append({'id':       u.id,
+                                   'name':     u.name,
+                                   'uniqname': u.uniqname,
+                                   'umid':     u.umid,
+                                   'enabled':  u.enabled,
+                                   'role':     u.role})
+
+        ret['status'] = 'success'
+
+        return ret
+
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error'}
+
 
 
 @view_config(route_name='admin_restock',
@@ -1866,6 +1896,51 @@ def admin_user(request):
         if request.debug: raise(e)
         request.session.flash('Invalid user?', 'error')
         return HTTPFound(location=request.route_url('admin_index'))
+
+
+@view_config(route_name='admin_user_purchase_add',
+             renderer='templates/admin/user_purchase_add.jinja2',
+             permission='admin')
+def admin_user_purchase_add(request):
+    return {}
+
+
+@view_config(route_name='admin_user_purchase_add_submit',
+             request_method='POST',
+             permission='admin')
+def admin_user_purchase_add_submit(request):
+    try:
+        # Get the user from the POST data
+        user = User.from_id(int(request.POST['user-search-choice']))
+
+        # Group all of the items into the correct structure
+        items = {}
+        for key,value in request.POST.items():
+            fields = key.split('-')
+            if len(fields) == 6:
+                # Make sure that we are adding an item
+                if fields[4] == 'item':
+                    item_id = int(fields[5])
+                    quantity = int(value)
+
+                    item = Item.from_id(item_id)
+                    items[item] = quantity
+
+        if len(items) == 0:
+            # Nothing to purchase?
+            request.session.flash('Must buy at least one item.', 'error')
+            return HTTPFound(location=request.route_url('admin_user_purchase_add'))
+
+        # Commit the purchase
+        purchase = datalayer.purchase(user, user, items)
+        request.session.flash('Purchase added. Event ID: {}.'.format(purchase.event.id), 'success')
+        return HTTPFound(location=request.route_url('admin_user_purchase_add'))
+    except NoResultFound:
+        request.session.flash('Invalid user?', 'error')
+        return HTTPFound(location=request.route_url('admin_user_purchase_add'))
+    except KeyError:
+        request.session.flash('Did you select a user?', 'error')
+        return HTTPFound(location=request.route_url('admin_user_purchase_add'))
 
 
 @view_config(route_name='admin_user_balance_edit',

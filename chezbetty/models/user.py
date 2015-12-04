@@ -124,6 +124,15 @@ class User(account.Account):
         return u
 
     @classmethod
+    def from_fuzzy(cls, search_str):
+        return DBSession.query(cls)\
+                        .filter(or_(
+                            cls.uniqname.ilike('%{}%'.format(search_str)),
+                            cls.umid.ilike('%{}%'.format(search_str)),
+                            cls.name.ilike('%{}%'.format(search_str))
+                        )).all()
+
+    @classmethod
     def all(cls):
         return DBSession.query(cls)\
                         .filter(cls.enabled)\

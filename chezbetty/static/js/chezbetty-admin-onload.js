@@ -270,6 +270,23 @@ $("#restock-search-table").on("click", "button", function () {
 	add_item(barcode);
 });
 
+// USER PURCHASE ADD
+
+$("#user-purchase-add-search-user-button").on("click", function () {
+	search_user($("#user-purchase-add-search-user").val());
+});
+
+$("#user-purchase-add-search-item-button").on("click", function () {
+	search_item_only($("#user-purchase-add-search-item").val());
+});
+
+$("#user-search-table-items").on("click", ".user-search-item-row-button", function () {
+	user_purchase_add_item($(this).attr('data-item'));
+});
+
+$("#user-purchase-add-table-items").on("input", "input:text", function () {
+	user_purchase_recalculate_totals();
+});
 
 // BOXES
 
