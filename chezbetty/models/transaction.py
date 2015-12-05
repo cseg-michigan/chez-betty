@@ -266,6 +266,43 @@ def __get_cash_events(cls):
 
 event.Event.get_cash_events = __get_cash_events
 
+# This is in a stupid place due to circular input problems
+@classmethod
+def __get_restock_events(cls):
+    return DBSession.query(event.Event)\
+            .join(Transaction)\
+            .filter(Transaction.type == 'restock')\
+            .filter(event.Event.deleted==False)\
+            .order_by(desc(event.Event.timestamp)).all()
+
+event.Event.get_restock_events = __get_restock_events
+
+# This is in a stupid place due to circular input problems
+@classmethod
+def __get_emptycash_events(cls):
+    return DBSession.query(event.Event)\
+            .join(Transaction)\
+            .filter(or_(
+                      Transaction.type == 'emptycashbox',
+                      Transaction.type == 'emptybitcoin'))\
+            .filter(event.Event.deleted==False)\
+            .order_by(desc(event.Event.timestamp)).all()
+
+event.Event.get_emptycash_events = __get_emptycash_events
+
+# This is in a stupid place due to circular input problems
+@classmethod
+def __get_deposit_events(cls):
+    return DBSession.query(event.Event)\
+            .join(Transaction)\
+            .filter(or_(
+                      Transaction.type == 'cashdeposit',
+                      Transaction.type == 'ccdeposit',
+                      Transaction.type == 'btcdeposit'))\
+            .filter(event.Event.deleted==False)\
+            .order_by(desc(event.Event.timestamp)).all()
+
+event.Event.get_deposit_events = __get_deposit_events
 
 
 class Purchase(Transaction):

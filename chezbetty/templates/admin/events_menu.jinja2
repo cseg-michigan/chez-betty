@@ -5,6 +5,9 @@
       {% if request.has_permission("admin") %}
       <li><a {% if sub_active_page == 'deleted' %}class="active"{% endif %} href="/admin/events/deleted">Deleted Transactions</a></li>
       <li><a {% if sub_active_page == 'cash' %}class="active"{% endif %} href="/admin/events/cash">Cash Transactions</a></li>
+      <li><a {% if sub_active_page == 'restock' %}class="active"{% endif %} href="/admin/events/restock">Restocks</a></li>
+      <li><a {% if sub_active_page == 'emptycash' %}class="active"{% endif %} href="/admin/events/emptycash">Cashbox Empties</a></li>
+      <li><a {% if sub_active_page == 'deposit' %}class="active"{% endif %} href="/admin/events/deposit">Deposits</a></li>
       {% endif %}
     </ul>
   </div>

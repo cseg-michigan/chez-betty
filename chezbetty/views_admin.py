@@ -2505,6 +2505,27 @@ def admin_events_cash(request):
     events = Event.get_cash_events()
     return {'events': events}
 
+@view_config(route_name='admin_events_restock',
+             renderer='templates/admin/events_cash.jinja2',
+             permission='admin')
+def admin_events_restock(request):
+    events = Event.get_restock_events()
+    return {'events': events}
+
+@view_config(route_name='admin_events_emptycash',
+             renderer='templates/admin/events_cash.jinja2',
+             permission='admin')
+def admin_events_emptycash(request):
+    events = Event.get_emptycash_events()
+    return {'events': events}
+
+@view_config(route_name='admin_events_deposit',
+             renderer='templates/admin/events_cash.jinja2',
+             permission='admin')
+def admin_events_deposit(request):
+    events = Event.get_deposit_events()
+    return {'events': events}
+
 
 @view_config(route_name='admin_event',
              renderer='templates/admin/event.jinja2',
