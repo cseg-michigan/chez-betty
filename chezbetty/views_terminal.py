@@ -135,6 +135,8 @@ def user(request):
 
         transactions,count = limitable_request(
                 request, user.get_transactions, limit=20, count=True)
+        if count is None:
+            count = 0
         return {'user': user,
                 'transactions': transactions,
                 'transactions_count': count,
