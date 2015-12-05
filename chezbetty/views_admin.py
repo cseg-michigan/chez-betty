@@ -77,7 +77,8 @@ from PIL import Image
 # Obviously don't need this for json requests
 @subscriber(BeforeRender)
 def add_counts(event):
-    if event['renderer_name'] != 'json':
+    if event['renderer_name'] != 'json' and \
+       event['renderer_name'].startswith('templates/admin'):
         count = {}
         count['items']        = Item.count()
         count['boxes']        = Box.count()
@@ -1605,7 +1606,6 @@ def admin_boxes_edit(request):
 
     for box in boxes_active:
         if box.subitem_count == 0:
-            print(box.name)
             unpopulated_boxes.append(box)
         else:
             active_populated.append(box)
