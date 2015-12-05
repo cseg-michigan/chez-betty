@@ -44,14 +44,11 @@
     {% else %}
     onscreen_keyboard = false;
     {% endif %}
-
-    is_service_account = {% if request.user.role == "serviceaccount" %}true{% else %}false{% endif %};
   </script>
 
   <div id="wrap">
 
     {% set active_page = active_page|default('index') -%}
-    {#{% include 'navbar.html' %}#}
 
     <div id="alerts" class="container">
       {% block alerts %}

@@ -44,8 +44,6 @@
     {% else %}
     onscreen_keyboard = false;
     {% endif %}
-
-    is_service_account = {% if request.user.role == "serviceaccount" %}true{% else %}false{% endif %};
   </script>
 
   <div id="wrap">
