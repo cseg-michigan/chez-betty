@@ -2,9 +2,9 @@
 
 function check_btc(){
     addr = $('#btcaddr').text();
-    $.getJSON('/bitcoin/check/'+addr, function (data) {
+    $.getJSON('/terminal/bitcoin/check/'+addr, function (data) {
         if ("event_id" in data) {
-            document.location = '/event/'+data.event_id;
+            document.location = '/terminal/event/'+data.event_id;
         }
     });
 }
