@@ -64,7 +64,7 @@ class Bitcoin(object):
             raise BTCException("General urllib failure")
 
     @staticmethod
-    def get_new_address(umid, auth_key, cb_url='{}/bitcoin/deposit'):
+    def get_new_address(umid, auth_key, cb_url='{}/terminal/bitcoin/deposit'):
 
         cb_url = cb_url.format(Bitcoin.HOSTNAME)
 
