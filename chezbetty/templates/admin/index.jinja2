@@ -317,11 +317,23 @@
             </tr>
             <tr>
               <td>% Inventory Lost</td>
-              <td class="right">{{ ((total_inventory_lost / restock.balance)*100)|round(2) }}%</td>
+              <td class="right">
+                {% if restock.balance == 0 %}
+                  0%
+                {% else %}
+                  {{ ((total_inventory_lost / restock.balance)*100)|round(2) }}%
+                {%endif %}
+              </td>
             </tr>
             <tr>
               <td>% Lost</td>
-              <td class="right">{{ (((total_inventory_lost - cashbox_net - btcbox_net) / restock.balance)*100)|round(2) }}%</td>
+              <td class="right">
+                {% if restock.balance == 0 %}
+                  0%
+                {% else %}
+                  {{ (((total_inventory_lost - cashbox_net - btcbox_net) / restock.balance)*100)|round(2) }}%
+                {% endif %}
+                </td>
             </tr>
             <tr>
               <td>Total CC Deposits</td>
