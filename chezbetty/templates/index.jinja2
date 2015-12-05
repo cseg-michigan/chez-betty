@@ -45,10 +45,6 @@ body {
           <a class="btn btn-default btn-huge btn-bordered" href="/item/request">{{ _('Request an Item') }}</a>
           <a class="btn btn-default btn-huge btn-bordered" href="/about">{{ _('About') }}</a>
           <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
-
-          {% if request.has_permission("manage") %}
-          <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Admin') }}</a>
-          {% endif %}
         </div>
 
         {% if top_debtor %}
