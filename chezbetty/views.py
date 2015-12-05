@@ -90,13 +90,24 @@ def index(request):
     for announcement in announcements:
         request.session.flash(announcement.announcement, 'info')
 
+    try:
+        top_debtor = DBSession.query(User)\
+                         .filter(User.balance < -5)\
+                         .order_by(User.balance)\
+                         .limit(1).one()
+    except NoResultFound:
+        top_debtor = None
+
     # For the demo mode
     if 'demo' in request.cookies and request.cookies['demo'] == '1':
         admins = User.get_admins()
     else:
         admins = []
 
-    return {'admins': admins}
+    return {
+            'admins': admins,
+            'top_debtor': top_debtor,
+            }
 
 
 @view_config(route_name='about', renderer='templates/about.jinja2')

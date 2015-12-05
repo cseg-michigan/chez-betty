@@ -47,9 +47,21 @@ body {
           <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
 
           {% if request.has_permission("manage") %}
-          <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Administration') }}</a>
+          <a class="btn btn-default btn-huge btn-bordered" href="/admin">{{ _('Admin') }}</a>
           {% endif %}
         </div>
+
+        {% if top_debtor %}
+        <div id="top-debtor">
+          <hr />
+          <div class="alert">
+            <h2>Do you know <strong>{{ top_debtor.name }}</strong> ({{ top_debtor.uniqname }})?</h2>
+            <h3>They are number one on the Wall of Shame, with a balance of
+              {{ top_debtor.balance|format_currency|safe }}.</h3>
+            <h3>If you know {{ top_debtor.name }}, please encourage them to pay Betty back today.</h3>
+          </div>
+        </div>
+        {% endif %}
 
         <div id="cc-banner" style="text-align:center">
           <hr />
