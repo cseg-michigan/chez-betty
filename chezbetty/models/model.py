@@ -93,7 +93,7 @@ def limitable_request(request, fn, prefix=None, limit=None, count=False):
     if count:
         r, r_tot = fn(limit=LIMIT, offset=OFFSET, count=count)
         if LIMIT is None or r_tot <= LIMIT:
-            r_tot = None
+            r_tot = 0
         return r, r_tot
     else:
         return fn(limit=LIMIT, offset=OFFSET, count=count)
