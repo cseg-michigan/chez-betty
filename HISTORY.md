@@ -1,6 +1,10 @@
 History of Chez Betty
 =====================
 
+- Dec 9, 2015: Betty ditches the BeagleBone Black and moves to an Intel
+Nuc. Hopefully that will be more reliable and responsive.
+- Sep 20, 2015: Betty restocks start requiring renting a U-Haul. With purchases at
+Costco over $6k, this is the only way to move that much inventory.
 - May 20, 2015: Betty bought the triple-wide fridge for $1200. Took 6 or so people
 to get it into 2909, but actually cold drinks made it worth it.
 - March 2015: Betty bought a freezer. After placing an ice cream order
