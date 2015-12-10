@@ -130,6 +130,15 @@ def notify_pool_out_of_credit(owner, pool):
             )
 
 
+def new_user_email(user):
+    send_email(
+            TO=user.uniqname+'@umich.edu',
+            SUBJECT='[Chez Betty] Welcome to Chez Betty!',
+            body=render('templates/admin/email_new_user.jinja2',
+                {'user': user})
+            )
+
+
 def string_to_qrcode(s):
     factory = qrcode.image.svg.SvgPathImage
     img = qrcode.make(s, image_factory=factory, box_size=14,

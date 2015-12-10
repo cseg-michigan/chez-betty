@@ -119,6 +119,7 @@ class User(account.Account):
             if create_if_never_seen:
                 u = cls(**cls.__ldap.lookup_umid(umid))
                 DBSession.add(u)
+                utility.new_user_email(u)
             else:
                 raise InvalidUserException()
         return u
