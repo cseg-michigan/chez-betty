@@ -61,10 +61,11 @@ class Event(Base):
                         .limit(count).all()
 
     @classmethod
-    def get_deleted(cls):
+    @limitable_all
+    def get_deleted_events(cls):
         return DBSession.query(cls)\
                         .filter(cls.deleted == True)\
-                        .order_by(cls.id).all()
+                        .order_by(desc(cls.timestamp))
 
 class Purchase(Event):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}

@@ -31,8 +31,9 @@
   {% endfor %}
   </tbody>
 </table>
-<p id="events_showing_text">Showing rows 1-{{ limit }}.</p>
-<p id="events_showing_count" style="visibility: hidden;">{{ limit }}</p>
+<p id="events_showing_text">Showing rows 1-{{ events|length }}.</p>
+<p id="events_force_load"><a onclick="event_load_more();">Click to load more rows.</a></p>
+<p id="events_showing_count" style="visibility: hidden;">{{ events|length }}</p>
 
 <script>
 /* This js is only used on this page. It is included in this file b/c it
@@ -51,25 +52,31 @@ function event_load_more_success (data) {
   $(".date").each(prettydate);
 
   event_loading = false;
+  $("#events_force_load").show();
 }
 
 function event_load_more_fail () {
   $("#events_showing_text").text("Error loading more rows.");
 }
 
+function event_load_more () {
+  event_loading = true;
+  $("#events_force_load").hide();
+  $("#events_showing_text").text($("#events_showing_text").text() + " Loading more rows...");
+  $.ajax({
+    type: "POST",
+    url: "/admin/events/load_more",
+    data: { last: $("#events_showing_count").text(), filter: "{{ event_filter }}" },
+    success: event_load_more_success,
+    error: event_load_more_fail
+  });
+}
+
 $(window).scroll(function event_autoload_onscroll () {
   if (event_loading) return;
 
   if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-    event_loading = true;
-    $("#events_showing_text").text($("#events_showing_text").text() + " Loading more rows...");
-    $.ajax({
-      type: "POST",
-      url: "/admin/events/load_more",
-      data: { last: $("#events_showing_count").text() },
-      success: event_load_more_success,
-      error: event_load_more_fail
-    });
+    event_load_more();
   }
 });
 </script>

@@ -2460,27 +2460,39 @@ def admin_restocks(request):
     events = Event.all(trans_type='restock')
     return {'events': events, 'limit': LIMIT}
 
+def _get_event_filter_function(event_filter):
+    if event_filter in (
+            'deleted',
+            'cash',
+            'restock',
+            'emptycash',
+            'deposit',
+            ):
+        try:
+            return getattr(Event, 'get_'+event_filter+'_events')
+        except AttributeError:
+            request.session.flash('Ignoring invalid filter', 'error')
+    return Event.all
+
 @view_config(route_name='admin_events',
              renderer='templates/admin/events.jinja2',
              permission='admin')
 def admin_events(request):
-    try:
-        LIMIT = int(request.GET['limit'])
-        if LIMIT == 0:
-            LIMIT = None
-    except (KeyError, ValueError):
-        LIMIT=50
-    events = Event.all(limit=LIMIT)
-    return {'events': events, 'limit': LIMIT}
+    event_filter = request.GET['filter'] if 'filter' in request.GET else 'all'
+    fn = _get_event_filter_function(event_filter)
+    events = limitable_request(request, fn, limit=50)
+    return {'events': events, 'event_filter': event_filter}
 
 @view_config(route_name='admin_events_load_more',
              request_method='POST',
              renderer='json',
              permission='admin')
 def admin_events_load_more(request):
-    LIMIT=25
+    LIMIT=100
     last = int(request.POST['last'])
-    events = Event.all(limit=LIMIT,offset=last)
+
+    fn = _get_event_filter_function(request.POST['filter'])
+    events = fn(limit=LIMIT,offset=last)
 
     events_html = []
     for e in events:
@@ -2490,41 +2502,6 @@ def admin_events_load_more(request):
             'count': last+LIMIT,
             'rows': events_html
             }
-
-@view_config(route_name='admin_events_deleted',
-             renderer='templates/admin/events_deleted.jinja2',
-             permission='admin')
-def admin_events_deleted(request):
-    events_deleted = Event.get_deleted()
-    return {'events': events_deleted}
-
-@view_config(route_name='admin_events_cash',
-             renderer='templates/admin/events_cash.jinja2',
-             permission='admin')
-def admin_events_cash(request):
-    events = Event.get_cash_events()
-    return {'events': events}
-
-@view_config(route_name='admin_events_restock',
-             renderer='templates/admin/events_cash.jinja2',
-             permission='admin')
-def admin_events_restock(request):
-    events = Event.get_restock_events()
-    return {'events': events}
-
-@view_config(route_name='admin_events_emptycash',
-             renderer='templates/admin/events_cash.jinja2',
-             permission='admin')
-def admin_events_emptycash(request):
-    events = Event.get_emptycash_events()
-    return {'events': events}
-
-@view_config(route_name='admin_events_deposit',
-             renderer='templates/admin/events_cash.jinja2',
-             permission='admin')
-def admin_events_deposit(request):
-    events = Event.get_deposit_events()
-    return {'events': events}
 
 
 @view_config(route_name='admin_event',

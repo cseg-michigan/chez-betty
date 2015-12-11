@@ -255,6 +255,7 @@ account.Account.total_purchases = __total_purchase_amount
 
 # This is in a stupid place due to circular input problems
 @classmethod
+@limitable_all
 def __get_cash_events(cls):
     return DBSession.query(event.Event)\
             .join(Transaction)\
@@ -262,23 +263,25 @@ def __get_cash_events(cls):
                       Transaction.to_account_cash_id == account.get_cash_account("chezbetty").id,
                       Transaction.fr_account_cash_id == account.get_cash_account("chezbetty").id))\
             .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp)).all()
+            .order_by(desc(event.Event.timestamp))
 
 event.Event.get_cash_events = __get_cash_events
 
 # This is in a stupid place due to circular input problems
 @classmethod
+@limitable_all
 def __get_restock_events(cls):
     return DBSession.query(event.Event)\
             .join(Transaction)\
             .filter(Transaction.type == 'restock')\
             .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp)).all()
+            .order_by(desc(event.Event.timestamp))
 
 event.Event.get_restock_events = __get_restock_events
 
 # This is in a stupid place due to circular input problems
 @classmethod
+@limitable_all
 def __get_emptycash_events(cls):
     return DBSession.query(event.Event)\
             .join(Transaction)\
@@ -286,12 +289,13 @@ def __get_emptycash_events(cls):
                       Transaction.type == 'emptycashbox',
                       Transaction.type == 'emptybitcoin'))\
             .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp)).all()
+            .order_by(desc(event.Event.timestamp))
 
 event.Event.get_emptycash_events = __get_emptycash_events
 
 # This is in a stupid place due to circular input problems
 @classmethod
+@limitable_all
 def __get_deposit_events(cls):
     return DBSession.query(event.Event)\
             .join(Transaction)\
@@ -300,7 +304,7 @@ def __get_deposit_events(cls):
                       Transaction.type == 'ccdeposit',
                       Transaction.type == 'btcdeposit'))\
             .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp)).all()
+            .order_by(desc(event.Event.timestamp))
 
 event.Event.get_deposit_events = __get_deposit_events
 
