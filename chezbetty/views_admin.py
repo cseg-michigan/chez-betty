@@ -1171,17 +1171,16 @@ def admin_item_edit(request):
 
         stats['num_sold'] = 0
         stats['sold_amount'] = 0
-        purchased_items = PurchaseLineItem.all()
+        purchased_items = PurchaseLineItem.all_item(item.id)
         for pi in purchased_items:
-            if pi.item_id == item.id:
-                stats['num_sold'] += pi.quantity
-                stats['sold_amount'] += pi.amount
+            stats['num_sold'] += pi.quantity
+            stats['sold_amount'] += pi.amount
 
         stats['stocked_amount'] = 0
-        stocked_items = RestockLineItem.all()
+        stocked_items = RestockLineItem.all_item(item.id)
         for si in stocked_items:
-            if si.item_id == item.id:
-                stats['stocked_amount'] += si.amount
+            stats['stocked_amount'] += si.amount
+        # XXX PERF
         stocked_boxes = RestockLineBox.all()
         for sb in stocked_boxes:
             for sbi in sb.box.items:
@@ -1202,10 +1201,9 @@ def admin_item_edit(request):
             stats['until_out'] = '---'
 
         stats['lost'] = 0
-        lost_items = InventoryLineItem.all()
+        lost_items = InventoryLineItem.all_item(item.id)
         for li in lost_items:
-            if li.item_id == item.id:
-                stats['lost'] += (li.quantity - li.quantity_counted)
+            stats['lost'] += (li.quantity - li.quantity_counted)
 
         inventory_total = Item.total_inventory_wholesale()
         stats['inv_percent'] = ((item.wholesale * item.in_stock) / inventory_total) * 100
