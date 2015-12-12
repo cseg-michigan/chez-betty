@@ -91,12 +91,12 @@ def index(request):
         request.session.flash(announcement.announcement, 'info')
 
     try:
-        top_debtor = DBSession.query(User)\
+        top_debtors = DBSession.query(User)\
                          .filter(User.balance < -5)\
                          .order_by(User.balance)\
-                         .limit(1).one()
+                         .limit(5).all()
     except NoResultFound:
-        top_debtor = None
+        top_debtors = None
 
     # For the demo mode
     if 'demo' in request.cookies and request.cookies['demo'] == '1':
@@ -106,7 +106,7 @@ def index(request):
 
     return {
             'admins': admins,
-            'top_debtor': top_debtor,
+            'top_debtors': top_debtors,
             }
 
 

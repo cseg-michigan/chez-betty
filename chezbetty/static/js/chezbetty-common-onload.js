@@ -64,3 +64,31 @@ $(".input-ajax_savefield").on('input', function () {
 	}
 });
 
+function change_rotating_div(showing_div) {
+	var id = showing_div.attr('id');
+	var idx = id.split('-').slice(-1)[0];
+
+	var div_root = id.slice(0, -idx.length);
+	var next_div = div_root + (parseInt(idx) + 1);
+	var j_next_div = $('#'+next_div);
+
+	// .length is jquery idiom for 'selector exists?'
+	if (! j_next_div.length) {
+		j_next_div = $('#' + div_root + '1');
+	}
+
+	showing_div.hide();
+	j_next_div.show();
+
+	setTimeout(function() {
+		change_rotating_div(j_next_div);
+	}, parseInt(showing_div.attr('data-rotate-div-timeout')));
+}
+
+$(".rotate-divs").each(function () {
+	var showing_div = $(this);
+	setTimeout(function() {
+		change_rotating_div(showing_div);
+	}, parseInt(showing_div.attr('data-rotate-div-timeout')));
+});
+

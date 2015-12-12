@@ -47,17 +47,17 @@ body {
           <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
         </div>
 
-        {% if top_debtor %}
-        <div id="top-debtor">
+        {% for debtor in top_debtors %}
+        <div id="top-debtor-{{ loop.index }}" data-rotate-div-timeout="5000" {% if loop.index == 1 %} class="rotate-divs" {% else %} style="display: none;"{% endif %}>
           <hr />
           <div class="alert">
-            <h2>Do you know <strong>{{ top_debtor.name }}</strong> ({{ top_debtor.uniqname }})?</h2>
-            <h3>They are number one on the Wall of Shame, with a balance of
-              {{ top_debtor.balance|format_currency|safe }}.</h3>
-            <h3>If you know {{ top_debtor.name }}, please encourage them to pay Betty back today.</h3>
+            <h2>Do you know <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }})?</h2>
+            <h3>They are number {{ loop.index }} on the Wall of Shame, with a balance of
+              {{ debtor.balance|format_currency|safe }}.</h3>
+            <h3>If you know {{ debtor.name }}, please encourage them to pay Betty back today.</h3>
           </div>
         </div>
-        {% endif %}
+        {% endfor %}
 
         <div id="cc-banner" style="text-align:center">
           <hr />
