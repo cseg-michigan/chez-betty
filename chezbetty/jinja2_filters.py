@@ -20,6 +20,17 @@ def format_currency(value):
 	else:
 		return '<span class="positive">${:,.2f}</span>'.format(value)
 
+def format_debt(value):
+	try:
+		p = float(value)
+	except ValueError:
+		return value
+	# We stored currency as floats, avoid the -$0.00 case
+	if p <= -0.01:
+		 return '<span class="negative">${:,.2f}</span>'.format(p*-1.0)
+	print("WARN: format_debt expects a negative value")
+	return format_currency(value)
+
 # Convert UTC datetime object from the database to the local time
 # of the Chez Betty instance.
 # TODO: pass the timezone in to this somehow, but for now we just go

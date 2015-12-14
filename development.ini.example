@@ -43,6 +43,7 @@ jinja2.filters =
     route_url = pyramid_jinja2.filters:route_url_filter
     static_url = pyramid_jinja2.filters:static_url_filter
     format_currency = chezbetty.jinja2_filters:format_currency
+    format_debt = chezbetty.jinja2_filters:format_debt
     pretty_date = chezbetty.jinja2_filters:pretty_date
     make_link = chezbetty.jinja2_filters:make_link
     make_user_link = chezbetty.jinja2_filters:make_user_link

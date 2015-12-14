@@ -159,4 +159,39 @@ body {
 
 {% block onload %}
 <script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
+
+<div id="splash" class="container">
+  <h1>Please Help Us Out</h1>
+  <h3>Right now, people owe Betty a combined
+    <strong>{{ owed_by_users|format_debt|safe }}</strong>.
+  </h3>
+  <h3>While we understand that $5 may feel like a small amount to one person,
+    $5&nbsp;x&nbsp;1000 users is quickly a lot of debt.</h3>
+  <h3>We cannot keep taking on personal debt to restock Betty if people will
+    not pay back their debts.
+    For this reason, <strong>we cannot restock Betty until everyone on the Wall
+    of Shame has paid off their debts.</strong>
+    If you owe Betty money, please pay it back today. If you know someone
+    who owes Betty money, please encourage them to pay it back today.
+  </h3>
+  <h3>To the many honest Betty users currently in the black, thank you for
+    helping to make Betty a success. We sincerely apologize that a few bad
+    apples are currently threatening to spoil the bunch.
+  </h3>
+  <div class="pull-right">
+    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#wrap").show();'>Continue to Betty</a>
+  </div>
+  <div class="clearfix"></div>
+  <hr />
+  <div style="-webkit-column-count: 6; -moz-column-count: 6; column-count: 6; font-size: 12px;">
+  {% for user in shame_users %}
+    <p>{{ user.name }} {{ user.balance|format_debt|safe }}</p>
+  {% endfor %}
+  </div>
+</div>
+
+<script>
+$("#wrap").hide();
+$("#splash").show();
+</script>
 {% endblock %}

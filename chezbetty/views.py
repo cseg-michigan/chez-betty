@@ -104,9 +104,15 @@ def index(request):
     else:
         admins = []
 
+    shame_users = DBSession.query(User)\
+                     .filter(User.balance < -5)\
+                     .order_by(User.balance).all()
+
     return {
             'admins': admins,
             'top_debtors': top_debtors,
+            'owed_by_users': User.get_amount_owed(),
+            'shame_users': shame_users,
             }
 
 
