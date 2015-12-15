@@ -1,0 +1,47 @@
+{% set t_amount = amount + new_val %}
+{% set t_charge = (t_amount + 0.3) / 0.971 %}
+{% set t_fee = t_charge - t_amount %}
+{% set t_total_cents = (t_charge*100)|round|int %}
+
+<button id="pay_{{ new_val }}_btn" class="btn btn-success btn-huge">Pay to ${{ new_val }} Balance</button>
+
+<script>
+var handler_{{ new_val }} = StripeCheckout.configure({
+  key: '{{ stripe_pk }}',
+  image: '{{"chezbetty:static/chezbetty_1000px.jpg"|static_url}}',
+  token: function(token) {
+    console.log(token);
+    // Callback w/ token.id to create a charge and token.email
+    $.ajax({
+      type: "POST",
+      url: "/paydebt/{{ user.uniqname }}/submit",
+      data: {
+        stripeToken: token.id,
+        betty_amount: '{{ t_amount }}',
+        betty_total_cents: '{{ t_total_cents }}'
+        },
+      success: function () {
+        window.location.reload();
+      },
+      error: function (e) {
+        console.log(e);
+        alert("Error posting data to server");
+      },
+      dataType: "json"
+    });
+  },
+  name: 'Chez Betty',
+  description: '${{ "%0.2f"|format(t_amount) }} Deposit (${{ "%0.2f"|format(t_total_cents/100) }} Charge)',
+  amount: {{ t_total_cents }},
+});
+
+$('#pay_{{ new_val }}_btn').on('click', function(e) {
+  handler_{{ new_val }}.open();
+  e.preventDefault();
+});
+
+$(window).on('popstate', function() {
+  handler_{{ new_val }}.close();
+});
+</script>
+
