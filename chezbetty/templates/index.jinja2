@@ -188,9 +188,9 @@ body {
   </div>
   <div class="clearfix"></div>
   <hr />
-  <div style="-webkit-column-count: 6; -moz-column-count: 6; column-count: 6; font-size: 12px;">
+  <div style="-webkit-column-count: 6; -moz-column-count: 6; column-count: 6; font-size: 14px;">
   {% for user in shame_users %}
-    <p>{{ user.name }} {{ user.balance|format_debt|safe }}</p>
+  <p>{{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}</p>
   {% endfor %}
   </div>
 </div>
