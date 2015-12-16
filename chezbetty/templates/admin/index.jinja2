@@ -447,30 +447,42 @@
         <h3 class="panel-title"><a href="/admin/events">Recent Transactions</a></h3>
       </div>
       <div class="panel-body">
-        <table class="table table-condensed table-striped table-responsive filterable">
+        <table class="table table-condensed table-striped table-responsive">
           <thead>
             <tr>
               <th></th>
               <th>Timestamp</th>
-              <th class="filterable-row">Type</th>
-              <th class="filterable-row">From Account:</th>
-              <th class="filterable-row">To Account:</th>
-              <th class="filterable-row">From Account (Cash):</th>
-              <th class="filterable-row">To Account (Cash):</th>
+              <th>Type</th>
+              <th>From Account:</th>
+              <th>To Account:</th>
+              {# <th class="filterable-row">From Account (Cash):</th> #}
+              {# <th class="filterable-row">To Account (Cash):</th> #}
               <th class="right">Amount</th>
             </tr>
           </thead>
           <tbody>
             {% for e in events %}
             {% for t in e.transactions %}
+
             <tr>
               <td>{{ button.event(e.id) }}</td>
               <td>{{ e.timestamp|pretty_date|safe }}</td>
               <td>{{ t.type }}</td>
-              <td>{{ t.fr_account_virt|make_link|safe if t.fr_account_virt else "n/a" }}</td>
-              <td>{{ t.to_account_virt|make_link|safe if t.to_account_virt else "n/a" }}</td>
-              <td>{{ t.fr_account_cash|make_link|safe if t.fr_account_cash else "n/a" }}</td>
-              <td>{{ t.to_account_cash|make_link|safe if t.to_account_cash else "n/a" }}</td>
+              <td>
+                {{ t.fr_account_virt|make_link|safe if t.fr_account_virt else "n/a" }}
+                {# Add account balance next to name for easy lookup. #}
+                {% if t.fr_account_virt.balance is defined and t.fr_account_virt.type != 'virtual' %}
+                  ({{ t.fr_account_virt.balance|format_currency|safe }})
+                {% endif %}
+              </td>
+              <td>
+                {{ t.to_account_virt|make_link|safe if t.to_account_virt else "n/a" }}
+                {% if t.to_account_virt.balance is defined and t.to_account_virt.type != 'virtual' %}
+                  ({{ t.to_account_virt.balance|format_currency|safe }})
+                {% endif %}
+              </td>
+              {# <td>{{ t.fr_account_cash|make_link|safe if t.fr_account_cash else "n/a" }}</td> #}
+              {# <td>{{ t.to_account_cash|make_link|safe if t.to_account_cash else "n/a" }}</td> #}
               <td class="right">{{ t.amount|format_currency|safe }}</td>
             </tr>
             {% endfor %}
