@@ -3,8 +3,10 @@ from . import account
 from . import event
 from . import item
 from . import box
+from . import user
 from chezbetty import utility
 
+import arrow
 from pyramid.threadlocal import get_current_registry
 
 
@@ -307,6 +309,25 @@ def __get_deposit_events(cls):
             .order_by(desc(event.Event.timestamp))
 
 event.Event.get_deposit_events = __get_deposit_events
+
+# This is in a stupid place due to circular input problems
+@property
+def __days_since_last_purchase(self):
+    last_purchase = object_session(self).query(event.Event)\
+            .join(Transaction)\
+            .filter(Transaction.fr_account_virt_id == self.id)\
+            .filter(event.Event.type == 'purchase')\
+            .filter(event.Event.deleted==False)\
+            .order_by(desc(event.Event.timestamp)).first()
+
+    if last_purchase:
+        diff = arrow.now() - last_purchase.timestamp
+        return diff.days
+    else:
+        return None
+
+user.User.days_since_last_purchase = __days_since_last_purchase
+
 
 
 class Purchase(Transaction):
