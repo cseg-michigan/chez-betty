@@ -2,6 +2,7 @@ from pyramid.config import Configurator
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.httpexceptions import HTTPFound
+import pyramid.httpexceptions
 from sqlalchemy import engine_from_config
 
 # Import all models so they get auto created if they don't exist
@@ -31,11 +32,24 @@ from .btc import Bitcoin
 ###
 ### 404
 ###
-
 def notfound(request):
-    request.session.flash('404: Could not find that page.', 'error')
-    return HTTPFound(location=request.route_url('index'))
+    ## 404 Logic:
+    # If there is a "." in the request path, then we assume this is not a user
+    # facing page but instead a javascript file or other helper file.
+    # If we cannot find that file, we want to actually 404.
+    # If the path looks like "/terminal/users" and we can't find that, then we
+    # want to redirect to a known page so the terminal keeps working.
+    if '.' in request.path:
+        return pyramid.httpexceptions.HTTPNotFound(body_template='<a href="/">Home</a>')
+    else:
+        request.session.flash('404: Could not find that page. Redirected to home.', 'error')
+        return HTTPFound(location=request.route_url('index'))
 
+###
+### main()
+###
+### Setup all routes and other config settings
+###
 def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     Base.metadata.create_all(engine)
