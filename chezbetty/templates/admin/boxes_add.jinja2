@@ -8,7 +8,7 @@
 
 {% block content %}
 
-<form role="form" action="/admin/box/add/submit" method="post">
+<form role="form" id="box_add_form" action="/admin/box/add/submit" method="post">
 
 <h2>Box Name and Barcode</h2>
 
@@ -37,12 +37,12 @@
     <tr>
       <td>Subitem Quantity</td>
       <td class="box-example-text">(Ex: 20)</td>
-      <td><input type="text" class="form-control" id="box-quantity" name="box-quantity" value="{{ d['box-quantity'] }}"></td>
+      <td><input type="number" min="0" class="form-control" id="box-quantity" name="box-quantity" value="{{ d['box-quantity'] }}"></td>
     </tr>
     <tr>
       <td>Barcode</td>
       <td></td>
-      <td><input type="text" class="form-control barcode-check" id="box-barcode" name="box-barcode" value="{{ d['box-barcode'] }}"></td>
+      <td><input type="number" min="0" class="form-control barcode-check" id="box-barcode" name="box-barcode" value="{{ d['box-barcode'] }}"></td>
     </tr>
     <tr>
       <td>Sales Tax</td>
@@ -63,7 +63,7 @@
     <tr>
       <td>Vendor Number</td>
       <td>{{ forms.dropdown("box-vendor", vendors, d['box-vendor']|default("0")) }}</td>
-      <td><input type="text" class="form-control" id="box-vendor-item_num" name="box-vendor-item_num" value="{{ d['box-vendor-item_num'] }}"></td>
+      <td><input type="number" min="0" class="form-control" id="box-vendor-item_num" name="box-vendor-item_num" value="{{ d['box-vendor-item_num'] }}"></td>
     </tr>
   </tbody>
 </table>
@@ -111,13 +111,13 @@
             <tr>
               <td>Barcode</td>
               <td></td>
-              <td><input type="text" class="form-control barcode-check" id="box-item-{{ i }}-barcode" name="box-item-{{ i }}-barcode" value="{{ d['box-item-'~i~'-barcode'] }}"></td>
+              <td><input type="number" min="0" class="form-control barcode-check" id="box-item-{{ i }}-barcode" name="box-item-{{ i }}-barcode" value="{{ d['box-item-'~i~'-barcode'] }}"></td>
             </tr>
           </tbody>
         </table>
 
       </td>
-      <td><input type="text" class="form-control" id="box-item-{{ i }}-quantity" name="box-item-{{ i }}-quantity" value="{{ d['box-item-'~i~'-quantity'] }}"></td>
+      <td><input type="number" min="0" class="form-control subitem-quantity" id="box-item-{{ i }}-quantity" name="box-item-{{ i }}-quantity" value="{{ d['box-item-'~i~'-quantity'] }}"></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -134,4 +134,21 @@
 {% block onload %}
 <script src="{{'chezbetty:static/js/chezbetty-admin-noenter.js'|static_url}}"></script>
 <script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
+<script>
+$('#box_add_form').submit(function check_submit(evt) {
+	evt.preventDefault();
+
+	var box_qty = parseInt($("#box-quantity").val());
+	var sub_qty = 0;
+	$(".subitem-quantity").each(function(index) {
+		sub_qty += parseInt($(this).val());
+	});
+	if (box_qty != sub_qty) {
+		alert("Sum of subitem quantities ("+sub_qty+") must match box quantity ("+box_qty+")");
+		return false;
+	}
+	
+	$(this).unbind('submit').trigger('submit');
+});
+</script>
 {% endblock %}
