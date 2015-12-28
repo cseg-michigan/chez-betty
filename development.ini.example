@@ -49,6 +49,7 @@ jinja2.filters =
     make_user_link = chezbetty.jinja2_filters:make_user_link
     shorten = chezbetty.jinja2_filters:shorten
     add_git_version = chezbetty.jinja2_filters:add_git_version
+    format_debt = chezbetty.jinja2_filters:format_debt
 
 auth.secret = aabbcc
 
