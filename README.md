@@ -42,7 +42,7 @@ development environment set up, do the following:
         ## Newest (only do this with Python 3.4+):
         pyvenv-3.5 venv
         
-        source vevn/bin/activate
+        source venv/bin/activate
 
 2. Install the dependencies:
 
