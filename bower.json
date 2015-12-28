@@ -28,7 +28,6 @@
     "bootstrap": "~3.3.0",
     "jquery-dateFormat": "~1.0.1",
     "jquery-ui": "~1.11.0",
-    "moment": "~2.7.0",
     "spin.js": "~2.0.1",
     "barcoder": "https://github.com/bradjc/node-barcoder.git#1.2.0",
     "datetimepicker": "latest",
