@@ -385,7 +385,23 @@ $(".request-delete").click(function () {
 	});
 });
 
+// Check that the number of subitems in a box matches the
+// total number of items that should be in that box.
+$('#box_add_form').submit(function check_submit(evt) {
+	evt.preventDefault();
 
+	var box_qty = parseInt($("#box-quantity").val());
+	var sub_qty = 0;
+	$(".subitem-quantity").each(function(index) {
+		sub_qty += parseInt($(this).val());
+	});
+	if (box_qty != sub_qty) {
+		alert("Sum of subitem quantities ("+sub_qty+") must match box quantity ("+box_qty+")");
+		return false;
+	}
+	
+	$(this).unbind('submit').trigger('submit');
+});
 
 
 //
