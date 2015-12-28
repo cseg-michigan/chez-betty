@@ -9,7 +9,6 @@
   {% block head %}
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap/bootstrap.min.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap-sortable/bootstrap-sortable.css'|static_url}}" />
-  <link rel="stylesheet" href="{{'chezbetty:static/css/lib/keyboard/keyboard.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/jquery-ui/jquery-ui.min.css'|static_url}}" />
 
   <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-terminal.css'|static_url}}" />
@@ -21,7 +20,6 @@
   <script src="{{'chezbetty:static/js/lib/bootstrap/bootstrap.min.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/moment/moment.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/bootstrap-sortable/bootstrap-sortable.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/lib/keyboard/jquery.keyboard.min.js'|static_url}}"></script>
 
   <script src="{{'chezbetty:static/js/chezbetty-common.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/chezbetty-terminal.js'|static_url}}"></script>
@@ -37,14 +35,6 @@
   {% else %}
     {% set demo = False %}
   {% endif %}
-
-  <script>
-    {% if request.is_terminal %}
-    onscreen_keyboard = true;
-    {% else %}
-    onscreen_keyboard = false;
-    {% endif %}
-  </script>
 
   <div id="wrap">
 

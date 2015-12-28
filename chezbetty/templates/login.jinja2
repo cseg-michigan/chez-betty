@@ -33,14 +33,6 @@ button {
 }
 </style>
 
-<script>
-  {% if request.is_terminal %}
-  onscreen_keyboard = true;
-  {% else %}
-  onscreen_keyboard = false;
-  {% endif %}
-</script>
-
 <div class="container">
 
   <div class="col-md-12">
@@ -86,8 +78,4 @@ button {
 
 </div>
 
-{% endblock %}
-
-{% block onload %}
-<script src="{{'chezbetty:static/js/chezbetty-admin-keyboard.js'|static_url}}"></script>
 {% endblock %}

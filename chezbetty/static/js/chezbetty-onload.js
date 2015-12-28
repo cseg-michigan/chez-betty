@@ -193,15 +193,6 @@ $(".faq-q").click(function() {
 
 
 
-
-if (onscreen_keyboard) {
-	$(".keyboard-wanted").keyboard({
-	  layout : 'qwerty',
-	  tabNavigation : true,
-	  enterNavigation : true,
-	});
-}
-
 var scrollStep = 100;
 
 $("#scrollTop").bind("click", function(event) {
