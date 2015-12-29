@@ -112,6 +112,8 @@ def main(global_config, **settings):
     config.add_route('terminal_deposit',        '/terminal/deposit')
     config.add_route('terminal_deposit_delete', '/terminal/deposit/delete')
 
+    config.add_route('terminal_item',           '/terminal/item/{barcode}')
+
     config.add_route('terminal',                '/terminal/{umid}')
 
 

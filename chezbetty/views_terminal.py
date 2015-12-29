@@ -211,6 +211,36 @@ def terminal_deposit_delete(request):
         return {'error': 'Error.'}
 
 
+@view_config(route_name='terminal_item',
+             renderer='json',
+             permission='service')
+def terminal_item(request):
+    try:
+        item = Item.from_barcode(request.matchdict['barcode'])
+    except:
+        # Could not find the item. Check to see if the user scanned a box
+        # instead. This could lead to two cases: a) the box only has 1 item in it
+        # in which case we just add that item to the cart. This likely occurred
+        # because the individual items do not have barcodes so we just use
+        # the box. b) The box has multiple items in it in which case we throw
+        # an error for now.
+        try:
+            box = Box.from_barcode(request.matchdict['barcode'])
+            if box.subitem_number == 1:
+                item = box.items[0].item
+            else:
+                return {'error': 'Cannot add that entire box to your order. Please scan an individual item.'}
+        except:
+            return {'error': 'Could not find that item.'}
+
+    if not item.enabled:
+        return {'error': 'That product is not currently for sale.'}
+
+    item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
+    return {'id':item.id,
+            'item_row_html': item_html}
+
+
 
 
 # @view_config(route_name='user', renderer='templates/terminal/user.jinja2', permission='service')

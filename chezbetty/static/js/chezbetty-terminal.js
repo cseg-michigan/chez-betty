@@ -51,6 +51,22 @@ function deposit_alert_error (error_str) {
 	$("#deposit-alerts").html(html);
 }
 
+function purchase_alert_clear () {
+	$("#purchase-alerts").empty();
+}
+
+function purchase_alert_success (error_str) {
+	html = '<div class="alert alert-success" role="alert">'+error_str+'</div>';
+	purchase_alert_clear();
+	$("#purchase-alerts").html(html);
+}
+
+function purchase_alert_error (error_str) {
+	html = '<div class="alert alert-danger" role="alert">'+error_str+'</div>';
+	purchase_alert_clear();
+	$("#purchase-alerts").html(html);
+}
+
 
 /*******************************************************************************
  * TERMINAL PAGE LOGIC
@@ -103,6 +119,27 @@ function calculate_user_new_balance () {
 	$("#user-info-current-balance").html(format_price(balance));
 }
 
+// Display and hide logout buttons based on user balance
+function show_correct_purchase_button () {
+	// If there is nothing in the cart, then it should be a logout button
+	if ($("#purchase_table tbody tr:visible").length == 0) {
+		$("#purchase-button-purchaselogout").hide();
+		$("#purchase-button-purchase").hide();
+		$("#purchase-button-logout").show();
+	} else {
+		$("#purchase-button-logout").hide();
+
+		// If the user is in debt, it should be just a purchase button
+		var balance = parseFloat($("#user-balance").text());
+		if (balance < 0) {
+			$("#purchase-button-purchaselogout").hide();
+			$("#purchase-button-purchase").show();
+		} else {
+			$("#purchase-button-purchaselogout").show();
+			$("#purchase-button-purchase").hide();
+		}
+	}
+}
 
 /*******************************************************************************
  * AJAX Callbacks
@@ -114,25 +151,11 @@ function calculate_user_new_balance () {
 function add_item_success (data) {
 	alert_clear();
 
-	// Check if there was an error looking up the product
-	if (data.status == "disabled") {
-		alert_error("That product is not currently for sale.");
-	} else if (data.status == "unknown_barcode") {
-		alert_error("Could not find that item.");
-	} else if (data.status == "scanned_box_with_multiple_items") {
-		alert_error("Cannot add that entire box to your order. Please scan an individual item.");
+	if ("error" in data) {
+		purchase_alert_error(data.error);
 	} else {
-
 		// First, if this is the first item hide the empty order row
 		$("#purchase-empty").hide();
-		if ($("#logout-button").attr('data-cb-href-default') === undefined) {
-			$("#logout-button").attr('data-cb-href-default', $("#logout-button").attr("href"));
-		}
-		if ($("#logout-button").attr('data-cb-href-alt') !== undefined) {
-			$("#logout-button").attr('href', $("#logout-button").attr("data-cb-href-alt"));
-		}
-		$("#logout-button .btn-text-alt").show();
-		$("#logout-button .btn-text-default").hide();
 
 		// Check if this item is already present. In that case we only
 		// need to increment the quantity and price
@@ -155,27 +178,36 @@ function add_item_success (data) {
 			$("#purchase_table tbody").append(data.item_row_html);
 		}
 
-		calculate_total();
+		// Want to make sure the correct logout button is displayed
+		show_correct_purchase_button();
 
+		calculate_total();
 	}
 }
 
 // Callback when adding to cart fails.
 function add_item_fail () {
-	alert_error("Could not find that item.");
+	purchase_alert_error("Could not find that item.");
 }
 
 // Callback when a purchase was successful
 function purchase_success (data) {
 	if ("error" in data) {
-		alert_error(data.error);
+		purchase_alert_error(data.error);
 		enable_button($(".btn-submit-purchase"));
-	} else if ("redirect_url" in data) {
-		window.location.replace(data.redirect_url);
 	} else {
-		// On successful purchase, redirect the user to the transaction complete
-		// page showing the transaction.
-		window.location.replace("/terminal/event/" + data.event_id);
+		// Update user balance
+		$("#user-balance").text(data.user_balance);
+		calculate_user_new_balance();
+
+		// Save what event this was
+		$("#purchase-eventid").text(data.event_id);
+
+		purchase_alert_success('Purchase was recorded successfully.');
+
+		// Flip to complete page
+		$("#puchase-entry").hide();
+		$("#puchase-complete").show();
 	}
 }
 
@@ -395,7 +427,7 @@ $("#deposit-entry-custom").on("click", "button", function () {
 function add_item (item_id) {
 	$.ajax({
 		dataType: "json",
-		url: "/terminal/purchase/item/"+item_id+"/json",
+		url: "/terminal/item/"+item_id,
 		success: add_item_success,
 		error: add_item_fail
 	});
@@ -460,11 +492,7 @@ $("#purchase_table tbody").on("click", ".btn-remove-item", function () {
 		$("#purchase-empty").show();
 
 		// Make the logout button normal again
-		if ($("#logout-button").attr('data-cb-href-default') !== undefined) {
-			$("#logout-button").attr('href', $("#logout-button").attr("data-cb-href-default"));
-		}
-		$("#logout-button .btn-text-alt").hide();
-		$("#logout-button .btn-text-default").show();
+		show_correct_purchase_button();
 	}
 
 	// Re-calculate the total
@@ -484,8 +512,24 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 	calculate_total();
 });
 
+// Choose which account to pay from
+$(".purchase-payment").click(function () {
+	$(".purchase-payment").removeClass("active");
+	$(this).addClass("active");
+});
+
+// Nothing in the cart, just logout
+$("#purchase-button-logout").click(function () {
+	window.location.href = "/";
+});
+
+// Click handler to submit a purchase and logout.
+$("#purchase-button-purchaselogout").click(function () {
+	submit_purchase(this, purchase_andlogout_success, purchase_error);
+});
+
 // Click handler to submit a purchase.
-$(".btn-submit-purchase").click(function () {
+$("#purchase-button-purchase").click(function () {
 	submit_purchase(this, purchase_success, purchase_error);
 });
 

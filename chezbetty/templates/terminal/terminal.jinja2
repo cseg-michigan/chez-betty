@@ -85,7 +85,9 @@
       </div>
       <div class="panel-body">
 
-        <div class="row">
+        <div id="purchase-alerts"></div>
+
+        <div id="purchase-entry" class="row">
 
           <div class="col-md-9">
 
@@ -153,20 +155,34 @@
           <div class="col-md-3">
             <div class="list-group">
               <button type="button" class="list-group-item list-group-item-info list-group-item-header">Select Payment</button>
-              <button type="button" id="payment-user" class="list-group-item active">Your Account</button>
-              <button type="button" id="payment-user" class="list-group-item">and this</button>
+              <button type="button" id="payment-user" class="list-group-item purchase-payment active">Your Account</button>
+              <button type="button" id="payment-user" class="list-group-item purchase-payment ">need a test</button>
               {% for pool in pools %}
-              <button type="button" id="payment-pool-{{ pool.id }}" class="list-group-item">{{ _('%(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
+              <button type="button" id="payment-pool-{{ pool.id }}" class="list-group-item purchase-payment">{{ _('%(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
               {% endfor %}
             </div>            
           </div>
 
         </div>
 
+        <div id="purchase-complete" class="row">
+          <div class="col-md-12">
+
+          <p>Purchase Complete</p>
+
+          <button type="button" class="btn btn-primary btn-lg btn-delete-purchase">{{ _('Undo this Purchase') }}</button>
+
+          <div id="purchase-eventid" class="hidden"></div>
+
+          </div>
+        </div>
+
         {# Purchase buttons #}
         <div class="row">
           <div class="col-md-12">       
-            <button type="button" id="purchase-button" class="btn btn-success btn-lg btn-submit">{{ _('Logout') }}</button>
+            <button type="button" id="purchase-button-logout" class="btn btn-success btn-lg btn-submit btn-submit-purchase">{{ _('Logout') }}</button>
+            <button type="button" id="purchase-button-purchaselogout" class="btn btn-success btn-lg btn-submit btn-submit-purchase" style="display:none;">{{ _('Purchase & Logout') }}</button>
+            <button type="button" id="purchase-button-purchase" class="btn btn-success btn-lg btn-submit btn-submit-purchase" style="display:none;">{{ _('Purchase') }}</button>
           </div>
         </div>
 
