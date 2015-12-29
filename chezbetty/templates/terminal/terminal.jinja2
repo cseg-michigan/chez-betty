@@ -1,0 +1,261 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'purchase' %}
+{% block title %}{{ _('Purchase') }}{% endblock %}
+{% block header %}{{ _('Purchase') }}{% endblock %}
+
+
+{% block content %}
+
+{# Display large banners if this user owes us money. #}
+{% if user and user.balance < -50 %}
+<div class="alert alert-danger" role="alert">
+  <div class="container">
+    <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
+    <h3>{{ _("You currently owe Betty %(big_debt)s. That's a lot of money!")|
+             format(big_debt=user.balance|format_currency)|safe }}</h3>
+    <p>{{ _("We're glad you like Betty. We're happy to extend a small line "
+    "of credit, but if people owe Betty lots of money, it's hard to keep "
+    "things in stock. Please try to pay Betty back soon!") }}</p>
+  </div>
+</div>
+{% elif user and user.balance < -20 %}
+<div class="alert alert-warning" role="alert">
+  <div class="container">
+    <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
+    <p>{{ _("You currently owe Betty %(debt)s.")|format(debt=user.balance|format_currency)|safe }}</p>
+    <p>{{ _('Please try to pay Betty back soon, thanks!') }}</p>
+  </div>
+</div>
+{% endif %}
+
+
+<div class="row">
+
+  {# Top user info box #}
+  <div class="col-md-6">
+    <div class="panel {% if user.balance < -5 %}panel-superdanger{% else %}panel-default{% endif %}">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ user.name }}</h3>
+      </div>
+      <div class="panel-body">
+
+        <dl class="dl-horizontal">
+          <dt>                               {{ _('Current Balance') }}</dt>
+          <dd id="user-info-current-balance">{{ user.balance|format_currency|safe }}</dd>
+
+          <dt>                           {{ _('Resulting Balance') }}</dt>
+          <dd id="user-info-new-balance">{{ user.balance|format_currency|safe }}</dd>
+        </dl>
+
+        <div id="user-balance" class="hidden">{{ user.balance }}</div>
+        <div id="user-umid" class="hidden">{{ user.umid }}</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ _('Links') }}</h3>
+      </div>
+      <div class="panel-body buttons">
+        TBD
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="row">
+
+  <div class="col-md-8">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ _('Purchase') }}</h3>
+      </div>
+      <div class="panel-body">
+
+        <div class="row">
+
+          <div class="col-md-9">
+
+            {% if demo and request.has_permission("admin") %}
+            <div class="well">
+              <h4>Demo Mode</h4>
+              {% for item in items %}
+              <a class="btn btn-default btn-small btn-bordered" href="#" onclick='add_item("{{ item.barcode }}");'>{{ item.name }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <div style="margin-bottom: 10px;">
+              <button type="button" id="btn-nobarcode" class="btn btn-default btn-lg btn-warning" style="width: 100%;">
+                {{ _('Choose Item Without Barcode') }}
+              </button>
+            </div>
+
+            <table class="table table-bordered" id="purchase_table">
+              <thead>
+                <tr>
+                  <th style="width: 6%">&nbsp;</th>
+                  <th>{{ _('Item') }}</th>
+                  <th style="width: 10%">{{ _('Quantity') }}</th>
+                  <th style="width: 10%">{{ _('Item Price') }}</th>
+                  <th style="width: 10%">{{ _('Total Price') }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr id="purchase-empty">
+                  {% if existing_items %}
+                  {{ existing_items|safe }}
+                  {% else %}
+                  <td colspan="5">
+                    <h3>{{ _('Order Empty') }}</h3>
+                    {{ _('Scan an item to begin') }}
+                  </td>
+                  {% endif %}
+                </tr>
+              </tbody>
+
+              <tfoot>
+                {% if user.balance > 20 %} {# todo: parameterize this #}
+                <tr>
+                  <td colspan="4"><b>{{ _('Subtotal') }}</b></td>
+                  <td id="purchase-subtotal">$0.00</td>
+                </tr>
+                <tr>
+                  <td colspan="2"><b>{{ _('Good Standing Discount') }}</b></td>
+                  <td id="purchase-discount-percent" colspan="2">(5.0%)</td>
+                  <td id="purchase-discount">($0.00)</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td colspan="4"><b>{{ _('Total') }}</b></td>
+                  <td id="purchase-total">$0.00</td>
+                </tr>
+              </tfoot>
+            </table>
+
+          </div>
+
+          {# Payment options #}
+          <div class="col-md-3">
+            <div class="list-group">
+              <button type="button" class="list-group-item list-group-item-info list-group-item-header">Select Payment</button>
+              <button type="button" id="payment-user" class="list-group-item active">Your Account</button>
+              <button type="button" id="payment-user" class="list-group-item">and this</button>
+              {% for pool in pools %}
+              <button type="button" id="payment-pool-{{ pool.id }}" class="list-group-item">{{ _('%(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
+              {% endfor %}
+            </div>            
+          </div>
+
+        </div>
+
+        {# Purchase buttons #}
+        <div class="row">
+          <div class="col-md-12">       
+            <button type="button" id="purchase-button" class="btn btn-success btn-lg btn-submit">{{ _('Logout') }}</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ _('Cash Deposit') }}</h3>
+      </div>
+      <div class="panel-body">
+
+        <div id="deposit-alerts"></div>
+        
+        <div id="deposit-entry">
+          <div class="row">
+            <div class="col-md-12">
+              <h5>{{ _('To make a cash deposit, put money in the box and enter what you deposited.') }}</h5>
+              <h5>{{ _('Your Deposit Limit: %(limit)s')|format(limit=user.deposit_limit|format_currency)|safe }}</h5>
+              <div id="deposit-entry-total" class="well well-md keypad-full-width">$0.00</div>
+              <div id="deposit-entry-default">
+                {% if user.deposit_limit >= 100 %}<button type="button" id="btn-default-100" class="btn btn-default btn-lg btn-default-deposit">$100</button>{% endif %}
+                {% if user.deposit_limit >= 20  %}<button type="button" id="btn-default-20"  class="btn btn-default btn-lg btn-default-deposit">$20</button>{% endif %}
+                {% if user.deposit_limit >= 10  %}<button type="button" id="btn-default-10"  class="btn btn-default btn-lg btn-default-deposit">$10</button>{% endif %}
+                {% if user.deposit_limit >= 5   %}<button type="button" id="btn-default-5"   class="btn btn-default btn-lg btn-default-deposit">$5</button>{% endif %}
+                <button type="button" id="btn-deposit-entry-default-custom" class="btn btn-default btn-lg btn-custom-deposit btn-warning">{{ _('Custom Amount') }}</button>
+              </div>
+              <div id="deposit-entry-custom" class="keypad-sm" style="display: none; text-align: center">
+                {% include "keypad.jinja2" %}
+                <button type="button" id="btn-deposit-entry-custom-default" class="btn btn-default btn-lg btn-custom-deposit btn-warning">{{ _('Standard Amounts') }}</button>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <button type="button" id="btn-deposit-user" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To Your Account') }}</button>
+              {% for pool in pools %}
+              <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To %(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <div id="deposit-complete" class="row" style="display:none;">
+          <div class="col-md-12">
+
+            <div style="text-align:center;">
+              <span class="deposit-thankyou">{{ _("Thank you!") }}</span>
+            </div>
+
+            <p>
+              <span id="deposit-complete-user">
+                {{ _("You successfully deposited %(amount)s into your account.")|
+                 format(amount='<span class="deposit-amount"></span>')|safe }}
+              </span>
+              <span id="deposit-complete-pool">
+                {{ _("You successfully deposited %(amount)s in the %(pool_name)s Pool.")|
+                 format(
+                   amount='<span class="deposit-amount"></span>',
+                   pool_name='<span class="deposit-pool-name"></span>',
+                 )|safe }}
+              </span>
+            </p>
+            <p>
+              {{ _("Please make sure you put that amount in the box. If not, click undo.") }}
+            </p>
+
+            <div id="deposit-eventid" class="hidden"></div>
+            <div id="deposit-amount" class="hidden"></div>
+
+            <button type="button" class="btn btn-primary btn-lg btn-delete-deposit">{{ _('Undo this Deposit') }}</button>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-terminal-item.js'|static_url}}"></script>
+{% endblock %}
+
+{% block timeout %}60*1000*50{% endblock %}

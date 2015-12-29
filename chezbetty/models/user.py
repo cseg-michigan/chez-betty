@@ -151,6 +151,13 @@ class User(account.Account):
                         .filter(cls.role=='administrator').all()
 
     @classmethod
+    def get_shame_users(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled)\
+                        .filter(cls.balance < -5)\
+                        .order_by(cls.balance).all()
+
+    @classmethod
     def get_users_total(cls):
         return DBSession.query(func.sum(User.balance).label("total_balance"))\
                         .one().total_balance or Decimal(0.0)
@@ -211,6 +218,16 @@ class User(account.Account):
     @property
     def has_password(self):
         return self._password != None
+
+    # Cash deposit limit is a quick check on how active the user has been.
+    # We basically don't want new users to play around with seeing how much
+    # cash they can deposit.
+    @property
+    def deposit_limit(self):
+        if self.total_deposits > 10.0 and self.total_purchases > 10.0:
+            return 100.0
+        else:
+            return 20.0
 
 
 def get_user(request):

@@ -88,6 +88,7 @@ def main(global_config, **settings):
 
     config.add_static_view('static', 'static', cache_max_age=3600)
 
+    # GLOBAL NOT LOGGED IN VIEWS
     config.add_route('exception_view',      '/exception')
 
     config.add_route('index',               '/')
@@ -104,29 +105,14 @@ def main(global_config, **settings):
     config.add_route('paydebt',             '/paydebt/{uniqname}')
     config.add_route('paydebt_submit',      '/paydebt/{uniqname}/submit')
 
+
     # TERMINAL VIEWS
-    config.add_route('user',                '/terminal/profile/{umid}')
+    config.add_route('terminal_umid_check',     '/terminal/check')
 
-    config.add_route('umid_check',          '/terminal/check')
+    config.add_route('terminal_deposit',        '/terminal/deposit')
+    config.add_route('terminal_deposit_delete', '/terminal/deposit/delete')
 
-    config.add_route('swipe',               '/terminal/swipe/{umid}')
-    config.add_route('purchase_new',        '/terminal/purchase/new')
-    config.add_route('purchase',            '/terminal/purchase/{umid}')
-    config.add_route('purchase_item_row',   '/terminal/purchase/item/{barcode}/json')
-
-    config.add_route('deposit_new',         '/terminal/deposit/new')
-    config.add_route('deposit',             '/terminal/deposit/{umid}')
-    config.add_route('deposit_edit',        '/terminal/deposit/edit/{umid}/{event_id}')
-    config.add_route('deposit_edit_submit', '/terminal/deposit/edit/submit')
-    config.add_route('deposit_emailinfo',   '/terminal/deposit/{user_id}/emailinfo')
-    config.add_route('deposit_password_create','/terminal/deposit/{user_id}/password/create')
-    config.add_route('deposit_password_reset', '/terminal/deposit/{user_id}/password/reset')
-
-    config.add_route('btc_deposit',         '/terminal/bitcoin/deposit/{umid}/{auth_key}')
-    config.add_route('btc_check',           '/terminal/bitcoin/check/{addr}')
-
-    config.add_route('event',               '/terminal/event/{event_id}')
-    config.add_route('event_undo',          '/terminal/event/undo/{umid}/{event_id}')
+    config.add_route('terminal',                '/terminal/{umid}')
 
 
     # USER ADMIN

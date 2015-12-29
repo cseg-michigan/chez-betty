@@ -1,0 +1,22 @@
+/*
+
+  Generic Styles
+
+*/
+
+/* Color dollar amounts */
+.negative {
+	color: red;
+}
+
+.positive {
+	
+}
+
+/* Random Effects */
+
+/* Put a light yellow background behind text */
+.highlight {
+	background-color: #fffacd;
+	padding: 2px 5px 2px 5px;
+}

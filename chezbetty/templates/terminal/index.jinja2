@@ -1,0 +1,186 @@
+{% extends "base.jinja2" %}
+{% block title %}Home{% endblock %}
+
+
+{% block content %}
+
+<style>
+body {
+  padding-bottom: 100px;
+}
+</style>
+
+<div id="index" class="row">
+  <div class="col-md-7">
+
+
+    <div class="row">
+      <div class="col-md-12">
+        <img src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:180px;" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+
+        <div id="alerts" style="font-size:20pt;">
+          {% for announcement in announcements %}
+          <div class="alert alert-info" role="alert">
+            {{ announcement.announcement }}
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-12">
+
+        {% for debtor in top_debtors %}
+        <div id="top-debtor-{{ loop.index }}" data-rotate-div-timeout="5000" {% if loop.index == 1 %} class="rotate-divs" {% else %} style="display: none;"{% endif %}>
+          <hr />
+          <div class="alert">
+            <h2>Do you know <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }})?</h2>
+            <h3>They are number {{ loop.index }} on the Wall of Shame, with a balance of
+              {{ debtor.balance|format_currency|safe }}.</h3>
+            <h3>If you know {{ debtor.name }}, please encourage them to pay Betty back today.</h3>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+
+        {% if demo and request.has_permission("admin") %}
+        <div id="front-demo" class="buttons">
+          <div class="well">
+            <h3>Demo Mode:</h3>
+            {% for admin in admins %}
+            <a class="btn btn-default btn-huge btn-bordered" href="/terminal/{{ admin.umid }}">Login as {{ admin.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-md-5" style="text-align: center;">
+
+    <div id="index-main" style="margin-top:100px;">
+      <h2>{{ _('Swipe your M-Card to login') }}</h2>
+    </div>
+
+    <hr />
+    <div class="or"><span>OR</span></div>
+
+    <div class="center">
+      <h2>{{ _('Enter your UMID here') }}</h2>
+    </div>
+
+    <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-terminal-keypad.css'|static_url}}" />
+
+    <div id="keypad-umid" class="center keypad-lg">
+      <container>
+        <container id="keypad-umid-status">
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+          <block class="umid-status-block btn btn-default"></block>
+        </container>
+        <block><button type="button" id="btn-keypad-9" class="btn btn-default btn-keypad">9</button></block>
+        <block><button type="button" id="btn-keypad-8" class="btn btn-default btn-keypad">8</button></block>
+        <block><button type="button" id="btn-keypad-7" class="btn btn-default btn-keypad">7</button></block>
+        <block><button type="button" id="btn-keypad-6" class="btn btn-default btn-keypad">6</button></block>
+        <block><button type="button" id="btn-keypad-5" class="btn btn-default btn-keypad">5</button></block>
+        <block><button type="button" id="btn-keypad-4" class="btn btn-default btn-keypad">4</button></block>
+        <block><button type="button" id="btn-keypad-3" class="btn btn-default btn-keypad">3</button></block>
+        <block><button type="button" id="btn-keypad-2" class="btn btn-default btn-keypad">2</button></block>
+        <block><button type="button" id="btn-keypad-1" class="btn btn-default btn-keypad">1</button></block>
+        <block><button type="button" id="btn-keypad-clear" class="btn btn-default btn-keypad">{{ _('Clear') }}</button></block>
+        <block><button type="button" id="btn-keypad-del" class="btn btn-default btn-keypad">&laquo;</button></block>
+        <block><button type="button" id="btn-keypad-0" class="btn btn-default btn-keypad">0</button></block>
+      </container>
+    </div>
+
+  </div>
+
+
+</div>
+
+
+{# Splash page saying we need people to pay us back. #}
+<div id="splash" class="container">
+  <h1>Please Help Us Out</h1>
+  <h3>Right now, people owe Betty a combined
+    <strong>{{ owed_by_users|format_debt|safe }}</strong>.
+  </h3>
+  <h3>While we understand that $5 may feel like a small amount to one person,
+    $5&nbsp;x&nbsp;1000 users is quickly a lot of debt.</h3>
+  <h3>We cannot keep taking on personal debt to restock Betty if people will
+    not pay back their debts.
+    For this reason, <strong>we cannot restock Betty until everyone on the Wall
+    of Shame has paid off their debts.</strong>
+    If you owe Betty money, please pay it back today. If you know someone
+    who owes Betty money, please encourage them to pay it back today.
+  </h3>
+  <h3>To the many honest Betty users currently in the black, thank you for
+    helping to make Betty a success. We sincerely apologize that a few bad
+    apples are currently threatening to spoil the bunch.
+  </h3>
+  <div class="pull-left">
+    <br />
+    <h4>Also, you get a 5% discount if you have at least $20 in your account.
+      There is no discount for being in debt.</h4>
+  </div>
+  <div class="pull-right">
+    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show();'>Continue to Betty</a>
+  </div>
+  <div class="clearfix"></div>
+  <hr />
+  <div style="-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size: 15px;">
+  {% for user in shame_users %}
+  <p>{{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}</p>
+  {% endfor %}
+  </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block footer %}
+<div class="navbar navbar-fixed-bottom" role="navigation">
+  <div class="container-fluid">
+    <hr />
+    <p>
+      <a class="btn btn-default btn-lg btn-bordered" href="/lang-en">English</a>
+      <a class="btn btn-default btn-lg btn-bordered" href="/lang-fr">français</a>
+      <a class="btn btn-default btn-lg btn-bordered" href="/lang-tw">漢語</a>
+      <a class="btn btn-default btn-lg btn-bordered" href="/lang-fa">فارسی</a>
+      <strong>{{ _('Can you help translate Betty? Visit github.com/um-cseg/chez-betty to contribute.') }}</strong>
+    </p>
+    <hr />
+  </div>
+</div>
+{% endblock %}
+
+{% set timeout = 1000*60*60*4 %}
+
+{% block onload %}
+<script>
+  $("#index").hide();
+  $("#splash").show();
+</script>
+{% endblock %}

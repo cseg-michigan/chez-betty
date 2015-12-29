@@ -1,4 +1,3 @@
-{% set relative = relative|default('') -%}
 {% import "macro_buttons.jinja2" as button %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
@@ -8,24 +7,29 @@
   <link rel="shortcut icon" type="image/png" href="{{'chezbetty:static/chezbetty_32px.png'|static_url}}" />
   {% block head %}
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap/bootstrap.min.css'|static_url}}" />
-  <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap-sortable/bootstrap-sortable.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/lib/jquery-ui/jquery-ui.min.css'|static_url}}" />
 
+  <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-common.css'|static_url}}" />
   <link rel="stylesheet" href="{{'chezbetty:static/css/chezbetty-terminal.css'|static_url}}" />
 
   <script src="{{'chezbetty:static/js/lib/jquery/jquery.min.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/jquery-ui/jquery-ui.min.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/lib/jquery-dateFormat/jquery-dateFormat.min.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/lib/spin.js/spin.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/bootstrap/bootstrap.min.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/lib/bootstrap-sortable/bootstrap-sortable.js'|static_url}}"></script>
 
   <script src="{{'chezbetty:static/js/chezbetty-common.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/chezbetty-terminal.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/chezbetty-dragscroll.js'|static_url}}"></script>
+  <script src="{{'chezbetty:static/js/chezbetty-terminal-dragscroll.js'|static_url}}"></script>
 
   <title>{% if request.debug %}[ DEBUG ]{% endif %} {% block title %}{% endblock %} | Chez Betty</title>
   {% endblock %}
+
+  <style>
+  @media (min-width: 992px) {
+    .container {
+      width: 1600px;
+    }
+  }
+  </style>
 </head>
 <body>
 
@@ -36,34 +40,6 @@
   {% endif %}
 
   <div id="wrap">
-
-    {% set active_page = active_page|default('index') -%}
-    {#{% include 'navbar.html' %}#}
-
-    {% if active_page not in ('deposit', 'deposit_edit') %}
-    {% if user %}
-    {% if user.balance < -50 %}
-    <div class="alert alert-danger" role="alert">
-      <div class="container">
-        <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
-        <h3>{{ _("You currently owe Betty %(big_debt)s. That's a lot of money!")|
-                 format(big_debt=user.balance|format_currency)|safe }}</h3>
-        <p>{{ _("We're glad you like Betty. We're happy to extend a small line "
-        "of credit, but if people owe Betty lots of money, it's hard to keep "
-        "things in stock. Please try to pay Betty back soon!") }}</p>
-      </div>
-    </div>
-    {% elif user.balance < -20 %}
-    <div class="alert alert-warning" role="alert">
-      <div class="container">
-        <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
-        <p>{{ _("You currently owe Betty %(debt)s.")|format(debt=user.balance|format_currency)|safe }}</p>
-        <p>{{ _('Please try to pay Betty back soon, thanks!') }}</p>
-      </div>
-    </div>
-    {% endif %}
-    {% endif %}
-    {% endif %}
 
     <div id="alerts" class="container">
       {% block alerts %}
@@ -85,14 +61,6 @@
       {% endblock %}
     </div>
 
-    {% block top %}
-    <div class="container">
-      <div class="header">
-        <h1>{% block header %}{% endblock %}</h1>
-      </div>
-    </div>
-    {% endblock %}
-
     <div id="content" class="container">
       {% block content %}{% endblock %}
     </div>
@@ -100,17 +68,8 @@
     {% block footer %}{% endblock %}
   </div>
 
-  {% if false and request.debug %}
-  <div class="navbar navbar-inverse navbar-fixed-bottom" style="background-color:#E8192F" role="navigation">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE{{ ''|add_git_version }}</span></a>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-  <script src="{{'chezbetty:static/js/chezbetty-onload.js'|static_url}}"></script>
+  <script src="{{'chezbetty:static/js/chezbetty-terminal.js'|static_url}}"></script>
+  <script src="{{'chezbetty:static/js/chezbetty-terminal-mcard.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/chezbetty-common-onload.js'|static_url}}"></script>
   {% block onload %}
   {% endblock %}

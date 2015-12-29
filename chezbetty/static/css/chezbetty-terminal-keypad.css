@@ -1,0 +1,108 @@
+/* Keypad CSS taken from:
+ * http://stackoverflow.com/questions/23077537/create-an-html-numeric-keypad-without-table-layout */
+
+.keypad-lg container {
+	width: 480px;
+	display: inline-block;
+}
+
+.keypad-lg block {
+	display: inline-block;
+	width: 150px;
+	height: 150px;
+	margin: 5px;
+	float: right;
+}
+
+block[v2] {
+	height: 210px;
+}
+
+block[h2] {
+	width: 210px;
+}
+
+block[h3] {
+	width: 320px;
+}
+
+.keypad-lg .btn-keypad {
+	height: 150px;
+	width: 150px;
+	font-size: 22pt;
+}
+
+.keypad-lg .btn-keypad-wide {
+	height: 150px;
+	width: 310px;
+	font-size: 14pt;
+}
+
+.keypad-lg .btn-keypad-triplewide {
+	height: 150px;
+	width: 470px;
+	font-size: 14pt;
+}
+
+.keypad-lg .btn-full-width {
+	width: 470px;
+	height: 150px;
+	margin: 0 5px;
+}
+
+.keypad-lg .keypad-full-width {
+	width: 480px;
+	margin: 5px;
+}
+
+.keypad-sm container {
+	width: 390px;
+	display: inline-block;
+}
+
+.keypad-sm block {
+	display: inline-block;
+	margin: 5px;
+	float: right;
+}
+
+.keypad-sm .btn-keypad {
+	height: 120px;
+	width: 120px;
+	font-size: 14pt;
+}
+
+.keypad-sm .btn-keypad-wide {
+	height: 120px;
+	width: 250px;
+	font-size: 14pt;
+}
+
+.keypad-sm .btn-keypad-triplewide {
+	height: 120px;
+	width: 380px;
+	font-size: 14pt;
+}
+
+.keypad-sm .btn-full-width {
+	width: 380px;
+	height: 120px;
+	margin: 0 5px;
+}
+
+.keypad-sm .keypad-full-width {
+	width: 380px;
+	margin: 5px;
+}
+
+#keypad-umid-status .umid-status-block {
+	width: 54px;
+	height: 54px;
+	margin-right: 3px;
+	margin-left: 3px;
+}
+
+.umid-status-blue {
+	background-color: #428bca;
+}
+

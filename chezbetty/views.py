@@ -84,11 +84,26 @@ def lang(request):
 
     return HTTPFound(location='/', headers=response.headers)
 
-@view_config(route_name='index', renderer='templates/index.jinja2')
-def index(request):
+
+
+
+from pyramid.view import view_config
+
+# Use to select which homepage to show, the only-on-the-betty-terminal version
+# or the publically accessible version.   
+def IsTerminalPredicate(boolean):
+    def is_terminal(context, request):
+        return ((request.user != None) and (request.user.role == 'serviceaccount')) == boolean
+    return is_terminal
+
+
+
+# Terminal home page
+@view_config(route_name='index',
+             renderer='templates/terminal/index.jinja2',
+             custom_predicates=(IsTerminalPredicate(True),))
+def index_terminal(request):
     announcements = Announcement.all_enabled()
-    for announcement in announcements:
-        request.session.flash(announcement.announcement, 'info')
 
     try:
         top_debtors = DBSession.query(User)\
@@ -104,12 +119,39 @@ def index(request):
     else:
         admins = []
 
+    shame_users = User.get_shame_users()
+
+    return {
+            'announcements': announcements,
+            'admins': admins,
+            'top_debtors': top_debtors,
+            'owed_by_users': User.get_amount_owed(),
+            'shame_users': shame_users,
+            }
+
+
+# General internet homepage
+@view_config(route_name='index',
+             renderer='templates/index.jinja2',
+             custom_predicates=(IsTerminalPredicate(False),))
+def index(request):
+    announcements = Announcement.all_enabled()
+    for announcement in announcements:
+        request.session.flash(announcement.announcement, 'info')
+
+    try:
+        top_debtors = DBSession.query(User)\
+                         .filter(User.balance < -5)\
+                         .order_by(User.balance)\
+                         .limit(5).all()
+    except NoResultFound:
+        top_debtors = None
+
     shame_users = DBSession.query(User)\
                      .filter(User.balance < -5)\
                      .order_by(User.balance).all()
 
     return {
-            'admins': admins,
             'top_debtors': top_debtors,
             'owed_by_users': User.get_amount_owed(),
             'shame_users': shame_users,
