@@ -1,76 +1,48 @@
-{% extends "base.jinja2" %}
-{% set active_page = 'purchase_complete' %}
-{% block title %}{{ _('Purchase Complete') }}{% endblock %}
-{% block header %}{{ _('Purchase Complete') }}{% endblock %}
+<table class="table table-bordered" id="purchase_table">
+  <thead>
+    <tr>
+      <th class="item-title">{{ _('Item') }}</th>
+      <th class="item-quantity" style="width: 15%;">{{ _('Quantity') }}</th>
+      <th class="item-price" style="width: 15%;">{{ _('Item Price') }}</th>
+      <th class="item-total" style="width: 15%;">{{ _('Total Price') }}</th>
+    </tr>
+  </thead>
 
-{% block content %}
+  <tbody>
+  {% for item in order['items'] %}
+    <tr class="purchase-item">
+      <td class="item-title">{{ item.name }}</td>
+      <td class="item-quantity">{{ item.quantity }}</td>
+      <td class="item-price">{{ item.price|format_currency|safe }}</td>
+      <td class="item-total">{{ item.total_price|format_currency|safe }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
 
-{% include "user_info.jinja2" %}
-
-
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">{{ _('Order Summary') }}</h3>
-  </div>
-  <div class="panel-body">
-
-    <table class="table table-bordered" id="purchase_table">
-      <thead>
-        <tr>
-          <th class="item-title">{{ _('Item') }}</th>
-          <th class="item-quantity" style="width: 15%;">{{ _('Quantity') }}</th>
-          <th class="item-price" style="width: 15%;">{{ _('Item Price') }}</th>
-          <th class="item-total" style="width: 15%;">{{ _('Total Price') }}</th>
-        </tr>
-      </thead>
-
-      <tbody>
-      {% for item in order['items'] %}
-        <tr class="purchase-item">
-          <td class="item-title">{{ item.name }}</td>
-          <td class="item-quantity">{{ item.quantity }}</td>
-          <td class="item-price">{{ item.price|format_currency|safe }}</td>
-          <td class="item-total">{{ item.total_price|format_currency|safe }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-
-      <tfoot>
-        {% if order['discount'] %}
-        {% set subtotal = transaction.amount / (1-transaction.discount) %}
-        <tr>
-          <td colspan="3"><b>{{ _('Subtotal') }}</b></td>
-          <td id="purchase-subtotal">{{ subtotal|format_currency|safe }}</td>
-        </tr>
-        <tr>
-          <td><b>{{ _('Discounts') }}</b></td>
-          <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(order['discount']*100) }}%)</td>
-          <td id="purchase-discount">({{ (subtotal * order['discount'])|format_currency|safe }})</td>
-        </tr>
+  <tfoot>
+    {% if order['discount'] %}
+    {% set subtotal = transaction.amount / (1-transaction.discount) %}
+    <tr>
+      <td colspan="3"><b>{{ _('Subtotal') }}</b></td>
+      <td id="purchase-subtotal">{{ subtotal|format_currency|safe }}</td>
+    </tr>
+    <tr>
+      <td><b>{{ _('Discounts') }}</b></td>
+      <td id="purchase-discount-percent" colspan="2">({{ '{:.2}'.format(order['discount']*100) }}%)</td>
+      <td id="purchase-discount">({{ (subtotal * order['discount'])|format_currency|safe }})</td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td colspan="3">
+        <b>{{ _('Total') }}</b>
+        {% if account_type == "user" %}
+        {{ _('(Paid with your user account)') }}
+        {% elif account_type == "pool" %}
+        {{ _('(Paid with %(pool_name)s Pool)')|format(pool_name=pool.name) }}
         {% endif %}
-        <tr>
-          <td colspan="3">
-            <b>{{ _('Total') }}</b>
-            {% if account_type == "user" %}
-            {{ _('(Paid with your user account)') }}
-            {% elif account_type == "pool" %}
-            {{ _('(Paid with %(pool_name)s Pool)')|format(pool_name=pool.name) }}
-            {% endif %}
-          </td>
-          <td id="purchase-total">{{ order['total']|format_currency|safe }}</td>
-        </tr>
-      </tfoot>
-    </table>
-
-  </div>
-</div>
-
-<a class="btn btn-danger" href="/terminal/event/undo/{{ user.umid }}/{{ event.id }}">{{ _('If this was a mistake, touch here to undo this transaction.') }}</a>
-
-{% endblock %}
-
-{% set timeout = 1000*15 %}
-
-{% block onload %}
-<script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
-{% endblock %}
+        <button type="button" id="purchase-delete-{{ event.id }}" class="btn btn-primary btn-sm btn-delete-purchase" style="float:right;">{{ _('Mistake? Undo this Purchase') }}</button>
+      </td>
+      <td id="purchase-total">{{ order['total']|format_currency|safe }}</td>
+    </tr>
+  </tfoot>
+</table>

@@ -107,14 +107,17 @@ def main(global_config, **settings):
 
 
     # TERMINAL VIEWS
-    config.add_route('terminal_umid_check',     '/terminal/check')
+    config.add_route('terminal_umid_check',      '/terminal/check')
 
-    config.add_route('terminal_deposit',        '/terminal/deposit')
-    config.add_route('terminal_deposit_delete', '/terminal/deposit/delete')
+    config.add_route('terminal_deposit',         '/terminal/deposit')
+    config.add_route('terminal_deposit_delete',  '/terminal/deposit/delete')
 
-    config.add_route('terminal_item',           '/terminal/item/{barcode}')
+    config.add_route('terminal_item',            '/terminal/item/{barcode}')
 
-    config.add_route('terminal',                '/terminal/{umid}')
+    config.add_route('terminal_purchase',        '/terminal/purchase')
+    config.add_route('terminal_purchase_delete', '/terminal/purchase/delete')
+
+    config.add_route('terminal',                 '/terminal/{umid}')
 
 
     # USER ADMIN

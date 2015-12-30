@@ -109,8 +109,18 @@ function calculate_user_new_balance () {
 	var raw_deposit = full_strip_price($("#deposit-entry-total").text());
 	var deposit = parseFloat(raw_deposit) / 100.0;
 
+	// Clear deposit amount if we are on deposit complete
+	if ($("#deposit-complete:visible").length == 1) {
+		deposit = 0.00;
+	}
+
 	var raw_purchase = full_strip_price($("#purchase-total").text());
 	var purchase = parseFloat(raw_purchase) / 100.0;
+
+	// Clear purchase amount if we are on purchase complete
+	if ($("#purchase-complete:visible").length == 1) {
+		purchase = 0.00;
+	}
 
 	var balance = parseFloat($("#user-balance").text());
 
@@ -121,8 +131,14 @@ function calculate_user_new_balance () {
 
 // Display and hide logout buttons based on user balance
 function show_correct_purchase_button () {
-	// If there is nothing in the cart, then it should be a logout button
-	if ($("#purchase_table tbody tr:visible").length == 0) {
+	if ($("#purchase-complete:visible").length == 1) {
+		// If we are on the purchase complete page, show logout
+		$("#purchase-button-purchaselogout").hide();
+		$("#purchase-button-purchase").hide();
+		$("#purchase-button-logout").show();
+
+	} else if ($("#purchase-empty:visible").length == 1) {
+		// If there is nothing in the cart, then it should be a logout button
 		$("#purchase-button-purchaselogout").hide();
 		$("#purchase-button-purchase").hide();
 		$("#purchase-button-logout").show();
@@ -149,7 +165,7 @@ function show_correct_purchase_button () {
 
 // Callback when adding an item to the cart succeeds
 function add_item_success (data) {
-	alert_clear();
+	purchase_alert_clear();
 
 	if ("error" in data) {
 		purchase_alert_error(data.error);
@@ -194,40 +210,76 @@ function add_item_fail () {
 function purchase_success (data) {
 	if ("error" in data) {
 		purchase_alert_error(data.error);
-		enable_button($(".btn-submit-purchase"));
 	} else {
+		purchase_alert_success('Purchase was recorded successfully.');
+
+		// Throw in table summarizing 
+		$("#purchase-complete-table").html(data.order_table);
+
+		// Flip to complete page
+		$("#purchase-entry").hide();
+		$("#purchase-complete").show();
+
+		// Update buttons
+		show_correct_purchase_button();
+
 		// Update user balance
 		$("#user-balance").text(data.user_balance);
 		calculate_user_new_balance();
-
-		// Save what event this was
-		$("#purchase-eventid").text(data.event_id);
-
-		purchase_alert_success('Purchase was recorded successfully.');
-
-		// Flip to complete page
-		$("#puchase-entry").hide();
-		$("#puchase-complete").show();
 	}
+
+	enable_button($(".btn-submit-purchase"));
 }
 
 // Callback when a purchase was successful and we want to log the user out
 // afterwards.
 function purchase_andlogout_success (data) {
 	if ("error" in data) {
-		alert_error(data
-			.error);
+		purchase_alert_error(data.error);
 		enable_button($(".btn-submit-purchase"));
 	} else {
 		// Follow the link from the button's href
-		window.location.replace($(this).attr('href'));
+		window.location.replace('/');
 	}
 }
 
 // Callback when a purchase fails for some reason
 function purchase_error () {
-	alert_error("Failed to complete purchase. Perhaps try again?");
+	purchase_alert_error("Failed to complete purchase. Perhaps try again?");
 	enable_button($(".btn-submit-purchase"));
+}
+
+// Callback when a purchase delete POST was successful
+function purchase_delete_success (data) {
+	if ("error" in data) {
+		purchase_alert_error(data.error);
+		enable_button($(".btn-delete-purchase"));
+	} else {
+		// Clear some state
+		$("#purchase-complete-table").html('');
+
+		purchase_alert_success('Purchase successfully removed.');
+
+		// Flip back to cart contents page
+		$("#purchase-complete").hide();
+		$("#purchase-entry").show();
+
+		// Update buttons
+		show_correct_purchase_button();
+
+		// Update user balance
+		$("#user-balance").text(data.user_balance);
+		calculate_user_new_balance();
+
+		// Also enable these buttons so they don't get stuck
+		enable_button($(".btn-submit-purchase"));
+	}
+}
+
+// Callback when a deposit purchase fails for some reason
+function purchase_delete_error () {
+	purchase_alert_error("Failed to delete purchase. Perhaps try again?");
+	enable_button($(".btn-delete-purchase"));
 }
 
 // DEPOSIT
@@ -437,7 +489,7 @@ function add_item (item_id) {
 // We need the button so we can disable it so we don't get duplicate purchases.
 function submit_purchase (this_btn, success_cb, error_cb) {
 	$(this_btn).blur();
-	alert_clear();
+	purchase_alert_clear();
 
 	disable_button($(this_btn));
 
@@ -447,37 +499,38 @@ function submit_purchase (this_btn, success_cb, error_cb) {
 	purchase.umid = $("#user-umid").text();
 
 	// What account to pay with?
-	fields = $(this_btn).attr("id").split("-");
-	if (fields.length < 3) {
-		purchase["account"] = "user";
-	} else {
-		purchase["account"] = fields[2];
-		if (purchase["account"] == "pool") {
-			purchase["pool_id"] = fields["3"];
-		}
+	var account_button = $(".purchase-payment.active");
+	var id = account_button.attr('id');
+	var fields = id.split('-');
+	var acct_type = fields[1];
+	if (acct_type == 'pool') {
+		// Put pool id in we should use a pool, otherwise we will default
+		// to the user's account.
+		purchase['pool_id'] = parseInt(fields[2]);
 	}
 
-	item_count = 0;
+	var item_count = 0;
 	$(".purchase-item").each(function (index) {
-		id = $(this).attr("id");
-		quantity = parseInt($(this).children(".item-quantity").text());
-		pid = id.split('-')[2];
+		var id = $(this).attr("id");
+		var quantity = parseInt($(this).children(".item-quantity").text());
+		var pid = id.split('-')[2];
 		purchase[pid] = quantity;
 		item_count++;
 	});
 
 	if (item_count == 0) {
-		alert_error("You must purchase at least one item.");
+		// This should never happen as the purchase button should not be visible
+		purchase_alert_error("You must purchase at least one item.");
 		enable_button($(this_btn));
 	} else {
 		// Post the order to the server
 		$.ajax({
-			type: "POST",
-			url: "/terminal/purchase/new",
-			data: purchase,
-			context: this_btn,
-			success: success_cb,
-			error: error_cb,
+			type:     "POST",
+			url:      "/terminal/purchase",
+			data:     purchase,
+			context:  this_btn,
+			success:  success_cb,
+			error:    error_cb,
 			dataType: "json"
 		});
 	}
@@ -501,13 +554,13 @@ $("#purchase_table tbody").on("click", ".btn-remove-item", function () {
 
 // Click handler to remove an item from a purchase.
 $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
-	quantity = parseInt($(this).parent().find("span").text()) - 1;
+	var quantity = parseInt($(this).parent().find("span").text()) - 1;
 	$(this).parent().find("span").text(quantity);
 	if (quantity < 2) {
 		$(this).hide();
 	}
 
-	item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
+	var item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
 	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
 	calculate_total();
 });
@@ -516,6 +569,32 @@ $("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
 $(".purchase-payment").click(function () {
 	$(".purchase-payment").removeClass("active");
 	$(this).addClass("active");
+});
+
+// Purchase mistake, revert this transaction and put the cart back
+$("#purchase-complete-table").on("click", ".btn-delete-purchase", function () {
+	$(this).blur();
+	purchase_alert_clear();
+
+	disable_button($(this));
+
+	var event_id = parseInt($(this).attr('id').split('-')[2]);
+
+	// Prepare enough information so we can delete the old
+	// deposit transaction
+	purchase = {};
+	purchase.umid = $("#user-umid").text();
+	purchase.old_event_id = event_id;
+
+	// Post the deposit to the server
+	$.ajax({
+		type:     "POST",
+		url:      "/terminal/purchase/delete",
+		data:     purchase,
+		success:  purchase_delete_success,
+		error:    purchase_delete_error,
+		dataType: "json"
+	});
 });
 
 // Nothing in the cart, just logout
@@ -569,13 +648,12 @@ $("#keypad-umid").on("click", "button", function () {
 				url: "/terminal/check",
 				data: {'umid': manual_umid_enter},
 				success: function (data) {
-					if (data.status == 'success') {
-						window.location = '/terminal/' + manual_umid_enter;
-					} else {
+					if ('error' in data) {
 						alert_error(data.msg);
 						clear_umid_keypad();
-					}
-				},
+					} else {
+						window.location = '/terminal/' + manual_umid_enter;
+					}				},
 				error: function (data) {
 					if (manual_umid_timeout >= 0) {
 						clearTimeout(manual_umid_timeout);

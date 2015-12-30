@@ -55,21 +55,16 @@ class DepositException(Exception):
 def terminal_umid_check(request):
     try:
         User.from_umid(request.POST['umid'])
-        return {'status': 'success',
-                'msg': _('mcard-keypad-success', default='Logging you in.')
-                }
+        return {}
     except:
-        return {'status': 'error',
-                'msg': _('mcard-keypad-error', default='First time using Betty? You need to swipe your M-Card the first time you log in.')
-               }
+        return {'error': _('mcard-keypad-error', default='First time using Betty? You need to swipe your M-Card the first time you log in.')}
 
 
-
-# Main terminal page with purchase/cash deposit
+## Main terminal page with purchase/cash deposit.
 @view_config(route_name='terminal',
              renderer='templates/terminal/terminal.jinja2',
              permission='service')
-def purchase(request):
+def terminal(request):
     try:
         if len(request.matchdict['umid']) != 8:
             raise __user.InvalidUserException()
@@ -91,28 +86,23 @@ def purchase(request):
                          .order_by(Item.name)\
                          .limit(6).all()
 
-        # Pre-populate cart if returning from undone transaction
-        existing_items = ''
-        if len(request.GET) != 0:
-            for (item_id, quantity) in request.GET.items():
-                item = Item.from_id(int(item_id))
-                existing_items += render('templates/terminal/purchase_item_row.jinja2',
-                    {'item': item, 'quantity': int(quantity)})
-
         # Figure out if any pools can be used to pay for this purchase
-        pools = []
+        purchase_pools = []
+        deposit_pools = []
         for pool in Pool.all_by_owner(user, True):
+            deposit_pools.append(pool)
             if pool.balance > (pool.credit_limit * -1):
-                pools.append(pool)
+                purchase_pools.append(pool)
 
         for pu in user.pools:
+            deposit_pools.append(pu.pool)
             if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
-                pools.append(pu.pool)
+                purchase_pools.append(pu.pool)
 
         return {'user': user,
                 'items': items,
-                'existing_items': existing_items,
-                'pools': pools}
+                'purchase_pools': purchase_pools,
+                'deposit_pools': deposit_pools}
 
     except __user.InvalidUserException as e:
         request.session.flash(_(
@@ -122,6 +112,7 @@ def purchase(request):
         return HTTPFound(location=request.route_url('index'))
 
 
+## Add a cash deposit.
 @view_config(route_name='terminal_deposit',
              request_method='POST',
              renderer='json',
@@ -179,6 +170,7 @@ def terminal_deposit(request):
         return {'error': str(e)}
 
 
+## Delete a just completed transaction.
 @view_config(route_name='terminal_deposit_delete',
              request_method='POST',
              renderer='json',
@@ -211,6 +203,7 @@ def terminal_deposit_delete(request):
         return {'error': 'Error.'}
 
 
+## Add an item to a shopping cart.
 @view_config(route_name='terminal_item',
              renderer='json',
              permission='service')
@@ -239,6 +232,107 @@ def terminal_item(request):
     item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
     return {'id':item.id,
             'item_row_html': item_html}
+
+
+## Make a purchase from the terminal.
+@view_config(route_name='terminal_purchase',
+             request_method='POST',
+             renderer='json',
+             permission='service')
+def terminal_purchase(request):
+    try:
+        user = User.from_umid(request.POST['umid'])
+
+        ignored_keys = ['umid', 'pool_id']
+
+        # Bundle all purchase items
+        items = {}
+        for item_id,quantity in request.POST.items():
+            if item_id in ignored_keys:
+                continue
+            item = Item.from_id(int(item_id))
+            items[item] = int(quantity)
+
+        # What should pay for this?
+        # Note: should do a bunch of checking to make sure all of this
+        # is kosher. But given our locked down single terminal, we're just
+        # going to skip all of that.
+        if 'pool_id' in request.POST:
+            pool = Pool.from_id(int(request.POST['pool_id']))
+            purchase = datalayer.purchase(user, pool, items)
+        else:
+            purchase = datalayer.purchase(user, user, items)
+
+        # Create a order complete view
+        order = {'total': purchase.amount,
+                 'discount': purchase.discount,
+                 'items': []}
+        for subtrans in purchase.subtransactions:
+            item = {}
+            item['name'] = subtrans.item.name
+            item['quantity'] = subtrans.quantity
+            item['price'] = subtrans.item.price
+            item['total_price'] = subtrans.amount
+            order['items'].append(item)
+
+        if purchase.fr_account_virt_id == user.id:
+            account_type = 'user'
+            pool = None
+        else:
+            account_type = 'pool'
+            pool = Pool.from_id(purchase.fr_account_virt_id)
+
+        summary = render('templates/terminal/purchase_complete.jinja2',
+            {'user': user,
+             'event': purchase.event,
+             'order': order,
+             'transaction': purchase,
+             'account_type': account_type,
+             'pool': pool})
+
+        # Return the committed transaction ID
+        return {'order_table': summary}
+
+    except __user.InvalidUserException as e:
+        return {'error': _('invalid-user-error',
+                           default='Invalid user error. Please try again.')
+               }
+
+    except ValueError as e:
+        return {'error': 'Unable to parse Item ID or quantity'}
+
+    except NoResultFound as e:
+        # Could not find an item
+        return {'error': 'Unable to identify an item.'}
+
+
+## Delete a just completed purchase.
+@view_config(route_name='terminal_purchase_delete',
+             request_method='POST',
+             renderer='json',
+             permission='service')
+def terminal_purchase_delete(request):
+    try:
+        user = User.from_umid(request.POST['umid'])
+        old_event = Event.from_id(request.POST['old_event_id'])
+
+        if old_event.type != 'purchase' or \
+           old_event.transactions[0].type != 'purchase' or \
+           (old_event.transactions[0].fr_account_virt_id != user.id and \
+            old_event.user_id != user.id):
+           # Something went wrong, can't undo this purchase
+           raise DepositException('Cannot undo that purchase')
+
+        # Now undo old deposit
+        datalayer.undo_event(old_event, user)
+
+        return {'user_balance': float(user.balance)}
+
+    except __user.InvalidUserException as e:
+        return {'error': 'Invalid user error. Please try again.'}
+
+    except DepositException as e:
+        return {'error': str(e)}
 
 
 
@@ -501,47 +595,6 @@ def terminal_item(request):
 #         request.session.flash('Error adding request.', 'error')
 #         return HTTPFound(location=request.route_url('index'))
 
-# @view_config(route_name='purchase_new',
-#              request_method='POST',
-#              renderer='json',
-#              permission='service')
-# def purchase_new(request):
-#     try:
-#         user = User.from_umid(request.POST['umid'])
-
-#         ignored_keys = ['umid', 'account', 'pool_id']
-
-#         # Bundle all purchase items
-#         items = {}
-#         for item_id,quantity in request.POST.items():
-#             if item_id in ignored_keys:
-#                 continue
-#             item = Item.from_id(int(item_id))
-#             items[item] = int(quantity)
-
-#         # What should pay for this?
-#         # Note: should do a bunch of checking to make sure all of this
-#         # is kosher. But given our locked down single terminal, we're just
-#         # going to skip all of that.
-#         if request.POST['account'] == 'user':
-#             purchase = datalayer.purchase(user, user, items)
-#         elif request.POST['account'] == 'pool':
-#             pool = Pool.from_id(int(request.POST['pool_id']))
-#             purchase = datalayer.purchase(user, pool, items)
-
-#         # Return the committed transaction ID
-#         return {'event_id': purchase.event.id}
-
-#     except __user.InvalidUserException as e:
-#         request.session.flash('Invalid user error. Please try again.', 'error')
-#         return {'redirect_url': '/'}
-
-#     except ValueError as e:
-#         return {'error': 'Unable to parse Item ID or quantity'}
-
-#     except NoResultFound as e:
-#         # Could not find an item
-#         return {'error': 'Unable to identify an item.'}
 
 
 # # Handle the POST from coinbase saying Chez Betty got a btc deposit.

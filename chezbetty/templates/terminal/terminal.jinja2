@@ -29,43 +29,7 @@
 {% endif %}
 
 
-<div class="row">
 
-  {# Top user info box #}
-  <div class="col-md-6">
-    <div class="panel {% if user.balance < -5 %}panel-superdanger{% else %}panel-default{% endif %}">
-      <div class="panel-heading">
-        <h3 class="panel-title">{{ user.name }}</h3>
-      </div>
-      <div class="panel-body">
-
-        <dl class="dl-horizontal">
-          <dt>                               {{ _('Current Balance') }}</dt>
-          <dd id="user-info-current-balance">{{ user.balance|format_currency|safe }}</dd>
-
-          <dt>                           {{ _('Resulting Balance') }}</dt>
-          <dd id="user-info-new-balance">{{ user.balance|format_currency|safe }}</dd>
-        </dl>
-
-        <div id="user-balance" class="hidden">{{ user.balance }}</div>
-        <div id="user-umid" class="hidden">{{ user.umid }}</div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">{{ _('Links') }}</h3>
-      </div>
-      <div class="panel-body buttons">
-        TBD
-      </div>
-    </div>
-  </div>
-
-</div>
 
 
 
@@ -76,6 +40,25 @@
 
 
 <div class="row">
+
+  <div class="col-md-1">
+    <div class="row" style="text-align: center;">
+      <img src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:100px;" />
+    </div>
+
+    <div class="row">
+      {{ _('Current Balance') }}<br />
+      <span id="user-info-current-balance">{{ user.balance|format_currency|safe }}</span>
+    </div>
+
+    <div class="row">
+      {{ _('Resulting Balance') }}<br />
+      <span id="user-info-new-balance">{{ user.balance|format_currency|safe }}</span>
+    </div>
+
+    <div id="user-balance" class="hidden">{{ user.balance }}</div>
+    <div id="user-umid" class="hidden">{{ user.umid }}</div>
+  </div>
 
   <div class="col-md-8">
 
@@ -157,7 +140,7 @@
               <button type="button" class="list-group-item list-group-item-info list-group-item-header">Select Payment</button>
               <button type="button" id="payment-user" class="list-group-item purchase-payment active">Your Account</button>
               <button type="button" id="payment-user" class="list-group-item purchase-payment ">need a test</button>
-              {% for pool in pools %}
+              {% for pool in purchase_pools %}
               <button type="button" id="payment-pool-{{ pool.id }}" class="list-group-item purchase-payment">{{ _('%(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
               {% endfor %}
             </div>            
@@ -165,14 +148,11 @@
 
         </div>
 
-        <div id="purchase-complete" class="row">
+        <div id="purchase-complete" class="row" style="display:none;">
           <div class="col-md-12">
 
-          <p>Purchase Complete</p>
-
-          <button type="button" class="btn btn-primary btn-lg btn-delete-purchase">{{ _('Undo this Purchase') }}</button>
-
-          <div id="purchase-eventid" class="hidden"></div>
+            <div id="purchase-complete-table"></div>
+            <div id="purchase-eventid" class="hidden"></div>
 
           </div>
         </div>
@@ -190,7 +170,7 @@
     </div>
   </div>
 
-  <div class="col-md-4">
+  <div class="col-md-3">
 
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -222,7 +202,7 @@
           <div class="row">
             <div class="col-md-12">
               <button type="button" id="btn-deposit-user" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To Your Account') }}</button>
-              {% for pool in pools %}
+              {% for pool in deposit_pools %}
               <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To %(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
               {% endfor %}
             </div>
