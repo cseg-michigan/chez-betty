@@ -178,6 +178,36 @@ class Transaction(Base):
         return utility.timeseries_balance_total_daily(rows)
 
 
+    @classmethod
+    def get_balances_over_time_for_user(cls, user):
+        rows = DBSession.query(cls.amount,
+                               cls.type,
+                               cls.to_account_virt_id,
+                               cls.fr_account_virt_id,
+                               event.Event.timestamp)\
+                        .join(event.Event)\
+                        .filter(or_(
+                                  cls.type=='purchase',
+                                  cls.type=='cashdeposit',
+                                  cls.type=='ccdeposit',
+                                  cls.type=='btcdeposit',
+                                  cls.type=='adjustment'
+                                ))\
+                        .filter(or_(
+                            cls.to_account_virt_id == user.id,
+                            cls.fr_account_virt_id == user.id,
+                            ))\
+                        .order_by(event.Event.timestamp)\
+                        .all()
+        # We can re-use the global balance calculation code because the query
+        # filtered it down to only this user, only now the "global" total
+        # positive values (r[2]) and total debt (r[1]) are just this user's
+        # balance, so we pull out the right column at each point in time.
+        rows = utility.timeseries_balance_total_daily(rows)
+        rows = [(r[0],r[2]/100 if r[1]==0 else -r[1]/100) for r in rows]
+        return rows
+
+
 def __get_transactions_query(self):
     return object_session(self).query(Transaction)\
             .join(event.Event)\

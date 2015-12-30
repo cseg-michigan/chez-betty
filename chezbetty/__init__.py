@@ -259,6 +259,8 @@ def main(global_config, **settings):
     config.add_route('admin_data_users_balance_totals_json',           '/admin/data/users/balance/totals')
     # config.add_route('admin_data_users_balance_totals_percapita_json', '/admin/data/users/balance/totalspc')
 
+    config.add_route('admin_data_user_balance_json',    '/admin/data/user/{user_id}/balances')
+
     config.add_route('admin_data_speed_items', '/admin/data/speed/items')
 
     # DYNAMIC CONTENT

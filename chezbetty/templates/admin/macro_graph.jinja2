@@ -274,7 +274,7 @@
 </div>
 {% endmacro %}
 
-{% macro create_cumulative_timeseries_panel(url, title, series_titles, yscales) %}
+{% macro create_cumulative_timeseries_panel(url, title, series_titles, yscales, yfloor=0) %}
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">{{ title }}</h3>
@@ -310,7 +310,7 @@
           },
 
           yAxis: {
-              floor: 0
+                floor: {{ yfloor }}
           }
       };
 

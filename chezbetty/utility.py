@@ -276,7 +276,8 @@ def timeseries_balance_total_daily(rows):
             total_balance += directions[trtype]*amount
 
         # Add to output array
-        out.append((t, round(total_debt*100), round(total_balance*100), round((total_debt*100)/users_in_debt)))
+        debt_per_user = 0 if users_in_debt == 0 else round((total_debt*100)/users_in_debt)
+        out.append((t, round(total_debt*100), round(total_balance*100), debt_per_user))
 
     return out
 
