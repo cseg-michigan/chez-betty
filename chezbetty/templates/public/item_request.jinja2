@@ -6,8 +6,7 @@
 
 {% block content %}
 
-<h3 style="text-align:center;">{{ _('At the Betty terminal? Visit chezbetty.eecs.umich.edu on your PC or phone to submit a request') }}</h3>
-<hr />
+<p class="lead">{{ _('Expanding the store.') }}</p>
 
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -37,15 +36,8 @@
       <input type="text" class="form-control" id="item-request" name="request">
       <hr />
       <button type="submit" id="btn-submit-request" class="btn btn-success btn-lg">{{ _('Submit Request') }}</button>
-      <div style="float: right;">
-        <a class="btn btn-default btn-lg" href="/">{{ _('Home') }}</a>
-      </div>
     </form>
   </div>
 </div>
 
-{% endblock %}
-
-{% block onload %}
-<script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
 {% endblock %}

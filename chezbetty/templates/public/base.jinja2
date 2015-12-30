@@ -15,25 +15,15 @@
 
   <script src="{{'chezbetty:static/js/lib/jquery/jquery.min.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/jquery-ui/jquery-ui.min.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/lib/jquery-dateFormat/jquery-dateFormat.min.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/lib/spin.js/spin.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/bootstrap/bootstrap.min.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/lib/bootstrap-sortable/bootstrap-sortable.js'|static_url}}"></script>
 
   <script src="{{'chezbetty:static/js/chezbetty-common.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/chezbetty.js'|static_url}}"></script>
-  <script src="{{'chezbetty:static/js/chezbetty-dragscroll.js'|static_url}}"></script>
 
   <title>{% if request.debug %}[ DEBUG ]{% endif %} {% block title %}{% endblock %} | Chez Betty</title>
   {% endblock %}
 </head>
 <body>
-
-  {% if "demo" in request.cookies and request.cookies["demo"]|int %}
-    {% set demo = True %}
-  {% else %}
-    {% set demo = False %}
-  {% endif %}
 
   <div id="wrap">
 
@@ -74,27 +64,9 @@
     {% block footer %}{% endblock %}
   </div>
 
-  {% if false and request.debug %}
-  <div class="navbar navbar-inverse navbar-fixed-bottom" style="background-color:#E8192F" role="navigation">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#"><span style="color:black;">DEBUG MODE{{ ''|add_git_version }}</span></a>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
-  <script src="{{'chezbetty:static/js/chezbetty-onload.js'|static_url}}"></script>
   <script src="{{'chezbetty:static/js/chezbetty-common-onload.js'|static_url}}"></script>
   {% block onload %}
   {% endblock %}
-
-  {% set timeout = timeout|default(60*1000*5) -%}
-  {% if timeout %}
-  <script>
-    setTimeout(function(){window.location.replace("/");}, {{ timeout }});
-  </script>
-  {% endif %}
 
   <!-- Google Analytics tracker -->
   <script>

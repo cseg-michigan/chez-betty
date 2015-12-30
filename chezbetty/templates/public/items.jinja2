@@ -14,22 +14,8 @@
   </div>
   <div class="panel-body">
     <div class="row">
-      <div class="col-lg-2">
-        <div class="top-button">
-          <a class="btn btn-default btn-lg btn-block" href="/">{{ _('Home') }}</a>
-          <a class="btn btn-default btn-lg btn-block" href="/item/request">{{ _('Request an Item') }}</a>
-          <hr />
-          <h4>{{ _('Touch columns to change sort order.') }}</h4>
-          <hr />
-          <h4>Scroll Controls:</h4>
-          <a id="scrollTop"  class="btn btn-info btn-lg btn-block" href="#">{{ _('Top') }}</a>
-          <a id="scrollUp"   class="btn btn-info btn-lg btn-block" href="#">{{ _('Up') }}</a>
-          <a id="scrollDown" class="btn btn-info btn-lg btn-block" href="#">{{ _('Down') }}</a>
-          <a id="scrollBot"  class="btn btn-info btn-lg btn-block" href="#">{{ _('Bottom') }}</a>
-        </div>
-      </div>
-      <div class="col-lg-10">
-        <div id="scrollMe" class="tabel-responsive" style="height: 800px; overflow: auto;">
+      <div class="col-lg-12">
+        <div class="tabel-responsive" style="height: 800px; overflow: auto;">
           <table class="table table-bordered table-striped sortable">
             <thead>
               <tr>
@@ -100,8 +86,4 @@
   </div>
 </div>
 
-{% endblock %}
-
-{% block onload %}
-<script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
 {% endblock %}

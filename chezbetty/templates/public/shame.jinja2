@@ -2,13 +2,7 @@
 {% block title %}{{ _('Wall of Shame') }}{% endblock %}
 {% block header %}{{ _('Wall of Shame') }}{% endblock %}
 
-
-
 {% block content %}
-
-<div class="top-button">
-  <a class="btn btn-default btn-lg" href="/">{{ _('Home') }}</a>
-</div>
 
 <p class="lead">{{ _('These users owe Chez Betty more than $5.') }}</p>
 
@@ -40,8 +34,4 @@
   </div>
 </div>
 
-{% endblock %}
-
-{% block onload %}
-<script src="{{'chezbetty:static/js/chezbetty-mcard.js'|static_url}}"></script>
 {% endblock %}

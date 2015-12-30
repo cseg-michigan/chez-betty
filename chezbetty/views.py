@@ -43,7 +43,7 @@ import traceback
 ### Catch-all error page
 ###
 
-@view_config(route_name='exception_view', renderer='templates/exception.jinja2')
+@view_config(route_name='exception_view', renderer='templates/public/exception.jinja2')
 def exception_view(request):
     return {}
 
@@ -85,8 +85,6 @@ def lang(request):
     return HTTPFound(location='/', headers=response.headers)
 
 
-
-
 from pyramid.view import view_config
 
 # Use to select which homepage to show, the only-on-the-betty-terminal version
@@ -121,23 +119,18 @@ def index_terminal(request):
 
     shame_users = User.get_shame_users()
 
-    return {
-            'announcements': announcements,
+    return {'announcements': announcements,
             'admins': admins,
             'top_debtors': top_debtors,
             'owed_by_users': User.get_amount_owed(),
-            'shame_users': shame_users,
-            }
+            'shame_users': shame_users}
 
 
 # General internet homepage
 @view_config(route_name='index',
-             renderer='templates/index.jinja2',
+             renderer='templates/public/index.jinja2',
              custom_predicates=(IsTerminalPredicate(False),))
 def index(request):
-    announcements = Announcement.all_enabled()
-    for announcement in announcements:
-        request.session.flash(announcement.announcement, 'info')
 
     try:
         top_debtors = DBSession.query(User)\
@@ -147,85 +140,6 @@ def index(request):
     except NoResultFound:
         top_debtors = None
 
-    shame_users = DBSession.query(User)\
-                     .filter(User.balance < -5)\
-                     .order_by(User.balance).all()
-
-    return {
-            'top_debtors': top_debtors,
-            'owed_by_users': User.get_amount_owed(),
-            'shame_users': shame_users,
-            }
-
-
-@view_config(route_name='about', renderer='templates/about.jinja2')
-def about(request):
-    return {}
-
-
-@view_config(route_name='items', renderer='templates/items.jinja2')
-def items(request):
-    items = DBSession.query(Item)\
-                     .filter(Item.enabled==True)\
-                     .filter(Item.in_stock>0)\
-                     .order_by(Item.name).all()
-    out_of_stock_items = DBSession.query(Item)\
-                     .filter(Item.enabled==True)\
-                     .filter(Item.in_stock==0)\
-                     .order_by(Item.name).all()
-    disabled_items = DBSession.query(Item)\
-                     .filter(Item.enabled==False)\
-                     .order_by(Item.name).all()
-    return {'items': items,
-            'out_of_stock_items': out_of_stock_items,
-            'disabled_items': disabled_items}
-
-
-@view_config(route_name='item_request', renderer='templates/item_request.jinja2')
-def item_request(request):
-    return {}
-
-
-@view_config(route_name='shame', renderer='templates/shame.jinja2')
-def users(request):
-    users = DBSession.query(User)\
-                     .filter(User.balance < -5)\
-                     .order_by(User.balance).all()
-    return {'users': users}
-
-
-@view_config(route_name='paydebt', renderer='templates/paydebt.jinja2')
-def paydebt(request):
-    uniqname = request.matchdict['uniqname']
-    user = User.from_uniqname(uniqname, local_only=True)
-    return {
-            'user': user,
-            'stripe_pk': request.registry.settings['stripe.publishable_key'],
-            }
-
-@view_config(route_name='paydebt_submit',
-             request_method='POST',
-             renderer='json',
-             )
-def paydebt_submit(request):
-    uniqname = request.matchdict['uniqname']
-    user = User.from_uniqname(uniqname, local_only=True)
-
-    print(request.POST)
-
-    token = request.POST['stripeToken']
-    amount = float(request.POST['betty_amount'])
-    total_cents = int(request.POST['betty_total_cents'])
-
-    post_stripe_payment(
-            datalayer,
-            request,
-            token,
-            amount,
-            total_cents,
-            user,
-            user,
-            )
-
-    return {}
+    return {'top_debtors': top_debtors,
+            'owed_by_users': User.get_amount_owed()}
 

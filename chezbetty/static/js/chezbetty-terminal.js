@@ -105,7 +105,6 @@ function calculate_total () {
 // Update the stored user balance in the DOM if it changes. Also
 // update any GUI elements that are based on that balance.
 function update_user_balance (balance) {
-	console.log(balance)
 	// Set the DOM element
 	$("#user-balance").text(balance);
 

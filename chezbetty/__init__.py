@@ -267,6 +267,7 @@ def main(global_config, **settings):
     config.add_view(notfound, context='pyramid.httpexceptions.HTTPNotFound')
 
     config.scan(".views")
+    config.scan(".views_public")
     config.scan(".views_terminal")
     config.scan(".views_user")
     config.scan(".views_admin")
