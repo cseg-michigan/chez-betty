@@ -32,15 +32,11 @@ from .utility import send_email
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
-# from .btc import Bitcoin, BTCException
-# import binascii
 import transaction
 
-# import traceback
-
+# Custom exception
 class DepositException(Exception):
     pass
-
 
 
 # Check for a valid user by UMID.
@@ -291,7 +287,8 @@ def terminal_purchase(request):
              'pool': pool})
 
         # Return the committed transaction ID
-        return {'order_table': summary}
+        return {'order_table': summary,
+                'user_balance': float(user.balance)}
 
     except __user.InvalidUserException as e:
         return {'error': _('invalid-user-error',

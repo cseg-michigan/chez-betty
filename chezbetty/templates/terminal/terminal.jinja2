@@ -1,65 +1,50 @@
 {% extends "base.jinja2" %}
-{% set active_page = 'purchase' %}
-{% block title %}{{ _('Purchase') }}{% endblock %}
-{% block header %}{{ _('Purchase') }}{% endblock %}
-
 
 {% block content %}
 
 {# Display large banners if this user owes us money. #}
-{% if user and user.balance < -50 %}
-<div class="alert alert-danger" role="alert">
+<div id="user-alert-balance-large" class="alert alert-danger user-alert-balance" role="alert" {% if user.balance >= -50 %}style="display:none;"{% endif %}>
   <div class="container">
     <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
     <h3>{{ _("You currently owe Betty %(big_debt)s. That's a lot of money!")|
-             format(big_debt=user.balance|format_currency)|safe }}</h3>
+             format(big_debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</h3>
     <p>{{ _("We're glad you like Betty. We're happy to extend a small line "
     "of credit, but if people owe Betty lots of money, it's hard to keep "
     "things in stock. Please try to pay Betty back soon!") }}</p>
   </div>
 </div>
-{% elif user and user.balance < -20 %}
-<div class="alert alert-warning" role="alert">
+<div id="user-alert-balance-medium" class="alert alert-warning user-alert-balance" role="alert" {% if user.balance >= -20 or user.balance < -50 %}style="display:none;"{% endif %}>
   <div class="container">
     <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
-    <p>{{ _("You currently owe Betty %(debt)s.")|format(debt=user.balance|format_currency)|safe }}</p>
+    <p>{{ _("You currently owe Betty %(debt)s.")|format(debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</p>
     <p>{{ _('Please try to pay Betty back soon, thanks!') }}</p>
   </div>
 </div>
-{% endif %}
-
-
-
-
-
-
-
-
-
-
 
 
 <div class="row">
 
+  {# Sidebar with logo and balance #}
   <div class="col-md-1">
-    <div class="row" style="text-align: center;">
+    <div class="row logo-box">
       <img src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:100px;" />
     </div>
 
-    <div class="row">
-      {{ _('Current Balance') }}<br />
-      <span id="user-info-current-balance">{{ user.balance|format_currency|safe }}</span>
+    <div id="user-info-current-balance" class="row well balance-box {% if user.balance < -5 %}big-debt{% endif %}">
+      <h4>{{ _('Current Balance') }}</h4>
+      <span class="current-formatted-balance">{{ user.balance|format_currency|safe }}</span>
     </div>
 
-    <div class="row">
-      {{ _('Resulting Balance') }}<br />
-      <span id="user-info-new-balance">{{ user.balance|format_currency|safe }}</span>
+    <div id="user-info-new-balance" class="row well balance-box {% if user.balance < -5 %}big-debt{% endif %}">
+      <h4>{{ _('Balance after Purchase or Deposit') }}</h4>
+      <span>{{ user.balance|format_currency|safe }}</span>
     </div>
 
     <div id="user-balance" class="hidden">{{ user.balance }}</div>
     <div id="user-umid" class="hidden">{{ user.umid }}</div>
   </div>
 
+  {# Purchase panel #}
   <div class="col-md-8">
 
     <div class="panel panel-default">
@@ -89,7 +74,7 @@
               </button>
             </div>
 
-            <table class="table table-bordered" id="purchase_table">
+            <table class="table table-bordered" id="purchase-table">
               <thead>
                 <tr>
                   <th style="width: 6%">&nbsp;</th>
@@ -139,7 +124,6 @@
             <div class="list-group">
               <button type="button" class="list-group-item list-group-item-info list-group-item-header">Select Payment</button>
               <button type="button" id="payment-user" class="list-group-item purchase-payment active">Your Account</button>
-              <button type="button" id="payment-user" class="list-group-item purchase-payment ">need a test</button>
               {% for pool in purchase_pools %}
               <button type="button" id="payment-pool-{{ pool.id }}" class="list-group-item purchase-payment">{{ _('%(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
               {% endfor %}
@@ -170,6 +154,7 @@
     </div>
   </div>
 
+  {# Deposit Panel #}
   <div class="col-md-3">
 
     <div class="panel panel-default">

@@ -15,6 +15,34 @@ button.list-group-item-header {
 	font-weight: bold;
 }
 
+/* Left sidebar */
+.logo-box {
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 30px;
+}
+
+.balance-box {
+	text-align: center;
+}
+
+.balance-box span {
+	font-size: 16px;
+}
+
+.big-debt {
+	background-color: #A94442;
+	color: white;
+}
+
+.big-debt .negative {
+	background-color: white;
+	font-size: 18px;
+	padding: 5px 10px 5px 10px;
+	font-weight: bold;
+	margin: 3px;
+}
+
 /* Buttons */
 .btn-huge {
 	padding: 20px 30px;
@@ -72,37 +100,6 @@ button.list-group-item-header {
 
 .alert {
 	margin-top: 15px;
-}
-
-/* Notice of big debt */
-.panel-superdanger {
-	background-color: #A94442;
-}
-
-.panel-superdanger .panel-heading {
-	background-color: #A94442;
-  border-color: white;
-}
-
-.panel-superdanger .panel-title {
-  color: white;
-}
-
-.panel-superdanger .panel-body {
-	background-color: #c05f5d;
-}
-
-.panel-superdanger .negative {
-	background-color: white;
-	font-size: 18px;
-	padding: 5px 10px 5px 10px;
-	font-weight: bold;
-	margin: 3px;
-}
-
-.panel-superdanger .user-info-balance {
-	margin-top: 5px;
-	margin-bottom: 5px;
 }
 
 

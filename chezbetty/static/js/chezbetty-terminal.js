@@ -8,7 +8,6 @@
  * GENERAL HELPER FUNCTIONS
  ******************************************************************************/
 
-
 /* Functions to manipulate price strings and numbers.
  */
 function format_price (price) {
@@ -75,7 +74,7 @@ function purchase_alert_error (error_str) {
 // Function to add up the items in a cart to display the total.
 function calculate_total () {
 	total = 0;
-	$("#purchase_table tbody tr:visible").each(function (index) {
+	$("#purchase-table tr.purchase-item").each(function (index) {
 		if ($(this).attr('id') != "purchase-empty") {
 			line_total = parseFloat(
 				strip_price($(this).children('.item-total').text()));
@@ -103,6 +102,29 @@ function calculate_total () {
 	calculate_user_new_balance();
 }
 
+// Update the stored user balance in the DOM if it changes. Also
+// update any GUI elements that are based on that balance.
+function update_user_balance (balance) {
+	console.log(balance)
+	// Set the DOM element
+	$("#user-balance").text(balance);
+
+	// Show/hide the top announcements
+	$(".user-alert-balance").hide();
+	if (balance < -50) {
+		$("#user-alert-balance-large").show();
+	} else if (balance < -20) {
+		$("#user-alert-balance-medium").show();
+	}
+
+	// Update the all places where current balance might be displayed
+	$(".current-formatted-balance").html(format_price(parseFloat(balance)));
+
+	// Update the color formatting based on amount in account
+	if (balance < -5) $("#user-info-current-balance").addClass("big-debt");
+	else $("#user-info-current-balance").removeClass("big-debt");
+}
+
 // Update the new tentative balance total for the user if the user were to
 // submit the purchase and deposit.
 function calculate_user_new_balance () {
@@ -125,8 +147,11 @@ function calculate_user_new_balance () {
 	var balance = parseFloat($("#user-balance").text());
 
 	var new_balance = balance - purchase + deposit;
-	$("#user-info-new-balance").html(format_price(new_balance));
-	$("#user-info-current-balance").html(format_price(balance));
+	$("#user-info-new-balance span").html(format_price(new_balance));
+
+	// Update the color formatting based on amount in account
+	if (new_balance < -5) $("#user-info-new-balance").addClass("big-debt");
+	else $("#user-info-new-balance").removeClass("big-debt");
 }
 
 // Display and hide logout buttons based on user balance
@@ -191,7 +216,7 @@ function add_item_success (data) {
 
 		} else {
 			// Add a new item
-			$("#purchase_table tbody").append(data.item_row_html);
+			$("#purchase-table tbody").append(data.item_row_html);
 		}
 
 		// Want to make sure the correct logout button is displayed
@@ -224,7 +249,7 @@ function purchase_success (data) {
 		show_correct_purchase_button();
 
 		// Update user balance
-		$("#user-balance").text(data.user_balance);
+		update_user_balance(data.user_balance);
 		calculate_user_new_balance();
 	}
 
@@ -268,7 +293,7 @@ function purchase_delete_success (data) {
 		show_correct_purchase_button();
 
 		// Update user balance
-		$("#user-balance").text(data.user_balance);
+		update_user_balance(data.user_balance);
 		calculate_user_new_balance();
 
 		// Also enable these buttons so they don't get stuck
@@ -306,7 +331,7 @@ function deposit_success (data) {
 		}
 
 		// Update user balance
-		$("#user-balance").text(data.user_balance);
+		update_user_balance(data.user_balance);
 		calculate_user_new_balance();
 
 		$("#deposit-eventid").text(data.event_id);
@@ -344,7 +369,7 @@ function deposit_delete_success (data) {
 		deposit_alert_success('Deposit successfully removed.');
 
 		// Update user balance
-		$("#user-balance").text(data.user_balance);
+		update_user_balance(data.user_balance);
 		calculate_user_new_balance();
 
 		// Make the change back to the deposit entry form
@@ -368,6 +393,147 @@ function deposit_delete_error () {
 /*******************************************************************************
  * EVENT HANDLERS
  ******************************************************************************/
+
+// PURCHASE
+
+// Function called by chezbetty-item.js when a new item was scanned and
+// should be added to the cart.
+function add_item (item_id) {
+	$.ajax({
+		dataType: "json",
+		url: "/terminal/item/"+item_id,
+		success: add_item_success,
+		error: add_item_fail
+	});
+}
+
+// Pass the button as "this" to this function to submit a purchase.
+// We need the button so we can disable it so we don't get duplicate purchases.
+function submit_purchase (this_btn, success_cb, error_cb) {
+	$(this_btn).blur();
+	purchase_alert_clear();
+
+	disable_button($(this_btn));
+
+	// Bundle all of the product ids and quantities into an object to send
+	// to the server. Also include the purchasing user.
+	purchase = {};
+	purchase.umid = $("#user-umid").text();
+
+	// What account to pay with?
+	var account_button = $(".purchase-payment.active");
+	var id = account_button.attr('id');
+	var fields = id.split('-');
+	var acct_type = fields[1];
+	if (acct_type == 'pool') {
+		// Put pool id in we should use a pool, otherwise we will default
+		// to the user's account.
+		purchase['pool_id'] = parseInt(fields[2]);
+	}
+
+	var item_count = 0;
+	$(".purchase-item").each(function (index) {
+		var id = $(this).attr("id");
+		var quantity = parseInt($(this).children(".item-quantity").text());
+		var pid = id.split('-')[2];
+		purchase[pid] = quantity;
+		item_count++;
+	});
+
+	if (item_count == 0) {
+		// This should never happen as the purchase button should not be visible
+		purchase_alert_error("You must purchase at least one item.");
+		enable_button($(this_btn));
+	} else {
+		// Post the order to the server
+		$.ajax({
+			type:     "POST",
+			url:      "/terminal/purchase",
+			data:     purchase,
+			context:  this_btn,
+			success:  success_cb,
+			error:    error_cb,
+			dataType: "json"
+		});
+	}
+}
+
+// Click handler to remove an item from a purchase.
+$("#purchase-table tbody").on("click", ".btn-remove-item", function () {
+	$(this).parent().parent().slideUp().remove();
+
+	// Check if the cart is empty and put the "Empty Order" row back in
+	if ($("#purchase-table tbody tr:visible").length == 0) {
+		$("#purchase-empty").show();
+
+		// Make the logout button normal again
+		show_correct_purchase_button();
+	}
+
+	// Re-calculate the total
+	calculate_total();
+});
+
+// Click handler to remove an item from a purchase.
+$("#purchase-table tbody").on("click", ".btn-decrement-item", function () {
+	var quantity = parseInt($(this).parent().find("span").text()) - 1;
+	$(this).parent().find("span").text(quantity);
+	if (quantity < 2) {
+		$(this).hide();
+	}
+
+	var item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
+	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
+	calculate_total();
+});
+
+// Choose which account to pay from
+$(".purchase-payment").click(function () {
+	$(".purchase-payment").removeClass("active");
+	$(this).addClass("active");
+});
+
+// Purchase mistake, revert this transaction and put the cart back
+$("#purchase-complete-table").on("click", ".btn-delete-purchase", function () {
+	$(this).blur();
+	purchase_alert_clear();
+
+	disable_button($(this));
+
+	var event_id = parseInt($(this).attr('id').split('-')[2]);
+
+	// Prepare enough information so we can delete the old
+	// deposit transaction
+	purchase = {};
+	purchase.umid = $("#user-umid").text();
+	purchase.old_event_id = event_id;
+
+	// Post the deposit to the server
+	$.ajax({
+		type:     "POST",
+		url:      "/terminal/purchase/delete",
+		data:     purchase,
+		success:  purchase_delete_success,
+		error:    purchase_delete_error,
+		dataType: "json"
+	});
+});
+
+// Nothing in the cart, just logout
+$("#purchase-button-logout").click(function () {
+	window.location.href = "/";
+});
+
+// Click handler to submit a purchase and logout.
+$("#purchase-button-purchaselogout").click(function () {
+	submit_purchase(this, purchase_andlogout_success, purchase_error);
+});
+
+// Click handler to submit a purchase.
+$("#purchase-button-purchase").click(function () {
+	submit_purchase(this, purchase_success, purchase_error);
+});
+
 
 // DEPOSIT
 
@@ -443,6 +609,7 @@ $("#btn-deposit-entry-default-custom").click(function() {
 	$("#deposit-entry-default").hide();
 	$("#deposit-entry-custom").show();
 	$("#deposit-entry-total").html(format_price(0.0));
+	calculate_user_new_balance();
 });
 
 // Switch to standard amount deposits from the custom page
@@ -450,6 +617,7 @@ $("#btn-deposit-entry-custom-default").click(function() {
 	$("#deposit-entry-custom").hide();
 	$("#deposit-entry-default").show();
 	$("#deposit-entry-total").html(format_price(0.0));
+	calculate_user_new_balance();
 });
 
 // Button press handler for the keypad
@@ -470,148 +638,6 @@ $("#deposit-entry-custom").on("click", "button", function () {
 	$("#deposit-entry-total").html(format_price(output));
 	calculate_user_new_balance();
 });
-
-
-// PURCHASE
-
-// Function called by chezbetty-item.js when a new item was scanned and
-// should be added to the cart.
-function add_item (item_id) {
-	$.ajax({
-		dataType: "json",
-		url: "/terminal/item/"+item_id,
-		success: add_item_success,
-		error: add_item_fail
-	});
-}
-
-// Pass the button as "this" to this function to submit a purchase.
-// We need the button so we can disable it so we don't get duplicate purchases.
-function submit_purchase (this_btn, success_cb, error_cb) {
-	$(this_btn).blur();
-	purchase_alert_clear();
-
-	disable_button($(this_btn));
-
-	// Bundle all of the product ids and quantities into an object to send
-	// to the server. Also include the purchasing user.
-	purchase = {};
-	purchase.umid = $("#user-umid").text();
-
-	// What account to pay with?
-	var account_button = $(".purchase-payment.active");
-	var id = account_button.attr('id');
-	var fields = id.split('-');
-	var acct_type = fields[1];
-	if (acct_type == 'pool') {
-		// Put pool id in we should use a pool, otherwise we will default
-		// to the user's account.
-		purchase['pool_id'] = parseInt(fields[2]);
-	}
-
-	var item_count = 0;
-	$(".purchase-item").each(function (index) {
-		var id = $(this).attr("id");
-		var quantity = parseInt($(this).children(".item-quantity").text());
-		var pid = id.split('-')[2];
-		purchase[pid] = quantity;
-		item_count++;
-	});
-
-	if (item_count == 0) {
-		// This should never happen as the purchase button should not be visible
-		purchase_alert_error("You must purchase at least one item.");
-		enable_button($(this_btn));
-	} else {
-		// Post the order to the server
-		$.ajax({
-			type:     "POST",
-			url:      "/terminal/purchase",
-			data:     purchase,
-			context:  this_btn,
-			success:  success_cb,
-			error:    error_cb,
-			dataType: "json"
-		});
-	}
-}
-
-// Click handler to remove an item from a purchase.
-$("#purchase_table tbody").on("click", ".btn-remove-item", function () {
-	$(this).parent().parent().slideUp().remove();
-
-	// Check if the cart is empty and put the "Empty Order" row back in
-	if ($("#purchase_table tbody tr:visible").length == 0) {
-		$("#purchase-empty").show();
-
-		// Make the logout button normal again
-		show_correct_purchase_button();
-	}
-
-	// Re-calculate the total
-	calculate_total();
-});
-
-// Click handler to remove an item from a purchase.
-$("#purchase_table tbody").on("click", ".btn-decrement-item", function () {
-	var quantity = parseInt($(this).parent().find("span").text()) - 1;
-	$(this).parent().find("span").text(quantity);
-	if (quantity < 2) {
-		$(this).hide();
-	}
-
-	var item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
-	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
-	calculate_total();
-});
-
-// Choose which account to pay from
-$(".purchase-payment").click(function () {
-	$(".purchase-payment").removeClass("active");
-	$(this).addClass("active");
-});
-
-// Purchase mistake, revert this transaction and put the cart back
-$("#purchase-complete-table").on("click", ".btn-delete-purchase", function () {
-	$(this).blur();
-	purchase_alert_clear();
-
-	disable_button($(this));
-
-	var event_id = parseInt($(this).attr('id').split('-')[2]);
-
-	// Prepare enough information so we can delete the old
-	// deposit transaction
-	purchase = {};
-	purchase.umid = $("#user-umid").text();
-	purchase.old_event_id = event_id;
-
-	// Post the deposit to the server
-	$.ajax({
-		type:     "POST",
-		url:      "/terminal/purchase/delete",
-		data:     purchase,
-		success:  purchase_delete_success,
-		error:    purchase_delete_error,
-		dataType: "json"
-	});
-});
-
-// Nothing in the cart, just logout
-$("#purchase-button-logout").click(function () {
-	window.location.href = "/";
-});
-
-// Click handler to submit a purchase and logout.
-$("#purchase-button-purchaselogout").click(function () {
-	submit_purchase(this, purchase_andlogout_success, purchase_error);
-});
-
-// Click handler to submit a purchase.
-$("#purchase-button-purchase").click(function () {
-	submit_purchase(this, purchase_success, purchase_error);
-});
-
 
 
 // TERMINAL INDEX PAGE
@@ -675,4 +701,3 @@ $("#keypad-umid").on("click", "button", function () {
 		}
 	}
 });
-
