@@ -331,6 +331,8 @@
       for (var i=0; i<series.length; i++) {
         chartOptions.series.push({
           type: 'line',
+          threshold: 0,
+          negativeColor: '#FF0000',
           name: series_titles[i],
           data: series[i],
         });
