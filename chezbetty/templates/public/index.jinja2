@@ -1,6 +1,7 @@
 {% extends "base.jinja2" %}
 {% block title %}Home{% endblock %}
 
+{% block top %}{% endblock %}
 
 {% block content %}
 
@@ -25,23 +26,62 @@ body {
       </div>
     </div>
 
+    <div class="row">
+      <div class="col-md-3">
+
+        <div class="list-group">
+          <div class="list-group-item list-group-item-info list-group-item-header">Navigation</div>
+          <a href="/items" class="list-group-item">{{ _('Item List') }}</a>
+          <a href="/item/request" class="list-group-item">{{ _('Request an Item') }}</a>
+          <a href="/about" class="list-group-item">{{ _('About') }}</a>
+          <a href="/shame" class="list-group-item list-group-item-danger">{{ _('Wall of Shame') }}</a>
+        </div>
+
+      </div>
+
+      <div class="col-md-5"></div>
+
+      <div class="col-md-4">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Betty User Login</h3>
+          </div>
+          <div class="panel-body">
+            <form class="form-horizontal" role="form" method="post" action="/login/submit">
+              <div class="form-group">
+                <label for="uniqname" class="col-sm-3 control-label">Uniqname</label>
+                <div class="col-sm-9">
+                  <input type="login" class="form-control" id="login-uniqname" name="login" placeholder="Uniqname">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password" class="col-sm-3 control-label">Password</label>
+                <div class="col-sm-9">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                  <button type="submit" class="btn btn-default">Login</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
 
     <div class="row">
       <div class="col-md-12">
 
-        <div id="front-buttons" class="buttons">
-          <a class="btn btn-default btn-huge btn-bordered" href="/items">{{ _('Item List') }}</a>
-          <a class="btn btn-default btn-huge btn-bordered" href="/item/request">{{ _('Request an Item') }}</a>
-          <a class="btn btn-default btn-huge btn-bordered" href="/about">{{ _('About') }}</a>
-          <a class="btn btn-default btn-huge btn-bordered" href="/shame">{{ _('Wall of Shame') }}</a>
-        </div>
-
         {% for debtor in top_debtors %}
-        <div id="top-debtor-{{ loop.index }}" data-rotate-div-timeout="5000" {% if loop.index == 1 %} class="rotate-divs" {% else %} style="display: none;"{% endif %}>
-          <hr />
-          <div class="alert">
+        <div id="top-debtor-{{ loop.index }}" data-rotate-div-timeout="5000" class="{% if loop.index == 1 %}rotate-divs{% else %}rotate-divs-hidden{% endif %}">
+          <div class="well">
             <h2>Do you know <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }})?</h2>
-            <h3>They are number {{ loop.index }} on the Wall of Shame, with a balance of
+            <h3><a target="_blank" href="https://mcommunity.umich.edu/#search:{{ debtor.uniqname }}">They</a> are number {{ loop.index }} on the Wall of Shame, with a balance of
               {{ debtor.balance|format_currency|safe }}.</h3>
             <h3>If you know {{ debtor.name }}, please encourage them to pay Betty back today.</h3>
           </div>

@@ -259,6 +259,7 @@ def main(global_config, **settings):
 
 
     config.add_route('login',          '/login')
+    config.add_route('login_submit',   '/login/submit')
     config.add_route('login_reset_pw', '/login/reset_pw')
     config.add_route('logout',         '/logout')
     config.add_request_method(get_user, "user", reify=True)

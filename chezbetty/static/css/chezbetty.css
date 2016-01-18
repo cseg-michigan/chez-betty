@@ -80,6 +80,15 @@ h1 {
 	line-height: 1.2em;
 }
 
+/* Home Page */
+.list-group-item-header {
+	font-weight: bold;
+}
+
+.rotate-divs-hidden {
+	display: none;
+}
+
 /* Alerts */
 #alerts {
 	margin-top: 10px;
@@ -125,7 +134,6 @@ h1 {
 }
 
 /* Items */
-
 .top-button {
 	margin-bottom: 15px;
 }
