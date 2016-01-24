@@ -112,10 +112,12 @@ def main(global_config, **settings):
     config.add_route('terminal_deposit',         '/terminal/deposit')
     config.add_route('terminal_deposit_delete',  '/terminal/deposit/delete')
 
-    config.add_route('terminal_item',            '/terminal/item/{barcode}')
+    config.add_route('terminal_item_id',         '/terminal/item/id/{item_id}')
+    config.add_route('terminal_item_barcode',    '/terminal/item/barcode/{barcode}')
 
     config.add_route('terminal_purchase',        '/terminal/purchase')
     config.add_route('terminal_purchase_delete', '/terminal/purchase/delete')
+    config.add_route('terminal_purchase_tag',    '/terminal/purchase/tag/{tag_id}')
 
     config.add_route('terminal',                 '/terminal/{umid}')
 

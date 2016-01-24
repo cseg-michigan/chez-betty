@@ -125,6 +125,32 @@ button.list-group-item-header {
 	color: red;
 }
 
+.btn-nobarcode-tag {
+	width: 200px;
+	height: 75px;
+	font-size: 18px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+.tag-item {
+	border: 1px solid #ccc;
+	text-align: center;
+	padding: 6px;
+	width: 200px;
+	height: 225px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	float: left;
+}
+
+.btn-back {
+	width: 250px;
+	height: 100px;
+	margin-top: 25px;
+	font-size: 18pt;
+}
+
 
 /* Deposit */
 #deposit-entry-total {

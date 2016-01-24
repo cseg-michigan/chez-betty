@@ -30,7 +30,7 @@ from sqlalchemy.orm import (
 
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import synonym
-from sqlalchemy.sql.expression import or_, and_, func
+from sqlalchemy.sql.expression import or_, and_, func, exists
 from sqlalchemy.sql.functions import coalesce
 from zope.sqlalchemy import ZopeTransactionExtension
 

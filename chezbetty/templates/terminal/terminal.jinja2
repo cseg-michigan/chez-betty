@@ -47,7 +47,7 @@
   {# Purchase panel #}
   <div class="col-md-8">
 
-    <div class="panel panel-default">
+    <div id="panel-purchase" class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">{{ _('Purchase') }}</h3>
       </div>
@@ -156,6 +156,35 @@
 
       </div>
     </div>
+
+    {# Hidden items without barcodes chooser panel #}
+    <div id="panel-nobarcode" class="panel panel-default" style="display:none;">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ _('Select Item Without Barcode') }}</h3>
+      </div>
+      <div class="panel-body">
+        <div id="tags">
+          <h3>Choose an Item Category</h3>
+          {% for tag in tags_with_nobarcode_items %}
+          <button type="button" class="btn btn-nobarcode-tag btn-default" data-tagid="{{ tag.id }}">{{ tag.name }}</button>
+          {% endfor %}
+          <button type="button" class="btn btn-nobarcode-tag btn-default" data-tagid="other">Other</button>
+
+          <div>
+            <button type="button" id="btn-nobarcode-tags-back" class="btn btn-warning btn-back">Back</button>
+          </div>
+        </div>
+
+        <div id="tag-items" style="display:none;">
+          <div id="tag-items-content"></div>
+          <div style="clear:left;">
+            <button type="button" id="btn-nobarcode-tag-items-back" class="btn btn-warning btn-back">Back</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 
   {# Deposit Panel #}

@@ -351,6 +351,22 @@ function purchase_delete_error () {
 	enable_button($(".btn-delete-purchase"));
 }
 
+// Callback when we get a list of items for a tag
+function purchase_tag_success (data) {
+	if ('error' in data) {
+		//not sure
+	} else {
+		$('#tag-items-content').html(data.items_html);
+		$('#tags').hide();
+		$('#tag-items').show();
+	}
+}
+
+// Callback when getting an item list fails
+function purchase_tag_error () {
+
+}
+
 // DEPOSIT
 
 // Callback when a deposit POST was successful
@@ -445,10 +461,19 @@ function deposit_delete_error () {
 
 // Function called by chezbetty-item.js when a new item was scanned and
 // should be added to the cart.
-function add_item (item_id) {
+function add_item (barcode) {
 	$.ajax({
 		dataType: "json",
-		url: "/terminal/item/"+item_id,
+		url: "/terminal/item/barcode/"+barcode,
+		success: add_item_success,
+		error: add_item_fail
+	});
+}
+
+function add_item_id (item_id) {
+	$.ajax({
+		dataType: "json",
+		url: "/terminal/item/id/"+item_id,
 		success: add_item_success,
 		error: add_item_fail
 	});
@@ -581,6 +606,46 @@ $("#purchase-button-purchase").click(function () {
 	submit_purchase(this, purchase_success, purchase_error);
 });
 
+// Clicked to choose an item on the terminal
+$('#btn-nobarcode').click(function () {
+	$('#panel-purchase').hide();
+	$('#panel-nobarcode').show();
+});
+
+// Go back to purchase cart
+$('#btn-nobarcode-tags-back').click(function () {
+	$('#panel-nobarcode').hide();
+	$('#panel-purchase').show();
+});
+
+// Go back to purchase cart
+$('#btn-nobarcode-tag-items-back').click(function () {
+	$('#tag-items').hide();
+	$('#tags').show();
+});
+
+// Choose a tag to view items
+$('.btn-nobarcode-tag').click(function () {
+	var tag_id = $(this).attr('data-tagid');
+
+	$.ajax({
+		type:     "GET",
+		url:      "/terminal/purchase/tag/" + tag_id,
+		success:  purchase_tag_success,
+		error:    purchase_tag_error,
+	});
+});
+
+$('#tag-items').on('click', '.tag-item', function () {
+	var item_id = $(this).attr('data-item-id');
+
+	add_item_id(item_id);
+
+	$('#tag-items').hide();
+	$('#panel-nobarcode').hide();
+	$('#tags').show();
+	$('#panel-purchase').show();
+});
 
 // DEPOSIT
 

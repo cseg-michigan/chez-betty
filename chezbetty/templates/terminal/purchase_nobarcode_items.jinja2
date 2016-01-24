@@ -1,0 +1,13 @@
+<h3>{{ tag.name }}</h3>
+{% for item in tag.nobarcode_items %}
+<div class="tag-item" data-item-id="{{ item.id }}">
+  {% if item.img %}
+  <img src="/dynamic/item/{{item.id}}.jpg" width="150px" />
+  {% else %}
+  <img src="{{'chezbetty:static/placeholder_300px.png'|static_url}}" width="150px" />
+  {% endif %}
+  <div class="tag-item-name">
+  	{{ item.name }}
+  </div>
+</div>
+{% endfor %}

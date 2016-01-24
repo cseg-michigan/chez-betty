@@ -25,6 +25,7 @@ from .models.event import Event
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
+from .models.tag import Tag
 
 from .utility import user_password_reset
 from .utility import send_email
@@ -102,11 +103,15 @@ def terminal(request):
             if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
                 purchase_pools.append(pu.pool)
 
+        # Get the list of tags that have items without barcodes in them
+        tags_with_nobarcode_items = Tag.get_tags_with_nobarcode_items();
+
         return {'user': user,
                 'items': items,
                 'purchase_pools': purchase_pools,
                 'deposit_pools': deposit_pools,
-                'purchase_fee_percent': purchase_fee_percent}
+                'purchase_fee_percent': purchase_fee_percent,
+                'tags_with_nobarcode_items': tags_with_nobarcode_items}
 
     except __user.InvalidUserException as e:
         request.session.flash(_(
@@ -114,6 +119,27 @@ def terminal(request):
             default='Failed to read M-Card. Please try swiping again.',
             ), 'error')
         return HTTPFound(location=request.route_url('index'))
+
+
+## Get all items without barcodes in a tag
+@view_config(route_name='terminal_purchase_tag',
+             renderer='json',
+             permission='service')
+def terminal_purchase_tag(request):
+    try:
+        tag_id = int(request.matchdict['tag_id'])
+        tag = Tag.from_id(tag_id)
+    except:
+        if request.matchdict['tag_id'] == 'other':
+            tag = {'name': 'other',
+                   'nobarcode_items': Item.get_nobarcode_notag_items()}
+        else:
+            return {'error': 'Unable to parse TAG ID'}
+    
+    item_array = render('templates/terminal/purchase_nobarcode_items.jinja2',
+                        {'tag': tag})
+
+    return {'items_html': item_array}
 
 
 ## Add a cash deposit.
@@ -208,10 +234,10 @@ def terminal_deposit_delete(request):
 
 
 ## Add an item to a shopping cart.
-@view_config(route_name='terminal_item',
+@view_config(route_name='terminal_item_barcode',
              renderer='json',
              permission='service')
-def terminal_item(request):
+def terminal_item_barcode(request):
     try:
         item = Item.from_barcode(request.matchdict['barcode'])
     except:
@@ -235,6 +261,24 @@ def terminal_item(request):
 
     item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
     return {'id':item.id,
+            'item_row_html': item_html}
+
+
+## Add an item to a shopping cart.
+@view_config(route_name='terminal_item_id',
+             renderer='json',
+             permission='service')
+def terminal_item_id(request):
+    try:
+        item = Item.from_id(request.matchdict['item_id'])
+    except:
+        return {'error': 'Could not find that item.'}
+
+    if not item.enabled:
+        return {'error': 'That product is not currently for sale.'}
+
+    item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
+    return {'id': item.id,
             'item_row_html': item_html}
 
 

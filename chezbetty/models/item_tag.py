@@ -25,3 +25,43 @@ class ItemTag(Base):
     @classmethod
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
+
+@classmethod
+@limitable_all
+def __get_tags_with_nobarcode_items(cls):
+    return DBSession.query(tag.Tag)\
+            .join(ItemTag)\
+            .join(item.Item)\
+            .filter(item.Item.barcode == None)\
+            .filter(ItemTag.deleted==False)\
+            .filter(item.Item.enabled==True)\
+            .filter(tag.Tag.deleted==False)
+
+tag.Tag.get_tags_with_nobarcode_items = __get_tags_with_nobarcode_items
+
+@property
+@limitable_all
+def __nobarcode_items(self):
+    return DBSession.query(item.Item)\
+            .join(ItemTag)\
+            .join(tag.Tag)\
+            .filter(ItemTag.tag_id == self.id)\
+            .filter(item.Item.barcode == None)\
+            .filter(ItemTag.deleted==False)\
+            .filter(item.Item.enabled==True)\
+            .filter(tag.Tag.deleted==False)
+
+tag.Tag.nobarcode_items = __nobarcode_items
+
+@classmethod
+@limitable_all
+def __get_nobarcode_notag_items(cls):
+    return DBSession.query(item.Item)\
+            .filter(item.Item.barcode == None)\
+            .filter(item.Item.enabled == True)\
+            .filter(~exists().where(
+                 and_(ItemTag.item_id == item.Item.id,
+                      ItemTag.deleted == False)))
+
+item.Item.get_nobarcode_notag_items = __get_nobarcode_notag_items
+
