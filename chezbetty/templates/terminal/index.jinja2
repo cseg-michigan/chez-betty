@@ -121,7 +121,7 @@ body {
 
 
 {# Splash page saying we need people to pay us back. #}
-<div id="splash" class="container">
+{# <div id="splash" class="container">
   <h1>Please Help Us Out</h1>
   <h3>Right now, people owe Betty a combined
     <strong>{{ owed_by_users|format_debt|safe }}</strong>.
@@ -154,7 +154,7 @@ body {
   <p>{{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}</p>
   {% endfor %}
   </div>
-</div>
+</div> #}
 
 
 
@@ -180,7 +180,9 @@ body {
 
 {% block onload %}
 <script>
-  $("#index").hide();
-  $("#splash").show();
+  if($('#splash').length != 0) {
+    $("#index").hide();
+    $("#splash").show();
+  }
 </script>
 {% endblock %}

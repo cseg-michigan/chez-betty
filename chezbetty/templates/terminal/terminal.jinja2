@@ -99,17 +99,21 @@
               </tbody>
 
               <tfoot>
-                {% if user.balance > 20 %} {# todo: parameterize this #}
-                <tr>
+                {# todo: parameterize this. note the JS has to change too #}
+                <tr id="purchase-row-subtotal" {% if user.balance <= 20 and user.balance > -5 %}style="display:none;"{% endif %}>
                   <td colspan="4"><b>{{ _('Subtotal') }}</b></td>
                   <td id="purchase-subtotal">$0.00</td>
                 </tr>
-                <tr>
+                <tr id="purchase-row-goodstanding" {% if user.balance <= 20 %}style="display:none;"{% endif %}>
                   <td colspan="2"><b>{{ _('Good Standing Discount') }}</b></td>
                   <td id="purchase-discount-percent" colspan="2">(5.0%)</td>
                   <td id="purchase-discount">($0.00)</td>
                 </tr>
-                {% endif %}
+                <tr id="purchase-row-wallshame" {% if user.balance > -5 %}style="display:none;"{% endif %}>
+                  <td colspan="2"><b>{{ _('Wall of Shame Fee') }}</b></td>
+                  <td id="purchase-fee-percent" colspan="2"><span id="purchase-fee-percent-amount">{{ purchase_fee_percent }}</span>%</td>
+                  <td id="purchase-fee">$0.00</td>
+                </tr>
                 <tr>
                   <td colspan="4"><b>{{ _('Total') }}</b></td>
                   <td id="purchase-total">$0.00</td>

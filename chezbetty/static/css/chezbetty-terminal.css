@@ -116,7 +116,7 @@ button.list-group-item-header {
 
 }
 
-#purchase-total, #purchase-subtotal, #purchase-discount, #purchase-discount-percent {
+#purchase-total, #purchase-subtotal, #purchase-discount, #purchase-discount-percent, #purchase-fee, #purchase-fee-percent {
 	text-align: right;
 	font-weight: bold;
 }

@@ -143,7 +143,7 @@ def index(request):
     return {'top_debtors': top_debtors,
             'owed_by_users': User.get_amount_owed()}
 
-
+# Login routes
 @view_config(route_name='login',
              renderer='templates/public/login.jinja2')
 @forbidden_view_config(renderer='templates/public/login.jinja2')
@@ -165,45 +165,41 @@ def login_submit(request):
     came_from = request.params.get('came_from', request.url)
 
     messages = []
-    login    = ''
-    password = ''
 
-    # Check if we got login credentials to check
-    if 'login' in request.params:
-        # See if this is a valid login attempt
-        login    = request.params.get('login', '')
-        password = request.params.get('password', '')
-        user     = DBSession.query(User).filter(User.uniqname == login).first()
-        if user and not user.enabled:
-            messages.append('Login failed. User not allowed to login.')
-        elif user and user.check_password(password):
-            # Got a successful login. Now decide where to direct the user.
-            headers = remember(request, login)
+    # See if this is a valid login attempt
+    login    = request.params.get('login', '')
+    password = request.params.get('password', '')
+    user     = DBSession.query(User).filter(User.uniqname == login).first()
+    if user and not user.enabled:
+        messages.append('Login failed. User not allowed to login.')
+    elif user and user.check_password(password):
+        # Got a successful login. Now decide where to direct the user.
+        headers = remember(request, login)
 
-            if user.role == 'serviceaccount':
-                # This is the service account for using the terminal.
-                # Go back to the home page
-                return HTTPFound(location=request.route_url('index'), headers=headers)
+        if user.role == 'serviceaccount':
+            # This is the service account for using the terminal.
+            # Go back to the home page
+            return HTTPFound(location=request.route_url('index'), headers=headers)
 
-            else:
-                # If we got a normal user, check if the login form had
-                # a "came_from" input which tells us where to go back to.
-                # Otherwise, default to '/user'.
-                came_from = request.params.get('came_from', '')
-
-                # Fetch some strings to compare against
-                login_url     = request.resource_url(request.context, 'login')
-                login_sub_url = request.resource_url(request.context, 'login', 'submit')
-                reset_pw_url  = request.resource_url(request.context, 'login', 'reset_pw')
-                user_url      = request.resource_url(request.context, 'user')
-
-                # Make sure we don't send the user back to useless pages
-                if came_from in ['', login_url, login_sub_url, reset_pw_url]:
-                    came_from = user_url
-            
-            return HTTPFound(location=came_from, headers=headers)
         else:
-            messages.append('Login failed. Incorrect username or password.')
+            # If we got a normal user, check if the login form had
+            # a "came_from" input which tells us where to go back to.
+            # Otherwise, default to '/user'.
+            came_from = request.params.get('came_from', '')
+
+            # Fetch some strings to compare against
+            login_url     = request.resource_url(request.context, 'login')
+            login_sub_url = request.resource_url(request.context, 'login', 'submit')
+            reset_pw_url  = request.resource_url(request.context, 'login', 'reset_pw')
+            user_url      = request.resource_url(request.context, 'user')
+
+            # Make sure we don't send the user back to useless pages
+            if came_from in ['', login_url, login_sub_url, reset_pw_url]:
+                came_from = user_url
+        
+        return HTTPFound(location=came_from, headers=headers)
+    else:
+        messages.append('Login failed. Incorrect username or password.')
 
     return dict(
         login_message = messages,

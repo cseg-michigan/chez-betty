@@ -34,6 +34,8 @@ from pyramid.security import Allow, Everyone, remember, forget
 import chezbetty.datalayer as datalayer
 import transaction
 
+import math
+
 # Custom exception
 class DepositException(Exception):
     pass
@@ -82,6 +84,11 @@ def terminal(request):
                          .order_by(Item.name)\
                          .limit(6).all()
 
+        # Determine initial wall-of-shame fee (if applicable)
+        purchase_fee_percent = 0.0
+        if float(user.balance) <= -5.0:
+            purchase_fee_percent = 5.0 + math.floor((float(user.balance)+5.0) / -5.0)
+
         # Figure out if any pools can be used to pay for this purchase
         purchase_pools = []
         deposit_pools = []
@@ -98,7 +105,8 @@ def terminal(request):
         return {'user': user,
                 'items': items,
                 'purchase_pools': purchase_pools,
-                'deposit_pools': deposit_pools}
+                'deposit_pools': deposit_pools,
+                'purchase_fee_percent': purchase_fee_percent}
 
     except __user.InvalidUserException as e:
         request.session.flash(_(

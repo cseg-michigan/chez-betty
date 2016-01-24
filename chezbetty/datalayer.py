@@ -17,6 +17,8 @@ from .models import box_vendor
 from .utility import notify_pool_out_of_credit
 from .utility import notify_new_top_wall_of_shame
 
+import math
+
 
 def top_debtor_wrapper(fn):
     '''Wrapper function for transactions that watches for a new top debtor.
@@ -166,7 +168,11 @@ def purchase(user, account, items):
     assert(len(items) > 0)
 
     # TODO: Parameterize
-    discount = Decimal(0.05) if user.balance > 20.0 else None
+    discount = None
+    if user.balance > 20.0:
+        discount = Decimal(0.05)
+    elif user.balance <= -5.0:
+        discount = Decimal(-0.01*(5.0 + math.floor((float(user.balance)+5.0) / -5.0)))
 
     e = event.Purchase(user)
     DBSession.add(e)

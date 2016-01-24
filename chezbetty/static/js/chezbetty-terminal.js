@@ -82,23 +82,58 @@ function calculate_total () {
 		}
 	});
 
-	var discount_td = $("#purchase-discount");
-	if (typeof discount_td !== 'undefined') {
+	var balance = parseFloat($("#user-balance").text());
+	var discount = 0.0;
+	var fee = 0.0;
+	var need_subtotal = false;
+
+	// Set Subtotal row
+	$("#purchase-subtotal").html(format_price(total));
+
+	// Hide or show discount / fee rows
+	if (balance > 20.0) {
+		// Good standing discount!
 		var discount_percent_td = $("#purchase-discount-percent");
 		var discount_percent_str = discount_percent_td.text().slice(1,-2);
-		var discount_percent = parseFloat(discount_percent_str) * .01;
+		var discount_percent = parseFloat(discount_percent_str) * 0.01;
 		var discount = total * discount_percent;
 
-		$("#purchase-subtotal").html(format_price(total));
+		// Make sure nothing looks strange
+		if (discount > total) discount = 0.0;
 
-		// basic sanity check
-		if ((total - discount) > 0) {
-			total = total - discount;
-			discount_td.html('(' + format_price(discount) + ')');
-		}
+		// Set discount row
+		$("#purchase-discount").html('(' + format_price(discount) + ')');
+		$("#purchase-row-goodstanding").show();
+		need_subtotal = true;
+	} else {
+		$("#purchase-row-goodstanding").hide();
 	}
 
-	$("#purchase-total").html(format_price(total));
+	if (balance <= -5.0) {
+		// Wall of shame fee!
+		var fee_percent = calculate_wallofshame_fee_percent();
+		var fee = total * (fee_percent * 0.01);
+
+		// Setup fee row
+		$("#purchase-fee-percent-amount").html(fee_percent.toFixed(1));
+		$("#purchase-fee").html(format_price(fee));
+		$("#purchase-row-wallshame").show();
+		need_subtotal = true;
+	} else {
+		$("#purchase-row-wallshame").hide();
+	}
+
+	// Show or hide subtotal row
+	if (need_subtotal) {
+		$("#purchase-row-subtotal").show();
+	} else {
+		$("#purchase-row-subtotal").hide();
+	}
+
+	// Calculate the total after any discount or fee
+	var new_total = total - discount + fee;
+
+	$("#purchase-total").html(format_price(new_total));
 	calculate_user_new_balance();
 }
 
@@ -179,6 +214,16 @@ function show_correct_purchase_button () {
 			$("#purchase-button-purchase").hide();
 		}
 	}
+}
+
+function calculate_wallofshame_fee_percent () {
+	var balance = parseFloat($("#user-balance").text());
+
+	// If not on wall of shame, no fee
+	if (balance > -5.0) return 0.0;
+
+	// Else, one percent for every $5 in debt after $-5, 5.0% to start
+	return 5.0 + Math.floor((balance+5.0) / -5.0);
 }
 
 /*******************************************************************************
@@ -331,7 +376,10 @@ function deposit_success (data) {
 
 		// Update user balance
 		update_user_balance(data.user_balance);
-		calculate_user_new_balance();
+
+		// We then calculate the purchase total in case a discount/fee
+		// has changed.
+		calculate_total();
 
 		$("#deposit-eventid").text(data.event_id);
 		$("#deposit-amount").text(data.amount);
