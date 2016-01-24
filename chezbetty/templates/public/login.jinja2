@@ -1,7 +1,15 @@
-{% extends "admin/base.jinja2" %}
-{% block title %}Chez Betty Admin Login{% endblock %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="shortcut icon" type="image/png" href="{{'chezbetty:static/chezbetty_32px.png'|static_url}}" />
+  <link rel="stylesheet" href="{{'chezbetty:static/css/lib/bootstrap/bootstrap.min.css'|static_url}}" />
 
-{% block body %}
+  <title>{% if request.debug %}[ DEBUG ]{% endif %} Login | Chez Betty</title>
+
+</head>
+<body>
 
 <style>
 body {
@@ -78,4 +86,16 @@ button {
 
 </div>
 
-{% endblock %}
+  <!-- Google Analytics tracker -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-55624000-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
+
+</html>

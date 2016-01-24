@@ -148,73 +148,69 @@ def index(request):
              renderer='templates/public/login.jinja2')
 @forbidden_view_config(renderer='templates/public/login.jinja2')
 def login(request):
-    login_url = request.resource_url(request.context, 'login')
-    referrer = request.url
-    if referrer == login_url:
-        # never use the login form itself as referrer; assume /user for now
-        referrer = request.resource_url(request.context, 'user')
-    reset_pw_url = request.resource_url(request.context, 'login', 'reset_pw')
-    came_from = request.params.get('came_from', referrer)
-    if came_from == reset_pw_url:
-        # never user reset_pw action as came_from; assume /user for now
-        came_from = request.resource_url(request.context, 'user')
-    message = login = password = ''
-    if 'login' in request.params:
-        login = request.params['login']
-        password = request.params['password']
-        user = DBSession.query(User).filter(User.uniqname == login).first()
-        if user and not user.enabled:
-            message = 'Login failed. User not allowed to login.'
-        elif user and user.check_password(password):
-            # successful login
-            headers = remember(request, login)
-            return HTTPFound(location=came_from, headers=headers)
-        else:
-            message = 'Login failed. Incorrect username or password.',
 
     return dict(
-        login_message = message,
-        url = request.application_url + '/login',
-        came_from = came_from,
-        login = login,
-        password = password
+        login_message = '',
+        url = '',
+        came_from = request.params.get('came_from', request.url),
+        login = '',
+        password = ''
     )
 
 
 @view_config(route_name='login_submit',
              renderer='templates/public/login.jinja2')
-@forbidden_view_config(renderer='templates/public/login.jinja2')
 def login_submit(request):
-    login_url = request.resource_url(request.context, 'login')
-    referrer = request.url
-    if referrer == login_url:
-        # never use the login form itself as referrer; assume /user for now
-        referrer = request.resource_url(request.context, 'user')
-    reset_pw_url = request.resource_url(request.context, 'login', 'reset_pw')
-    came_from = request.params.get('came_from', referrer)
-    if came_from == reset_pw_url:
-        # never user reset_pw action as came_from; assume /user for now
-        came_from = request.resource_url(request.context, 'user')
-    message = login = password = ''
+    # Need to set this in case the password is wrong
+    came_from = request.params.get('came_from', request.url)
+
+    messages = []
+    login    = ''
+    password = ''
+
+    # Check if we got login credentials to check
     if 'login' in request.params:
-        login = request.params['login']
-        password = request.params['password']
-        user = DBSession.query(User).filter(User.uniqname == login).first()
+        # See if this is a valid login attempt
+        login    = request.params.get('login', '')
+        password = request.params.get('password', '')
+        user     = DBSession.query(User).filter(User.uniqname == login).first()
         if user and not user.enabled:
-            message = 'Login failed. User not allowed to login.'
+            messages.append('Login failed. User not allowed to login.')
         elif user and user.check_password(password):
-            # successful login
+            # Got a successful login. Now decide where to direct the user.
             headers = remember(request, login)
+
+            if user.role == 'serviceaccount':
+                # This is the service account for using the terminal.
+                # Go back to the home page
+                return HTTPFound(location=request.route_url('index'), headers=headers)
+
+            else:
+                # If we got a normal user, check if the login form had
+                # a "came_from" input which tells us where to go back to.
+                # Otherwise, default to '/user'.
+                came_from = request.params.get('came_from', '')
+
+                # Fetch some strings to compare against
+                login_url     = request.resource_url(request.context, 'login')
+                login_sub_url = request.resource_url(request.context, 'login', 'submit')
+                reset_pw_url  = request.resource_url(request.context, 'login', 'reset_pw')
+                user_url      = request.resource_url(request.context, 'user')
+
+                # Make sure we don't send the user back to useless pages
+                if came_from in ['', login_url, login_sub_url, reset_pw_url]:
+                    came_from = user_url
+            
             return HTTPFound(location=came_from, headers=headers)
         else:
-            message = 'Login failed. Incorrect username or password.',
+            messages.append('Login failed. Incorrect username or password.')
 
     return dict(
-        login_message = message,
-        url = request.application_url + '/login',
-        came_from = came_from,
-        login = login,
-        password = password
+        login_message = messages,
+        url           = request.application_url + '/login',
+        came_from     = came_from,
+        login         = login,
+        password      = password
     )
 
 
@@ -257,6 +253,6 @@ def login_reset_pw(request):
 @view_config(route_name='logout')
 def logout(request):
     headers = forget(request)
-    return HTTPFound(location=request.route_url('login'),
-                     headers = headers)
+    return HTTPFound(location = request.route_url('index'),
+                     headers  = headers)
 
