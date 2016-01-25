@@ -43,6 +43,7 @@ body {
 
       <div class="col-md-4">
 
+        {% if not request.user %}
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">Betty User Login</h3>
@@ -69,6 +70,19 @@ body {
             </form>
           </div>
         </div>
+        {% else %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">You Are Logged In</h3>
+          </div>
+          <div class="panel-body">
+            <p>
+              To make a deposit and see your transactions,
+              go to your <a href="/user">user</a> page.
+            </p>
+         </div>
+        </div>
+        {% endif %}
         
       </div>
     </div>
