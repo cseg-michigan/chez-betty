@@ -31,7 +31,7 @@ development environment set up, do the following:
 2. Install system dependencies:
 
         # Ubuntu 15.10
-        sudo apt-get install postgresql postgresql-server-dev-9.4
+        sudo apt-get install postgresql postgresql-server-dev-9.4 libjpeg-dev
 
 1. Setup virtualenv with Python3:
 
