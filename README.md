@@ -28,6 +28,11 @@ development environment set up, do the following:
 
         git clone https://github.com/um-cseg/chez-betty.git
 
+2. Install system dependencies:
+
+        # Ubuntu 15.10
+        sudo apt-get install postgresql postgresql-server-dev-9.4
+
 1. Setup virtualenv with Python3:
 
         cd chez-betty
