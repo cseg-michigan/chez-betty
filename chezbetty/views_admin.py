@@ -1339,7 +1339,7 @@ def admin_item_edit_submit(request):
 
     except Exception as e:
         if request.debug: raise(e)
-        request.session.flash('Error processing item fields.', 'error')
+        request.session.flash('Error processing item fields. {}'.format(e), 'error')
         return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
 
 
