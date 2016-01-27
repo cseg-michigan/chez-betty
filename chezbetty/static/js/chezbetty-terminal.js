@@ -71,6 +71,15 @@ function purchase_alert_error (error_str) {
  * TERMINAL PAGE LOGIC
  ******************************************************************************/
 
+// Returns the current balance of the user that is logged in on terminal
+function get_user_balance () {
+	return parseFloat($("#user-balance").text());
+}
+
+function get_pool_balance (pool_id) {
+	return parseFloat($("#pool-balance-"+pool_id).text());
+}
+
 // Function to add up the items in a cart to display the total.
 function calculate_total () {
 	total = 0;
@@ -82,7 +91,7 @@ function calculate_total () {
 		}
 	});
 
-	var balance = parseFloat($("#user-balance").text());
+	var balance = get_user_balance();
 	var discount = 0.0;
 	var fee = 0.0;
 	var need_subtotal = false;
@@ -159,6 +168,41 @@ function update_user_balance (balance) {
 	else $("#user-info-current-balance").removeClass("big-debt");
 }
 
+// Update the stored pool balance in the DOM if it changes.
+function update_pool_balance (pool_id, balance) {
+	// Set the DOM element
+	$("#pool-balance-"+pool_id).text(balance);
+
+	display_and_update_pool_balance_box();
+}
+
+// Returns the pool id if a pool payment is selected, otherwise returns -1
+// if the user account is paying.
+function get_active_payment_account () {
+	var account_button = $(".purchase-payment.active");
+	var id = account_button.attr('id');
+	var fields = id.split('-');
+	var acct_type = fields[1];
+	if (acct_type == 'pool') {
+		return parseInt(fields[2]);
+	}
+	return -1;
+}
+
+function display_and_update_pool_balance_box () {
+	var active_account = get_active_payment_account();
+
+	if (active_account == -1) {
+		// Hide the pool balance box
+		$('#pool-info-current-balance').hide();
+	} else {
+		// Get the pool balance
+		var balance = get_pool_balance(active_account);
+		$("#pool-info-current-balance span").html(format_price(balance));
+		$('#pool-info-current-balance').show();
+	}
+}
+
 // Update the new tentative balance total for the user if the user were to
 // submit the purchase and deposit.
 function calculate_user_new_balance () {
@@ -178,9 +222,14 @@ function calculate_user_new_balance () {
 		purchase = 0.00;
 	}
 
-	var balance = parseFloat($("#user-balance").text());
+	var balance = get_user_balance();
 
-	var new_balance = balance - purchase + deposit;
+	// Only do this calculation if we are not using a pool
+	if (get_active_payment_account() == -1) {
+		var new_balance = balance - purchase + deposit;
+	} else {
+		var new_balance = balance;
+	}
 	$("#user-info-new-balance span").html(format_price(new_balance));
 
 	// Update the color formatting based on amount in account
@@ -206,7 +255,9 @@ function show_correct_purchase_button () {
 
 		// If the user is in debt, it should be just a purchase button
 		var balance = parseFloat($("#user-balance").text());
-		if (balance < 0) {
+		if (balance < 0 && get_active_payment_account() == -1) {
+			// If the user is paying with pool, then we can have purchase and
+			// logout button.
 			$("#purchase-button-purchaselogout").hide();
 			$("#purchase-button-purchase").show();
 		} else {
@@ -217,7 +268,7 @@ function show_correct_purchase_button () {
 }
 
 function calculate_wallofshame_fee_percent () {
-	var balance = parseFloat($("#user-balance").text());
+	var balance = get_user_balance();
 
 	// If not on wall of shame, no fee
 	if (balance > -5.0) return 0.0;
@@ -282,7 +333,7 @@ function purchase_success (data) {
 	} else {
 		purchase_alert_success('Purchase was recorded successfully.');
 
-		// Throw in table summarizing 
+		// Throw in table summarizing
 		$("#purchase-complete-table").html(data.order_table);
 
 		// Flip to complete page
@@ -385,13 +436,16 @@ function deposit_success (data) {
 			$(".deposit-pool-name").text(data.pool_name);
 			$("#deposit-complete-user").hide();
 			$("#deposit-complete-pool").show();
+
+			// Update pool balance
+			update_pool_balance(data.pool_id, data.pool_balance);
 		} else {
 			$("#deposit-complete-pool").hide();
 			$("#deposit-complete-user").show();
-		}
 
-		// Update user balance
-		update_user_balance(data.user_balance);
+			// Update user balance
+			update_user_balance(data.user_balance);
+		}
 
 		// We then calculate the purchase total in case a discount/fee
 		// has changed.
@@ -434,6 +488,12 @@ function deposit_delete_success (data) {
 		// Update user balance
 		update_user_balance(data.user_balance);
 		calculate_user_new_balance();
+
+		// Update any pool balances
+		for (var i=0; i<data.pools.length; i++) {
+			var pool = data.pools[i];
+			update_pool_balance(pool.id, pool.balance);
+		}
 
 		// Make the change back to the deposit entry form
 		$("#deposit-complete").hide();
@@ -493,14 +553,9 @@ function submit_purchase (this_btn, success_cb, error_cb) {
 	purchase.umid = $("#user-umid").text();
 
 	// What account to pay with?
-	var account_button = $(".purchase-payment.active");
-	var id = account_button.attr('id');
-	var fields = id.split('-');
-	var acct_type = fields[1];
-	if (acct_type == 'pool') {
-		// Put pool id in we should use a pool, otherwise we will default
-		// to the user's account.
-		purchase['pool_id'] = parseInt(fields[2]);
+	var pool_id = get_active_payment_account();
+	if (pool_id > -1) {
+		purchase['pool_id'] = pool_id;
 	}
 
 	var item_count = 0;
@@ -563,6 +618,15 @@ $("#purchase-table tbody").on("click", ".btn-decrement-item", function () {
 $(".purchase-payment").click(function () {
 	$(".purchase-payment").removeClass("active");
 	$(this).addClass("active");
+
+	// Update boxes on the left showing current balance and new balance
+	calculate_user_new_balance();
+
+	// Show or hide pool balance
+	display_and_update_pool_balance_box();
+
+	// Can also switch payment options
+	show_correct_purchase_button();
 });
 
 // Purchase mistake, revert this transaction and put the cart back

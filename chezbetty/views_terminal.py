@@ -135,7 +135,7 @@ def terminal_purchase_tag(request):
                    'nobarcode_items': Item.get_nobarcode_notag_items()}
         else:
             return {'error': 'Unable to parse TAG ID'}
-    
+
     item_array = render('templates/terminal/purchase_nobarcode_items.jinja2',
                         {'tag': tag})
 
@@ -178,6 +178,8 @@ def terminal_deposit(request):
             pool = Pool.from_id(request.POST['pool_id'])
             deposit = datalayer.deposit(user, pool, amount)
             ret['pool_name'] = pool.name
+            ret['pool_balance'] = float(pool.balance)
+            ret['pool_id'] = pool.id
 
         # Return a JSON blob of the transaction ID so the client can redirect to
         # the deposit success page
@@ -220,7 +222,17 @@ def terminal_deposit_delete(request):
         # Now undo old deposit
         datalayer.undo_event(old_event, user)
 
-        return {'user_balance': float(user.balance)}
+        purchase_pools = []
+        for pool in Pool.all_by_owner(user, True):
+            if pool.balance > (pool.credit_limit * -1):
+                purchase_pools.append({'id': pool.id, 'balance': float(pool.balance)})
+
+        for pu in user.pools:
+            if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
+                purchase_pools.append({'id': pu.pool.id, 'balance': float(pu.pool.balance)})
+
+        return {'user_balance': float(user.balance),
+                'pools': purchase_pools}
 
     except __user.InvalidUserException as e:
         return {'error': 'Invalid user error. Please try again.'}
@@ -433,7 +445,7 @@ def terminal_purchase_delete(request):
 #         pools = Pool.all_accessable(user, True)
 
 #         return {'user' : user,
-#                 'btc'  : btc_html, 
+#                 'btc'  : btc_html,
 #                 'pools': pools}
 
 #     except __user.InvalidUserException as e:
@@ -464,7 +476,7 @@ def terminal_purchase_delete(request):
 
 #         return {'user': user,
 #                 'old_event': event,
-#                 'old_deposit': event.transactions[0], 
+#                 'old_deposit': event.transactions[0],
 #                 'pools': pools}
 
 #     except __user.InvalidUserException as e:
@@ -501,7 +513,7 @@ def terminal_purchase_delete(request):
 #                 {'deposit': transaction,
 #                  'user': user,
 #                  'event': event,
-#                  'prev_balance': prev_balance, 
+#                  'prev_balance': prev_balance,
 #                  'account_type': account_type,
 #                  'pool': pool}, request)
 
