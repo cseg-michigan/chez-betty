@@ -68,12 +68,6 @@
             </div>
             {% endif %}
 
-            <div style="margin-bottom: 10px;">
-              <button type="button" id="btn-nobarcode" class="btn btn-default btn-lg btn-warning" style="width: 100%;">
-                {{ _('Choose Item Without Barcode') }}
-              </button>
-            </div>
-
             <table class="table table-bordered" id="purchase-table">
               <thead>
                 <tr>
@@ -123,15 +117,22 @@
 
           </div>
 
-          {# Payment options #}
           <div class="col-md-3">
+            {# Payment options #}
             <div class="list-group">
               <button type="button" class="list-group-item list-group-item-info list-group-item-header">Select Payment</button>
               <button type="button" id="payment-user" class="list-group-item purchase-payment active">Your Account</button>
               {% for pool in purchase_pools %}
               <button type="button" id="payment-pool-{{ pool.id }}" class="list-group-item purchase-payment">{{ _('%(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
               {% endfor %}
-            </div>            
+            </div>
+
+            {# Choose item without barcode #}
+            <div style="margin-bottom: 10px;">
+              <button type="button" id="btn-nobarcode" class="btn btn-default btn-lg btn-primary" style="width: 100%; height: 150px">
+                {{ _('Item Without Barcode') }}
+              </button>
+            </div>
           </div>
 
         </div>
@@ -147,7 +148,7 @@
 
         {# Purchase buttons #}
         <div class="row">
-          <div class="col-md-12">       
+          <div class="col-md-12">
             <button type="button" id="purchase-button-logout" class="btn btn-success btn-lg btn-submit btn-submit-purchase">{{ _('Logout') }}</button>
             <button type="button" id="purchase-button-purchaselogout" class="btn btn-success btn-lg btn-submit btn-submit-purchase" style="display:none;">{{ _('Purchase & Logout') }}</button>
             <button type="button" id="purchase-button-purchase" class="btn btn-success btn-lg btn-submit btn-submit-purchase" style="display:none;">{{ _('Purchase') }}</button>
@@ -197,7 +198,7 @@
       <div class="panel-body">
 
         <div id="deposit-alerts"></div>
-        
+
         <div id="deposit-entry">
           <div class="row">
             <div class="col-md-12">
@@ -261,7 +262,7 @@
 
       </div>
     </div>
-    
+
   </div>
 
 </div>
