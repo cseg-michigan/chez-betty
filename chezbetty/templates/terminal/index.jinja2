@@ -179,6 +179,7 @@ body {
 {% set timeout = 1000*60*60*4 %}
 
 {% block onload %}
+<script src="{{'chezbetty:static/js/chezbetty-terminal-mcard.js'|static_url}}"></script>
 <script>
   if($('#splash').length != 0) {
     $("#index").hide();
