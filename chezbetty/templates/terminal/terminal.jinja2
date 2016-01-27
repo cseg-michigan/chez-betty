@@ -112,7 +112,10 @@
                   <td id="purchase-discount-percent" colspan="2">(5.0%)</td>
                   <td id="purchase-discount">($0.00)</td>
                 </tr>
-                <tr id="purchase-row-wallshame" {% if user.balance > -5 %}style="display:none;"{% endif %}>
+                <tr id="purchase-row-wallshame"
+                        {% if user.balance >= -5 %}style="display:none;"{% endif %}
+                        {% if user.balance < -5 %}class="big-debt"{% endif %}
+                        >
                   <td colspan="2"><b>{{ _('Wall of Shame Fee') }}</b></td>
                   <td id="purchase-fee-percent" colspan="2"><span id="purchase-fee-percent-amount">{{ purchase_fee_percent }}</span>%</td>
                   <td id="purchase-fee">$0.00</td>
