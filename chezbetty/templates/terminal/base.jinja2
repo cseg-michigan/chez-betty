@@ -1,3 +1,5 @@
+{% import "../macro_alerts.jinja2" as alerts %}
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -40,25 +42,9 @@
 
   <div id="wrap">
 
-    <div id="alerts" class="container">
-      {% block alerts %}
-      {% for msg in request.session.pop_flash('error') %}
-      <div class="alert alert-danger" role="alert">
-        {{ msg }}
-      </div>
-      {% endfor %}
-      {% for msg in request.session.pop_flash('success') %}
-      <div class="alert alert-success" role="alert">
-        {{ msg }}
-      </div>
-      {% endfor %}
-      {% for msg in request.session.pop_flash('info') %}
-      <div class="alert alert-info" role="alert">
-        {{ msg }}
-      </div>
-      {% endfor %}
-      {% endblock %}
-    </div>
+    {% block alerts %}
+    {{ alerts.alerts_container(request) }}
+    {% endblock %}
 
     <div id="content" class="container">
       {% block content %}{% endblock %}

@@ -1,6 +1,10 @@
 {% extends "base.jinja2" %}
+{% import "../macro_alerts.jinja2" as alerts %}
 {% block title %}Home{% endblock %}
 
+{% block alerts %}
+{# Empty this block on this page so that we can render the alerts in a better place #}
+{% endblock %}
 
 {% block content %}
 
@@ -22,6 +26,8 @@ body {
 
     <div class="row">
       <div class="col-md-12">
+
+        {{ alerts.alerts_container(request, nested=True) }}
 
         <div id="announcements" style="font-size:20pt;">
           {% for announcement in announcements %}
