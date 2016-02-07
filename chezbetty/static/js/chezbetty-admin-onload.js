@@ -290,7 +290,7 @@ $("#user-purchase-add-table-items").on("input", "input:text", function () {
 
 // BOXES
 
-$("#new-box-table").on("input", "input:text", function () {
+$("#new-box-table").on("input", function () {
 	var base = $("#box-general-name").val();
 	var variants = $("#box-variants").val();
 	var volume = $("#box-volume").val();
