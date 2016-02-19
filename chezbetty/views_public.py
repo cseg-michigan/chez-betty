@@ -67,6 +67,27 @@ def item_request(request):
     return {}
 
 
+@view_config(route_name='item_request_new', request_method='POST')
+def item_request_new(request):
+    try:
+        request_text = request.POST['request']
+        if len(request_text) < 5:
+            raise ValueError()
+
+        datalayer.new_request(None, request.POST['request'])
+
+        request.session.flash('Request added successfully', 'success')
+        return HTTPFound(location=request.route_url('index'))
+
+    except ValueError:
+        request.session.flash('If you are making a request, it should probably contain some characters.', 'error')
+        return HTTPFound(location=request.route_url('item_request'))
+
+    except:
+        request.session.flash('Error adding request.', 'error')
+        return HTTPFound(location=request.route_url('index'))
+
+
 @view_config(route_name='shame', renderer='templates/public/shame.jinja2')
 def users(request):
     users = DBSession.query(User)\
