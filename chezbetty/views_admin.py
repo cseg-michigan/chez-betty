@@ -1036,7 +1036,13 @@ def admin_items_edit(request):
     # Get the total amount of inventory we have
     inventory_total = Item.total_inventory_wholesale()
 
+    # Keep track of items which are in stock but disabled.
+    items_stocked_but_disabled = []
+
     for item in items:
+        if item.in_stock != 0 and item.enabled == False:
+            items_stocked_but_disabled.append(item)
+
         if item.id in purchased_quantities:
             item.number_sold = purchased_quantities[item.id]
         else:
@@ -1098,6 +1104,15 @@ def admin_items_edit(request):
         if item.id not in purchased_amount:
             purchased_amount[item.id] = 0
         item.profit = purchased_amount[item.id] - (stocked_amount[item.id] - (item.wholesale * item.in_stock))
+
+    # Show a warning to the admin if we have any items in stock but that people
+    # can't buy
+    if len(items_stocked_but_disabled) > 0:
+        err = 'Items '
+        err += ' '.join(['"{}",'.format(i.name) for i in items_stocked_but_disabled])
+        err = err[0:-1]
+        err += ' are stocked but marked disabled.'
+        request.session.flash(err, 'error')
 
     return {'items': items}
 
