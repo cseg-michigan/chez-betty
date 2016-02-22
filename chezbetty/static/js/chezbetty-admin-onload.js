@@ -1,12 +1,4 @@
 
-function prettydate (index) {
-	d = new Date($(this).text());
-	s = $.format.date(d, "MMM d, yyyy") + " at " + $.format.date(d, "h:mm a");
-	$(this).text(s);
-	$(this).switchClass('date', 'prettydate');
-}
-$(".date").each(prettydate);
-
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
 $(".admin-switch").bootstrapSwitch();
 

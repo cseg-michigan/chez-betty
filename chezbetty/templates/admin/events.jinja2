@@ -49,7 +49,6 @@ function event_load_more_success (data) {
   $("#events_showing_count").text(data.count);
 
   $("#events_table tr:last").after(data.rows);
-  $(".date").each(prettydate);
 
   event_loading = false;
   $("#events_force_load").show();
