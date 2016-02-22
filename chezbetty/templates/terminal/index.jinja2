@@ -41,23 +41,27 @@ body {
     </div>
 
 
-    <div class="row">
+    {% if top_debtors|length > 0 %}
+    <div class="row" style="margin-top: 20px;">
       <div class="col-md-12">
 
-        {% for debtor in top_debtors %}
-        <div id="top-debtor-{{ loop.index }}" data-rotate-div-timeout="5000" {% if loop.index == 1 %} class="rotate-divs" {% else %} style="display: none;"{% endif %}>
-          <hr />
-          <div class="alert">
-            <h2>Do you know <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }})?</h2>
-            <h3>They are number {{ loop.index }} on the Wall of Shame, with a balance of
-              {{ debtor.balance|format_currency|safe }}.</h3>
-            <h3>If you know {{ debtor.name }}, please encourage them to pay Betty back today.</h3>
-          </div>
+        <div class="well">
+          <h2 style="margin-top:30px; margin-bottom:30px;">Do you know any of these people?</h2>
+          <h1 style="margin-bottom:30px; color:#e62020!important; font-size:300%; font-weight:bold;">They are on top of the Wall of Shame.</h1>
+
+          <ol>
+            {% for debtor in top_debtors %}
+            <li style="font-size: {{38-(3*loop.index)}}px; padding-bottom: 10px;">
+              <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }}): {{ debtor.balance|format_currency|safe }}
+            </li>
+            {% endfor %}
+          </ol>
+          <h2>Please encourage them to pay Betty back today.</h2>
         </div>
-        {% endfor %}
 
       </div>
     </div>
+    {% endif %}
 
     <div class="row">
       <div class="col-md-12">
