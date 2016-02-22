@@ -199,6 +199,14 @@
               <td>YTD Total CC Deposits</td>
               <td class="right">{{ ytd_dep_cc|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>YTD Discounts</td>
+              <td class="right">{{ ytd_discounts|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Fees</td>
+              <td class="right">{{ ytd_fees|format_currency|safe }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -241,6 +249,14 @@
               <td>MTD Total CC Deposits</td>
               <td class="right">{{ mtd_dep_cc|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>MTD Discounts</td>
+              <td class="right">{{ mtd_discounts|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Fees</td>
+              <td class="right">{{ mtd_fees|format_currency|safe }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -282,6 +298,14 @@
             <tr>
               <td>CC Deposits</td>
               <td class="right">{{ today_dep_cc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Discounts</td>
+              <td class="right">{{ today_discounts|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Fees</td>
+              <td class="right">{{ today_fees|format_currency|safe }}</td>
             </tr>
           </tbody>
         </table>

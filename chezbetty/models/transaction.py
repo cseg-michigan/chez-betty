@@ -155,6 +155,37 @@ class Transaction(Base):
 
         return r.one().a or Decimal(0.0)
 
+    # Get the total amount of discounts people have received for keeping
+    # money in their account
+    @classmethod
+    def discounts(cls, start=None, end=None):
+        r = DBSession.query(func.sum(cls.discount).label('d'))\
+                        .join(event.Event)\
+                        .filter(cls.discount > 0)\
+                        .filter(event.Event.deleted==False)
+
+        if start:
+            r = r.filter(event.Event.timestamp>=start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+
+        return r.one().d or Decimal(0.0)
+
+    # Get the total amount of fees people have paid for being in debt
+    @classmethod
+    def fees(cls, start=None, end=None):
+        r = DBSession.query(func.sum(cls.discount).label('f'))\
+                        .join(event.Event)\
+                        .filter(cls.discount < 0)\
+                        .filter(event.Event.deleted==False)
+
+        if start:
+            r = r.filter(event.Event.timestamp>=start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+
+        return r.one().f or Decimal(0.0)
+
     # Returns an array of tuples where the first item is a millisecond timestamp,
     # the next is the total amount of debt, and the next is the total amount
     # of stored money for users.

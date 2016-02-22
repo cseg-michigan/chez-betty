@@ -291,29 +291,35 @@ def admin_index(request):
     # Walk back to the beginning of the day for all these statistics
     now = now.replace(hour=0, minute=0, seconds=0)
 
-    ytd_sales    = Purchase.total(now.replace(month=1,day=1), None)
-    ytd_profit   = PurchaseLineItem.profit_on_sales(now.replace(month=1,day=1), None)
-    ytd_lost     = Inventory.total(now.replace(month=1,day=1), None)
-    ytd_dep      = Deposit.total(now.replace(month=1,day=1), None)
-    ytd_dep_cash = CashDeposit.total(now.replace(month=1,day=1), None)
-    ytd_dep_btc  = BTCDeposit.total(now.replace(month=1,day=1), None)
-    ytd_dep_cc   = CCDeposit.total(now.replace(month=1,day=1), None)
+    ytd_sales     = Purchase.total(now.replace(month=1,day=1), None)
+    ytd_profit    = PurchaseLineItem.profit_on_sales(now.replace(month=1,day=1), None)
+    ytd_lost      = Inventory.total(now.replace(month=1,day=1), None)
+    ytd_dep       = Deposit.total(now.replace(month=1,day=1), None)
+    ytd_dep_cash  = CashDeposit.total(now.replace(month=1,day=1), None)
+    ytd_dep_btc   = BTCDeposit.total(now.replace(month=1,day=1), None)
+    ytd_dep_cc    = CCDeposit.total(now.replace(month=1,day=1), None)
+    ytd_discounts = Purchase.discounts(now.replace(month=1,day=1), None)
+    ytd_fees      = Purchase.fees(now.replace(month=1,day=1), None)
 
-    mtd_sales    = Purchase.total(now.replace(day=1), None)
-    mtd_profit   = PurchaseLineItem.profit_on_sales(now.replace(day=1), None)
-    mtd_lost     = Inventory.total(now.replace(day=1), None)
-    mtd_dep      = Deposit.total(now.replace(day=1), None)
-    mtd_dep_cash = CashDeposit.total(now.replace(day=1), None)
-    mtd_dep_btc  = BTCDeposit.total(now.replace(day=1), None)
-    mtd_dep_cc   = CCDeposit.total(now.replace(day=1), None)
+    mtd_sales     = Purchase.total(now.replace(day=1), None)
+    mtd_profit    = PurchaseLineItem.profit_on_sales(now.replace(day=1), None)
+    mtd_lost      = Inventory.total(now.replace(day=1), None)
+    mtd_dep       = Deposit.total(now.replace(day=1), None)
+    mtd_dep_cash  = CashDeposit.total(now.replace(day=1), None)
+    mtd_dep_btc   = BTCDeposit.total(now.replace(day=1), None)
+    mtd_dep_cc    = CCDeposit.total(now.replace(day=1), None)
+    mtd_discounts = Purchase.discounts(now.replace(day=1), None)
+    mtd_fees      = Purchase.fees(now.replace(day=1), None)
 
-    today_sales    = Purchase.total(now, None)
-    today_profit   = PurchaseLineItem.profit_on_sales(now, None)
-    today_lost     = Inventory.total(now, None)
-    today_dep      = Deposit.total(now, None)
-    today_dep_cash = CashDeposit.total(now, None)
-    today_dep_btc  = BTCDeposit.total(now, None)
-    today_dep_cc   = CCDeposit.total(now, None)
+    today_sales     = Purchase.total(now, None)
+    today_profit    = PurchaseLineItem.profit_on_sales(now, None)
+    today_lost      = Inventory.total(now, None)
+    today_dep       = Deposit.total(now, None)
+    today_dep_cash  = CashDeposit.total(now, None)
+    today_dep_btc   = BTCDeposit.total(now, None)
+    today_dep_cc    = CCDeposit.total(now, None)
+    today_discounts = Purchase.discounts(now, None)
+    today_fees      = Purchase.fees(now, None)
 
 
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
@@ -363,6 +369,8 @@ def admin_index(request):
                 ytd_dep_cash=ytd_dep_cash,
                 ytd_dep_btc=ytd_dep_btc,
                 ytd_dep_cc=ytd_dep_cc,
+                ytd_discounts=ytd_discounts,
+                ytd_fees=ytd_fees,
                 mtd_sales=mtd_sales,
                 mtd_profit=mtd_profit,
                 mtd_lost=mtd_lost,
@@ -370,6 +378,8 @@ def admin_index(request):
                 mtd_dep_cash=mtd_dep_cash,
                 mtd_dep_btc=mtd_dep_btc,
                 mtd_dep_cc=mtd_dep_cc,
+                mtd_discounts=mtd_discounts,
+                mtd_fees=mtd_fees,
                 today_sales=today_sales,
                 today_profit=today_profit,
                 today_lost=today_lost,
@@ -377,6 +387,8 @@ def admin_index(request):
                 today_dep_cash=today_dep_cash,
                 today_dep_btc=today_dep_btc,
                 today_dep_cc=today_dep_cc,
+                today_discounts=today_discounts,
+                today_fees=today_fees,
                 graph_items_day=views_data.create_dict('items', 'day', 21),
                 graph_sales_day=views_data.create_dict('sales', 'day', 21),
                 graph_deposits_day=graph_deposits_day)
