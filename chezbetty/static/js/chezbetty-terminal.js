@@ -851,7 +851,7 @@ $("#keypad-umid").on("click", "button", function () {
 				data: {'umid': manual_umid_enter},
 				success: function (data) {
 					if ('error' in data) {
-						alert_error(data.msg);
+						alert_error(data.error);
 						clear_umid_keypad();
 					} else {
 						window.location = '/terminal/' + manual_umid_enter;

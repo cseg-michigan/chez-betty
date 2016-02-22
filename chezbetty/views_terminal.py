@@ -6,7 +6,7 @@ from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config, forbidden_view_config
 
-from pyramid.i18n import TranslationStringFactory
+from pyramid.i18n import TranslationStringFactory, get_localizer
 _ = TranslationStringFactory('betty')
 
 from sqlalchemy.sql import func
@@ -56,7 +56,9 @@ def terminal_umid_check(request):
         User.from_umid(request.POST['umid'])
         return {}
     except:
-        return {'error': _('mcard-keypad-error', default='First time using Betty? You need to swipe your M-Card the first time you log in.')}
+        return {'error': get_localizer(request).translate(
+                    _('mcard-keypad-error',
+                      default='First time using Betty? You need to swipe your M-Card the first time you log in.'))}
 
 
 ## Main terminal page with purchase/cash deposit.
@@ -72,11 +74,11 @@ def terminal(request):
             user = User.from_umid(request.matchdict['umid'], create_if_never_seen=True)
         user = DBSession.merge(user)
         if not user.enabled:
-            request.session.flash(_(
+            request.session.flash(get_localizer(request).translate(_(
                 'user-not-enabled',
                 default='User is not enabled. Please contact ${email}.',
                 mapping={'email':request.registry.settings['chezbetty.email']},
-                ), 'error')
+                )), 'error')
             return HTTPFound(location=request.route_url('index'))
 
         # For Demo mode:
@@ -114,10 +116,10 @@ def terminal(request):
                 'tags_with_nobarcode_items': tags_with_nobarcode_items}
 
     except __user.InvalidUserException as e:
-        request.session.flash(_(
+        request.session.flash(get_localizer(request).translate(_(
             'mcard-error',
             default='Failed to read M-Card. Please try swiping again.',
-            ), 'error')
+            )), 'error')
         return HTTPFound(location=request.route_url('index'))
 
 
@@ -355,8 +357,8 @@ def terminal_purchase(request):
                 'user_balance': float(user.balance)}
 
     except __user.InvalidUserException as e:
-        return {'error': _('invalid-user-error',
-                           default='Invalid user error. Please try again.')
+        return {'error': get_localizer(request).translate(_('invalid-user-error',
+                           default='Invalid user error. Please try again.'))
                }
 
     except ValueError as e:
