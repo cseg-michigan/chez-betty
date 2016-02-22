@@ -327,7 +327,6 @@ def __get_cash_events(cls):
                       Transaction.fr_account_cash_id == account.get_cash_account("chezbetty").id))\
             .filter(event.Event.deleted==False)\
             .order_by(desc(event.Event.timestamp))
-
 event.Event.get_cash_events = __get_cash_events
 
 # This is in a stupid place due to circular input problems
@@ -339,7 +338,6 @@ def __get_restock_events(cls):
             .filter(Transaction.type == 'restock')\
             .filter(event.Event.deleted==False)\
             .order_by(desc(event.Event.timestamp))
-
 event.Event.get_restock_events = __get_restock_events
 
 # This is in a stupid place due to circular input problems
@@ -353,7 +351,6 @@ def __get_emptycash_events(cls):
                       Transaction.type == 'emptybitcoin'))\
             .filter(event.Event.deleted==False)\
             .order_by(desc(event.Event.timestamp))
-
 event.Event.get_emptycash_events = __get_emptycash_events
 
 # This is in a stupid place due to circular input problems
@@ -368,7 +365,6 @@ def __get_deposit_events(cls):
                       Transaction.type == 'btcdeposit'))\
             .filter(event.Event.deleted==False)\
             .order_by(desc(event.Event.timestamp))
-
 event.Event.get_deposit_events = __get_deposit_events
 
 # This is in a stupid place due to circular input problems
@@ -386,9 +382,29 @@ def __days_since_last_purchase(self):
         return diff.days
     else:
         return None
-
 user.User.days_since_last_purchase = __days_since_last_purchase
 
+# This is in a stupid place due to circular input problems
+@property
+def __lifetime_fees(self):
+    return object_session(self).query(func.sum(Purchase.discount).label("f"))\
+            .join(event.Event)\
+            .filter(Transaction.fr_account_virt_id == self.id)\
+            .filter(Purchase.discount < 0)\
+            .filter(event.Event.type == 'purchase')\
+            .filter(event.Event.deleted==False).one().f or Decimal(0.0)
+user.User.lifetime_fees = __lifetime_fees
+
+# This is in a stupid place due to circular input problems
+@property
+def __lifetime_discounts(self):
+    return object_session(self).query(func.sum(Purchase.discount).label("f"))\
+            .join(event.Event)\
+            .filter(Transaction.fr_account_virt_id == self.id)\
+            .filter(Purchase.discount > 0)\
+            .filter(event.Event.type == 'purchase')\
+            .filter(event.Event.deleted==False).one().f or Decimal(0.0)
+user.User.lifetime_discounts = __lifetime_discounts
 
 
 class Purchase(Transaction):
