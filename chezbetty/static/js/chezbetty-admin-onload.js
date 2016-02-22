@@ -566,3 +566,10 @@ $("button:submit").click(function () {
 	clicked_submit = true;
 });
 
+
+//
+// Make sticky column headers work
+//
+
+$('.sticky').stickyTableHeaders({fixedOffset: $('.navbar')});
+

@@ -168,4 +168,8 @@ tfoot tr td {
   color: #aaaaaa;
 }
 
+.table thead {
+  background-color: white;
+}
+
 

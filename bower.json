@@ -32,7 +32,8 @@
     "barcoder": "https://github.com/bradjc/node-barcoder.git#1.2.0",
     "datetimepicker": "latest",
     "fgt-jquery-scannerdetection": "latest",
-    "highstock": "https://github.com/highslide-software/highstock-release/archive/v2.0.3.zip"
+    "highstock": "https://github.com/highslide-software/highstock-release/archive/v2.0.3.zip",
+    "StickyTableHeaders": "latest"
   },
   "install": {
     "path": {
@@ -63,7 +64,8 @@
       "datetimepicker":     ["bower_components/datetimepicker/jquery.datetimepicker.js",
                              "bower_components/datetimepicker/jquery.datetimepicker.css"],
       "fgt-jquery-scannerdetection": ["bower_components/fgt-jquery-scannerdetection/jquery.scannerdetection.js"],
-      "highstock":          ["bower_components/highstock/highstock.js"]
+      "highstock":          ["bower_components/highstock/highstock.js"],
+      "StickyTableHeaders": ["bower_components/StickyTableHeaders/js/jquery.stickytableheaders.min.js"]
     },
     "ignore": ["bower_components/bootstrap/less/bootstrap.less"]
   }
