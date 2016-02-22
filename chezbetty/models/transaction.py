@@ -159,7 +159,7 @@ class Transaction(Base):
     # money in their account
     @classmethod
     def discounts(cls, start=None, end=None):
-        r = DBSession.query(func.sum(cls.discount).label('d'))\
+        r = DBSession.query(func.sum((cls.amount / (1-cls.discount)) - cls.amount).label('d'))\
                         .join(event.Event)\
                         .filter(cls.discount > 0)\
                         .filter(event.Event.deleted==False)
@@ -174,7 +174,7 @@ class Transaction(Base):
     # Get the total amount of fees people have paid for being in debt
     @classmethod
     def fees(cls, start=None, end=None):
-        r = DBSession.query(func.sum(cls.discount).label('f'))\
+        r = DBSession.query(func.sum((cls.amount / (1-cls.discount)) - cls.amount).label('f'))\
                         .join(event.Event)\
                         .filter(cls.discount < 0)\
                         .filter(event.Event.deleted==False)
@@ -387,9 +387,9 @@ user.User.days_since_last_purchase = __days_since_last_purchase
 # This is in a stupid place due to circular input problems
 @property
 def __lifetime_fees(self):
-    return object_session(self).query(func.sum(Purchase.discount).label("f"))\
+    return object_session(self).query(func.sum((Purchase.amount / (1-Purchase.discount)) - Purchase.amount).label("f"))\
             .join(event.Event)\
-            .filter(Transaction.fr_account_virt_id == self.id)\
+            .filter(Purchase.fr_account_virt_id == self.id)\
             .filter(Purchase.discount < 0)\
             .filter(event.Event.type == 'purchase')\
             .filter(event.Event.deleted==False).one().f or Decimal(0.0)
@@ -398,9 +398,9 @@ user.User.lifetime_fees = __lifetime_fees
 # This is in a stupid place due to circular input problems
 @property
 def __lifetime_discounts(self):
-    return object_session(self).query(func.sum(Purchase.discount).label("f"))\
+    return object_session(self).query(func.sum((Purchase.amount / (1-Purchase.discount)) - Purchase.amount).label("f"))\
             .join(event.Event)\
-            .filter(Transaction.fr_account_virt_id == self.id)\
+            .filter(Purchase.fr_account_virt_id == self.id)\
             .filter(Purchase.discount > 0)\
             .filter(event.Event.type == 'purchase')\
             .filter(event.Event.deleted==False).one().f or Decimal(0.0)
