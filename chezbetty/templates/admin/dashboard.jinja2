@@ -1,0 +1,239 @@
+{% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
+{% import "macro_graph.jinja2" as graph %}
+
+{% set active_page = 'dashboard' %}
+{% block title %}Dashboard{% endblock %}
+
+
+{% block top %}
+
+<h1 class="page-header">Dashboard</h1>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Stats</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>Total Sales</td>
+              <td class="right">{{ total_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Profit on Sales</td>
+              <td class="right">{{ profit_on_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Inventory Lost</td>
+              <td class="right">{{ total_inventory_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>% Inventory Lost</td>
+              <td class="right">
+                {% if restock.balance == 0 %}
+                  0%
+                {% else %}
+                  {{ ((total_inventory_lost / restock.balance)*100)|round(2) }}%
+                {%endif %}
+              </td>
+            </tr>
+            <tr>
+              <td>% Lost</td>
+              <td class="right">
+                {% if restock.balance == 0 %}
+                  0%
+                {% else %}
+                  {{ (((total_inventory_lost - cashbox_net - btcbox_net) / restock.balance)*100)|round(2) }}%
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+              <td>Total CC Deposits</td>
+              <td class="right">{{ total_cc_deposits|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Total Deposits</td>
+              <td class="right">{{ total_deposits|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Year-to-Date</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>YTD Sales</td>
+              <td class="right">{{ ytd_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Profit on Sales</td>
+              <td class="right">{{ ytd_profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Inventory Lost</td>
+              <td class="right">{{ ytd_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total Deposits</td>
+              <td class="right">{{ ytd_dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total Cash Deposits</td>
+              <td class="right">{{ ytd_dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total BTC Deposits</td>
+              <td class="right">{{ ytd_dep_btc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Total CC Deposits</td>
+              <td class="right">{{ ytd_dep_cc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Discounts</td>
+              <td class="right">{{ ytd_discounts|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>YTD Fees</td>
+              <td class="right">{{ ytd_fees|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Month-to-Date</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>MTD Sales</td>
+              <td class="right">{{ mtd_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Profit on Sales</td>
+              <td class="right">{{ mtd_profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Inventory Lost</td>
+              <td class="right">{{ mtd_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total Deposits</td>
+              <td class="right">{{ mtd_dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total Cash Deposits</td>
+              <td class="right">{{ mtd_dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total BTC Deposits</td>
+              <td class="right">{{ mtd_dep_btc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Total CC Deposits</td>
+              <td class="right">{{ mtd_dep_cc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Discounts</td>
+              <td class="right">{{ mtd_discounts|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Fees</td>
+              <td class="right">{{ mtd_fees|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="row">
+
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><a href="/admin/items/edit?sort=sold&amp;direction=desc">Best Selling Items</a></h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="right" style="width:20%;">Sold</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in best_selling_items %}
+            <tr>
+              <td>{{ item[1]|make_link(33)|safe }}</td>
+              <td class="right">{{ item.quantity }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+  {{ graph.create_graph_panel(graph_sales_day.xs, graph_sales_day.ys, graph_sales_day.avg_hack, "Sales per day") }}
+  </div>
+  <div class="col-md-4">
+  {{ graph.create_graph_panel(graph_deposits_day.xs, graph_deposits_day.ys, graph_deposits_day.avg_hack, "Deposits per day") }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/users/totals", "Total Users", ['Users'], [1]) }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/users/balance/totals", "Total Balances", ['User Debt', 'User Bank Balance', 'Debt per User (in $0.01)'], [100, 100, 1]) }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/raw/sales/day", "Sales Per Day", ['Sales'], [1]) }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_cumulative_timeseries_panel("/admin/data/raw/deposits/day", "Deposits Per Day", ['Deposits'], [1]) }}
+  </div>
+</div>
+
+
+{% endblock %}

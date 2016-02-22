@@ -230,11 +230,6 @@ def admin_ajaxed_field(request):
              permission='manage')
 def admin_index(request):
     events          = Event.some(10)
-    items_low_stock = DBSession.query(Item)\
-                               .filter(Item.enabled == True)\
-                               .filter(Item.in_stock < 10)\
-                               .order_by(Item.in_stock)\
-                               .limit(5).all()
     users_shame     = DBSession.query(User)\
                                .filter(User.balance < 0)\
                                .order_by(User.balance)\
@@ -242,15 +237,7 @@ def admin_index(request):
     users_balance   = User.get_users_total()
     held_for_users  = User.get_amount_held()
     owed_by_users   = User.get_amount_owed()
-    bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item)\
-                               .join(Item)\
-                               .join(Transaction)\
-                               .join(Event)\
-                               .filter(Transaction.type=='purchase')\
-                               .filter(Event.deleted==False)\
-                               .group_by(Item.id)\
-                               .order_by(desc('quantity'))\
-                               .limit(5).all()
+
     inventory       = DBSession.query(func.sum(Item.in_stock * Item.wholesale).label("wholesale"),
                                       func.sum(Item.in_stock * Item.price).label("price")).one()
 
@@ -277,6 +264,66 @@ def admin_index(request):
     # for what we paid for it.
     estimated_net = chezbetty_cash.balance + cashbox.balance + btcbox.balance - held_for_users + inventory.wholesale
 
+    # Get the current date that it is in the eastern time zone
+    now = arrow.now()
+
+    # Walk back to the beginning of the day for all these statistics
+    now = now.replace(hour=0, minute=0, seconds=0)
+
+    today_sales     = Purchase.total(now, None)
+    today_profit    = PurchaseLineItem.profit_on_sales(now, None)
+    today_lost      = Inventory.total(now, None)
+    today_dep       = Deposit.total(now, None)
+    today_dep_cash  = CashDeposit.total(now, None)
+    today_dep_btc   = BTCDeposit.total(now, None)
+    today_dep_cc    = CCDeposit.total(now, None)
+    today_discounts = Purchase.discounts(now, None)
+    today_fees      = Purchase.fees(now, None)
+
+    return dict(events=events,
+                users_shame=users_shame,
+                users_balance=users_balance,
+                held_for_users=held_for_users,
+                owed_by_users=owed_by_users,
+                cashbox=cashbox,
+                btcbox=btcbox,
+                chezbetty_cash=chezbetty_cash,
+                chezbetty=chezbetty,
+                cashbox_net=cashbox_net,
+                btcbox_net=btcbox_net,
+                chezbetty_net=chezbetty_net,
+                estimated_net=estimated_net,
+                restock=restock,
+                donation=donation,
+                withdrawal=withdrawal,
+                inventory=inventory,
+                today_sales=today_sales,
+                today_profit=today_profit,
+                today_lost=today_lost,
+                today_dep=today_dep,
+                today_dep_cash=today_dep_cash,
+                today_dep_btc=today_dep_btc,
+                today_dep_cc=today_dep_cc,
+                today_discounts=today_discounts,
+                today_fees=today_fees
+                )
+
+
+@view_config(route_name='admin_index_dashboard',
+             renderer='templates/admin/dashboard.jinja2',
+             permission='manage')
+def admin_dashboard(request):
+
+    bsi             = DBSession.query(func.sum(PurchaseLineItem.quantity).label('quantity'), Item)\
+                               .join(Item)\
+                               .join(Transaction)\
+                               .join(Event)\
+                               .filter(Transaction.type=='purchase')\
+                               .filter(Event.deleted==False)\
+                               .group_by(Item.id)\
+                               .order_by(desc('quantity'))\
+                               .limit(5).all()
+
     total_sales          = Purchase.total()
     profit_on_sales      = PurchaseLineItem.profit_on_sales()
     total_inventory_lost = Inventory.total()
@@ -284,6 +331,20 @@ def admin_index(request):
     total_cash_deposits  = CashDeposit.total()
     total_btc_deposits   = BTCDeposit.total()
     total_cc_deposits    = CCDeposit.total()
+
+    cashbox_lost    = Transaction.get_balance("lost", account.get_cash_account("cashbox"))
+    cashbox_found   = Transaction.get_balance("found", account.get_cash_account("cashbox"))
+    btcbox_lost     = Transaction.get_balance("lost", account.get_cash_account("btcbox"))
+    btcbox_found    = Transaction.get_balance("found", account.get_cash_account("btcbox"))
+    chezbetty_lost  = Transaction.get_balance("lost", account.get_cash_account("chezbetty"))
+    chezbetty_found = Transaction.get_balance("found", account.get_cash_account("chezbetty"))
+    restock         = Transaction.get_balance("restock", account.get_cash_account("chezbetty"))
+    donation        = Transaction.get_balance("donation", account.get_cash_account("chezbetty"))
+    withdrawal      = Transaction.get_balance("withdrawal", account.get_cash_account("chezbetty"))
+
+    cashbox_net   = cashbox_found.balance - cashbox_lost.balance
+    btcbox_net    = btcbox_found.balance - btcbox_lost.balance
+    chezbetty_net = chezbetty_found.balance - chezbetty_lost.balance
 
     # Get the current date that it is in the eastern time zone
     now = arrow.now()
@@ -311,17 +372,6 @@ def admin_index(request):
     mtd_discounts = Purchase.discounts(now.replace(day=1), None)
     mtd_fees      = Purchase.fees(now.replace(day=1), None)
 
-    today_sales     = Purchase.total(now, None)
-    today_profit    = PurchaseLineItem.profit_on_sales(now, None)
-    today_lost      = Inventory.total(now, None)
-    today_dep       = Deposit.total(now, None)
-    today_dep_cash  = CashDeposit.total(now, None)
-    today_dep_btc   = BTCDeposit.total(now, None)
-    today_dep_cc    = CCDeposit.total(now, None)
-    today_discounts = Purchase.discounts(now, None)
-    today_fees      = Purchase.fees(now, None)
-
-
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
     graph_deposits_day_cash  = views_data.create_dict('deposits_cash', 'day', 21)
     graph_deposits_day_btc   = views_data.create_dict('deposits_btc', 'day', 21)
@@ -335,26 +385,7 @@ def admin_index(request):
                                  graph_deposits_day_cash['avg_hack'][0],
                                  graph_deposits_day_btc['avg_hack'][0]]}
 
-
-    return dict(events=events,
-                items_low_stock=items_low_stock,
-                users_shame=users_shame,
-                users_balance=users_balance,
-                held_for_users=held_for_users,
-                owed_by_users=owed_by_users,
-                cashbox=cashbox,
-                btcbox=btcbox,
-                chezbetty_cash=chezbetty_cash,
-                chezbetty=chezbetty,
-                cashbox_net=cashbox_net,
-                btcbox_net=btcbox_net,
-                chezbetty_net=chezbetty_net,
-                estimated_net=estimated_net,
-                restock=restock,
-                donation=donation,
-                withdrawal=withdrawal,
-                inventory=inventory,
-                best_selling_items=bsi,
+    return dict(best_selling_items=bsi,
                 total_sales=total_sales,
                 profit_on_sales=profit_on_sales,
                 total_inventory_lost=total_inventory_lost,
@@ -362,6 +393,10 @@ def admin_index(request):
                 total_cash_deposits=total_cash_deposits,
                 total_btc_deposits=total_btc_deposits,
                 total_cc_deposits=total_cc_deposits,
+                restock=restock,
+                cashbox_net=cashbox_net,
+                btcbox_net=btcbox_net,
+                chezbetty_net=chezbetty_net,
                 ytd_sales=ytd_sales,
                 ytd_profit=ytd_profit,
                 ytd_lost=ytd_lost,
@@ -380,18 +415,9 @@ def admin_index(request):
                 mtd_dep_cc=mtd_dep_cc,
                 mtd_discounts=mtd_discounts,
                 mtd_fees=mtd_fees,
-                today_sales=today_sales,
-                today_profit=today_profit,
-                today_lost=today_lost,
-                today_dep=today_dep,
-                today_dep_cash=today_dep_cash,
-                today_dep_btc=today_dep_btc,
-                today_dep_cc=today_dep_cc,
-                today_discounts=today_discounts,
-                today_fees=today_fees,
-                graph_items_day=views_data.create_dict('items', 'day', 21),
                 graph_sales_day=views_data.create_dict('sales', 'day', 21),
-                graph_deposits_day=graph_deposits_day)
+                graph_deposits_day=graph_deposits_day
+                )
 
 
 @view_config(route_name='admin_item_barcode_json',
