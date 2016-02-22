@@ -408,32 +408,6 @@
     </div>
   </div>
 
-  {#} <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title"><a href="/admin/items/edit?sort=stock">Low Stock Items</a></h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-condensed table-striped">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th class="right" style="width:20%;">Stock</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in items_low_stock %}
-            <tr>
-              <td>{{ item|make_link(33)|safe }}</td>
-              <td class="right">{{ item.in_stock }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div> #}
-
   <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -479,8 +453,6 @@
               <th>Type</th>
               <th>From Account:</th>
               <th>To Account:</th>
-              {# <th class="filterable-row">From Account (Cash):</th> #}
-              {# <th class="filterable-row">To Account (Cash):</th> #}
               <th class="right">Amount</th>
             </tr>
           </thead>
@@ -505,8 +477,6 @@
                   ({{ t.to_account_virt.balance|format_currency|safe }})
                 {% endif %}
               </td>
-              {# <td>{{ t.fr_account_cash|make_link|safe if t.fr_account_cash else "n/a" }}</td> #}
-              {# <td>{{ t.to_account_cash|make_link|safe if t.to_account_cash else "n/a" }}</td> #}
               <td class="right">{{ t.amount|format_currency|safe }}</td>
             </tr>
             {% endfor %}
