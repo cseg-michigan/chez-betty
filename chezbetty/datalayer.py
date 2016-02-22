@@ -172,7 +172,7 @@ def purchase(user, account, items):
     if user.balance > 20.0:
         discount = Decimal('0.05')
     elif user.balance <= -5.0:
-        discount = Decimal('{}'.format(round(-0.01*(5.0 + math.floor((float(user.balance)+5.0) / -5.0)), 2)))
+        discount = round(Decimal('-0.01')*(5 + math.floor((user.balance+5) / -5)), 2)
 
     e = event.Purchase(user)
     DBSession.add(e)
@@ -180,7 +180,7 @@ def purchase(user, account, items):
     t = transaction.Purchase(e, account, discount)
     DBSession.add(t)
     DBSession.flush()
-    amount = Decimal(0.0)
+    amount = Decimal(0)
     for item, quantity in items.items():
         item.in_stock -= quantity
         line_amount = Decimal(item.price * quantity)
@@ -324,7 +324,7 @@ def reconcile_items(items, admin):
     t = transaction.Inventory(e)
     DBSession.add(t)
     DBSession.flush()
-    total_amount_missing = Decimal(0.0)
+    total_amount_missing = Decimal(0)
     for item, quantity in items.items():
         # Record the restock line item even if the number hasn't changed.
         # This lets us track when we have counted items.

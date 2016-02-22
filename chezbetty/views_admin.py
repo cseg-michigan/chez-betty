@@ -547,20 +547,20 @@ def admin_user_search_json(request):
 def admin_restock(request):
     restock_items = ''
     index = 0
-    global_cost = 0.0
+    global_cost = Decimal(0)
     if len(request.GET) != 0:
         for index,packed_values in request.GET.items():
             values = packed_values.split(',')
             if len(values) == 1:
                 # This is the global cost value
-                global_cost = round(float(values[0]), 2)
+                global_cost = round(Decimal(values[0]), 2)
             else:
                 line_values = {}
                 line_type = values[0]
                 line_id = int(values[1])
                 line_values['quantity'] = int(values[2])
-                line_values['wholesale'] = float(values[3])
-                line_values['coupon'] = float(values[4] if values[4] != 'None' else 0)
+                line_values['wholesale'] = Decimal(values[3])
+                line_values['coupon'] = Decimal(values[4] if values[4] != 'None' else 0)
                 line_values['salestax'] = values[5] == 'True'
                 line_values['btldeposit'] = values[6] == 'True'
 
@@ -618,7 +618,7 @@ def admin_restock_submit(request):
     # Check for a global cost that should be applied across all items.
     # Note: this can be negative to reflect a discount of some kind applied to
     # all items.
-    global_cost = float(request.POST['restock-globalcost'] or 0.0)
+    global_cost = Decimal(request.POST['restock-globalcost'] or 0)
 
     for key,val in request.POST.items():
 
@@ -631,8 +631,8 @@ def admin_restock_submit(request):
                 obj_type   = request.POST['-'.join([f[0], 'type', f[2]])]
                 obj_id     = request.POST['-'.join([f[0], 'id', f[2]])]
                 quantity   = int(request.POST['-'.join([f[0], 'quantity', f[2]])] or 0)
-                wholesale  = float(request.POST['-'.join([f[0], 'wholesale', f[2]])] or Decimal(0.0))
-                coupon     = float(request.POST['-'.join([f[0], 'coupon', f[2]])] or Decimal(0.0))
+                wholesale  = Decimal(request.POST['-'.join([f[0], 'wholesale', f[2]])] or 0)
+                coupon     = Decimal(request.POST['-'.join([f[0], 'coupon', f[2]])] or 0)
                 salestax   = request.POST['-'.join([f[0], 'salestax', f[2]])] == 'on'
                 btldeposit = request.POST['-'.join([f[0], 'bottledeposit', f[2]])] == 'on'
                 itemcount  = int(request.POST['-'.join([f[0], 'itemcount', f[2]])])
@@ -647,9 +647,9 @@ def admin_restock_submit(request):
                 # Calculate the total
                 total = quantity * (wholesale - coupon)
                 if salestax:
-                    total *= 1.06
+                    total *= Decimal('1.06')
                 if btldeposit:
-                    total += (0.10 * itemcount * quantity)
+                    total += (Decimal('0.10') * itemcount * quantity)
                 total = round(total, 2)
 
                 # Create arrays of restocked items/boxes
@@ -679,7 +679,7 @@ def admin_restock_submit(request):
                         itembox.item.sales_tax = salestax
 
                         subquantity = itembox.quantity * quantity
-                        subtotal    = float(itembox.percentage / 100) * total
+                        subtotal    = (itembox.percentage / 100) * total
                         add_item(itembox.item, subquantity, subtotal)
 
                     items.append((box, quantity, total, wholesale, coupon, salestax, btldeposit))
@@ -713,9 +713,9 @@ def admin_restock_submit(request):
             if quantity == 0:
                 request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
                 continue
-            item.wholesale = Decimal(round((total/quantity) + global_cost_item_addition, 4))
+            item.wholesale = round((total/quantity) + global_cost_item_addition, 4)
             # Set the item price
-            item.price = round(item.wholesale * Decimal(1.15), 2)
+            item.price = round(item.wholesale * Decimal('1.15'), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
@@ -750,8 +750,9 @@ def admin_cash_reconcile(request):
     return {}
 
 
-@view_config(route_name='admin_cash_reconcile_submit', request_method='POST',
-        permission='manage')
+@view_config(route_name='admin_cash_reconcile_submit',
+             request_method='POST',
+             permission='manage')
 def admin_cash_reconcile_submit(request):
     try:
         if request.POST['amount'].strip() == '':
@@ -786,10 +787,11 @@ def admin_cash_reconcile_submit(request):
 
 
 @view_config(route_name='admin_cash_reconcile_success',
-        renderer='templates/admin/cash_reconcile_complete.jinja2', permission='manage')
+             renderer='templates/admin/cash_reconcile_complete.jinja2',
+             permission='manage')
 def admin_cash_reconcile_success(request):
-    deposit = float(request.GET['amount'])
-    expected = float(request.GET['expected_amount'])
+    deposit = Decimal(request.GET['amount'])
+    expected = Decimal(request.GET['expected_amount'])
     difference = deposit - expected
     return {'cash': {'deposit': deposit,
                      'expected': expected,
@@ -1029,7 +1031,7 @@ def admin_items_edit(request):
             if sbi.item_id not in stocked_amount:
                 stocked_amount[sbi.item_id] = 0
             try:
-                percentage = sbi.percentage / Decimal(100.0)
+                percentage = sbi.percentage / 100
             except:
                 percentage = 0
             stocked_amount[sbi.item_id] += (percentage * sb.amount)
@@ -1136,9 +1138,9 @@ def admin_items_edit_submit(request):
         try:
             field = key.split('-')[1]
             if field == 'price':
-                val = round(float(request.POST[key]), 2)
+                val = round(Decimal(request.POST[key]), 2)
             elif field == 'wholesale':
-                val = round(float(request.POST[key]), 4)
+                val = round(Decimal(request.POST[key]), 4)
             elif field == 'sales_tax':
                 val = request.POST[key] == 'on'
             elif field == 'bottle_dep':
@@ -1243,7 +1245,7 @@ def admin_item_edit(request):
             for sbi in sb.box.items:
                 if sbi.item_id == item.id:
                     try:
-                        percentage = sbi.percentage / Decimal(100.0)
+                        percentage = sbi.percentage / 100
                     except:
                         percentage = 0.0
                     stats['stocked_amount'] += (percentage * sb.amount)
@@ -1354,9 +1356,9 @@ def admin_item_edit_submit(request):
                 # Update the base item
                 field = fields[1]
                 if field == 'price':
-                    val = round(float(request.POST[key]), 2)
+                    val = round(Decimal(request.POST[key]), 2)
                 elif field == 'wholesale':
-                    val = round(float(request.POST[key]), 4)
+                    val = round(Decimal(request.POST[key]), 4)
                 elif field == 'barcode':
                     val = request.POST[key].strip() or None
                 elif field == 'img':
@@ -1690,7 +1692,7 @@ def admin_boxes_edit_submit(request):
         try:
             field = key.split('-')[1]
             if field == 'wholesale':
-                val = round(float(request.POST[key]), 2)
+                val = round(Decimal(request.POST[key]), 2)
             else:
                 val = request.POST[key].strip()
 
@@ -1784,13 +1786,13 @@ def admin_box_edit_submit(request):
                             boxitem.enabled = False
                         else:
                             boxitem.quantity = int(quantity)
-                            boxitem.percentage = round(float(percentage), 2)
+                            boxitem.percentage = round(Decimal(percentage), 2)
                         break
                 else:
                     if quantity != '':
                         # Add a new vendor to the item
                         item = Item.from_id(item_id)
-                        box_item = BoxItem(box, item, quantity, round(float(percentage), 2))
+                        box_item = BoxItem(box, item, quantity, round(Decimal(percentage), 2))
                         DBSession.add(box_item)
 
             elif fields[1] == 'vendor' and fields[2] == 'id':
@@ -1819,7 +1821,7 @@ def admin_box_edit_submit(request):
                 # Update the base item
                 field = fields[1]
                 if field == 'wholesale':
-                    val = round(float(request.POST[key]), 2)
+                    val = round(Decimal(request.POST[key]), 2)
                 elif field == 'quantity':
                     val = int(request.POST[key])
                 elif field == 'sales_tax':
@@ -2490,7 +2492,7 @@ def admin_btc_reconcile_submit(request):
 
         # we are taking ((bitcoin_amount)/(bitcoin_available)) of our bitcoins;
         # we should also expect bitcoin_usd to be that*btcbox.balance
-        expected_usd = Decimal(math.floor(100*((bitcoin_amount*btcbox.balance) / bitcoin_available))/100.0)
+        expected_usd = Decimal(math.floor(100*((bitcoin_amount*btcbox.balance) / bitcoin_available))/100)
 
         datalayer.reconcile_bitcoins(usd_amount, request.user, expected_amount=expected_usd)
         request.session.flash('Converted %s Bitcoins to %s USD' % (bitcoin_amount, usd_amount), 'success')
