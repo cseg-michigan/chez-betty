@@ -11,7 +11,6 @@
   {% if request.has_permission("admin") %}
   <li {% if active_page == 'btc_reconcile' %}class="active"{% endif %}><a href="/admin/btc/reconcile">Deposit Bitcoins</a></li>
   {% endif %}
-  <li {% if active_page == 'shopping_list' %}class="active"{% endif %}><a href="/admin/shopping">Shopping List</a></li>
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>Manage Items</span></li>

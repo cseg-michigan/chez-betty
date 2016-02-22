@@ -227,8 +227,6 @@ def main(global_config, **settings):
     config.add_route('admin_password_edit',             '/admin/password/edit')
     config.add_route('admin_password_edit_submit',      '/admin/password/edit/submit')
 
-    config.add_route('admin_shopping_list',             '/admin/shopping')
-
     config.add_route('admin_requests',                  '/admin/requests')
 
     config.add_route('admin_announcements_edit',        '/admin/announcements/edit')
