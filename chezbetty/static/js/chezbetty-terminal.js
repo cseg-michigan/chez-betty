@@ -603,10 +603,26 @@ $("#purchase-table tbody").on("click", ".btn-remove-item", function () {
 
 // Click handler to remove an item from a purchase.
 $("#purchase-table tbody").on("click", ".btn-decrement-item", function () {
-	var quantity = parseInt($(this).parent().find("span").text()) - 1;
-	$(this).parent().find("span").text(quantity);
+	var quantity_span = $(this).parent().parent().find(".item-quantity span");
+	var quantity = parseInt(quantity_span.text()) - 1;
+	quantity_span.text(quantity);
 	if (quantity < 2) {
 		$(this).hide();
+	}
+
+	var item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());
+	$(this).parent().parent().find(".item-total").html(format_price(quantity*item_price));
+	calculate_total();
+});
+
+// Increase the number of a given item in the cart
+$("#purchase-table tbody").on("click", ".btn-increment-item", function () {
+	var quantity_span = $(this).parent().parent().find(".item-quantity span");
+	var quantity = parseInt(quantity_span.text()) + 1;
+	quantity_span.text(quantity);
+
+	if (quantity >= 2) {
+		$(this).parent().parent().find(".btn-decrement-item").show();
 	}
 
 	var item_price = parseFloat($(this).parent().parent().children(".item-price-single").text());

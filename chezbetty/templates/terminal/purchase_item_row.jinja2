@@ -1,7 +1,7 @@
 <tr id="purchase-item-{{ item.id }}" class="purchase-item">
   <td class="item-actions"><button type="button" class="btn btn-danger btn-lg btn-remove-item"><span class="glyphicon glyphicon-remove-sign"></span></button></td>
   <td class="item-title">{{ item.name }}</td>
-  <td class="item-quantity">
+  <td class="item-quantity" style="width: 6%; border-right: none;">
     <span>
       {% if quantity %}
       {{ quantity }}
@@ -10,8 +10,9 @@
       1
       {% endif %}
     </span>
-    <button type="button" class="btn btn-danger btn-lg btn-decrement-item" {% if quantity < 2 %}style="display:none;"{% endif %}>-</button>
   </td>
+  <td style="width: 7%; border-left: none; border-right: none;"><button type="button" class="btn btn-danger btn-lg btn-decrement-item" {% if quantity < 2 %}style="display:none;"{% endif %}>-</button></td>
+  <td style="width: 7%; border-left: none; "><button type="button" class="btn btn-danger btn-lg btn-increment-item">+</button></td>
   <td class="item-price">{{ item.price|format_currency|safe }}</td>
   <td class="item-total">{{ item.price|format_currency|safe }}</td>
   <td class="hidden item-price-single">{{ item.price }}</td>
