@@ -184,7 +184,7 @@ def user_deposit_cc_custom(request):
         pool = None
     return {'user': request.user,
             'stripe_pk': request.registry.settings['stripe.publishable_key'],
-            'amount': round(float(request.GET['deposit-amount']), 2),
+            'amount': round(Decimal(request.GET['deposit-amount']), 2),
             'account': account,
             'pool': pool,
             }
@@ -194,7 +194,7 @@ def user_deposit_cc_custom(request):
              permission='user')
 def user_deposit_cc_submit(request):
     token = request.POST['stripeToken']
-    amount = float(request.POST['betty_amount'])
+    amount = Decimal(request.POST['betty_amount'])
     total_cents = int(request.POST['betty_total_cents'])
     to_account = request.POST['betty_to_account']
 

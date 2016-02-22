@@ -553,7 +553,10 @@ def admin_restock(request):
             values = packed_values.split(',')
             if len(values) == 1:
                 # This is the global cost value
-                global_cost = round(Decimal(values[0]), 2)
+                try:
+                    global_cost = round(Decimal(values[0] or 0), 2)
+                except:
+                    global_cost = Decimal(0)
             else:
                 line_values = {}
                 line_type = values[0]

@@ -1,8 +1,8 @@
 {% macro deposit_cc_custom(account, amount, balance, stripe_pk, class='') -%}
-  {% set charge = (amount + 0.3) / 0.971 %}
-  {% set fee = charge - amount %}
+  {% set charge = (amount|float + 0.3) / 0.971 %}
+  {% set fee = charge - amount|float %}
   {% set total_cents = (charge*100)|round|int %}
-  {% set new_balance = balance|float + amount %}
+  {% set new_balance = balance|float + amount|float %}
 
   <tr class="{{ class }}">
     <td>{{ amount|format_currency|safe }}</td>

@@ -293,14 +293,13 @@ def post_stripe_payment(
     # See http://stripe.com/docs/tutorials/charges
     stripe.api_key = request.registry.settings['stripe.secret_key']
 
-    charge = (amount + 0.3) / 0.971
+    charge = (amount + Decimal('0.3')) / Decimal('0.971')
     fee = charge - amount
     if total_cents != int(round((amount + fee)*100)):
         print("Stripe total mismatch. total_cents {} != {}".format(
             total_cents, int(round((amount + fee)*100))))
         request.session.flash('Unexpected error processing transaction. Card NOT charged.', 'error')
         return False
-    amount = Decimal(amount)
 
     if amount <= 0.0:
         request.session.flash(

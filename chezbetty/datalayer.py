@@ -189,7 +189,7 @@ def purchase(user, account, items):
         DBSession.add(pli)
         amount += line_amount
     if discount:
-        amount = amount - (amount * discount)
+        amount = round(amount - (amount * discount), 2)
     t.update_amount(amount)
 
     if isinstance(account, Pool):

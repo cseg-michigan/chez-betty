@@ -21,15 +21,15 @@
 <hr />
 
 {% if account == 'user' %}
-{% set balance = user.balance|float %}
-{% set target = balance + amount %}
+{% set balance = user.balance %}
+{% set target = balance|float + amount|float %}
 <dl class="dl-horizontal">
   <dt>{{ _('Account Balance') }}</dt>
   <dd id="user-balance">{{ user.balance|format_currency|safe }}</dd>
 </dl>
 {% else %}
 {% set balance = pool.balance|float %}
-{% set target = balance + amount %}
+{% set target = balance + amount|float %}
 <dl class="dl-horizontal">
   <dt>{{ _('%(pool_name)s Balance')|format(pool_name=pool.name) }}</dt>
   <dd id="pool-{{ pool.id }}-balance">{{ pool.balance|format_currency|safe }}</dd>
