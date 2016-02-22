@@ -105,7 +105,7 @@ def is_terminal(event):
 ### Admin
 ###
 
-@view_config(route_name='admin_ajax_bool', permission='admin')
+@view_config(route_name='admin_ajax_bool', permission='manage')
 def admin_ajax_bool(request):
     obj_str = request.matchdict['object']
     obj_id  = int(request.matchdict['id'])
@@ -148,6 +148,7 @@ def admin_ajax_bool(request):
 
     return request.response
 
+
 @view_config(route_name='admin_ajax_new',
              renderer='json',
              permission='admin')
@@ -168,6 +169,7 @@ def admin_ajax_new(request):
 
     return {'id': new_thing.id,
             'arg': obj_arg}
+
 
 @view_config(route_name='admin_ajax_connection',
              renderer='json',
@@ -208,6 +210,7 @@ def admin_ajax_connection(request):
 
     return out
 
+
 @view_config(route_name='admin_ajaxed_field',
              renderer='json',
              permission='manage')
@@ -224,6 +227,7 @@ def admin_ajaxed_field(request):
         except BTCException:
             return dict(html='Error loading BTC Value')
     request.session.flash('No handler for ajaxed field: {}'.format(field), 'error')
+
 
 @view_config(route_name='admin_index',
              renderer='templates/admin/index.jinja2',
