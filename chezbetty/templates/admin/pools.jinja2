@@ -9,38 +9,34 @@
 
 {% block content %}
 
-<form role="form" action="/admin/items/edit/submit" method="post" id="form-edit-items">
+<div id="pools">
 
-  <div id="edit-items">
+  <table class="table sortable">
 
-    <table class="table sortable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Member Count</th>
+        <th class="right">Balance</th>
+        <th class="right">Credit Limit</th>
+      </tr>
+    </thead>
 
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Member Count</th>
-          <th class="right">Balance</th>
-          <th class="right">Credit Limit</th>
-        </tr>
-      </thead>
+    <tbody>
 
-      <tbody>
+      {% for pool in pools %}
 
-        {% for pool in pools %}
+      <tr id="pool-{{ pool.id }}" class="pool-row {% if pool.enabled == False %}disabled-row{% endif %}">
+        <td>{{ pool|make_link|safe }}</td>
+        <td>{{ pool.users|length }}</td>
+        <td class="right">{{ pool.balance|format_currency|safe }}</td>
+        <td class="right">{{ pool.credit_limit|format_currency|safe }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
 
-        <tr id="pool-{{ pool.id }}" class="pool-row {% if pool.enabled == False %}disabled-row{% endif %}">
-          <td>{{ pool|make_link|safe }}</td>
-          <td>{{ pool.users|length }}</td>
-          <td class="right">{{ pool.balance|format_currency|safe }}</td>
-          <td class="right">{{ pool.credit_limit|format_currency|safe }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
+  </table>
 
-    </table>
-
-  </div>
-
-</form>
+</div>
 
 {% endblock %}
