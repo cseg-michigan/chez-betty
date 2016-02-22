@@ -170,9 +170,9 @@ def purchase(user, account, items):
     # TODO: Parameterize
     discount = None
     if user.balance > 20.0:
-        discount = Decimal(0.05)
+        discount = Decimal('0.05')
     elif user.balance <= -5.0:
-        discount = Decimal(-0.01*(5.0 + math.floor((float(user.balance)+5.0) / -5.0)))
+        discount = Decimal('{}'.format(round(-0.01*(5.0 + math.floor((float(user.balance)+5.0) / -5.0)), 2)))
 
     e = event.Purchase(user)
     DBSession.add(e)
