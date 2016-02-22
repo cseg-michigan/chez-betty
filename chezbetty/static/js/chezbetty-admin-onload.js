@@ -219,10 +219,6 @@ $("#balance-change-amount").on("input", function () {
 	update_new_balance();
 });
 
-$("#edit-items").click(function () {
-	alert_clear();
-});
-
 // Update markup
 $("#edit-items").on("input", "input:text", function () {
 	var id = $(this).attr("id").split("-")[2];
@@ -399,7 +395,7 @@ $('#box_add_form').submit(function check_submit(evt) {
 		alert("Sum of subitem quantities ("+sub_qty+") must match box quantity ("+box_qty+")");
 		return false;
 	}
-	
+
 	$(this).unbind('submit').trigger('submit');
 });
 
