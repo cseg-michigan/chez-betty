@@ -142,7 +142,9 @@ class User(account.Account):
 
     @classmethod
     def count(cls):
-        return DBSession.query(func.count(cls.id).label('c')).one().c
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.role != 'serviceaccount')\
+                        .one().c
 
     @classmethod
     def get_admins(cls):
