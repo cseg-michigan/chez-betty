@@ -131,23 +131,17 @@ body {
 
 
 {# Splash page saying we need people to pay us back. #}
-{# <div id="splash" class="container">
-  <h1>Please Help Us Out</h1>
-  <h3>Right now, people owe Betty a combined
-    <strong>{{ owed_by_users|format_debt|safe }}</strong>.
-  </h3>
-  <h3>While we understand that $5 may feel like a small amount to one person,
-    $5&nbsp;x&nbsp;1000 users is quickly a lot of debt.</h3>
-  <h3>We cannot keep taking on personal debt to restock Betty if people will
-    not pay back their debts.
-    For this reason, <strong>we cannot restock Betty until everyone on the Wall
-    of Shame has paid off their debts.</strong>
-    If you owe Betty money, please pay it back today. If you know someone
-    who owes Betty money, please encourage them to pay it back today.
-  </h3>
-  <h3>To the many honest Betty users currently in the black, thank you for
-    helping to make Betty a success. We sincerely apologize that a few bad
-    apples are currently threatening to spoil the bunch.
+{#<div id="splash" class="container">
+  <h1>Hi.</h1>
+  <h3>We know you like using Betty. We do too.<h3>
+  <h1>But this isn't a charity. Right now, people owe Betty a combined</h1>
+  <div>
+    <h1 style="font-size: 200px;">
+      <strong>{{ owed_by_users|format_debt|safe }}</strong>.
+    </h1>
+  </div>
+  <h3>To the people on the below list, please pay Betty back so we can keep
+      the service running.
   </h3>
   <div class="pull-left">
     <br />
@@ -164,7 +158,7 @@ body {
   <p>{{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}</p>
   {% endfor %}
   </div>
-</div> #}
+</div>#}
 
 
 
