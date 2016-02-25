@@ -11,7 +11,11 @@
 
 <form role="form" action="/admin/inventory/submit" method="post">
 
-  <table class="table">
+  {% for group in [('Items We Should Have', items_have), ('Items We Do Not Have', items_donthave), ('Disabled Items', items_disabled)] %}
+
+  <h3>{{ group[0] }}</h3>
+
+  <table class="table sortable sticky">
     <thead>
       <tr class="item-list-header">
         <th>Name</th>
@@ -21,12 +25,6 @@
     </thead>
 
     <tbody>
-      {% for group in [('Items We Should Have', items_have), ('Items We Do Not Have',items_donthave), ('Disabled Items',items_disabled)] %}
-
-      <tr>
-        <td colspan="3"><h3>{{ group[0] }}</td>
-      </tr>
-
       {% for item in group[1] %}
       <tr id="item-{{ item.id }}">
         <td>{{ item|make_link|safe }}</td>
@@ -34,10 +32,11 @@
         <td><input type="text" class="form-control numeric" id="item-newstock-{{ item.id }}" name="item-newstock-{{ item.id }}" value="{{ undone_inventory[item.id] }}"></td>
       </tr>
       {% endfor %}
-      {% endfor %}
     </tbody>
 
   </table>
+
+  {% endfor %}
 
   <button type="submit" class="btn btn-success">Process Inventory</button>
 
