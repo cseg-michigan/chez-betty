@@ -112,7 +112,7 @@ def paydebt_submit(request):
     user = User.from_uniqname(uniqname, local_only=True)
 
     token = request.POST['stripeToken']
-    amount = float(request.POST['betty_amount'])
+    amount = Decimal(request.POST['betty_amount'])
     total_cents = int(request.POST['betty_total_cents'])
 
     post_stripe_payment(
