@@ -4,6 +4,8 @@ chezbetty.egg-info/*
 chezbetty/scripts/__pycache__/*
 *.pyc
 *.pyo
+*.swp
+*.swo
 development.ini
 .Python
 bin/
