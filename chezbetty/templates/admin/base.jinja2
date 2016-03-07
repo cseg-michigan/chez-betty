@@ -66,12 +66,12 @@
           {% block alerts %}
           {% for msg in request.session.pop_flash("error") %}
           <div class="alert alert-danger" role="alert">
-            {{ msg }}
+            {{ msg|safe }}
           </div>
           {% endfor %}
           {% for msg in request.session.pop_flash("success") %}
           <div class="alert alert-success" role="alert">
-            {{ msg }}
+            {{ msg|safe }}
           </div>
           {% endfor %}
           {% endblock %}

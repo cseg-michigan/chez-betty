@@ -894,7 +894,6 @@ def admin_items_add(request):
              request_method='POST',
              permission='manage')
 def admin_items_add_submit(request):
-    count = 0
     error_items = []
 
     # Iterate all the POST keys and find the ones that are item names
@@ -958,7 +957,10 @@ def admin_items_add_submit(request):
                 item = Item(name, barcode, price, wholesale, sales_tax, bottle_dep, stock, enabled)
                 DBSession.add(item)
                 DBSession.flush()
-                count += 1
+                request.session.flash(
+                        'Added <a href="/admin/item/edit/{}">{}</a>'.\
+                                format(item.id, item.name),
+                        'success')
             except Exception as e:
                 if request.debug: raise(e)
                 if len(name):
@@ -971,10 +973,6 @@ def admin_items_add_submit(request):
                     request.session.flash('Error adding item: {}. Most likely a duplicate barcode.'.\
                                     format(name), 'error')
                 # Otherwise this was probably a blank row; ignore.
-    if count:
-        request.session.flash('{} item{} added successfully.'.format(count, ['s',''][count==1]), 'success')
-    else:
-        request.session.flash('No items added.', 'error')
     if len(error_items):
         flat = {}
         e_count = 0
@@ -1618,6 +1616,10 @@ def admin_box_add_submit(request):
             box = Box(box_name, box_barcode, box_bottledep, box_salestax)
             DBSession.add(box)
             DBSession.flush()
+            request.session.flash(
+                    'Added box: <a href="/admin/box/edit/{}">{}</a>'.\
+                            format(box.id, box.name),
+                    'success')
 
             # Need to add items to the box
             for item,quantity in items_to_add:
@@ -1633,6 +1635,10 @@ def admin_box_add_submit(request):
                                 enabled=False)
                     DBSession.add(item)
                     DBSession.flush()
+                    request.session.flash(
+                            'Added item: <a href="/admin/item/edit/{}">{}</a>'.\
+                                    format(item.id, item.name),
+                            'success')
 
                 # Set the box percentages all equal
                 box_item = BoxItem(box, item, quantity, round((quantity/total_items)*100, 2))
@@ -1644,6 +1650,8 @@ def admin_box_add_submit(request):
                 box_vendor = BoxVendor(vendor, box, box_itemnum)
                 DBSession.add(box_vendor)
 
+            # Leave this in addition to the creation message above in case some
+            # part of the box failed to add, attention needs to be drawn
             request.session.flash('Box "{}" added successfully.'.format(box_name), 'success')
             return HTTPFound(location=request.route_url('admin_box_add'))
 
