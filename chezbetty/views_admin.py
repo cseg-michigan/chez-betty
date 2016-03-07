@@ -1220,7 +1220,7 @@ def admin_item_edit(request):
                 pass
 
         events.extend(sst)
-        events.sort(key=sortTransactionsByEvent)
+        events.sort(key=sortTransactionsByEvent, reverse=True)
         events_total += sst_total
 
         if event_limit is None or events_total <= event_limit:
