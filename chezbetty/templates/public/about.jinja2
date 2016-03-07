@@ -86,6 +86,24 @@
 	<p>{{ _('Current wholesale and Betty prices are always available on <a href="/items">the items page</a>.')|safe }}</p>
 </div>
 
+<h3 class="faq-q">{{ _("What's the Good Standing Discount?") }}</h3>
+<div class="faq-a">
+	<p>{{ _("If you keep an account balance with $20 or more, Betty will give you a 5% discount on all purchases!") }}</p>
+</div>
+
+<h3 class="faq-q">{{ _("What's the Wall of Shame Tax?") }}</h3>
+<div class="faq-a">
+	<p>
+	{{
+	_("For people on the Wall of Shame (anyone with less than $5 in their account), Betty charges a progressive tax on all purchases.")
+	+ ' ' +
+	_("The tax begins at 5% and increases an additional 1% for every additional $5 you are in debt ($10-15 debt is 6%, $15-20 is 7%, and so on).")
+	+ ' ' +
+	_("If you are on the Wall of Shame, the Betty terminal will very clearly show the tax being applied as you check out.")
+	}}
+	</p>
+</div>
+
 <h3 class="faq-q">{{ _("What does Betty do with her profits?") }}</h3>
 <div class="faq-a">
 	<p>{{ _("First, Betty has to pay her debts (e.g. any losses incurred from "
