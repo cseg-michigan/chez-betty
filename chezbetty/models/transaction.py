@@ -218,6 +218,7 @@ class Transaction(Base):
                                cls.fr_account_virt_id,
                                event.Event.timestamp)\
                         .join(event.Event)\
+                        .filter(event.Event.deleted==False)\
                         .filter(or_(
                                   cls.type=='purchase',
                                   cls.type=='cashdeposit',
