@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "macro_graph.jinja2" as graph %}
 
 {% block title %}Home{% endblock %}
 
@@ -84,6 +85,10 @@
 
 </div>
 {% endif %} {# endif any pools #}
+
+<hr />
+
+{{ graph.create_cumulative_timeseries_panel("/user/data/balances", "Balance over Time", ['User Balance'], [1], yfloor='null') }}
 
 <hr />
 

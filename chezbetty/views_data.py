@@ -512,6 +512,14 @@ def admin_data_user_balance_json(request):
     user = User.from_id(request.matchdict['user_id'])
     return Transaction.get_balances_over_time_for_user(user)
 
+# The same information as admin_data_user_balance_json, but from the user
+# context and only for the currently logged in user
+@view_config(route_name='user_data_balance_json',
+             renderer='json',
+             permission='user')
+def user_data_balance_json(request):
+    return Transaction.get_balances_over_time_for_user(request.user)
+
 
 # # Timestamps and user debt, "bank balance", debt/user
 # @view_config(route_name='admin_data_users_balance_totals_percapita_json',

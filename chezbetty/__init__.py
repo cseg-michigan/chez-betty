@@ -142,6 +142,8 @@ def main(global_config, **settings):
     config.add_route('user_password_edit',         '/user/password/edit')
     config.add_route('user_password_edit_submit',  '/user/password/edit/submit')
 
+    config.add_route('user_data_balance_json',     '/user/data/balances')
+
 
     # ADMIN
     config.add_route('admin_index',             '/admin')
