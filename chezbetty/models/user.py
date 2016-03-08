@@ -24,6 +24,19 @@ class LDAPLookup(object):
     BASE_DN = "ou=People,dc=umich,dc=edu"
     PASSWORD = None
     ATTRIBUTES = ["uid", "entityid", "displayName"]
+    # http://www.itcs.umich.edu/itcsdocs/r1463/attributes-for-ldap.html
+    DETAILS_ATTRIBUTES = [
+            # Could be interesting but require extra perm's from ITS
+            #"umichInstRoles",
+            #"umichAlumStatus",
+            #"umichAAAcadProgram",
+            #"umichAATermStatus",
+            #"umichHR",
+            "notice",
+            "ou",
+            "umichDescription",
+            "umichTitle",
+            ]
 
     def __init__(self):
         self.__conn = None
@@ -38,14 +51,14 @@ class LDAPLookup(object):
             )
 
 
-    def __lookup(self, k, v):
+    def __do_lookup(self, k, v, attributes, full_dict=False):
         self.__connect()
         query = "(%s=%s)" % (k, v)
         try:
             self.__conn.search(self.BASE_DN,
                     query,
                     ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
-                    attributes=self.ATTRIBUTES
+                    attributes=attributes
             )
         except:
             # sometimes our connections time out
@@ -54,22 +67,41 @@ class LDAPLookup(object):
             self.__conn.search(self.BASE_DN,
                     query,
                     ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
-                    attributes=self.ATTRIBUTES
+                    attributes=attributes
             )
 
         if len(self.__conn.response) == 0:
             raise InvalidUserException()
+
+        if full_dict:
+            return self.__conn.response[0]["attributes"]
+
         return {
             "umid":self.__conn.response[0]["attributes"]["entityid"],
             "uniqname":self.__conn.response[0]["attributes"]["uid"][0],
             "name":self.__conn.response[0]["attributes"]["displayName"][0]
         }
 
-    def lookup_umid(self, umid):
-        return self.__lookup("entityid", umid)
+    def __lookup(self, k, v):
+        return self.__do_lookup(k, v, self.ATTRIBUTES)
 
-    def lookup_uniqname(self, uniqname):
-        return self.__lookup("uid", uniqname)
+    def __detail_lookup(self, k, v):
+        return self.__do_lookup(k, v,
+                self.ATTRIBUTES + self.DETAILS_ATTRIBUTES,
+                full_dict=True,
+                )
+
+    def lookup_umid(self, umid, details=False):
+        if details:
+            return self.__detail_lookup("entityid", umid)
+        else:
+            return self.__lookup("entityid", umid)
+
+    def lookup_uniqname(self, uniqname, details=False):
+        if details:
+            return self.__detail_lookup("uid", uniqname)
+        else:
+            return self.__lookup("uid", uniqname)
 
 
 class User(account.Account):
@@ -103,6 +135,9 @@ class User(account.Account):
     @classmethod
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
+
+    def get_details(self):
+        return self.__ldap.lookup_uniqname(self.uniqname, details=True)
 
     @classmethod
     def from_uniqname(cls, uniqname, local_only=False):

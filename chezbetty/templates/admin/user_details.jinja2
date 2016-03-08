@@ -1,0 +1,18 @@
+<dl class="dl-horizontal">
+  {% if umichTitle %}
+  <dt>Title</dt><dd>{{ umichTitle|join(", ") }}</dd>
+  {% endif %}
+  {% if ou %}
+  <dt>Affiliations</dt><dd>{{ ou|join(", ") }}</dd>
+  {% endif %}
+  {# This is text that the user enters in the MCommunity Directory. They might
+  indicate the best way to contact them, who their administrative assistant is,
+  or any other sort of notice that they want. #}
+  {% if notice %}
+  <dt>Notice</dt><dd>{{ notice }}</dd>
+  {% endif %}
+  {% if umichDescription %}
+  <dt>About Me</dt><dd>{{ umichDescription }}</dd>
+  {% endif %}
+</dl>
+

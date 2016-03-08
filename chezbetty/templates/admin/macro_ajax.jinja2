@@ -1,0 +1,7 @@
+{% macro fill(path, load_text=None) %}
+<div class="ajax-fill" data-path="{{path}}">
+  {% if load_text %}
+  <p>{{ load_text }}</p>
+  {% endif %}
+</div>
+{% endmacro %}

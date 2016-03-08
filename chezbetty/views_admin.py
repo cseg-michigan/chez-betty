@@ -1984,6 +1984,17 @@ def admin_user(request):
         request.session.flash('Invalid user?', 'error')
         return HTTPFound(location=request.route_url('admin_index'))
 
+@view_config(route_name='admin_user_details',
+             renderer='templates/admin/user_details.jinja2',
+             permission='admin')
+def admin_user_details(request):
+    try:
+        user = User.from_id(request.matchdict['user_id'])
+        details = user.get_details()
+        return details
+    except Exception as e:
+        if request.debug: raise(e)
+        return '<p>Unknown error loading user detail.</p>'
 
 @view_config(route_name='admin_user_purchase_add',
              renderer='templates/admin/user_purchase_add.jinja2',

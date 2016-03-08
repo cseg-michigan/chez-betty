@@ -1,5 +1,6 @@
 {% extends "base.jinja2" %}
 {% import "macro_graph.jinja2" as graph %}
+{% import "macro_ajax.jinja2" as ajax %}
 {% set active_page = 'users' %}
 {% block title %}User{% endblock %}
 
@@ -14,16 +15,23 @@
     <h3 class="panel-title">User Details</h3>
   </div>
   <div class="panel-body">
-    <dl class="dl-horizontal">
-      <dt>Name</dt><dd>{{ user.name }}</dd>
-      <dt>uniqname</dt><dd><a href="https://mcommunity.umich.edu/#search:{{ user.uniqname }}">{{ user.uniqname }}</a></dd>
-      <dt>UMID</dt><dd>{{ user.umid }}</dd>
-      <dt>Balance</dt><dd>{{ user.balance|format_currency|safe }}</dd>
-      <dt>Lifetime Discounts</dt><dd>{{ user.lifetime_discounts|format_currency|safe }}</dd>
-      <dt>Lifetime Fees</dt><dd>{{ user.lifetime_fees|format_currency|safe }}</dd>
-      <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
-      <dt>Enabled</dt><dd><td>{{ button.onoff_switch("user", "enabled", user.id, user.enabled) }}</td></dd>
-    </dl>
+    <div class="row">
+      <div class="col-lg-4 col-md-4 col-sm-12">
+        <dl class="dl-horizontal">
+          <dt>Name</dt><dd>{{ user.name }}</dd>
+          <dt>uniqname</dt><dd><a href="https://mcommunity.umich.edu/#search:{{ user.uniqname }}">{{ user.uniqname }}</a></dd>
+          <dt>UMID</dt><dd>{{ user.umid }}</dd>
+          <dt>Balance</dt><dd>{{ user.balance|format_currency|safe }}</dd>
+          <dt>Lifetime Discounts</dt><dd>{{ user.lifetime_discounts|format_currency|safe }}</dd>
+          <dt>Lifetime Fees</dt><dd>{{ user.lifetime_fees|format_currency|safe }}</dd>
+          <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
+          <dt>Enabled</dt><dd><td>{{ button.onoff_switch("user", "enabled", user.id, user.enabled) }}</td></dd>
+        </dl>
+      </div>
+      <div class="col-lg-8 col-md-8 col-sm-12">
+        {{ ajax.fill("/admin/user/" + user.id|string + "/details", "Loading user details from LDAP...") }}
+      </div>
+    </div>
     <hr />
     {% if user.has_password == False %}
     {{ button.ajax_singleuse_button("Create and Email Password", "/admin/user/"~user.id~"/password/create") }}

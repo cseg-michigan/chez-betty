@@ -92,3 +92,9 @@ $(".rotate-divs").each(function () {
 	}, parseInt(showing_div.attr('data-rotate-div-timeout')));
 });
 
+$(".ajax-fill").each(function () {
+	console.log($(this));
+	$(this).removeClass("ajax-fill");
+	$(this).load($(this).attr("data-path"));
+});
+

@@ -190,6 +190,7 @@ def main(global_config, **settings):
     config.add_route('admin_users_email_oneperson',     '/admin/users/email/oneperson')
     config.add_route('admin_users_email_all',           '/admin/users/email/all')
     config.add_route('admin_user',                      '/admin/user/{user_id}')
+    config.add_route('admin_user_details',              '/admin/user/{user_id}/details')
     config.add_route('admin_user_search_json',          '/admin/user/search/{search}/json')
     config.add_route('admin_user_balance_edit',         '/admin/user/balance/edit')
     config.add_route('admin_user_balance_edit_submit',  '/admin/user/balance/edit/submit')
