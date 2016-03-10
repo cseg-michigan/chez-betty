@@ -107,6 +107,8 @@ def main(global_config, **settings):
 
 
     # TERMINAL VIEWS
+    config.add_route('terminal_force_index',     '/force_terminal')
+
     config.add_route('terminal_umid_check',      '/terminal/check')
 
     config.add_route('terminal_deposit',         '/terminal/deposit')

@@ -96,11 +96,7 @@ def IsTerminalPredicate(boolean):
 
 
 
-# Terminal home page
-@view_config(route_name='index',
-             renderer='templates/terminal/index.jinja2',
-             custom_predicates=(IsTerminalPredicate(True),))
-def index_terminal(request):
+def _index_terminal(request):
     announcements = Announcement.all_enabled()
 
     try:
@@ -124,6 +120,21 @@ def index_terminal(request):
             'top_debtors': top_debtors,
             'owed_by_users': User.get_amount_owed(),
             'shame_users': shame_users}
+
+
+# Terminal home page
+@view_config(route_name='index',
+             renderer='templates/terminal/index.jinja2',
+             custom_predicates=(IsTerminalPredicate(True),))
+def index_terminal(request):
+    return _index_terminal(request)
+
+
+# Convenience route for checking in on things
+@view_config(route_name='terminal_force_index',
+             renderer='templates/terminal/index.jinja2')
+def terminal_force_index(request):
+    return _index_terminal(request)
 
 
 # General internet homepage
