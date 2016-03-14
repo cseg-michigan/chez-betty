@@ -144,8 +144,10 @@ body {
   </h1>
   <div class="pull-left">
     <br />
-    <h4>Also, you get a 5% discount if you have at least $20 in your account.
-      There is no discount for being in debt.</h4>
+    <h4>
+      Also, you get a 5% discount if you have at least $20 in your account.
+      Users who are more than $5 in debt are taxed on every purchase.
+    </h4>
   </div>
   <div class="pull-right">
     <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show();'>Continue to Betty</a>
@@ -153,7 +155,12 @@ body {
   <div class="clearfix"></div>
   <hr />
   <div style="-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size: 15px;">
+  {% set tax_header = 100 %} {# start much greater than max tax #}
   {% for user in shame_users %}
+  {% if (-user.balance / 5)|round(method='floor') < tax_header %}
+  {% set tax_header = (-user.balance / 5)|round(method='floor') %}
+  <h2 class="big-debt"><strong>{{ (tax_header + 4)|int }}% Tax</strong></h2>
+  {% endif %}
   <p>{{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}</p>
   {% endfor %}
   </div>
