@@ -150,11 +150,11 @@ body {
     </h4>
   </div>
   <div class="pull-right">
-    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show();'>Continue to Betty</a>
+    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
   </div>
   <div class="clearfix"></div>
   <hr />
-  <div style="-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size: 15px;">
+  <div class="fitin" data-fitin-width="1570" data-fitin-height="500" data-fitin-columns="true" style="-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size: 15px;">
   {% set tax_header = 100 %} {# start much greater than max tax #}
   {% for user in shame_users %}
   {% if (-user.balance / 5)|round(method='floor') < tax_header %}
@@ -171,7 +171,7 @@ body {
 {% endblock %}
 
 {% block footer %}
-<div class="navbar navbar-fixed-bottom" role="navigation">
+<div id="footer" class="navbar navbar-fixed-bottom" role="navigation">
   <div class="container-fluid">
     <hr />
     <p>
@@ -193,6 +193,7 @@ body {
 <script>
   if($('#splash').length != 0) {
     $("#index").hide();
+    $("#footer").hide();
     $("#splash").show();
   }
 </script>

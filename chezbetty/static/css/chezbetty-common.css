@@ -20,3 +20,9 @@
 	background-color: #fffacd;
 	padding: 2px 5px 2px 5px;
 }
+
+/* Support for auto-sizing text */
+.fitin {
+	overflow: hidden;
+}
+

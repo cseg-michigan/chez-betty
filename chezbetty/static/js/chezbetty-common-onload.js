@@ -98,3 +98,20 @@ $(".ajax-fill").each(function () {
 	$(this).load($(this).attr("data-path"));
 });
 
+// Based off http://stackoverflow.com/questions/6112660/
+$(".fitin").each(function () {
+	var height  = $(this).attr("data-fitin-height");
+	var width   = $(this).attr("data-fitin-width");
+	var columns = $(this).attr("data-fitin-columns") == "true";
+
+	while ($(this).height() > height) {
+		$(this).css('font-size', (parseInt($(this).css('font-size')) - 1) + "px" );
+
+		if (columns) {
+			$(this).css('column-count', parseInt($(this).css('column-count')) + 1 );
+			$(this).css('-webkit-column-count', parseInt($(this).css('-webkit-column-count')) + 1 );
+			$(this).css('-moz-column-count', parseInt($(this).css('-moz-column-count')) + 1 );
+		}
+	}
+});
+
