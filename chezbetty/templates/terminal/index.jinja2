@@ -144,13 +144,13 @@ body {
   </h1>
   <div class="pull-left">
     <br />
-    <h4>
+    <h4 id="splash-note">
       Also, you get a 5% discount if you have at least $20 in your account.
       Users who are more than $5 in debt are taxed on every purchase.
     </h4>
   </div>
   <div class="pull-right">
-    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
+    <a id="continue_to_betty" data-time="{{ -owed_by_users }}" class="btn btn-deftaul btn-huge btn-bordered">Continue to Betty</a>
   </div>
   <div class="clearfix"></div>
   <hr />
@@ -162,7 +162,7 @@ body {
   <h2 class="big-debt"><strong>{{ (tax_header + 4)|int }}% Tax</strong></h2>
   {% endif %}
   <p style="{%if user.balance < -20%}font-weight: bold;{%endif%}{%if loop.index <= 5%}font-size: 150%;{%endif%}">
-  {{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}
+  {{loop.index}}.&nbsp;{{ user.name }}{%if loop.index <= 5%} (<tt>{{user.uniqname}}</tt>){%endif%}&nbsp;{{ user.balance|format_debt|safe }}
   </p>
   {% endfor %}
   </div>
