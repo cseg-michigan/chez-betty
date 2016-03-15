@@ -893,35 +893,3 @@ $("#keypad-umid").on("click", "button", function () {
 		}
 	}
 });
-
-
-// SUPPORT FOR THE DEBT SPLASH PAGE
-$("#continue_to_betty").on('click', function continue_to_betty () {
-	$("#continue_to_betty").unbind('click');
-
-	var time = Math.floor(parseInt($(this).attr('data-time')) / 100);
-	var a = $(this);
-	var delay = 0;
-
-	var f = function() {
-		a.text("Continuing in " + time + "...");
-		time -= 1;
-		delay += 1;
-
-		if (delay > 3) {
-			$("#splash-note").text("The countdown is (Debt / 100) seconds. Bored? Annoyed? Take this time to call/text/e-mail someone below!");
-			$("#splash-note").addClass('big-debt');
-		}
-
-		if (time < 0) {
-			$("#splash").hide();
-			$("#index").show();
-			$("#footer").show();
-		} else {
-			setTimeout(f, 1000);
-		}
-	};
-
-	f();
-});
-
