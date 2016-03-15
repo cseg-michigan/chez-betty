@@ -17,6 +17,9 @@ input_timer = null;
 $(document).keypress(function (e) {
 	alert_clear();
 
+	// Ignore MCard input while the splash screen is live
+	if ($('#splash').is(':visible')) return;
+
 	if (input_timer) {
 		clearInterval(input_timer);
 	}
