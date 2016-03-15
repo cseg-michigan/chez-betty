@@ -16,6 +16,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li><a class="navbar-brand hidden-lg hidden-md hidden-sm" href="#" style="color:black; display:block;">DEBUG MODE{{ ''|add_git_version }}</a></li>
         {% if request.has_permission("admin") %}
+        <li><a href="/force_terminal">Terminal</a></li>
         <li><a href="/">User Interface</a></li>
         {% endif %}
         <li><a href="/logout">Logout</a></li>
