@@ -161,7 +161,9 @@ body {
   {% set tax_header = (-user.balance / 5)|round(method='floor') %}
   <h2 class="big-debt"><strong>{{ (tax_header + 4)|int }}% Tax</strong></h2>
   {% endif %}
-  <p>{{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}</p>
+  <p style="{%if user.balance < -20%}font-weight: bold;{%endif%}{%if loop.index <= 5%}font-size: 150%;{%endif%}">
+  {{loop.index}}.&nbsp;{{ user.name }}&nbsp;{{ user.balance|format_debt|safe }}
+  </p>
   {% endfor %}
   </div>
 </div>
