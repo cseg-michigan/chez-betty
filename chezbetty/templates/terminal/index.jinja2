@@ -150,7 +150,7 @@ body {
     </h4>
   </div>
   <div class="pull-right">
-    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
+    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#splash2").show();'>Continue to Betty</a>
   </div>
   <div class="clearfix"></div>
   <hr />
@@ -168,6 +168,23 @@ body {
   </div>
 </div>
 
+
+{# Secondary splash page #}
+<div id="splash2" class="container" style="display: none;">
+  <div style="font-size: 100px;">
+    <h1 style="font-size: 100px;">
+      Seriously. We need some help from some social pressure.
+    </h1>
+    <h1 style="font-size: 100px;">
+      Please email <span style="color: red;">{{ shame_users[0].uniqname }}@umich.edu</span>
+      and ask them why they have not paid Betty back.
+    </h1>
+    <h1 style="font-size: 60px;">
+      (Bonus points if you cc <span style="color: red;">chezbetty@umich.edu</span>)
+    </h1>
+    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash2").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
+  </div>
+</div>
 
 
 {% endblock %}
