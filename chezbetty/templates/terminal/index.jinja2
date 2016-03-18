@@ -132,12 +132,15 @@ body {
 
 {# Splash page saying we need people to pay us back. #}
 <div id="splash" class="container">
-  <h1>To be clear,</h1>
-  <div>
+  <h1>Hey, we'd like to get user debt under $1,000 before restocking
+      so we can make sure Betty can pay her bills.
+  </h1>
+  <h1>Otherwise we are only going to have bubbly water.</h1>
+  {#<div>
     <h1 style="font-size: 100px; color: red;">
       no seriuos restocking until user debt is under $1,000.
     </h1>
-  </div>
+  </div>#}
   <h1>Current debt is: <strong>{{ owed_by_users|format_debt|safe }}</strong>
   <h1>So please, e-mail a stranger and ask them to pay Betty back so we can restock.</h1>
   <div class="pull-right">
