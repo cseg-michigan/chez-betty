@@ -132,24 +132,22 @@ body {
 
 {# Splash page saying we need people to pay us back. #}
 <div id="splash" class="container">
-  <h1>Right now, people owe Betty a combined</h1>
+  <h1>To be clear,</h1>
   <div>
-    <h1 style="font-size: 200px;">
-      <strong>{{ owed_by_users|format_debt|safe }}</strong>
+    <h1 style="font-size: 100px; color: red;">
+      no seriuos restocking until user debt is under $1,000.
     </h1>
   </div>
-  <h1>So please bug your friends, email your students, guilt your labmates,
-  and shun your colleagues to pay Betty back so we can restock with something
-  other than what we like (which is bubbly water).
-  </h1>
-  <div class="pull-left">
+  <h1>Current debt is: <strong>{{ owed_by_users|format_debt|safe }}</strong>
+  <h1>So please, e-mail a stranger and ask them to pay Betty back so we can restock.</h1>
+  <div class="pull-right">
     <br />
     <h4>
       Also, you get a 5% discount if you have at least $20 in your account.
       Users who are more than $5 in debt are taxed on every purchase.
     </h4>
   </div>
-  <div class="pull-right">
+  <div class="pull-left">
     <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#splash2").show();'>Continue to Betty</a>
   </div>
   <div class="clearfix"></div>
