@@ -1961,6 +1961,17 @@ def admin_users_edit_submit(request):
     return HTTPFound(location=request.route_url('admin_users_edit'))
 
 
+@view_config(route_name='admin_uniqname',
+             permission='admin')
+def admin_uniqname(request):
+    try:
+        user = User.from_uniqname(request.matchdict['uniqname'], local_only=True)
+        return HTTPFound(location=request.route_url('admin_user', user_id=user.id))
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('No user with that uniqname.', 'error')
+        return HTTPFound(location=request.route_url('admin_index'))
+
 @view_config(route_name='admin_user',
              renderer='templates/admin/user.jinja2',
              permission='admin')
