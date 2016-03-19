@@ -114,6 +114,7 @@ class User(account.Account):
     _password = Column("password", String(255))
     _salt     = Column("salt", String(255))
     enabled   = Column(Boolean, nullable=False, default=True)
+    archived  = Column(Boolean, nullable=False, default=False)
     role      = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
                        nullable=False, default="user")
 
@@ -179,6 +180,8 @@ class User(account.Account):
     def count(cls):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.role != 'serviceaccount')\
+                        .filter(cls.archived == False)\
+                        .filter(cls.enabled == True)\
                         .one().c
 
     @classmethod

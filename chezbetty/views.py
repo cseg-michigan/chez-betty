@@ -88,7 +88,7 @@ def lang(request):
 from pyramid.view import view_config
 
 # Use to select which homepage to show, the only-on-the-betty-terminal version
-# or the publically accessible version.   
+# or the publically accessible version.
 def IsTerminalPredicate(boolean):
     def is_terminal(context, request):
         return ((request.user != None) and (request.user.role == 'serviceaccount')) == boolean
@@ -193,6 +193,17 @@ def login_submit(request):
             return HTTPFound(location=request.route_url('index'), headers=headers)
 
         else:
+            # On user login also check if the user is archived. A login
+            # counts as activity
+            if user.archived:
+                if user.archived_balance != 0:
+                    datalayer.adjust_user_balance(user,
+                                                  user.archived_balance,
+                                                  'Reinstated archived user.',
+                                                  user)
+                user.balance = user.archived_balance
+                user.archived = False
+
             # If we got a normal user, check if the login form had
             # a "came_from" input which tells us where to go back to.
             # Otherwise, default to '/user'.
@@ -207,7 +218,7 @@ def login_submit(request):
             # Make sure we don't send the user back to useless pages
             if came_from in ['', login_url, login_sub_url, reset_pw_url]:
                 came_from = user_url
-        
+
         return HTTPFound(location=came_from, headers=headers)
     else:
         messages.append('Login failed. Incorrect username or password.')

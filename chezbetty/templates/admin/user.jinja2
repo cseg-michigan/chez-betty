@@ -25,6 +25,7 @@
           <dt>Lifetime Discounts</dt><dd>{{ user.lifetime_discounts|format_currency|safe }}</dd>
           <dt>Lifetime Fees</dt><dd>{{ user.lifetime_fees|format_currency|safe }}</dd>
           <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
+          <dt>Archived</dt><dd>{{ user.archived }}</dd>
           <dt>Enabled</dt><dd><td>{{ button.onoff_switch("user", "enabled", user.id, user.enabled) }}</td></dd>
         </dl>
       </div>
@@ -37,6 +38,9 @@
     {{ button.ajax_singleuse_button("Create and Email Password", "/admin/user/"~user.id~"/password/create") }}
     {% else %}
     {{ button.ajax_singleuse_button("Reset and Email Password", "/admin/user/"~user.id~"/password/reset") }}
+    {% endif %}
+    {% if not user.archived %}
+    {{ button.ajax_singleuse_button("Archive User", "/admin/user/"~user.id~"/archive") }}
     {% endif %}
 
   </div>

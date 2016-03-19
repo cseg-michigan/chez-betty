@@ -201,6 +201,7 @@ def main(global_config, **settings):
     config.add_route('admin_user_purchase_add_submit',  '/admin/user/purchase/add/submit')
     config.add_route('admin_user_password_create',      '/admin/user/{user_id}/password/create')
     config.add_route('admin_user_password_reset',       '/admin/user/{user_id}/password/reset')
+    config.add_route('admin_user_archive',              '/admin/user/{user_id}/archive')
 
     config.add_route('admin_pools',                     '/admin/pools')
     config.add_route('admin_pool',                      '/admin/pool/{pool_id}')

@@ -5,11 +5,12 @@ from sqlalchemy_utils import ArrowType
 class Account(Versioned, Base):
     __tablename__ = "accounts"
 
-    id         = Column(Integer, primary_key=True, nullable=False)
-    type       = Column(Enum("user", "virtual", "cash", "pool", name="account_type"), nullable=False)
-    name       = Column(String(255), nullable=False)
-    balance    = Column(Numeric, nullable=False)
-    created_at = Column(ArrowType, default=datetime.datetime.utcnow)
+    id               = Column(Integer, primary_key=True, nullable=False)
+    type             = Column(Enum("user", "virtual", "cash", "pool", name="account_type"), nullable=False)
+    name             = Column(String(255), nullable=False)
+    balance          = Column(Numeric, nullable=False)
+    archived_balance = Column(Numeric, nullable=True)
+    created_at       = Column(ArrowType, default=datetime.datetime.utcnow)
 
     __mapper_args__ = {'polymorphic_on': type}
 

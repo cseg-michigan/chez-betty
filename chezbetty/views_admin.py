@@ -2119,6 +2119,50 @@ def admin_user_password_reset(request):
         return {'status': 'error',
                 'msg': 'Error.'}
 
+#
+# Method for de-activating users who haven't used Betty in a while.
+# This lets us handle users who don't go to north anymore or who
+# have graduated.
+#
+# The balance they have when they are archived is recorded and then any
+# balance or debt is moved to the chezbetty account. If the user ever does
+# return, their old balance is restored.
+#
+@view_config(route_name='admin_user_archive',
+        renderer='json',
+        permission='admin')
+def admin_user_archive(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+
+        # Cannot archive already archived user
+        if user.archived:
+            return {'status': 'error',
+                    'msg': 'User already archived.'}
+
+        # Save current balance
+        user.archived_balance = user.balance
+
+        # Now transfer it to chezbetty if there is anything to transfer
+        if user.balance != 0:
+            datalayer.adjust_user_balance(user,
+                                          user.balance*-1,
+                                          'Archived user who has not used Betty in a while.',
+                                          request.user)
+
+        # Mark it done
+        user.archived = True
+
+        return {'status': 'success',
+                'msg': 'User achived.'}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
 @view_config(route_name='admin_users_email',
              renderer='templates/admin/users_email.jinja2',
              permission='admin')

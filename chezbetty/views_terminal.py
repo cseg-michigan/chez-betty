@@ -81,6 +81,16 @@ def terminal(request):
                 )), 'error')
             return HTTPFound(location=request.route_url('index'))
 
+        # Handle re-instating archived user
+        if user.archived:
+            if user.archived_balance != 0:
+                datalayer.adjust_user_balance(user,
+                                              user.archived_balance,
+                                              'Reinstated archived user.',
+                                              request.user)
+            user.balance = user.archived_balance
+            user.archived = False
+
         # For Demo mode:
         items = DBSession.query(Item)\
                          .filter(Item.enabled == True)\
