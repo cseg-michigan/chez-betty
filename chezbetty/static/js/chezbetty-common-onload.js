@@ -93,7 +93,6 @@ $(".rotate-divs").each(function () {
 });
 
 $(".ajax-fill").each(function () {
-	console.log($(this));
 	$(this).removeClass("ajax-fill");
 	$(this).load($(this).attr("data-path"));
 });

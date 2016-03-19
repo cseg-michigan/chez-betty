@@ -2005,7 +2005,7 @@ def admin_user_details(request):
         return details
     except Exception as e:
         if request.debug: raise(e)
-        return '<p>Unknown error loading user detail.</p>'
+        return {'notice': 'Unknown error loading user detail.'}
 
 @view_config(route_name='admin_user_purchase_add',
              renderer='templates/admin/user_purchase_add.jinja2',
