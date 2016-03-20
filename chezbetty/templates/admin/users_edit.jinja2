@@ -12,44 +12,81 @@
 {% set sort=request.GET["sort"]|default(None) %}
 {% set dir=request.GET["direction"]|default("asc") %}
 
-<form role="form" action="/admin/users/edit/submit" method="post">
 
-  <table class="table sortable sticky">
+<table class="table sortable sticky">
 
-    <thead>
-      <tr class="user-list-header">
-        <th>&nbsp;</th>
-        <th {% if sort=="name" %}data-defaultsort="{{ dir }}"{% endif %}>Name</th>
-        <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
-        <th {% if sort=="balance" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
-        <th {% if sort=="lastpurchase" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Days Since Last Purchase</th>
-        <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
-      </tr>
-    </thead>
+  <thead>
+    <tr class="user-list-header">
+      <th {% if sort=="name" %}data-defaultsort="{{ dir }}"{% endif %}>Name</th>
+      <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
+      <th {% if sort=="balance" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
+      <th {% if sort=="lastpurchase" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Days Since Last Purchase</th>
+      <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
+    </tr>
+  </thead>
 
-    <tbody>
-      {% for user in users %}
-      <tr id="user-{{ user.id }}" class="edit-user-row {% if user.enabled == False %} disabled-row {% endif %}">
-        <td><a href="/admin/user/{{ user.id }}"><span class="glyphicon glyphicon-user"></span></a></td>
-        <td data-value="{{ user.name }}"><input type="text" class="form-control" id="user-name-{{ user.id }}" name="user-name-{{ user.id }}" value="{{ user.name }}"></td>
-        <td data-value="{{ user.role }}">
-          <select class="form-control" id="user-role-{{ user.id }}" name="user-role-{{ user.id }}">
-            {% for role in roles %}
-            <option value="{{ role[0] }}" {% if role[0] == user.role %}selected="selected"{% endif %}>{{ role[1] }}</option>
-            {% endfor %}
-          </select>
-        </td>
-        <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
-        <td data-value="{{ user.days_since_last_purchase }}" class="right">{{ user.days_since_last_purchase }}</td>
-        <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
+  <tbody>
+    {% for user in normal_users %}
+    <tr id="user-{{ user.id }}" class="edit-user-row {% if user.enabled == False %} disabled-row {% endif %}">
+      <td data-value="{{ user.name }}">{{ user|make_link|safe }}</td>
+      <td data-value="{{ user.role }}">{{ roles[user.role] }}</td>
+      <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
+      <td data-value="{{ user.days_since_last_purchase }}" class="right">{{ user.days_since_last_purchase }}</td>
+      <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
 
-  </table>
+</table>
 
-  <button type="submit" class="btn btn-success">Update users</button>
+<h2>Archived Users</h2>
+<table class="table sortable sticky">
 
-</form>
+  <thead>
+    <tr class="user-list-header">
+      <th {% if sort=="name" %}data-defaultsort="{{ dir }}"{% endif %}>Name</th>
+      <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
+      <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for user in archived_users %}
+    <tr id="user-{{ user.id }}" class="edit-user-row {% if user.enabled == False %} disabled-row {% endif %}">
+      <td data-value="{{ user.name }}">{{ user|make_link|safe }}</td>
+      <td data-value="{{ user.role }}">{{ roles[user.role] }}</td>
+      <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
+
+<h2>Disabled Users</h2>
+<table class="table sortable sticky">
+
+  <thead>
+    <tr class="user-list-header">
+      <th {% if sort=="name" %}data-defaultsort="{{ dir }}"{% endif %}>Name</th>
+      <th {% if sort=="role" %}data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
+      <th {% if sort=="balance" %}data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
+      <th {% if sort=="date" %}data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for user in disabled_users %}
+    <tr id="user-{{ user.id }}" class="edit-user-row {% if user.enabled == False %} disabled-row {% endif %}">
+      <td data-value="{{ user.name }}">{{ user|make_link|safe }}</td>
+      <td data-value="{{ user.role }}">{{ roles[user.role] }}</td>
+      <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
+      <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+</table>
+
+
 
 {% endblock %}

@@ -21,6 +21,7 @@
           <dt>Name</dt><dd>{{ user.name }}</dd>
           <dt>uniqname</dt><dd><a href="https://mcommunity.umich.edu/#search:{{ user.uniqname }}">{{ user.uniqname }}</a></dd>
           <dt>UMID</dt><dd>{{ user.umid }}</dd>
+          <dt>Role</dt><dd>{{ user.role }}</dd>
           <dt>Balance</dt><dd>{{ user.balance|format_currency|safe }}</dd>
           <dt>Lifetime Discounts</dt><dd>{{ user.lifetime_discounts|format_currency|safe }}</dd>
           <dt>Lifetime Fees</dt><dd>{{ user.lifetime_fees|format_currency|safe }}</dd>
@@ -41,6 +42,15 @@
     {% endif %}
     {% if not user.archived %}
     {{ button.ajax_singleuse_button("Archive User", "/admin/user/"~user.id~"/archive") }}
+    {% endif %}
+    {% if not user.role == 'user' %}
+    {{ button.ajax_singleuse_button("Change role to User", "/admin/user/"~user.id~"/changerole/user") }}
+    {% endif %}
+    {% if not user.role == 'manager' %}
+    {{ button.ajax_singleuse_button("Change role to Manager", "/admin/user/"~user.id~"/changerole/manager") }}
+    {% endif %}
+    {% if not user.role == 'administrator' %}
+    {{ button.ajax_singleuse_button("Change role to Administrator", "/admin/user/"~user.id~"/changerole/administrator") }}
     {% endif %}
 
   </div>

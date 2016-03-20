@@ -16,7 +16,7 @@ from . import views_data
 from .models import *
 from .models.model import *
 from .models import user as __user
-from .models.user import User
+from .models.user import User, InvalidUserException
 from .models.item import Item, ItemImage
 from .models.box import Box
 from .models.box_item import BoxItem
@@ -1922,43 +1922,17 @@ def admin_vendors_edit_submit(request):
              renderer='templates/admin/users_edit.jinja2',
              permission='admin')
 def admin_users_edit(request):
-    enabled_users = DBSession.query(User).filter_by(enabled=True).order_by(User.name).all()
-    disabled_users = DBSession.query(User).filter_by(enabled=False).order_by(User.name).all()
-    users = enabled_users + disabled_users
-    roles = [('user', 'User'),
-             ('serviceaccount', 'Service Account'),
-             ('manager', 'Manager'),
-             ('administrator', 'Administrator')]
-    return {'users': users, 'roles': roles}
-
-
-@view_config(route_name='admin_users_edit_submit',
-             request_method='POST',
-             permission='admin')
-def admin_users_edit_submit(request):
-    for key in request.POST:
-        user_id = int(key.split('-')[2])
-        field = key.split('-')[1]
-        val = request.POST[key].strip()
-
-        user = User.from_id(user_id)
-
-        if field == 'role' and user.role == 'user' and val != 'user':
-            # The user was previously just a user and now is being set to
-            # something else. Every other role type requires a password.
-            # Here, we set the password to the default (so the user can
-            # login) and the user can change it themselves.
-            user.password = request.registry.settings['chezbetty.default_password']
-
-        elif field == 'role' and user.role != 'user' and val == 'user':
-            # The user was something other than just a user and is being
-            # downgraded. The user no longer needs to be able to login
-            # so we reset the password.
-            user.password = ''
-
-        setattr(user, field, val)
-    request.session.flash('Users updated successfully.', 'success')
-    return HTTPFound(location=request.route_url('admin_users_edit'))
+    normal_users = User.get_normal_users()
+    archived_users = User.get_archived_users()
+    disabled_users = User.get_disabled_users()
+    roles = {'user': 'User',
+             'serviceaccount': 'Service Account',
+             'manager': 'Manager',
+             'administrator': 'Administrator'}
+    return {'normal_users': normal_users,
+            'archived_users': archived_users,
+            'disabled_users': disabled_users,
+            'roles': roles}
 
 
 @view_config(route_name='admin_uniqname',
@@ -2003,6 +1977,8 @@ def admin_user_details(request):
         user = User.from_id(request.matchdict['user_id'])
         details = user.get_details()
         return details
+    except InvalidUserException:
+        return {'notice': 'User no longer in the directory.'}
     except Exception as e:
         if request.debug: raise(e)
         return {'notice': 'Unknown error loading user detail.'}
@@ -2119,7 +2095,7 @@ def admin_user_password_reset(request):
         return {'status': 'error',
                 'msg': 'Error.'}
 
-#
+
 # Method for de-activating users who haven't used Betty in a while.
 # This lets us handle users who don't go to north anymore or who
 # have graduated.
@@ -2127,7 +2103,6 @@ def admin_user_password_reset(request):
 # The balance they have when they are archived is recorded and then any
 # balance or debt is moved to the chezbetty account. If the user ever does
 # return, their old balance is restored.
-#
 @view_config(route_name='admin_user_archive',
         renderer='json',
         permission='admin')
@@ -2162,6 +2137,29 @@ def admin_user_archive(request):
         if request.debug: raise(e)
         return {'status': 'error',
                 'msg': 'Error.'}
+
+
+# AJAX for changing user role
+@view_config(route_name='admin_user_changerole',
+        renderer='json',
+        permission='admin')
+def admin_user_changerole(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        new_role = request.matchdict['role']
+
+        user.role = new_role
+
+        return {'status': 'success',
+                'msg': 'User role successfully changed to {}.'.format(new_role)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
+
 
 @view_config(route_name='admin_users_email',
              renderer='templates/admin/users_email.jinja2',

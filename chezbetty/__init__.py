@@ -185,7 +185,6 @@ def main(global_config, **settings):
     config.add_route('admin_inventory_submit',          '/admin/inventory/submit')
 
     config.add_route('admin_users_edit',                '/admin/users/edit')
-    config.add_route('admin_users_edit_submit',         '/admin/users/edit/submit')
     config.add_route('admin_users_email',               '/admin/users/email')
     config.add_route('admin_users_email_endofsemester', '/admin/users/email/endofsemester')
     config.add_route('admin_users_email_deadbeats',     '/admin/users/email/deadbeats')
@@ -202,6 +201,7 @@ def main(global_config, **settings):
     config.add_route('admin_user_password_create',      '/admin/user/{user_id}/password/create')
     config.add_route('admin_user_password_reset',       '/admin/user/{user_id}/password/reset')
     config.add_route('admin_user_archive',              '/admin/user/{user_id}/archive')
+    config.add_route('admin_user_changerole',           '/admin/user/{user_id}/changerole/{role}')
 
     config.add_route('admin_pools',                     '/admin/pools')
     config.add_route('admin_pool',                      '/admin/pool/{pool_id}')

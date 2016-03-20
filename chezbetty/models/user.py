@@ -198,6 +198,26 @@ class User(account.Account):
                         .order_by(cls.balance).all()
 
     @classmethod
+    def get_normal_users(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled)\
+                        .filter(cls.archived == False)\
+                        .order_by(cls.name).all()
+
+    @classmethod
+    def get_archived_users(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled)\
+                        .filter(cls.archived == True)\
+                        .order_by(cls.name).all()
+
+    @classmethod
+    def get_disabled_users(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled == False)\
+                        .order_by(cls.name).all()
+
+    @classmethod
     def get_users_total(cls):
         return DBSession.query(func.sum(User.balance).label("total_balance"))\
                         .one().total_balance or Decimal(0.0)
