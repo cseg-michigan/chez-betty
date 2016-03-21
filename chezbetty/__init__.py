@@ -88,6 +88,8 @@ def main(global_config, **settings):
 
     config.add_static_view('static', 'static', cache_max_age=3600)
 
+    config.add_renderer('csv', 'chezbetty.renderers.CSVRenderer')
+
     # GLOBAL NOT LOGGED IN VIEWS
     config.add_route('exception_view',      '/exception')
 
@@ -97,6 +99,7 @@ def main(global_config, **settings):
 
     config.add_route('about',               '/about')
     config.add_route('shame',               '/shame')
+    config.add_route('shame_csv',           '/shame.csv')
 
     config.add_route('items',               '/items')
     config.add_route('item_request',        '/item/request')

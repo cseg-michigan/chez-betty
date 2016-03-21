@@ -95,6 +95,19 @@ def users(request):
                      .order_by(User.balance).all()
     return {'users': users}
 
+@view_config(route_name='shame_csv', renderer='csv')
+def shame_csv(request):
+    users = DBSession.query(User)\
+                     .filter(User.balance < -5)\
+                     .order_by(User.balance).all()
+    header = ['uniqname','balance','name']
+    rows = [[user.uniqname, user.balance, user.name] for user in users]
+
+    return {
+            'header': header,
+            'rows': rows,
+            }
+
 
 @view_config(route_name='paydebt', renderer='templates/public/paydebt.jinja2')
 def paydebt(request):
