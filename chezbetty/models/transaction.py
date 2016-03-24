@@ -211,8 +211,8 @@ class Transaction(Base):
 
 
     @classmethod
-    def get_balances_over_time_for_user(cls, user):
-        rows = DBSession.query(cls.amount,
+    def get_transactions_over_time_for_user(cls, user):
+        return DBSession.query(cls.amount,
                                cls.type,
                                cls.to_account_virt_id,
                                cls.fr_account_virt_id,
@@ -232,6 +232,11 @@ class Transaction(Base):
                             ))\
                         .order_by(event.Event.timestamp)\
                         .all()
+
+
+    @classmethod
+    def get_balances_over_time_for_user(cls, user):
+        rows = cls.get_transactions_over_time_for_user(user)
         # We can re-use the global balance calculation code because the query
         # filtered it down to only this user, only now the "global" total
         # positive values (r[2]) and total debt (r[1]) are just this user's
@@ -239,6 +244,12 @@ class Transaction(Base):
         rows = utility.timeseries_balance_total_daily(rows)
         rows = [(r[0],r[2]/100 if r[1]==0 else -r[1]/100) for r in rows]
         return rows
+
+    @classmethod
+    def get_days_in_debt_for_user(cls, user):
+        rows = cls.get_transactions_over_time_for_user(user)
+        days = utility.get_days_on_shame(user, rows)
+        return days
 
 
 def __get_transactions_query(self):

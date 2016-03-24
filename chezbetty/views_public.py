@@ -87,21 +87,24 @@ def item_request_new(request):
         request.session.flash('Error adding request.', 'error')
         return HTTPFound(location=request.route_url('index'))
 
-
-@view_config(route_name='shame', renderer='templates/public/shame.jinja2')
-def users(request):
+def _get_shame_users():
     users = DBSession.query(User)\
                      .filter(User.balance < -5)\
                      .order_by(User.balance).all()
+    for user in users:
+        user.days_on_shame = Transaction.get_days_in_debt_for_user(user)
+    return users
+
+@view_config(route_name='shame', renderer='templates/public/shame.jinja2')
+def shame(request):
+    users = _get_shame_users()
     return {'users': users}
 
 @view_config(route_name='shame_csv', renderer='csv')
 def shame_csv(request):
-    users = DBSession.query(User)\
-                     .filter(User.balance < -5)\
-                     .order_by(User.balance).all()
-    header = ['uniqname','balance','name']
-    rows = [[user.uniqname, user.balance, user.name] for user in users]
+    users = _get_shame_users()
+    header = ['uniqname','balance','name','days_on_shame']
+    rows = [[user.uniqname, user.balance, user.name, user.days_on_shame] for user in users]
 
     return {
             'header': header,

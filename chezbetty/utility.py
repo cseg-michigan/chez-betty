@@ -15,6 +15,7 @@ except ImportError:
 
 import pytz
 
+import arrow
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -200,6 +201,41 @@ def group(rows, period='day'):
             sums.append((item_period, total))
 
     return sums
+
+
+def get_days_on_shame(user, rows):
+    directions = {
+        'purchase':   -1, # user balance goes down by amount
+        'cashdeposit': 1, # user balance goes up by amount
+        'ccdeposit':   1,
+        'btcdeposit':  1,
+        'adjustment':  1
+    }
+
+    if user.balance >= 0:
+        return 0
+    balance = user.balance
+    for r in reversed(rows):
+        amount = r[0]
+        trtype = r[1]
+        to_uid = r[2]
+        fr_uid = r[3]
+        timest = r[4]
+        t = timest.timestamp*1000
+
+        # We get the user/pool id from whether we care about where the
+        # money came from or went
+        if directions[trtype] == -1:
+            userid = fr_uid
+        else:
+            userid = to_uid
+
+        balance = balance - (directions[trtype]*amount)
+
+        if balance > -5:
+            break
+
+    return (arrow.now() - timest).days
 
 # Returns an array of tuples where the first item in the tuple is a millisecond
 # timestamp and the second item is the total number of things so far.

@@ -51,8 +51,10 @@ body {
 
           <ol>
             {% for debtor in top_debtors %}
-            <li style="font-size: {{38-(3*loop.index)}}px; padding-bottom: 10px;">
+            <li style="font-size: {{30-(2*loop.index)}}px; padding-bottom: 10px;">
               <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }}): {{ debtor.balance|format_currency|safe }}
+              <br />
+              <p style="font-size: 75%; color: blue;">{{ debtor.days_on_shame }} days on the Wall of Shame</p>
             </li>
             {% endfor %}
           </ol>
@@ -162,9 +164,12 @@ body {
   {% set tax_header = (-user.balance / 5)|round(method='floor') %}
   <h2 class="big-debt"><strong>{{ (tax_header + 4)|int }}% Tax</strong></h2>
   {% endif %}
-  <p style="{%if user.balance < -20%}font-weight: bold;{%endif%}{%if loop.index <= 5%}font-size: 150%;{%endif%}">
-  {{loop.index}}.&nbsp;{{ user.name }}{%if loop.index<=5%} (<tt>{{user.uniqname}}</tt>){%endif%}&nbsp;{{ user.balance|format_debt|safe }}
-  </p>
+  <div>
+    <p style="{%if user.balance < -20%}font-weight: bold;{%endif%}{%if loop.index <= 5%}font-size: 150%;{%endif%}">
+    {{loop.index}}.&nbsp;{{ user.name }}{%if loop.index<=5%} (<tt>{{user.uniqname}}</tt>){%endif%}&nbsp;{{ user.balance|format_debt|safe }}
+    </p>
+    <p style="color: blue">{%if loop.index <= 5 %}{{user.days_on_shame}}&nbsp;days on Wall of Shame{%endif%}</p>
+  </div>
   {% endfor %}
   </div>
 </div>
@@ -180,8 +185,8 @@ body {
       Please email <span style="color: red;">{{ shame_users[0].uniqname }}@umich.edu</span>
       and ask them why they have not paid Betty back.
     </h1>
-    <h1 style="font-size: 60px;">
-      (Bonus points if you cc <span style="color: red;">chezbetty@umich.edu</span>)
+    <h1 style="font-size: 60px; color: blue;">
+      They have been on the Wall of Shame for {{ shame_users[0].days_on_shame }} days.
     </h1>
     <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash2").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
   </div>

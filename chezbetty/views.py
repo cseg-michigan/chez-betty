@@ -99,11 +99,17 @@ def IsTerminalPredicate(boolean):
 def _index_terminal(request):
     announcements = Announcement.all_enabled()
 
+    shame_users = User.get_shame_users()
+
     try:
         top_debtors = DBSession.query(User)\
                          .filter(User.balance < -5)\
                          .order_by(User.balance)\
                          .limit(5).all()
+        for i, debtor in enumerate(top_debtors):
+            days = Transaction.get_days_in_debt_for_user(debtor)
+            debtor.days_on_shame = days
+            shame_users[i].days_on_shame = days
     except NoResultFound:
         top_debtors = None
 
@@ -112,8 +118,6 @@ def _index_terminal(request):
         admins = User.get_admins()
     else:
         admins = []
-
-    shame_users = User.get_shame_users()
 
     return {'announcements': announcements,
             'admins': admins,
