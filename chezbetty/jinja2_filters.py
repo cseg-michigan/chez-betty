@@ -41,6 +41,10 @@ def pretty_date(datetime_obj):
 	eastern_time = eastern.format('hh:mm A')
 	return '<span class="prettydate">{} at {}</span>'.format(eastern_date, eastern_time)
 
+def human_date(datetime_obj):
+	eastern = arrow.get(datetime_obj).to('US/Eastern')
+	return eastern.humanize()
+
 # Shorten a string to l length
 def shorten(s, l):
 	if l == 0:

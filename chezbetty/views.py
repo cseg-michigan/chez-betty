@@ -110,6 +110,12 @@ def _index_terminal(request):
             days = Transaction.get_days_in_debt_for_user(debtor)
             debtor.days_on_shame = days
             shame_users[i].days_on_shame = days
+
+            last_purchase = debtor.get_transactions_query()\
+                    .filter(Transaction.type=='purchase')\
+                    .limit(1).one()
+            debtor.most_recent_purchase = last_purchase
+            shame_users[i].most_recent_purchase = last_purchase
     except NoResultFound:
         top_debtors = None
 

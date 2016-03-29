@@ -168,7 +168,8 @@ body {
     <p style="{%if user.balance < -20%}font-weight: bold;{%endif%}{%if loop.index <= 5%}font-size: 150%;{%endif%}">
     {{loop.index}}.&nbsp;{{ user.name }}{%if loop.index<=5%} (<tt>{{user.uniqname}}</tt>){%endif%}&nbsp;{{ user.balance|format_debt|safe }}
     </p>
-    <p style="color: blue">{%if loop.index <= 5 %}{{user.days_on_shame}}&nbsp;days on Wall of Shame{%endif%}</p>
+    <p style="color: blue">{%if loop.index <= 5%}{{user.days_on_shame}}&nbsp;days on Wall of Shame{%endif%}</p>
+    <p style="color: red">{%if loop.index <= 5%}Most recently a {{user.most_recent_purchase.amount|format_currency|safe}} purchase {{user.most_recent_purchase.event.timestamp|human_date|safe}}{%endif%}</p>
   </div>
   {% endfor %}
   </div>
@@ -177,16 +178,19 @@ body {
 
 {# Secondary splash page #}
 <div id="splash2" class="container" style="display: none;">
-  <div style="font-size: 100px;">
-    <h1 style="font-size: 100px;">
+  <div style="font-size: 90px;">
+    <h1 style="font-size: 90px;">
       Seriously. We need some help from some social pressure.
     </h1>
-    <h1 style="font-size: 100px;">
+    <h1 style="font-size: 90px;">
       Please email <span style="color: red;">{{ shame_users[0].uniqname }}@umich.edu</span>
       and ask them why they have not paid Betty back.
     </h1>
     <h1 style="font-size: 60px; color: blue;">
       They have been on the Wall of Shame for {{ shame_users[0].days_on_shame }} days.
+    </h1>
+    <h1 style="font-size: 60px; color: red;">
+      They made a {{shame_users[0].most_recent_purchase.amount|format_currency|safe}} purchase {{shame_users[0].most_recent_purchase.event.timestamp|human_date|safe}}.
     </h1>
     <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash2").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
   </div>
