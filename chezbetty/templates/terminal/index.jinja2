@@ -51,10 +51,11 @@ body {
 
           <ol>
             {% for debtor in top_debtors %}
-            <li style="font-size: {{30-(2*loop.index)}}px; padding-bottom: 10px;">
+            <li style="font-size: {{25-(1.5*loop.index)}}px; padding-bottom: 10px;">
               <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }}): {{ debtor.balance|format_currency|safe }}
               <br />
               <p style="font-size: 75%; color: blue;">{{ debtor.days_on_shame }} days on the Wall of Shame</p>
+              <p style="font-size: 75%; color: red">Most recently a {{ debtor.most_recent_purchase.amount|format_currency|safe }} purchase {{ debtor.most_recent_purchase.event.timestamp|human_date|safe }}</p>
             </li>
             {% endfor %}
           </ol>
