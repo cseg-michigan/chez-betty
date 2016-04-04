@@ -20,7 +20,7 @@ class Event(Base):
     deleted_user_id   = Column(Integer, ForeignKey("users.id"), nullable=True) # user that deleted the event
 
     type = Column(Enum("purchase", "deposit", "adjustment", "restock",
-                       "inventory", "emptycashbox", "emptybitcoin", "reconcile",
+                       "inventory", "emptycashbox", "emptysafe", "emptybitcoin", "reconcile",
                        "donation", "withdrawal",
                        name="event_type"), nullable=False)
     __mapper_args__ = {'polymorphic_on': type}
@@ -101,6 +101,12 @@ class Inventory(Event):
 
 class EmptyCashBox(Event):
     __mapper_args__ = {'polymorphic_identity': 'emptycashbox'}
+    def __init__(self, admin):
+        Event.__init__(self, admin, None)
+
+
+class EmptySafe(Event):
+    __mapper_args__ = {'polymorphic_identity': 'emptysafe'}
     def __init__(self, admin):
         Event.__init__(self, admin, None)
 

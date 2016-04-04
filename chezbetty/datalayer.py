@@ -342,53 +342,66 @@ def reconcile_items(items, admin):
 
 
 # Call this when the cash box gets emptied
-def reconcile_cash(amount, admin):
+def reconcile_safe(amount, admin):
     assert(amount>=0)
 
-    e = event.EmptyCashBox(admin)
+    e = event.EmptySafe(admin)
     DBSession.add(e)
     DBSession.flush()
 
-    cashbox_c = account.get_cash_account("cashbox")
-    expected_amount = cashbox_c.balance
+    safe_c = account.get_cash_account("safe")
+    expected_amount = safe_c.balance
     amount_missing = expected_amount - amount
 
     if amount_missing != 0.0:
-        # If the amount in the cashbox doesn't match what we expected there to
+        # If the amount in the safe doesn't match what we expected there to
         # be, we need to adjust the amount in the cash box be transferring
         # to or from a null account
 
         if amount_missing > 0:
             # We got less in the box than we expected
-            # Move money from the cashbox account to null with transaction type
+            # Move money from the safe account to null with transaction type
             # "lost"
-            t1 = transaction.Lost(e, account.get_cash_account("cashbox"), amount_missing)
+            t1 = transaction.Lost(e, account.get_cash_account("safe"), amount_missing)
             DBSession.add(t1)
 
         else:
             # We got more in the box than expected! Use a found transaction
             # to reconcile the difference
-            t1 = transaction.Found(e, account.get_cash_account("cashbox"), abs(amount_missing))
+            t1 = transaction.Found(e, account.get_cash_account("safe"), abs(amount_missing))
             DBSession.add(t1)
 
 
-    # Now move all the money from the cashbox to chezbetty
-    t2 = transaction.EmptyCashBox(e, amount)
+    # Now move all the money from the safe to chezbetty
+    t2 = transaction.EmptySafe(e, amount)
     DBSession.add(t2)
-    return expected_amount
+    return e
 
 
-# Call this to move money from the cash box to the bank, but without necessarily
-# emptying the cash box.
-def cashbox_to_bank(amount, admin):
-    assert(amount>=0)
-
+# Call this to move all of the money from the cash box to the safe.
+# We don't actually count the amount, so we do no reconciling here, but it
+# means that money isn't sitting in the store.
+def cashbox_to_safe(admin):
     e = event.EmptyCashBox(admin)
     DBSession.add(e)
     DBSession.flush()
 
-    t = transaction.EmptyCashBox(e, amount)
+    t = transaction.EmptyCashBox(e)
     DBSession.add(t)
+    return e
+
+
+# Call this to move money from the safe to the bank.
+def safe_to_bank(amount, admin):
+    assert(amount>=0)
+
+    e = event.EmptySafe(admin)
+    DBSession.add(e)
+    DBSession.flush()
+
+    t = transaction.EmptySafe(e, amount)
+    DBSession.add(t)
+    return e
 
 
 # Call this when bitcoins are converted to USD

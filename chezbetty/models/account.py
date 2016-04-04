@@ -47,6 +47,7 @@ def get_cash_account(name):
     if t:
         return t
     t = CashAccount(name)
+    t.archived_balance = None
     DBSession.add(t)
     DBSession.flush()
     return t

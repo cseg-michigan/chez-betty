@@ -32,7 +32,8 @@ class Transaction(Base):
                        "adjustment",    # chezbetty   <-> user              None                            Yes
                        "restock",       # chezbetty    -> null              chezbetty -> null
                        "inventory",     # chezbetty   <-> null              None
-                       "emptycashbox",  # None                              cashbox   -> chezbetty
+                       "emptycashbox",  # None                              cashbox   -> safe
+                       "emptysafe",     # None                              safe      -> chezbetty
                        "emptybitcoin",  # None                              btcbox    -> chezbetty
                        "lost",          # None                              chezbetty/cashbox/btcbox -> null       Yes
                        "found",         # None                              null      -> chezbetty/cashbox/btcbox  Yes
@@ -361,6 +362,7 @@ def __get_emptycash_events(cls):
             .join(Transaction)\
             .filter(or_(
                       Transaction.type == 'emptycashbox',
+                      Transaction.type == 'emptysafe',
                       Transaction.type == 'emptybitcoin'))\
             .filter(event.Event.deleted==False)\
             .order_by(desc(event.Event.timestamp))
@@ -574,10 +576,19 @@ class Inventory(Transaction):
 
 class EmptyCashBox(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'emptycashbox'}
-    def __init__(self, event, amount):
+    def __init__(self, event):
         cashbox_c = account.get_cash_account("cashbox")
+        amount = cashbox_c.balance
+        safe_c = account.get_cash_account("safe")
+        Transaction.__init__(self, event, None, None, cashbox_c, safe_c, amount)
+
+
+class EmptySafe(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'emptysafe'}
+    def __init__(self, event, amount):
+        safe_c = account.get_cash_account("safe")
         chezbetty_c = account.get_cash_account("chezbetty")
-        Transaction.__init__(self, event, None, None, cashbox_c, chezbetty_c, amount)
+        Transaction.__init__(self, event, None, None, safe_c, chezbetty_c, amount)
 
 
 class EmptyBitcoin(Transaction):

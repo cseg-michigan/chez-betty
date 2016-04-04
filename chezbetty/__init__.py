@@ -213,7 +213,6 @@ def main(global_config, **settings):
 
     config.add_route('admin_cash_reconcile',            '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',     '/admin/cash/reconcile/submit')
-    config.add_route('admin_cash_reconcile_success',    '/admin/cash/reconcile/success')
     config.add_route('admin_cash_donation',             '/admin/cash/donation')
     config.add_route('admin_cash_donation_submit',      '/admin/cash/donation/submit')
     config.add_route('admin_cash_withdrawal',           '/admin/cash/withdrawal')

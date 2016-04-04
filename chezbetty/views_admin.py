@@ -246,12 +246,15 @@ def admin_index(request):
                                       func.sum(Item.in_stock * Item.price).label("price")).one()
 
     chezbetty       = VirtualAccount.from_name("chezbetty")
+    safe            = CashAccount.from_name("safe")
     cashbox         = CashAccount.from_name("cashbox")
     btcbox          = CashAccount.from_name("btcbox")
     chezbetty_cash  = CashAccount.from_name("chezbetty")
 
     cashbox_lost    = Transaction.get_balance("lost", account.get_cash_account("cashbox"))
+    safe_lost       = Transaction.get_balance("lost", account.get_cash_account("safe"))
     cashbox_found   = Transaction.get_balance("found", account.get_cash_account("cashbox"))
+    safe_found      = Transaction.get_balance("found", account.get_cash_account("safe"))
     btcbox_lost     = Transaction.get_balance("lost", account.get_cash_account("btcbox"))
     btcbox_found    = Transaction.get_balance("found", account.get_cash_account("btcbox"))
     chezbetty_lost  = Transaction.get_balance("lost", account.get_cash_account("chezbetty"))
@@ -260,7 +263,7 @@ def admin_index(request):
     donation        = Transaction.get_balance("donation", account.get_cash_account("chezbetty"))
     withdrawal      = Transaction.get_balance("withdrawal", account.get_cash_account("chezbetty"))
 
-    cashbox_net = cashbox_found.balance - cashbox_lost.balance
+    cashbox_net = (cashbox_found.balance - cashbox_lost.balance) + (safe_found.balance - safe_lost.balance)
     btcbox_net = btcbox_found.balance - btcbox_lost.balance
     chezbetty_net = chezbetty_found.balance - chezbetty_lost.balance
     # Our "shut it down" balance. Basically what we would have left over if
@@ -289,6 +292,7 @@ def admin_index(request):
                 users_balance=users_balance,
                 held_for_users=held_for_users,
                 owed_by_users=owed_by_users,
+                safe=safe,
                 cashbox=cashbox,
                 btcbox=btcbox,
                 chezbetty_cash=chezbetty_cash,
@@ -758,47 +762,48 @@ def admin_cash_reconcile(request):
              permission='manage')
 def admin_cash_reconcile_submit(request):
     try:
-        if request.POST['amount'].strip() == '':
-            # We just got an empty string (and not 0)
-            request.session.flash('Error: must enter a cash box amount', 'error')
-            return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
-        amount = Decimal(request.POST['amount'])
+        if request.POST['cash-box-reconcile-type'] == 'cashboxtosafe':
+            if account.get_cash_account("cashbox").balance == Decimal('0'):
+                request.session.flash('Nothing to move!', 'error')
+                return HTTPFound(location=request.route_url('admin_index'))
 
-        if request.POST['cash-box-reconcile'] == 'on':
-            # Make the cashbox total to 0
-            expected_amount = datalayer.reconcile_cash(amount, request.user)
+            else:
+                event = datalayer.cashbox_to_safe(request.user)
 
-            request.session.flash('Cash box recorded successfully', 'success')
-            return HTTPFound(location=request.route_url('admin_cash_reconcile_success',
-                _query={'amount':amount, 'expected_amount':expected_amount}))
-        else:
-            # Just move some of the money
-            datalayer.cashbox_to_bank(amount, request.user)
+                request.session.flash('Moved cashbox contents to safe.', 'success')
+                return HTTPFound(location=request.route_url('admin_event', event_id=event.id))
 
-            request.session.flash('Moved ${:,.2f} from the cash box to the bank'.format(amount), 'success')
-            return HTTPFound(location=request.route_url('admin_index'))
+        elif request.POST['cash-box-reconcile-type'] == 'safetobank':
+            if request.POST['amount'].strip() == '':
+                # We just got an empty string (and not 0)
+                request.session.flash('Error: must enter an amount', 'error')
+                return HTTPFound(location=request.route_url('admin_cash_reconcile'))
+
+            amount = Decimal(request.POST['amount'])
+
+            if request.POST['cash-box-reconcile'] == 'on':
+                # Make the safe total to 0
+                event = datalayer.reconcile_safe(amount, request.user)
+
+                request.session.flash('Cash deposits reconciled successfully.', 'success')
+                return HTTPFound(location=request.route_url('admin_event', event_id=event.id))
+            else:
+                # Just move some of the money
+                event = datalayer.safe_to_bank(amount, request.user)
+
+                request.session.flash('Moved ${:,.2f} from the safe to the bank'.format(amount), 'success')
+                # return HTTPFound(location=request.route_url('admin_event'))
+                return HTTPFound(location=request.route_url('admin_event', event_id=event.id))
 
     except decimal.InvalidOperation:
-        request.session.flash('Error: Bad value for cash box amount', 'error')
+        request.session.flash('Error: Bad value for safe amount', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
 
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Error occurred', 'error')
         return HTTPFound(location=request.route_url('admin_cash_reconcile'))
-
-
-@view_config(route_name='admin_cash_reconcile_success',
-             renderer='templates/admin/cash_reconcile_complete.jinja2',
-             permission='manage')
-def admin_cash_reconcile_success(request):
-    deposit = Decimal(request.GET['amount'])
-    expected = Decimal(request.GET['expected_amount'])
-    difference = deposit - expected
-    return {'cash': {'deposit': deposit,
-                     'expected': expected,
-                     'difference': difference}}
 
 
 def admin_btc_reoncile(request):

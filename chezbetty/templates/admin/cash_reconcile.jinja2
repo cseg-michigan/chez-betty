@@ -9,23 +9,52 @@
 
 {% block content %}
 
-<form role="form" action="/admin/cash/reconcile/submit" method="post">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Empty Cashbox</h3>
+  </div>
+  <div class="panel-body">
+    This will move all money that should be in the cashbox to the safe.
+    We don't count here, so no need to enter an amount.
 
-  <dl class="dl-horizontal">
-    <dt>Cash Box Contents</dt>
-    <dd><input type="number" min="0" step="0.01" class="form-control numeric" id="cash-box-amount" name="amount"></dd>
-  </dl>
+    <form role="form" action="/admin/cash/reconcile/submit" method="post">
+      <input type="hidden" name="cash-box-reconcile-type" value="cashboxtosafe">
+      <button type="submit" class="btn btn-success">Move Cashbox to Safe</button>
+    </form>
+  </div>
+</div>
 
 
-  <input type="hidden" name="cash-box-reconcile" value="off">
-  <input type="checkbox" id="cash-box-reconcile" name="cash-box-reconcile">
-  <label for="cash-box-reconcile">Check to if the box is completely empty and you
-  want to reconcile the cashbox.</label>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Deposit to Bank</h3>
+  </div>
+  <div class="panel-body">
+    This will move money from the safe to the bank. It will not, however, empty
+    the cashbox. So, if you emptied the cashbox on the way to the bank,
+    you should click the "Move Cashbox to Safe" button first.
 
-  <br />
+    <form role="form" action="/admin/cash/reconcile/submit" method="post">
+      <input type="hidden" name="cash-box-reconcile-type" value="safetobank">
 
-  <button type="submit" class="btn btn-success">Deposit</button>
+      <dl class="dl-horizontal">
+        <dt>Amount deposited to bank</dt>
+        <dd><input type="number" min="0" step="0.01" class="form-control numeric" id="cash-box-amount" name="amount"></dd>
+      </dl>
 
-</form>
+
+      <input type="hidden" name="cash-box-reconcile" value="off">
+      <input type="checkbox" id="cash-box-reconcile" name="cash-box-reconcile">
+      <label for="cash-box-reconcile">Check if the safe is completely empty and you
+      want to reconcile cash deposits.</label>
+
+      <br />
+      <button type="submit" class="btn btn-success">Deposit</button>
+    </form>
+  </div>
+</div>
+
+
+
 
 {% endblock %}

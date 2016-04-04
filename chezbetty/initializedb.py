@@ -121,6 +121,7 @@ def main(argv=sys.argv):
         DBSession.add(user)
         account.get_virt_account("chezbetty")
         account.get_cash_account("cashbox")
+        account.get_cash_account("safe")
         account.get_cash_account("chezbetty")
         account.get_cash_account("btcbox")
         coke_box = Box(
