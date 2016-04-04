@@ -23,7 +23,7 @@ from .models.box_item import BoxItem
 from .models.transaction import Transaction, Deposit, CashDeposit, BTCDeposit, CCDeposit, Purchase
 from .models.transaction import Inventory, InventoryLineItem, RestockLineItem, RestockLineBox
 from .models.transaction import PurchaseLineItem, SubTransaction, SubSubTransaction
-from .models.account import Account, VirtualAccount, CashAccount
+from .models.account import Account, VirtualAccount, CashAccount, get_virt_account, get_cash_account
 from .models.event import Event
 from .models import event as __event
 from .models.vendor import Vendor
@@ -245,11 +245,11 @@ def admin_index(request):
     inventory       = DBSession.query(func.sum(Item.in_stock * Item.wholesale).label("wholesale"),
                                       func.sum(Item.in_stock * Item.price).label("price")).one()
 
-    chezbetty       = VirtualAccount.from_name("chezbetty")
-    safe            = CashAccount.from_name("safe")
-    cashbox         = CashAccount.from_name("cashbox")
-    btcbox          = CashAccount.from_name("btcbox")
-    chezbetty_cash  = CashAccount.from_name("chezbetty")
+    chezbetty       = get_virt_account("chezbetty")
+    safe            = get_cash_account("safe")
+    cashbox         = get_cash_account("cashbox")
+    btcbox          = get_cash_account("btcbox")
+    chezbetty_cash  = get_cash_account("chezbetty")
 
     cashbox_lost    = Transaction.get_balance("lost", account.get_cash_account("cashbox"))
     safe_lost       = Transaction.get_balance("lost", account.get_cash_account("safe"))
@@ -2458,7 +2458,7 @@ def admin_btc_reconcile(request):
     except BTCException:
         btc = {"btc": None,
                "usd": 0.0}
-    btcbox = CashAccount.from_name("btcbox")
+    btcbox = get_cash_account("btcbox")
 
     try:
         request.GET.getone("verbose")
@@ -2552,7 +2552,7 @@ def admin_btc_reconcile(request):
 def admin_btc_reconcile_submit(request):
     try:
         #bitcoin_amount = Bitcoin.get_balance()
-        btcbox = CashAccount.from_name("btcbox")
+        btcbox = get_cash_account("btcbox")
         bitcoin_amount = Decimal(request.POST['amount_btc'])
         usd_amount = Decimal(request.POST['amount_usd'])
         bitcoin_available = Bitcoin.get_balance()

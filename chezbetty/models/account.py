@@ -18,10 +18,6 @@ class Account(Versioned, Base):
         self.name = name
         self.balance = Decimal(0.0)
 
-    @classmethod
-    def from_name(cls, name):
-        return DBSession.query(cls).filter(cls.name == name).one()
-
 
 class VirtualAccount(Account):
     __mapper_args__ = {'polymorphic_identity': 'virtual'}
