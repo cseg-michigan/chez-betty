@@ -383,6 +383,31 @@ def __get_deposit_events(cls):
 event.Event.get_deposit_events = __get_deposit_events
 
 # This is in a stupid place due to circular input problems
+@classmethod
+def __get_deadbeats(cls):
+    deadbeats = DBSession.query(user.User)\
+            .filter(user.User.enabled==True)\
+            .filter(user.User.archived==False)\
+            .filter(user.User.balance <= -5)\
+            .all()
+
+    # Only get users between 0 and -5 if they have been in debt for a week or
+    # more.
+    iffy_users = DBSession.query(user.User)\
+            .filter(user.User.enabled==True)\
+            .filter(user.User.archived==False)\
+            .filter(user.User.balance < 0)\
+            .filter(user.User.balance > -5)\
+            .all()
+    for u in iffy_users:
+        days = Transaction.get_days_in_debt_for_user(u)
+        if days >= 7:
+            deadbeats.append(u)
+
+    return deadbeats
+user.User.get_deadbeats = __get_deadbeats
+
+# This is in a stupid place due to circular input problems
 @property
 def __days_since_last_purchase(self):
     last_purchase = object_session(self).query(event.Event)\
@@ -421,6 +446,11 @@ def __lifetime_discounts(self):
             .filter(event.Event.deleted==False).one().f or Decimal(0.0)
 user.User.lifetime_discounts = __lifetime_discounts
 
+
+
+################################################################################
+## Related Classes
+################################################################################
 
 class Purchase(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'purchase'}

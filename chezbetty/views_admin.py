@@ -38,6 +38,7 @@ from .models.pool_user import PoolUser
 from .models.tag import Tag
 from .models.item_tag import ItemTag
 
+from .utility import suppress_emails
 from .utility import send_email
 from .utility import send_bcc_email
 from .utility import user_password_reset
@@ -2170,8 +2171,8 @@ def admin_user_changerole(request):
              renderer='templates/admin/users_email.jinja2',
              permission='admin')
 def admin_users_email(request):
-    users = DBSession.query(User).order_by(User.name).all()
-    return {'users': users}
+    return {'users': User.all(),
+            'emails_suppressed': suppress_emails()}
 
 
 @view_config(route_name='admin_users_email_endofsemester',
@@ -2206,23 +2207,13 @@ def admin_users_email_endofsemester(request):
              request_method='POST',
              permission='admin')
 def admin_users_email_deadbeats(request):
-    threshold = float(request.POST['threshold'])
-    if threshold < 0:
-        request.session.flash('Threshold should be >= 0', 'error')
-        return HTTPFound(location=request.route_url('admin_users_email'))
-    # Work around storing balances as floats so we don't bug people with -$0.00
-    if threshold < 0.01:
-        threshold = 0.01
-    deadbeats = DBSession.query(User).\
-            filter(User.enabled).\
-            filter(User.balance < -threshold).\
-            all()
+    deadbeats = User.get_deadbeats()
     for deadbeat in deadbeats:
         send_email(
                 TO=deadbeat.uniqname+'@umich.edu',
                 SUBJECT='Chez Betty Balance',
                 body=render('templates/admin/email_deadbeats.jinja2',
-                    {'user': deadbeat, 'threshold': threshold})
+                    {'user': deadbeat})
                 )
 
     request.session.flash('Deadbeat users emailed.', 'success')

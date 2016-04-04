@@ -21,13 +21,19 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 
+def suppress_emails ():
+    settings = get_current_registry().settings
+    if 'debugging' in settings and bool(int(settings['debugging'])):
+        if 'debugging_send_email' not in settings or settings['debugging_send_email'] != 'true':
+            return True
+    return False
+
 def _send_email(msg, FROM):
     settings = get_current_registry().settings
 
-    if 'debugging' in settings and bool(int(settings['debugging'])):
-        if 'debugging_send_email' not in settings or settings['debugging_send_email'] != 'true':
-            print("Mail suppressed due to debug settings")
-            return
+    if suppress_emails():
+        print("Mail suppressed due to debug settings")
+        return
 
     if 'smtp.host' in settings:
         sm = smtplib.SMTP(host=settings['smtp.host'])
