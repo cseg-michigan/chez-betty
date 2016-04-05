@@ -270,7 +270,7 @@ def admin_index(request):
     # Our "shut it down" balance. Basically what we would have left over if
     # refunded all account holders, defaulted on our loan, and sold all inventory
     # for what we paid for it.
-    estimated_net = chezbetty_cash.balance + cashbox.balance + btcbox.balance - held_for_users + inventory.wholesale
+    estimated_net = chezbetty_cash.balance + safe.balance + cashbox.balance + btcbox.balance - held_for_users + inventory.wholesale
 
     # Get the current date that it is in the eastern time zone
     now = arrow.now()
