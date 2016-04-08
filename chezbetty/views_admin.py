@@ -276,7 +276,7 @@ def admin_index(request):
     now = arrow.now()
 
     # Walk back to the beginning of the day for all these statistics
-    now = now.replace(hour=0, minute=0, seconds=0)
+    now = now.replace(hour=0, minute=0, second=0)
 
     today_sales     = Purchase.total(now, None)
     today_profit    = PurchaseLineItem.profit_on_sales(now, None)
@@ -287,6 +287,19 @@ def admin_index(request):
     today_dep_cc    = CCDeposit.total(now, None)
     today_discounts = Purchase.discounts(now, None)
     today_fees      = Purchase.fees(now, None)
+
+    # Also get statistics for yesterday
+    yesterday = now - datetime.timedelta(days=1)
+
+    yesterday_sales     = Purchase.total(yesterday, now)
+    yesterday_profit    = PurchaseLineItem.profit_on_sales(yesterday, now)
+    yesterday_lost      = Inventory.total(yesterday, now)
+    yesterday_dep       = Deposit.total(yesterday, now)
+    yesterday_dep_cash  = CashDeposit.total(yesterday, now)
+    yesterday_dep_btc   = BTCDeposit.total(yesterday, now)
+    yesterday_dep_cc    = CCDeposit.total(yesterday, now)
+    yesterday_discounts = Purchase.discounts(yesterday, now)
+    yesterday_fees      = Purchase.fees(yesterday, now)
 
     return dict(events=events,
                 users_shame=users_shame,
@@ -314,7 +327,16 @@ def admin_index(request):
                 today_dep_btc=today_dep_btc,
                 today_dep_cc=today_dep_cc,
                 today_discounts=today_discounts,
-                today_fees=today_fees
+                today_fees=today_fees,
+                yesterday_sales=yesterday_sales,
+                yesterday_profit=yesterday_profit,
+                yesterday_lost=yesterday_lost,
+                yesterday_dep=yesterday_dep,
+                yesterday_dep_cash=yesterday_dep_cash,
+                yesterday_dep_btc=yesterday_dep_btc,
+                yesterday_dep_cc=yesterday_dep_cc,
+                yesterday_discounts=yesterday_discounts,
+                yesterday_fees=yesterday_fees
                 )
 
 
