@@ -8,6 +8,7 @@
       <li {% if event_filter == 'restock' %}class="active"{% endif %}><a href="/admin/events?filter=restock">Restocks</a></li>
       <li {% if event_filter == 'emptycash' %}class="active"{% endif %}><a href="/admin/events?filter=emptycash">Cashbox Empties</a></li>
       <li {% if event_filter == 'deposit' %}class="active"{% endif %}><a href="/admin/events?filter=deposit">Deposits</a></li>
+      <li {% if event_filter == 'donation' %}class="active"{% endif %}><a href="/admin/events?filter=donation">Donations/Withdrawals</a></li>
       {% endif %}
     </ul>
   </div>

@@ -384,6 +384,19 @@ event.Event.get_deposit_events = __get_deposit_events
 
 # This is in a stupid place due to circular input problems
 @classmethod
+@limitable_all
+def __get_donation_events(cls):
+    return DBSession.query(event.Event)\
+            .join(Transaction)\
+            .filter(or_(
+                      Transaction.type == 'donation',
+                      Transaction.type == 'withdrawal'))\
+            .filter(event.Event.deleted==False)\
+            .order_by(desc(event.Event.timestamp))
+event.Event.get_donation_events = __get_donation_events
+
+# This is in a stupid place due to circular input problems
+@classmethod
 def __get_deadbeats(cls):
     deadbeats = DBSession.query(user.User)\
             .filter(user.User.enabled==True)\

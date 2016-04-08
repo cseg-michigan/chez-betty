@@ -2595,6 +2595,7 @@ def _get_event_filter_function(event_filter):
             'restock',
             'emptycash',
             'deposit',
+            'donation',
             ):
         try:
             return getattr(Event, 'get_'+event_filter+'_events')
@@ -2616,11 +2617,11 @@ def admin_events(request):
              renderer='json',
              permission='admin')
 def admin_events_load_more(request):
-    LIMIT=100
-    last = int(request.POST['last'])
+    LIMIT = 100
+    last  = int(request.POST['last'])
 
     fn = _get_event_filter_function(request.POST['filter'])
-    events = fn(limit=LIMIT,offset=last)
+    events = fn(limit=LIMIT, offset=last)
 
     events_html = []
     for e in events:
