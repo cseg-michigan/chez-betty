@@ -1,0 +1,10 @@
+<nav class="navbar navbar-default">
+  <div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav">
+      <li {% if user_page == 'active'   %}class="active"{% endif %}><a href="/admin/users/list?group=active">Active Users</a></li>
+      <li {% if user_page == 'archived' %}class="active"{% endif %}><a href="/admin/users/list?group=archived">Archived Users</a></li>
+      <li {% if user_page == 'disabled' %}class="active"{% endif %}><a href="/admin/users/list?group=disabled">Disabled Users</a></li>
+      <li {% if user_page == 'stats'    %}class="active"{% endif %}><a href="/admin/users/stats">Users Stats</a></li>
+    </ul>
+  </div>
+</nav>

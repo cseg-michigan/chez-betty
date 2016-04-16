@@ -187,7 +187,8 @@ def main(global_config, **settings):
     config.add_route('admin_inventory',                 '/admin/inventory')
     config.add_route('admin_inventory_submit',          '/admin/inventory/submit')
 
-    config.add_route('admin_users_edit',                '/admin/users/edit')
+    config.add_route('admin_users_list',                '/admin/users/list')
+    config.add_route('admin_users_stats',               '/admin/users/stats')
     config.add_route('admin_users_email',               '/admin/users/email')
     config.add_route('admin_users_email_endofsemester', '/admin/users/email/endofsemester')
     config.add_route('admin_users_email_deadbeats',     '/admin/users/email/deadbeats')
@@ -223,7 +224,6 @@ def main(global_config, **settings):
     config.add_route('admin_btc_reconcile',             '/admin/btc/reconcile')
     config.add_route('admin_btc_reconcile_submit',      '/admin/btc/reconcile/submit')
 
-    config.add_route('admin_restocks',                  '/admin/restocks')
     config.add_route('admin_events',                    '/admin/events')
     config.add_route('admin_events_load_more',          '/admin/events/load_more')
     config.add_route('admin_event_upload',              '/admin/event/upload')

@@ -1,11 +1,14 @@
 {% extends "base.jinja2" %}
 {% set active_page = 'users' %}
-{% block title %}Edit Users{% endblock %}
+{% block title %}User Stats{% endblock %}
 
 {% block top %}
-<h1 class="page-header">Edit Users</h1>
+<h1 class="page-header">User Stats</h1>
 {% endblock %}
 
+{% block submenu %}
+{% include "users_menu.jinja2" %}
+{% endblock %}
 
 {% block content %}
 

@@ -1946,10 +1946,35 @@ def admin_vendors_edit_submit(request):
     return HTTPFound(location=request.route_url('admin_vendors_edit'))
 
 
-@view_config(route_name='admin_users_edit',
-             renderer='templates/admin/users_edit.jinja2',
+@view_config(route_name='admin_users_list',
+             renderer='templates/admin/users_list.jinja2',
              permission='admin')
-def admin_users_edit(request):
+def admin_users_list(request):
+    user_group = request.GET['group'] if 'group' in request.GET else 'active'
+
+    if user_group == 'active':
+        users = User.get_normal_users()
+        page  = 'active'
+    elif user_group == 'archived':
+        users = User.get_archived_users()
+        page  = 'archived'
+    else:
+        users = User.get_disabled_users()
+        page  = 'disabled'
+
+    roles = {'user': 'User',
+             'serviceaccount': 'Service Account',
+             'manager': 'Manager',
+             'administrator': 'Administrator'}
+    return {'users': users,
+            'user_page': page,
+            'roles': roles}
+
+
+@view_config(route_name='admin_users_stats',
+             renderer='templates/admin/users_stats.jinja2',
+             permission='admin')
+def admin_users_stats(request):
     normal_users = User.get_normal_users()
     archived_users = User.get_archived_users()
     disabled_users = User.get_disabled_users()
@@ -1960,6 +1985,7 @@ def admin_users_edit(request):
     return {'normal_users': normal_users,
             'archived_users': archived_users,
             'disabled_users': disabled_users,
+            'user_page': 'stats',
             'roles': roles}
 
 
@@ -2597,19 +2623,6 @@ def admin_btc_reconcile_submit(request):
     return HTTPFound(location=request.route_url('admin_index'))
 
 
-@view_config(route_name='admin_restocks',
-             renderer='templates/admin/restocks.jinja2',
-             permission='manage')
-def admin_restocks(request):
-    try:
-        LIMIT = int(request.GET['limit'])
-        if LIMIT == 0:
-            LIMIT = None
-    except (KeyError, ValueError):
-        LIMIT=50
-    events = Event.all(trans_type='restock')
-    return {'events': events, 'limit': LIMIT}
-
 def _get_event_filter_function(event_filter):
     if event_filter in (
             'deleted',
@@ -2625,6 +2638,7 @@ def _get_event_filter_function(event_filter):
             request.session.flash('Ignoring invalid filter', 'error')
     return Event.all
 
+
 @view_config(route_name='admin_events',
              renderer='templates/admin/events.jinja2',
              permission='admin')
@@ -2633,6 +2647,7 @@ def admin_events(request):
     fn = _get_event_filter_function(event_filter)
     events = limitable_request(request, fn, limit=50)
     return {'events': events, 'event_filter': event_filter}
+
 
 @view_config(route_name='admin_events_load_more',
              request_method='POST',
