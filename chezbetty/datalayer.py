@@ -218,7 +218,7 @@ def purchase(user, account, items):
             discount = (-1 * ((final / amount) - Decimal('1')))
         else:
             # Just use wall of shame fee
-            discount = fee_percent * Decimal('0.01')
+            discount = fee_percent * Decimal('-0.01')
 
     if discount == 0:
         # Make sure we handle the no discount normal case correctly
