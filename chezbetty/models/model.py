@@ -1,6 +1,7 @@
 import datetime
 import functools
 from decimal import Decimal
+from decimal import ROUND_HALF_UP
 import decimal
 from sqlalchemy import (
     LargeBinary,

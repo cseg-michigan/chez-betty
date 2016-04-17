@@ -100,7 +100,7 @@ def terminal(request):
         # Determine initial wall-of-shame fee (if applicable)
         purchase_fee_percent = Decimal(0)
         if user.balance <= Decimal('-5.0'):
-            purchase_fee_percent = 5 + math.floor((user.balance+5) / -5)
+            purchase_fee_percent = 5 + (math.floor((user.balance+5) / -5) * 5)
 
         # Figure out if any pools can be used to pay for this purchase
         purchase_pools = []

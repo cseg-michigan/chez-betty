@@ -168,11 +168,61 @@ def purchase(user, account, items):
     assert(len(items) > 0)
 
     # TODO: Parameterize
-    discount = None
+    discount = Decimal(0)
     if user.balance > 20.0:
         discount = Decimal('0.05')
-    elif user.balance <= -5.0:
-        discount = round(Decimal('-0.01')*(5 + math.floor((user.balance+5) / -5)), 2)
+
+    # Need to calculate a total
+    amount = Decimal(0)
+    for item, quantity in items.items():
+        amount += Decimal(item.price * quantity)
+
+    intermediate = amount - (amount * discount).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+
+    # Calculate a potential wall of shame fee
+    fee = None
+    fee_amount = Decimal(0)
+    result = user.balance - intermediate
+    fee_percent = Decimal(0)
+    if result <= Decimal('-5'):
+        remainder = (user.balance - intermediate) * Decimal('-1')
+        offset = user.balance * Decimal('-1')
+        if user.balance > Decimal('-5'):
+            offset = Decimal('5')
+        fee_percent = math.floor(offset / Decimal('5')) * Decimal('5')
+
+        while True:
+            extra = remainder - offset
+
+            if remainder < fee_percent + Decimal('5'):
+                fee_amount += ((fee_percent * Decimal('0.01')) * extra)
+                break
+
+            else:
+                fee_amount += ((fee_percent * Decimal('0.01')) * (fee_percent + Decimal('5') - offset))
+                fee_percent += Decimal('5')
+                offset = fee_percent
+
+        fee_percent = (fee_amount / intermediate) * Decimal('100')
+        if fee_percent < Decimal('0.1'):
+            fee_percent = Decimal('0.1')
+
+        fee_amount = (intermediate * (fee_percent * Decimal('0.01'))).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+
+
+    if fee_amount != 0:
+        if discount != 0:
+            # Only do this complicated math if we have to merge a good
+            # standing discount with a wall of shame fee
+            final = intermediate + fee_amount
+            discount = (-1 * ((final / amount) - Decimal('1')))
+        else:
+            # Just use wall of shame fee
+            discount = fee_percent * Decimal('0.01')
+
+    if discount == 0:
+        # Make sure we handle the no discount normal case correctly
+        discount = None
 
     e = event.Purchase(user)
     DBSession.add(e)

@@ -105,7 +105,7 @@ function calculate_total () {
 		var discount_percent_td = $("#purchase-discount-percent");
 		var discount_percent_str = discount_percent_td.text().slice(1,-2);
 		var discount_percent = parseFloat(discount_percent_str) * 0.01;
-		var discount = total * discount_percent;
+		var discount = Math.round((total * discount_percent) * 100) / 100;
 
 		// Make sure nothing looks strange
 		if (discount > total) discount = 0.0;
@@ -118,10 +118,10 @@ function calculate_total () {
 		$("#purchase-row-goodstanding").hide();
 	}
 
-	if (balance <= -5.0) {
+	if ((balance - total - discount) <= -5.0) {
 		// Wall of shame fee!
-		var fee_percent = calculate_wallofshame_fee_percent();
-		var fee = total * (fee_percent * 0.01);
+		var fee_percent = calculate_wallofshame_fee_percent(balance, total-discount);
+		var fee = Math.round(((total-discount) * (fee_percent * 0.01)) * 100) / 100;
 
 		// Setup fee row
 		$("#purchase-fee-percent-amount").html(fee_percent.toFixed(1));
@@ -267,14 +267,43 @@ function show_correct_purchase_button () {
 	}
 }
 
-function calculate_wallofshame_fee_percent () {
-	var balance = get_user_balance();
+function calculate_wallofshame_fee_percent (balance, total) {
+	// If not on wall of shame, nor going to be, no fee
+	if (balance - total > -5.0) return 0.0;
 
-	// If not on wall of shame, no fee
-	if (balance > -5.0) return 0.0;
+	// Calculate the correct fee.
+	// Need to get the amount we will charge the fee on
+	var remainder = (balance - total) * -1;
+	var offset = balance * -1;
+	if (balance > -5) {
+		offset = 5;
+	}
+	var fee_percent = Math.floor(offset / 5.0) * 5;
+	var fee = 0;
 
-	// Else, one percent for every $5 in debt after $-5, 5.0% to start
-	return 5.0 + Math.floor((balance+5.0) / -5.0);
+	// This works only because we increase the fee every $5 dollars
+	// and we increase the fee in 5% increments.
+	while (true) {
+		var extra = remainder - offset;
+
+		if (remainder < fee_percent + 5) {
+			fee += ((fee_percent * 0.01) * extra);
+			break;
+
+		} else {
+			fee += ((fee_percent * 0.01) * (fee_percent + 5 - offset));
+			fee_percent += 5;
+			offset = fee_percent;
+		}
+	}
+
+	fee_percent = (fee / total) * 100;
+
+	if (fee_percent < 0.1) {
+		fee_percent = 0.1;
+	}
+
+	return fee_percent;
 }
 
 /*******************************************************************************
