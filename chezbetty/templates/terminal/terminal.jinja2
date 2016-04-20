@@ -24,10 +24,14 @@
 
 <div class="row">
 
-  {# Sidebar with logo and balance #}
+  {# Sidebar with logo, user name, and balance #}
   <div class="col-md-1">
     <div class="row logo-box">
       <img src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:100px;" />
+    </div>
+
+    <div class="row well">
+      <h4>{{ user.name }}</h4>
     </div>
 
     <div id="user-info-current-balance" class="row well balance-box {% if user.balance < -5 %}big-debt{% endif %}">
