@@ -59,6 +59,7 @@ void usbsuspHookExitingSuspend(void) {
 uint8_t send = 0;
 uint8_t count = 0;
 uint32_t last_interrupt_time = 0;
+uint32_t rising_edge_time = 0;
 
 void gpio_toggle (uint32_t base, uint8_t ui8Leds) {
     uint32_t ui32Toggle = GPIOPinRead(base, ui8Leds);
@@ -82,45 +83,103 @@ void GPIOBIntHandler(void) {
     // Acknowledge the GPIO  - Pin n interrupt by clearing the interrupt flag.
     GPIOPinIntClear(GPIO_B_BASE, ui32GPIOIntStatus);
 
-    // Check to make sure this is valid, and to debounce (not strictly sure
-    // this is necessary...).
-    bool valid_pulse = false;
+    // Was this a rising edge or falling edge. True==rising
+    bool direction = (GPIOPinRead(GPIO_B_BASE, GPIO_PIN_6) != 0);
 
-    if (count == 0) {
-        // On first edge we know we are good
-        valid_pulse = true;
-    } else {
-        // See if this is a valid edge
-        uint32_t curr_time = TimerValueGet(GPTIMER0_BASE, GPTIMER_A);
-        // Must be at least 30 ms from last edge
-        if ((last_interrupt_time - curr_time) > (SysCtrlClockGet() / 33)) {
-            valid_pulse = true;
-        }
-    }
 
-    // Increment our dollar count and set a timeout timer
-    if (valid_pulse) {
 
-        count += 1;
 
-        // Start a timeout timer
+    if (direction == true) {
+        // Got rising edge of pulse.
+
+        // Start timeout timer and wait for falling edge
         TimerDisable(GPTIMER0_BASE, GPTIMER_A);
         // Timeout in 100 ms
         TimerLoadSet(GPTIMER0_BASE, GPTIMER_A, SysCtrlClockGet() / 10);
         TimerEnable(GPTIMER0_BASE, GPTIMER_A);
 
-        // Save the time we got this edge so we can detect if the next one
-        // is too close.
-        last_interrupt_time = TimerValueGet(GPTIMER0_BASE, GPTIMER_A);
+        // Save this time
+        rising_edge_time = TimerValueGet(GPTIMER0_BASE, GPTIMER_A);
 
-        gpio_toggle(GPIO_B_BASE, GPIO_PIN_5);
 
-        // On the first edge send a notice so the listener knows its getting
-        // data.
-        if (count == 1) {
-            send = 2;
+    } else {
+        // Got falling edge
+        // Ensure this was about when we expect
+        uint32_t falling_edge_time = TimerValueGet(GPTIMER0_BASE, GPTIMER_A);
+        uint32_t diff = rising_edge_time - falling_edge_time;
+        if (diff > (SysCtrlClockGet() / 66) && diff < (SysCtrlClockGet() / 20)) {
+            // This looks like a valid pulse, count it!
+
+            count += 1;
+
+            // On the first edge send a notice so the listener knows its getting
+            // data.
+            if (count == 1) {
+                send = 2;
+            }
         }
+
+
+
     }
+
+
+
+
+
+    // // Check to make sure this is valid, and to debounce (not strictly sure
+    // // this is necessary...).
+    // bool valid_pulse = true;
+
+    // // Wait 15 ms and make sure line is still high
+    // int start = TimerValueGet(GPTIMER0_BASE, GPTIMER_A);
+    // while (start - TimerValueGet(GPTIMER0_BASE, GPTIMER_A) < (SysCtrlClockGet() / 66)) {
+    //     if (GPIOPinRead(GPIO_B_BASE, GPIO_PIN_6) == 0) {
+    //         valid_pulse = false;
+    //         break;
+    //     }
+    // }
+
+    // if (valid_pulse) {
+
+    //     if (count != 0) {
+    //         // We have gotten multiple pulses in a row. Make sure they are not
+    //         // too close.
+    //         valid_pulse = false;
+
+    //         // See if this is a valid edge
+    //         uint32_t curr_time = TimerValueGet(GPTIMER0_BASE, GPTIMER_A);
+    //         // Must be at least 30 ms from last edge
+    //         if ((last_interrupt_time - curr_time) > (SysCtrlClockGet() / 33)) {
+    //             valid_pulse = true;
+    //         }
+    //     }
+
+    //     // Increment our dollar count and set a timeout timer
+    //     if (valid_pulse) {
+
+    //         count += 1;
+
+    //         // Start a timeout timer
+    //         TimerDisable(GPTIMER0_BASE, GPTIMER_A);
+    //         // Timeout in 100 ms
+    //         TimerLoadSet(GPTIMER0_BASE, GPTIMER_A, SysCtrlClockGet() / 10);
+    //         TimerEnable(GPTIMER0_BASE, GPTIMER_A);
+
+    //         // Save the time we got this edge so we can detect if the next one
+    //         // is too close.
+    //         last_interrupt_time = TimerValueGet(GPTIMER0_BASE, GPTIMER_A);
+
+    //         gpio_toggle(GPIO_B_BASE, GPIO_PIN_5);
+
+    //         // On the first edge send a notice so the listener knows its getting
+    //         // data.
+    //         if (count == 1) {
+    //             send = 2;
+    //         }
+    //     }
+
+    // }
 
 }
 
@@ -237,7 +296,7 @@ int main (void) {
 
     GPIOPinTypeGPIOInput(GPIO_B_BASE, GPIO_PIN_6);
     IOCPadConfigSet(GPIO_B_BASE, GPIO_PIN_6, IOC_OVERRIDE_DIS);
-    GPIOIntTypeSet(GPIO_B_BASE, GPIO_PIN_6, GPIO_RISING_EDGE);
+    GPIOIntTypeSet(GPIO_B_BASE, GPIO_PIN_6, GPIO_BOTH_EDGES);
     GPIOPinIntEnable(GPIO_B_BASE, GPIO_PIN_6);
 
     IntMasterEnable();
@@ -271,14 +330,18 @@ int main (void) {
             uint8_t local_count = count;
             count = 0;
 
-            bspLedToggle(BSP_LED_3);
+            if (local_count != 0) {
 
-            send_char('b', true);
-            send_char('i', true);
-            send_char('l', true);
-            send_char('l', true);
+                bspLedToggle(BSP_LED_3);
 
-            dollars_to_characters(local_count);
+                send_char('b', true);
+                send_char('i', true);
+                send_char('l', true);
+                send_char('l', true);
+
+                dollars_to_characters(local_count);
+
+            }
 
             // // if (local_count > 0 && local_count < 3) {
             // if (local_count == 1) {
