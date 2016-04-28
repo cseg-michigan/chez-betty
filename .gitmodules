@@ -1,0 +1,3 @@
+[submodule "bill_acceptor/software/cc2538-base"]
+	path = bill_acceptor/software/cc2538-base
+	url = https://github.com/lab11/cc2538-base
