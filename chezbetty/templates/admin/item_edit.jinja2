@@ -29,6 +29,10 @@
             <dt>Price</dt>
             <dd><input type="text" class="form-control numeric" id="item-price" name="item-price" value="{{ item.price|round(2) }}"></dd>
 
+            <dt>Sticky Price</dt>
+            <input type="hidden" name="item-sticky_price" value="off">
+            <dd><input type="checkbox" id="item-sticky_price" name="item-sticky_price" {% if item.sticky_price == True %}checked="checked"{% endif %}></input></dd>
+
             <dt>Wholesale</dt>
             <dd><input type="text" class="form-control numeric" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale|round(4) }}"></dd>
 
