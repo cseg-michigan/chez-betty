@@ -279,15 +279,10 @@ class User(account.Account):
     def has_password(self):
         return self._password != None
 
-    # Cash deposit limit is a quick check on how active the user has been.
-    # We basically don't want new users to play around with seeing how much
-    # cash they can deposit.
+    # Cash deposit limit is now fixed at $2 because we have a bill acceptor
     @property
     def deposit_limit(self):
-        if self.total_deposits > 10.0 and self.total_purchases > 10.0:
-            return 100.0
-        else:
-            return 20.0
+        return 2.0
 
 
 def get_user(request):

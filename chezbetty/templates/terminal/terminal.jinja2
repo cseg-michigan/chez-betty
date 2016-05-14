@@ -93,15 +93,14 @@
               </thead>
 
               <tbody>
-                <tr id="purchase-empty">
-                  {% if existing_items %}
-                  {{ existing_items|safe }}
-                  {% else %}
+                {% if existing_items %}
+                {{ existing_items|safe }}
+                {% endif %}
+                <tr id="purchase-empty" {% if existing_items %}style="display:none;"{% endif %}>
                   <td colspan="7">
                     <h3>{{ _('Order Empty') }}</h3>
                     {{ _('Scan an item to begin') }}
                   </td>
-                  {% endif %}
                 </tr>
               </tbody>
 
@@ -215,65 +214,93 @@
 
         <div id="deposit-alerts"></div>
 
-        <div id="deposit-entry">
+        <div id="deposit-main" {% if deposit %}style="display:none;"{% endif %}>
           <div class="row">
             <div class="col-md-12">
-              <h5>{{ _('To make a cash deposit, put money in the box and enter what you deposited.') }}</h5>
-              <h5>{{ _('Your Deposit Limit: %(limit)s')|format(limit=user.deposit_limit|format_currency)|safe }}</h5>
-              <div id="deposit-entry-total" class="well well-md keypad-full-width">$0.00</div>
-              <div id="deposit-entry-default">
-                {% if user.deposit_limit >= 100 %}<button type="button" id="btn-default-100" class="btn btn-default btn-lg btn-default-deposit">$100</button>{% endif %}
-                {% if user.deposit_limit >= 20  %}<button type="button" id="btn-default-20"  class="btn btn-default btn-lg btn-default-deposit">$20</button>{% endif %}
-                {% if user.deposit_limit >= 10  %}<button type="button" id="btn-default-10"  class="btn btn-default btn-lg btn-default-deposit">$10</button>{% endif %}
-                {% if user.deposit_limit >= 5   %}<button type="button" id="btn-default-5"   class="btn btn-default btn-lg btn-default-deposit">$5</button>{% endif %}
-                <button type="button" id="btn-default-0"   class="btn btn-default btn-lg btn-default-deposit">$0</button>
-                <button type="button" id="btn-deposit-entry-default-custom" class="btn btn-default btn-lg btn-custom-deposit btn-warning">{{ _('Custom Amount') }}</button>
-              </div>
-              <div id="deposit-entry-custom" class="keypad-sm" style="display: none; text-align: center">
-                {% include "keypad.jinja2" %}
-                <button type="button" id="btn-deposit-entry-custom-default" class="btn btn-default btn-lg btn-custom-deposit btn-warning">{{ _('Standard Amounts') }}</button>
-              </div>
+              <h5>{{ _('To make a cash deposit, put money in the bill acceptor. It will automatically be added to your account.') }}</h5>
             </div>
           </div>
           <div class="row">
             <div class="col-md-12">
-              <button type="button" id="btn-deposit-user" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To Your Account') }}</button>
-              {% for pool in deposit_pools %}
-              <button type="button" id="btn-deposit-pool-{{ pool.id }}" class="btn btn-success btn-lg btn-submit-deposit">{{ _('Deposit To %(pool_name)s Pool')|format(pool_name=pool.name) }}</button>
-              {% endfor %}
+              <button type="button" id="btn-deposit-coins" class="btn btn-warning btn-lg btn-deposit-action">{{ _('Deposit Coins') }}</button>
             </div>
           </div>
         </div>
 
-        <div id="deposit-complete" class="row" style="display:none;">
-          <div class="col-md-12">
-
-            <div style="text-align:center;">
-              <span class="deposit-thankyou">{{ _("Thank you!") }}</span>
+        <div id="deposit-coins" style="display:none;">
+          <div class="row">
+            <div class="col-md-12">
+              <h5>{{ _('To make a cash deposit, put money in the bill acceptor. It will automatically be added to your account.') }}</h5>
+              <h5>{{ _('Your coin deposit limit: %(limit)s')|format(limit=user.deposit_limit|format_currency)|safe }}</h5>
+              <div id="deposit-entry-total" class="well well-md keypad-full-width">$0.00</div>
+              <div id="deposit-entry-default">
+                <button type="button" id="btn-coin-100" class="btn btn-default btn-lg btn-coin-deposit">$1.00</button>
+                <button type="button" id="btn-coin-50"  class="btn btn-default btn-lg btn-coin-deposit">$0.50</button>
+                <button type="button" id="btn-coin-25"  class="btn btn-default btn-lg btn-coin-deposit">$0.25</button>
+                <button type="button" id="btn-coin-10"  class="btn btn-default btn-lg btn-coin-deposit">$0.10</button>
+                <button type="button" id="btn-coin-5"   class="btn btn-default btn-lg btn-coin-deposit">$0.05</button>
+                <button type="button" id="btn-coin-1"   class="btn btn-default btn-lg btn-coin-deposit">$0.01</button>
+                <button type="button" id="btn-coin-del" class="btn btn-default btn-lg btn-coin-deposit">Clear</button>
+              </div>
             </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <button type="button" id="btn-submit-deposit" class="btn btn-success btn-lg btn-deposit-action">{{ _('Deposit To Your Account') }}</button>
+            </div>
+          </div>
+        </div>
 
-            <p>
-              <span id="deposit-complete-user">
-                {{ _("You successfully deposited %(amount)s into your account.")|
-                 format(amount='<span class="deposit-amount"></span>')|safe }}
-              </span>
-              <span id="deposit-complete-pool">
-                {{ _("You successfully deposited %(amount)s in the %(pool_name)s Pool.")|
-                 format(
-                   amount='<span class="deposit-amount"></span>',
-                   pool_name='<span class="deposit-pool-name"></span>',
-                 )|safe }}
-              </span>
-            </p>
-            <p>
-              {{ _("Please make sure you put that amount in the box. If not, click undo.") }}
-            </p>
+        <div id="deposit-verify" style="display:none;">
+          <div class="row">
+            <div class="col-md-12">
+              <h3>{{ _("Did you put %(amount)s into the cashbox?")|
+                 format(amount='<span id="deposit-verify-amount"></span>')|safe }}</h5>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <button type="button" id="btn-confirm-deposit-yes" class="btn btn-success btn-lg btn-deposit-action">{{ _('Yes') }}</button>
+              <button type="button" id="btn-confirm-deposit-no"  class="btn btn-error btn-lg btn-deposit-action">{{ _('No') }}</button>
+            </div>
+          </div>
+        </div>
 
-            <div id="deposit-eventid" class="hidden"></div>
-            <div id="deposit-amount" class="hidden"></div>
+        <div id="deposit-complete" {% if not deposit %}style="display:none;"{% endif %}>
+          <div class="row">
+            <div class="col-md-12">
 
-            <button type="button" class="btn btn-primary btn-lg btn-delete-deposit">{{ _('Undo this Deposit') }}</button>
+              <div style="text-align:center;">
+                <span class="deposit-thankyou">{{ _("Thank you!") }}</span>
+              </div>
 
+              <p>
+                <span id="deposit-complete-user">
+                  {% if deposit %}
+                  {{ _("You successfully deposited %(amount)s into your account.")|
+                   format(amount='<span class="deposit-amount">'~deposit.amount|format_currency~'</span>')|safe }}
+                  {% else %}
+                  {{ _("You successfully deposited %(amount)s into your account.")|
+                   format(amount='<span class="deposit-amount"></span>')|safe }}
+                  {% endif %}
+                </span>
+              </p>
+
+              <p>
+                You can continue to insert bills into the bill acceptor.
+                They will be added to your deposit.
+              </p>
+
+              <div id="deposit-eventid" class="hidden"></div>
+              <div id="deposit-amount" class="hidden"></div>
+
+            </div>
+          </div>
+        </div>
+
+        <div id="deposit-counting" class="row" style="display:none;">
+          <div class="col-md-12">
+            <h3>Processing the inserted bill...</h3>
           </div>
         </div>
 
@@ -285,5 +312,14 @@
 </div>
 
 {% endblock %}
+
+{% if existing_items %}
+  {% block onload %}
+  <script>
+    show_correct_purchase_button();
+    calculate_total();
+  </script>
+  {% endblock %}
+{% endif %}
 
 {% block timeout %}60*1000*50{% endblock %}

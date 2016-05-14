@@ -168,14 +168,6 @@ function update_user_balance (balance) {
 	else $("#user-info-current-balance").removeClass("big-debt");
 }
 
-// Update the stored pool balance in the DOM if it changes.
-function update_pool_balance (pool_id, balance) {
-	// Set the DOM element
-	$("#pool-balance-"+pool_id).text(balance);
-
-	display_and_update_pool_balance_box();
-}
-
 // Returns the pool id if a pool payment is selected, otherwise returns -1
 // if the user account is paying.
 function get_active_payment_account () {
@@ -474,31 +466,20 @@ function purchase_tag_error () {
 
 // Callback when a deposit POST was successful
 function deposit_success (data) {
-	if (logged_in() && data.type === 'user') {
+	if (logged_in()) {
 		if ("error" in data) {
 			deposit_alert_error(data.error);
 			enable_button($(".btn-submit-deposit"));
-			enable_button($(".btn-delete-deposit"));
 		} else {
 			// On successful deposit, we switch to the frame that shows
 			// the successful deposit.
 
-			// Setup the page with amount/event/pool
+			// Setup the page with amount/event
 			$(".deposit-amount").html(format_price(data.amount));
-			if (data.pool_name) {
-				$(".deposit-pool-name").text(data.pool_name);
-				$("#deposit-complete-user").hide();
-				$("#deposit-complete-pool").show();
+			$("#deposit-complete-user").show();
 
-				// Update pool balance
-				update_pool_balance(data.pool_id, data.pool_balance);
-			} else {
-				$("#deposit-complete-pool").hide();
-				$("#deposit-complete-user").show();
-
-				// Update user balance
-				update_user_balance(data.user_balance);
-			}
+			// Update user balance
+			update_user_balance(data.user_balance);
 
 			// We then calculate the purchase total in case a discount/fee
 			// has changed.
@@ -508,12 +489,11 @@ function deposit_success (data) {
 			$("#deposit-amount").text(data.amount);
 
 			// Make the change
-			$("#deposit-entry").hide();
+			$("#deposit-main").hide();
+			$("#deposit-coins").hide();
+			$("#deposit-verify").hide();
+			$("#deposit-counting").hide();
 			$("#deposit-complete").show();
-
-			// Also enable these buttons so they don't get stuck
-			enable_button($(".btn-submit-deposit"));
-			enable_button($(".btn-delete-deposit"));
 		}
 	} else {
 		var alert_str = 'Deposit of '+format_price(data.new_amount)+' recorded.'
@@ -526,52 +506,12 @@ function deposit_success (data) {
 function deposit_error () {
 	if (logged_in()) {
 		deposit_alert_error("Failed to complete deposit. Email chezbetty@umich.edu and let them know.");
-		enable_button($(".btn-submit-deposit"));
-		enable_button($(".btn-delete-deposit"));
+		enable_button($(".btn-confirm-deposit-yes"));
+		$("#deposit-counting").hide();
 		$("#deposit-entry-total").html(format_price(0.0));
 	} else {
 		alert_error("Failed to complete deposit. Email chezbetty@umich.edu and let them know.");
 	}
-}
-
-// Callback when a deposit delete POST was successful
-function deposit_delete_success (data) {
-	if ("error" in data) {
-		deposit_alert_error(data.error);
-		enable_button($(".btn-submit-deposit"));
-		enable_button($(".btn-delete-deposit"));
-	} else {
-		// Clear some state
-		$("#deposit-eventid").text();
-		$("#deposit-amount").text();
-
-		deposit_alert_success('Deposit successfully removed.');
-
-		// Update user balance
-		update_user_balance(data.user_balance);
-		calculate_user_new_balance();
-
-		// Update any pool balances
-		for (var i=0; i<data.pools.length; i++) {
-			var pool = data.pools[i];
-			update_pool_balance(pool.id, pool.balance);
-		}
-
-		// Make the change back to the deposit entry form
-		$("#deposit-complete").hide();
-		$("#deposit-entry").show();
-
-		// Also enable these buttons so they don't get stuck
-		enable_button($(".btn-submit-deposit"));
-		enable_button($(".btn-delete-deposit"));
-	}
-}
-
-// Callback when a deposit delete fails for some reason
-function deposit_delete_error () {
-	deposit_alert_error("Failed to delete deposit. Perhaps try again?");
-	enable_button($(".btn-submit-deposit"));
-	enable_button($(".btn-delete-deposit"));
 }
 
 
@@ -636,7 +576,11 @@ function submit_purchase (this_btn, success_cb, error_cb) {
 		var id = $(this).attr("id");
 		var quantity = parseInt($(this).children(".item-quantity").text());
 		var pid = id.split('-')[2];
-		purchase[pid] = quantity;
+		if (pid in purchase) {
+			purchase[pid] += quantity;
+		} else {
+			purchase[pid] = quantity;
+		}
 		item_count++;
 	});
 
@@ -804,7 +748,7 @@ $('#tag-items').on('click', '.tag-item', function () {
 
 // Called to let the user know we got the bill, we just need time to count it.
 function start_deposit () {
-	console.log('counting')
+	$("#deposit-counting").show();
 }
 
 function handle_deposit (amount, method) {
@@ -827,89 +771,60 @@ function handle_deposit (amount, method) {
 	});
 }
 
-// Click handler to submit a deposit.
-$(".btn-submit-deposit").click(function () {
-	$(this).blur();
-	deposit_alert_clear();
+function verify_deposit (amount) {
+	$("#deposit-verify-amount").html(format_price(amount));
+	$("#deposit-coins").hide();
+	$("#deposit-verify").show();
+}
 
-	disable_button($(this));
+// Click handler to submit a deposit.
+$("#btn-submit-deposit").click(function () {
+	deposit_alert_clear();
 
 	var amount = strip_price($("#deposit-entry-total").text());
 
 	// Clear deposit keypad box
 	$("#deposit-entry-total").html(format_price(0.0));
 
+	verify_deposit(parseFloat(amount));
+	console.log('jflkdsa')
+});
 
+// Click handler to confirm a deposit.
+$("#btn-confirm-deposit-yes").click(function () {
+	$(this).blur();
+	disable_button($(this));
+
+	var amount = strip_price($("#deposit-verify-amount").text());
 	handle_deposit(amount, 'manual');
 });
 
-// Click handler to submit a deposit.
-$(".btn-delete-deposit").click(function () {
-	$(this).blur();
-	deposit_alert_clear();
-
-	disable_button($(this));
-
-	// Fill in the keypad box
-	var prev_amount = parseFloat($("#deposit-amount").text());
-	$("#deposit-entry-total").html(format_price(prev_amount));
-
-	// Prepare enough information so we can delete the old
-	// deposit transaction
-	deposit = {};
-	deposit.umid = $("#user-umid").text();
-	deposit.old_event_id = $("#deposit-eventid").text();
-
-	// Post the deposit to the server
-	$.ajax({
-		type:     "POST",
-		url:      "/terminal/deposit/delete",
-		data:     deposit,
-		success:  deposit_delete_success,
-		error:    deposit_delete_error,
-		dataType: "json"
-	});
+// Click handler to reject a deposit.
+$("#btn-confirm-deposit-no").click(function () {
+	$("#deposit-verify").hide();
+	$("#deposit-coins").show();
 });
 
 // Button press handler for the default deposit amount buttons
-$(".btn-default-deposit").click(function() {
-	var value = $(this).attr("id").split("-")[2];
-	$("#deposit-entry-total").html(format_price(parseFloat(value)));
-	calculate_user_new_balance();
-});
-
-// Switch to custom amount entry mode
-$("#btn-deposit-entry-default-custom").click(function() {
-	$("#deposit-entry-default").hide();
-	$("#deposit-entry-custom").show();
-	$("#deposit-entry-total").html(format_price(0.0));
-	calculate_user_new_balance();
-});
-
-// Switch to standard amount deposits from the custom page
-$("#btn-deposit-entry-custom-default").click(function() {
-	$("#deposit-entry-custom").hide();
-	$("#deposit-entry-default").show();
-	$("#deposit-entry-total").html(format_price(0.0));
-	calculate_user_new_balance();
-});
-
-// Button press handler for the keypad
-$("#deposit-entry-custom").on("click", "button", function () {
+$(".btn-coin-deposit").click(function() {
 	var input = full_strip_price($("#deposit-entry-total").text());
 	var value = $(this).attr("id").split("-")[2];
 
-	if (value == "del") {
-		input = input.slice(0, input.length-1);
-	} else if (value == "clr") {
-		input = 0;
-	} else {
-		input += value;
+	var output = 0;
+	if (value !== "del") {
+		output = (parseFloat(value) + parseFloat(input)) / 100.0;
 	}
 
-	var output = parseFloat(input) / 100.0;
-
 	$("#deposit-entry-total").html(format_price(output));
+	calculate_user_new_balance();
+});
+
+// Switch to coin deposit mode
+$("#btn-deposit-coins").click(function() {
+	$("#deposit-main").hide();
+	$("#deposit-complete").hide();
+	$("#deposit-coins").show();
+	$("#deposit-entry-total").html(format_price(0.0));
 	calculate_user_new_balance();
 });
 

@@ -14,6 +14,6 @@
   <td style="width: 7%; border-left: none; border-right: none;"><button type="button" class="btn btn-danger btn-lg btn-decrement-item" {% if quantity < 2 %}style="display:none;"{% endif %}>-</button></td>
   <td style="width: 7%; border-left: none; "><button type="button" class="btn btn-danger btn-lg btn-increment-item">+</button></td>
   <td class="item-price">{{ item.price|format_currency|safe }}</td>
-  <td class="item-total">{{ item.price|format_currency|safe }}</td>
+  <td class="item-total">{{ (item.price*quantity)|format_currency|safe }}</td>
   <td class="hidden item-price-single">{{ item.price }}</td>
 </tr>

@@ -62,7 +62,7 @@ h2.big-debt {
 	margin-bottom: 20px;
 }
 
-.btn-default-deposit {
+.btn-coin-deposit {
 	height: 90px;
 	width: 44%;
 	margin: 10px;
@@ -76,7 +76,7 @@ h2.big-debt {
 	margin-bottom: 10px;
 }
 
-.btn-submit-deposit {
+.btn-deposit-action {
 	width: 100%;
 	height: 60px;
 	margin-bottom: 15px;

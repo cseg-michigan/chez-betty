@@ -92,6 +92,18 @@ def terminal(request):
             user.balance = user.archived_balance
             user.archived = False
 
+        # NOTE TODO (added on 2016/05/14): The "name" field in this temp
+        # table needs to be terminal specific. That is, if there are multiple
+        # terminals, items and money shouldn't be able to move between them.
+
+        # If cash was added before a user was logged in, credit that now
+        deposit = None
+        in_flight_deposit = Ephemeron.from_name('deposit')
+        if in_flight_deposit:
+            amount = Decimal(in_flight_deposit.value)
+            deposit = datalayer.deposit(user, user, amount)
+            DBSession.delete(in_flight_deposit)
+
         # For Demo mode:
         items = DBSession.query(Item)\
                          .filter(Item.enabled == True)\
@@ -105,26 +117,47 @@ def terminal(request):
 
         # Figure out if any pools can be used to pay for this purchase
         purchase_pools = []
-        deposit_pools = []
         for pool in Pool.all_by_owner(user, True):
-            deposit_pools.append(pool)
             if pool.balance > (pool.credit_limit * -1):
                 purchase_pools.append(pool)
 
         for pu in user.pools:
-            deposit_pools.append(pu.pool)
             if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
                 purchase_pools.append(pu.pool)
 
         # Get the list of tags that have items without barcodes in them
         tags_with_nobarcode_items = Tag.get_tags_with_nobarcode_items();
 
+        # Add any pre-scanned items
+        cart_html = ''
+        cart = Ephemeron.from_name('cart')
+        if cart:
+            barcodes = cart.value.split(',')
+            barcode_dict = {}
+            # Group barcodes if an item was scanned more than once
+            for barcode in barcodes:
+                if barcode in barcode_dict:
+                    barcode_dict[barcode] += 1
+                else:
+                    barcode_dict[barcode] = 1
+
+            for barcode, quantity in barcode_dict.items():
+                item = get_item_from_barcode(barcode)
+
+                if type(item) is Item:
+                    cart_html += render('templates/terminal/purchase_item_row.jinja2', {'item': item,
+                                                                                        'quantity': quantity})
+
+            # Remove temporary cart now that we've shown it to the user
+            DBSession.delete(cart)
+
         return {'user': user,
                 'items': items,
                 'purchase_pools': purchase_pools,
-                'deposit_pools': deposit_pools,
                 'purchase_fee_percent': purchase_fee_percent,
-                'tags_with_nobarcode_items': tags_with_nobarcode_items}
+                'tags_with_nobarcode_items': tags_with_nobarcode_items,
+                'existing_items': cart_html,
+                'deposit': deposit}
 
     except __user.InvalidUserException as e:
         request.session.flash(get_localizer(request).translate(_(
@@ -267,13 +300,9 @@ def terminal_deposit_delete(request):
         return {'error': 'Error.'}
 
 
-## Add an item to a shopping cart.
-@view_config(route_name='terminal_item_barcode',
-             renderer='json',
-             permission='service')
-def terminal_item_barcode(request):
+def get_item_from_barcode(barcode):
     try:
-        item = Item.from_barcode(request.matchdict['barcode'])
+        item = Item.from_barcode(barcode)
     except:
         # Could not find the item. Check to see if the user scanned a box
         # instead. This could lead to two cases: a) the box only has 1 item in it
@@ -282,16 +311,29 @@ def terminal_item_barcode(request):
         # the box. b) The box has multiple items in it in which case we throw
         # an error for now.
         try:
-            box = Box.from_barcode(request.matchdict['barcode'])
+            box = Box.from_barcode(barcode)
             if box.subitem_number == 1:
                 item = box.items[0].item
             else:
-                return {'error': 'Cannot add that entire box to your order. Please scan an individual item.'}
+                return 'Cannot add that entire box to your order. Please scan an individual item.'
         except:
-            return {'error': 'Could not find that item.'}
+            return 'Could not find that item.'
 
     if not item.enabled:
-        return {'error': 'That product is not currently for sale.'}
+        return 'That product is not currently for sale.'
+
+    return item
+
+
+## Add an item to a shopping cart.
+@view_config(route_name='terminal_item_barcode',
+             renderer='json',
+             permission='service')
+def terminal_item_barcode(request):
+    item = get_item_from_barcode(request.matchdict['barcode'])
+
+    if type(item) is str:
+         return {'error': item}
 
     item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
     return {'id':item.id,
