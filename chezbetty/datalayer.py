@@ -13,6 +13,7 @@ from .models.box import Box
 from .models import box_item
 from .models import item_vendor
 from .models import box_vendor
+from .models import ephemeron
 
 from .utility import notify_pool_out_of_credit
 from .utility import notify_new_top_wall_of_shame
@@ -305,6 +306,14 @@ def bitcoin_deposit(user, amount, btc_transaction, address, amount_btc):
                 new=user.balance,
                 amount=amount,
                 transaction=t)
+
+
+# Call this to say money was given to chez betty but we don't know whose
+# account to put it into
+def temporary_deposit(amount):
+    assert(amount > 0.0)
+
+    return ephemeron.Ephemeron.add_decimal('deposit', amount)
 
 
 # Call this to adjust a user's balance

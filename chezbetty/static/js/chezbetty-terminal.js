@@ -306,6 +306,13 @@ function calculate_wallofshame_fee_percent (balance, total) {
 	return fee_percent;
 }
 
+// Returns true if a user has logged in to purchase something
+function logged_in () {
+	var umid = $("#user-umid").text();
+	if (umid === '') return false;
+	return true;
+}
+
 /*******************************************************************************
  * AJAX Callbacks
  ******************************************************************************/
@@ -353,6 +360,22 @@ function add_item_success (data) {
 // Callback when adding to cart fails.
 function add_item_fail () {
 	purchase_alert_error("Could not find that item.");
+}
+
+// Callback when saving an item for when a user logs in succeeds
+function save_item_success (data) {
+	purchase_alert_clear();
+
+	if ("error" in data) {
+		alert_error('Could not add that item right now.');
+	} else {
+		alert_success('Item successfully scanned. Log in to add it to your cart.')
+	}
+}
+
+// Callback when adding to cart fails.
+function save_item_fail () {
+	alert_error('Could not add that item right now.');
 }
 
 // Callback when a purchase was successful
@@ -451,54 +474,64 @@ function purchase_tag_error () {
 
 // Callback when a deposit POST was successful
 function deposit_success (data) {
-	if ("error" in data) {
-		deposit_alert_error(data.error);
-		enable_button($(".btn-submit-deposit"));
-		enable_button($(".btn-delete-deposit"));
-	} else {
-		// On successful deposit, we switch to the frame that shows
-		// the successful deposit.
-
-		// Setup the page with amount/event/pool
-		$(".deposit-amount").html(format_price(data.amount));
-		if (data.pool_name) {
-			$(".deposit-pool-name").text(data.pool_name);
-			$("#deposit-complete-user").hide();
-			$("#deposit-complete-pool").show();
-
-			// Update pool balance
-			update_pool_balance(data.pool_id, data.pool_balance);
+	if (logged_in() && data.type === 'user') {
+		if ("error" in data) {
+			deposit_alert_error(data.error);
+			enable_button($(".btn-submit-deposit"));
+			enable_button($(".btn-delete-deposit"));
 		} else {
-			$("#deposit-complete-pool").hide();
-			$("#deposit-complete-user").show();
+			// On successful deposit, we switch to the frame that shows
+			// the successful deposit.
 
-			// Update user balance
-			update_user_balance(data.user_balance);
+			// Setup the page with amount/event/pool
+			$(".deposit-amount").html(format_price(data.amount));
+			if (data.pool_name) {
+				$(".deposit-pool-name").text(data.pool_name);
+				$("#deposit-complete-user").hide();
+				$("#deposit-complete-pool").show();
+
+				// Update pool balance
+				update_pool_balance(data.pool_id, data.pool_balance);
+			} else {
+				$("#deposit-complete-pool").hide();
+				$("#deposit-complete-user").show();
+
+				// Update user balance
+				update_user_balance(data.user_balance);
+			}
+
+			// We then calculate the purchase total in case a discount/fee
+			// has changed.
+			calculate_total();
+
+			$("#deposit-eventid").text(data.event_id);
+			$("#deposit-amount").text(data.amount);
+
+			// Make the change
+			$("#deposit-entry").hide();
+			$("#deposit-complete").show();
+
+			// Also enable these buttons so they don't get stuck
+			enable_button($(".btn-submit-deposit"));
+			enable_button($(".btn-delete-deposit"));
 		}
-
-		// We then calculate the purchase total in case a discount/fee
-		// has changed.
-		calculate_total();
-
-		$("#deposit-eventid").text(data.event_id);
-		$("#deposit-amount").text(data.amount);
-
-		// Make the change
-		$("#deposit-entry").hide();
-		$("#deposit-complete").show();
-
-		// Also enable these buttons so they don't get stuck
-		enable_button($(".btn-submit-deposit"));
-		enable_button($(".btn-delete-deposit"));
+	} else {
+		var alert_str = 'Deposit of '+format_price(data.new_amount)+' recorded.'
+		alert_str += ' Please log in to add '+format_price(data.total_amount)+' to your account.'
+		alert_success(alert_str);
 	}
 }
 
 // Callback when a deposit fails for some reason
 function deposit_error () {
-	deposit_alert_error("Failed to complete deposit. Perhaps try again?");
-	enable_button($(".btn-submit-deposit"));
-	enable_button($(".btn-delete-deposit"));
-	$("#deposit-entry-total").html(format_price(0.0));
+	if (logged_in()) {
+		deposit_alert_error("Failed to complete deposit. Email chezbetty@umich.edu and let them know.");
+		enable_button($(".btn-submit-deposit"));
+		enable_button($(".btn-delete-deposit"));
+		$("#deposit-entry-total").html(format_price(0.0));
+	} else {
+		alert_error("Failed to complete deposit. Email chezbetty@umich.edu and let them know.");
+	}
 }
 
 // Callback when a deposit delete POST was successful
@@ -551,12 +584,23 @@ function deposit_delete_error () {
 // Function called by chezbetty-item.js when a new item was scanned and
 // should be added to the cart.
 function add_item (barcode) {
-	$.ajax({
-		dataType: "json",
-		url: "/terminal/item/barcode/"+barcode,
-		success: add_item_success,
-		error: add_item_fail
-	});
+	if (logged_in()) {
+		// Request information about the product so we can add it to the cart
+		$.ajax({
+			dataType: "json",
+			url: "/terminal/item/barcode/"+barcode,
+			success: add_item_success,
+			error: add_item_fail
+		});
+	} else {
+		// Save this item for when the user does log in
+		$.ajax({
+			dataType: "json",
+			url: "/terminal/saveitem/barcode/"+barcode,
+			success: save_item_success,
+			error: save_item_fail
+		});
+	}
 }
 
 function add_item_id (item_id) {
@@ -759,19 +803,16 @@ $('#tag-items').on('click', '.tag-item', function () {
 // DEPOSIT
 
 // Called to let the user know we got the bill, we just need time to count it.
-function deposit_counting () {
-
+function start_deposit () {
+	console.log('counting')
 }
 
 function handle_deposit (amount, method) {
 	deposit = {};
 
-	// If this is undefined, then the user is not logged in. That's ok,
+	// If this is empty, then the user is not logged in. That's ok,
 	// we save the deposit for the next user
 	deposit.umid = $("#user-umid").text();
-	if (deposit.umid == undefined) {
-		alert('Deposit recorded. Please log in to add it to your account.');
-	}
 	deposit.amount = amount;
 	deposit.method = method;
 

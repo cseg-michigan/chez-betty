@@ -26,6 +26,7 @@ from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
 from .models.tag import Tag
+from .models.ephemeron import Ephemeron
 
 from .utility import user_password_reset
 from .utility import send_email
@@ -161,43 +162,52 @@ def terminal_purchase_tag(request):
              permission='service')
 def terminal_deposit(request):
     try:
-        user = User.from_umid(request.POST['umid'])
+        if request.POST['umid'] == '':
+            # User was not logged in when deposit was made. We store
+            # this deposit temporarily and give it to the next user who
+            # logs in.
+            user = None
+        else:
+            user = User.from_umid(request.POST['umid'])
         amount = Decimal(request.POST['amount'])
-        account = request.POST['account']
+        method = request.POST['method']
 
-        # Check if the deposit amount is too great.
-        # This if block could be tighter, but this is easier to understand
-        if amount > 100.0:
-            # Anything above 100 is blocked
-            raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
-
-        if amount < 100.0 and amount > 20.0 and (user.total_deposits < 10.0 or user.total_purchases < 10.0):
-            # If the deposit is between 20 and 100 and the user hasn't done much
-            # with betty. Block the deposit. We do allow deposits up to 100 for
-            # customers that have shown they know how to scan/purchase and
-            # deposit
-            raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
-
+        # Can't deposit a negative amount
         if amount <= 0.0:
             raise DepositException('Deposit amount must be greater than $0.00')
+
+        # Now check the deposit method. We trust anything that comes from the
+        # bill acceptor, but double check a manual deposit
+        if method == 'manual':
+            # Check if the deposit amount is too great.
+            if amount > 2.0:
+                # Anything above $2 is blocked
+                raise DepositException('Deposit amount of ${:,.2f} exceeds the limit'.format(amount))
+
+        elif method == 'acceptor':
+            # Any amount is OK
+            pass
+
+        else:
+            raise DepositException('"{}" is an unknown deposit type'.format(method))
 
         # At this point the deposit can go through
         ret = {}
 
-        if account == 'user':
+        if user:
             deposit = datalayer.deposit(user, user, amount)
-        elif account == 'pool':
-            pool = Pool.from_id(request.POST['pool_id'])
-            deposit = datalayer.deposit(user, pool, amount)
-            ret['pool_name'] = pool.name
-            ret['pool_balance'] = float(pool.balance)
-            ret['pool_id'] = pool.id
+            ret['type'] = 'user'
+            ret['amount'] = float(deposit['amount'])
+            ret['event_id'] = deposit['event'].id
+            ret['user_balance'] = float(user.balance)
 
-        # Return a JSON blob of the transaction ID so the client can redirect to
-        # the deposit success page
-        ret['amount'] = float(deposit['amount'])
-        ret['event_id'] = deposit['event'].id
-        ret['user_balance'] = float(user.balance)
+        else:
+            # No one was logged in. Need to save this temporarily
+            total_stored = datalayer.temporary_deposit(amount);
+            ret['type'] = 'temporary'
+            ret['new_amount'] = float(amount)
+            ret['total_amount'] = float(total_stored)
+
         return ret
 
     except __user.InvalidUserException as e:
@@ -286,6 +296,20 @@ def terminal_item_barcode(request):
     item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
     return {'id':item.id,
             'item_row_html': item_html}
+
+
+## Add item to saved list for when a user logs in (when we can add it to
+## the cart)
+@view_config(route_name='terminal_saveitem_barcode',
+             renderer='json',
+             permission='service')
+def terminal_saveitem_barcode(request):
+    try:
+        cart_barcodes = Ephemeron.add_list('cart', request.matchdict['barcode'])
+        return {'barcodes': cart_barcodes}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'error': 'Error.'}
 
 
 ## Add an item to a shopping cart.
