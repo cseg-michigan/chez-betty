@@ -28,11 +28,17 @@ function process_input () {
 		window.location.replace("/terminal/" + umid);
 
 	} else if (keyboard_input.length == 7 && keyboard_input.slice(0, 4) == "BILL") {
-		// This looks like the bill acceptor
-		var dollars = parseInt(keyboard_input.slice(4, 7));
+		if (keyboard_input == 'BILLBEG') {
+			// A bill was inserted
+			deposit_counting();
+		} else {
 
-		// Call the main code to actually handle this
-		handle_deposit(dollars, 'acceptor');
+			// This looks like the bill acceptor
+			var dollars = parseInt(keyboard_input.slice(4, 7));
+
+			// Call the main code to actually handle this
+			handle_deposit(dollars, 'acceptor');
+		}
 
 	} else {
 		// Well, this must be a barcode scan

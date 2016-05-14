@@ -758,26 +758,22 @@ $('#tag-items').on('click', '.tag-item', function () {
 
 // DEPOSIT
 
-// Click handler to submit a deposit.
-$(".btn-submit-deposit").click(function () {
-	$(this).blur();
-	deposit_alert_clear();
+// Called to let the user know we got the bill, we just need time to count it.
+function deposit_counting () {
 
-	disable_button($(this));
+}
 
+function handle_deposit (amount, method) {
 	deposit = {};
+
+	// If this is undefined, then the user is not logged in. That's ok,
+	// we save the deposit for the next user
 	deposit.umid = $("#user-umid").text();
-	deposit.amount = strip_price($("#deposit-entry-total").text());
-
-	// Clear deposit keypad box
-	$("#deposit-entry-total").html(format_price(0.0));
-
-	// What account to deposit to?
-	fields = $(this).attr("id").split("-");
-	deposit.account = fields[2];
-	if (deposit.account == "pool") {
-		deposit.pool_id = fields["3"];
+	if (deposit.umid == undefined) {
+		alert('Deposit recorded. Please log in to add it to your account.');
 	}
+	deposit.amount = amount;
+	deposit.method = method;
 
 	// Post the deposit to the server
 	$.ajax({
@@ -788,6 +784,22 @@ $(".btn-submit-deposit").click(function () {
 		error:    deposit_error,
 		dataType: "json"
 	});
+}
+
+// Click handler to submit a deposit.
+$(".btn-submit-deposit").click(function () {
+	$(this).blur();
+	deposit_alert_clear();
+
+	disable_button($(this));
+
+	var amount = strip_price($("#deposit-entry-total").text());
+
+	// Clear deposit keypad box
+	$("#deposit-entry-total").html(format_price(0.0));
+
+
+	handle_deposit(amount, 'manual');
 });
 
 // Click handler to submit a deposit.
