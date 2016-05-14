@@ -19,14 +19,9 @@ function process_input () {
 	var keyin = keyboard_input;
 	keyboard_input = '';
 
-	console.log('keboard input: ' + keyin)
-
-
 	if (keyin.slice(0, 3) == "%B6") {
 		// This looks like an M-Card
 		var umid = keyin.slice(8, 16);
-
-		console.log('got umid ' + umid);
 
 		// Ignore MCard input while the splash screen is live
 		if ($('#splash').is(':visible')) {
@@ -42,7 +37,6 @@ function process_input () {
 		// as one string.
 		var dollars = keyin.slice(keyin.length-3, keyin.length);
 
-		console.log(dollars)
 		if (dollars == 'BEG') {
 			start_deposit();
 		} else {
@@ -51,11 +45,9 @@ function process_input () {
 		}
 
 	} else {
-		console.log('barcode')
 		// Well, this must be a barcode scan
 		if (keyin.length > 1) {
 			var barcode = keyin.slice(0, keyin.length-1);
-			console.log(barcode)
 			add_item(barcode);
 		}
 	}
