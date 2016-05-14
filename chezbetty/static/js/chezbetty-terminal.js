@@ -467,6 +467,9 @@ function purchase_tag_error () {
 // Callback when a deposit POST was successful
 function deposit_success (data) {
 	if (logged_in()) {
+		deposit_alert_clear();
+		enable_button($('.btn-submit-purchase'));
+
 		if ("error" in data) {
 			deposit_alert_error(data.error);
 			enable_button($(".btn-submit-deposit"));
@@ -507,6 +510,7 @@ function deposit_error () {
 	if (logged_in()) {
 		deposit_alert_error("Failed to complete deposit. Email chezbetty@umich.edu and let them know.");
 		enable_button($(".btn-confirm-deposit-yes"));
+		enable_button($('.btn-submit-purchase'));
 		$("#deposit-counting").hide();
 		$("#deposit-entry-total").html(format_price(0.0));
 	} else {
@@ -748,6 +752,7 @@ $('#tag-items').on('click', '.tag-item', function () {
 
 // Called to let the user know we got the bill, we just need time to count it.
 function start_deposit () {
+	disable_button($('.btn-submit-purchase'));
 	$("#deposit-counting").show();
 }
 

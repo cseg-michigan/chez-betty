@@ -78,6 +78,14 @@ class Deposit(Event):
     def __init__(self, user):
         Event.__init__(self, user, None)
 
+    @classmethod
+    def get_user_recent(cls, user):
+        return DBSession.query(cls)\
+                        .filter(cls.user_id == user.id)\
+                        .filter(cls.timestamp>=(datetime.datetime.utcnow()-datetime.timedelta(minutes=2)))\
+                        .filter(cls.deleted == False)\
+                        .all()
+
 
 class Adjustment(Event):
     __mapper_args__ = {'polymorphic_identity': 'adjustment'}

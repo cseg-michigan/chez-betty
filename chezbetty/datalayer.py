@@ -258,15 +258,40 @@ def deposit(user, account, amount):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
 
+    # Keep track of how much this deposit will be once merged (if needed)
+    deposit_total = amount
+
+    # Get recent deposits that we might merge with this one
+    events_to_delete = []
+    recent_deposits = event.Deposit.get_user_recent(user)
+    for d in recent_deposits:
+        # Only look at transaction events with 1 CashDeposit transaction
+        if len(d.transactions) == 1 and d.transactions[0].type == 'cashdeposit':
+            t = d.transactions[0]
+            # Must be a deposit to the same account
+            if t.to_account_virt_id == account.id:
+                deposit_total += t.amount
+                events_to_delete.append(d)
+
+
+    # TODO (added on 2016/05/14): Make adding the new deposit and deleting
+    # the old ones a single atomic unit
+
+    # Add the new deposit (which may be a cumulative total)
     prev = user.balance
     e = event.Deposit(user)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.CashDeposit(e, account, amount)
+    t = transaction.CashDeposit(e, account, deposit_total)
     DBSession.add(t)
+
+    # And then delete the old events that we merged together
+    for e in events_to_delete:
+        undo_event(e, user)
+
     return dict(prev=prev,
                 new=user.balance,
-                amount=amount,
+                amount=deposit_total,
                 transaction=t,
                 event=e)
 
