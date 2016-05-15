@@ -236,10 +236,17 @@ def terminal_deposit(request):
 
         else:
             # No one was logged in. Need to save this temporarily
-            total_stored = datalayer.temporary_deposit(amount);
-            ret['type'] = 'temporary'
-            ret['new_amount'] = float(amount)
-            ret['total_amount'] = float(total_stored)
+            # total_stored = datalayer.temporary_deposit(amount);
+            # ret['type'] = 'temporary'
+            # ret['new_amount'] = float(amount)
+            # ret['total_amount'] = float(total_stored)
+
+            print('GOT NON-LOGGED IN DEPOSIT')
+            print('GOT NON-LOGGED IN DEPOSIT')
+            print('GOT NON-LOGGED IN DEPOSIT')
+            print('AMOUNT: {}'.format(amount))
+            print('IGNORING THIS FOR NOW.')
+            ret['error'] = 'Must be logged in to deposit'
 
         return ret
 
