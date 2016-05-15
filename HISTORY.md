@@ -1,6 +1,13 @@
 History of Chez Betty
 =====================
 
+- May 14, 2016: Added a bill acceptor to Betty. This should prevent
+most of the loss from cash deposits being entered but the money
+not being in the cash box.
+- May 14, 2016: Replaced the thermostat in the True GDM-72 refrigerator.
+The old one failed, causing the fridge to get too warm, then failed
+the other way causing a lot of drinks to freeze. All told, it cost
+Betty about $250.
 - Dec 9, 2015: Betty ditches the BeagleBone Black and moves to an Intel
 Nuc. Hopefully that will be more reliable and responsive.
 - Sep 20, 2015: Betty restocks start requiring renting a U-Haul. With purchases at
