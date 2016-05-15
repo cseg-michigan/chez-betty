@@ -1,0 +1,8 @@
+<nav class="navbar navbar-default">
+  <div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav">
+      <li {% if items_page == 'active'   %}class="active"{% endif %}><a href="/admin/items/list?group=active">Active Items</a></li>
+      <li {% if items_page == 'disabled' %}class="active"{% endif %}><a href="/admin/items/list?group=disabled">Disabled Items</a></li>
+    </ul>
+  </div>
+</nav>

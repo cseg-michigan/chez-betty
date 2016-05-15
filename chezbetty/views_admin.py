@@ -1027,186 +1027,147 @@ def admin_items_add_submit(request):
         return HTTPFound(location=request.route_url('admin_items_add'))
 
 
-@view_config(route_name='admin_items_edit',
-             renderer='templates/admin/items_edit.jinja2',
+@view_config(route_name='admin_items_list',
+             renderer='templates/admin/items_list.jinja2',
              permission='manage')
-def admin_items_edit(request):
-    items_active = DBSession.query(Item)\
-                            .filter_by(enabled=True)\
-                            .order_by(Item.name).all()
-    items_inactive = DBSession.query(Item)\
-                              .filter_by(enabled=False)\
-                              .order_by(Item.name).all()
-    items = items_active + items_inactive
+def admin_items_list(request):
+    group = request.GET['group'] if 'group' in request.GET else 'active'
 
-    # Calculate the number sold here (much faster)
-    # Also calculate how much each sale was worth to us
-    purchased_items = PurchaseLineItem.all()
-    purchased_quantities = {}
-    purchased_amount = {}
-    for pi in purchased_items:
-        if pi.item_id not in purchased_quantities:
-            purchased_quantities[pi.item_id] = 0
-        if pi.item_id not in purchased_amount:
-            purchased_amount[pi.item_id] = 0
-        purchased_quantities[pi.item_id] += pi.quantity
-        purchased_amount[pi.item_id] += pi.amount
+    if group == 'active':
+        page  = 'active'
+        items = Item.all()
 
-    # Calculate the number lost here (much faster)
-    lost_items = InventoryLineItem.all()
-    lost_quantities = {}
-    for li in lost_items:
-        if li.item_id not in lost_quantities:
-            lost_quantities[li.item_id] = 0
-        lost_quantities[li.item_id] += (li.quantity - li.quantity_counted)
+        # Calculate the number sold here (much faster)
+        # Also calculate how much each sale was worth to us
+        purchased_items = PurchaseLineItem.all()
+        purchased_quantities = {}
+        purchased_amount = {}
+        for pi in purchased_items:
+            if pi.item_id not in purchased_quantities:
+                purchased_quantities[pi.item_id] = 0
+            if pi.item_id not in purchased_amount:
+                purchased_amount[pi.item_id] = 0
+            purchased_quantities[pi.item_id] += pi.quantity
+            purchased_amount[pi.item_id] += pi.amount
 
-    # Calculate the amount we have paid to the store for all items
-    stocked_items = RestockLineItem.all()
-    stocked_amount = {}
-    for si in stocked_items:
-        if si.item_id not in stocked_amount:
-            stocked_amount[si.item_id] = 0
-        stocked_amount[si.item_id] += si.amount
-    stocked_boxes = RestockLineBox.all()
-    for sb in stocked_boxes:
-        for sbi in sb.box.items:
-            if sbi.item_id not in stocked_amount:
-                stocked_amount[sbi.item_id] = 0
-            try:
-                percentage = sbi.percentage / 100
-            except:
-                percentage = 0
-            stocked_amount[sbi.item_id] += (percentage * sb.amount)
+        # Calculate the number lost here (much faster)
+        lost_items = InventoryLineItem.all()
+        lost_quantities = {}
+        for li in lost_items:
+            if li.item_id not in lost_quantities:
+                lost_quantities[li.item_id] = 0
+            lost_quantities[li.item_id] += (li.quantity - li.quantity_counted)
 
-    # Get the sale speed
-    sale_speeds = views_data.item_sale_speed(30)
+        # Calculate the amount we have paid to the store for all items
+        stocked_items = RestockLineItem.all()
+        stocked_amount = {}
+        for si in stocked_items:
+            if si.item_id not in stocked_amount:
+                stocked_amount[si.item_id] = 0
+            stocked_amount[si.item_id] += si.amount
+        stocked_boxes = RestockLineBox.all()
+        for sb in stocked_boxes:
+            for sbi in sb.box.items:
+                if sbi.item_id not in stocked_amount:
+                    stocked_amount[sbi.item_id] = 0
+                try:
+                    percentage = sbi.percentage / 100
+                except:
+                    percentage = 0
+                stocked_amount[sbi.item_id] += (percentage * sb.amount)
 
-    # Get the total amount of inventory we have
-    inventory_total = Item.total_inventory_wholesale()
+        # Get the sale speed
+        sale_speeds = views_data.item_sale_speed(30)
 
-    # Keep track of items which are in stock but disabled.
-    items_stocked_but_disabled = []
+        # Get the total amount of inventory we have
+        inventory_total = Item.total_inventory_wholesale()
 
-    for item in items:
-        if item.in_stock != 0 and item.enabled == False:
-            items_stocked_but_disabled.append(item)
-
-        if item.id in purchased_quantities:
-            item.number_sold = purchased_quantities[item.id]
-        else:
-            item.number_sold = None
-
-        if item.id in lost_quantities:
-            item.number_lost = lost_quantities[item.id]
-        else:
-            item.number_lost = None
-
-        if item.id in sale_speeds:
-            speed = sale_speeds[item.id]
-
-            item.sale_speed_thirty_days = speed
-
-            if speed > 0:
-                item.days_until_out = item.in_stock / sale_speeds[item.id]
-            elif item.in_stock <= 0:
-                item.days_until_out = 0
+        for item in items:
+            if item.id in purchased_quantities:
+                item.number_sold = purchased_quantities[item.id]
             else:
+                item.number_sold = None
+
+            if item.id in lost_quantities:
+                item.number_lost = lost_quantities[item.id]
+            else:
+                item.number_lost = None
+
+            if item.id in sale_speeds:
+                speed = sale_speeds[item.id]
+
+                item.sale_speed_thirty_days = speed
+
+                if speed > 0:
+                    item.days_until_out = item.in_stock / sale_speeds[item.id]
+                elif item.in_stock <= 0:
+                    item.days_until_out = 0
+                else:
+                    item.days_until_out = None
+            else:
+                item.sale_speed_thirty_days = 0
                 item.days_until_out = None
-        else:
-            item.sale_speed_thirty_days = 0
-            item.days_until_out = None
 
-        item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
+            item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
-        # Calculate "theftiness" which is:
-        #
-        #                number stolen
-        #  theftiness = ---------------
-        #                 number sold
-        #
-        if not item.number_sold:
-            if not item.number_lost or item.number_lost < 0:
-                # Both 0, just put this at 0.
-                item.theftiness = 0.0
+            # Calculate "theftiness" which is:
+            #
+            #                number stolen
+            #  theftiness = ---------------
+            #                 number sold
+            #
+            if not item.number_sold:
+                if not item.number_lost or item.number_lost < 0:
+                    # Both 0, just put this at 0.
+                    item.theftiness = 0.0
+                else:
+                    # Haven't sold any, but at least one stolen. Bad!
+                    item.theftiness = 100.0
             else:
-                # Haven't sold any, but at least one stolen. Bad!
-                item.theftiness = 100.0
-        else:
-            item.theftiness = ((item.number_lost or 0.0)/item.number_sold) * 100.0
+                item.theftiness = ((item.number_lost or 0.0)/item.number_sold) * 100.0
 
 
-        # Calculate profit which is:
-        #
-        #  profit = (num_sold * price) - ((num_purchased - num_in_stock) * wholesale)
-        #
-        # Note: this is not perfect for two reasons.
-        #       1. when calculating how much we paid to the store for each item
-        #          in a box, we use the current box division percents, not
-        #          necessarily the ones used when we restocked the box.
-        #       2. We just use the current wholesale price for calculating
-        #          how much we have in stock. This may not be the same as what
-        #          we actually paid. Therefore, this will only be correct when
-        #          stock==0.
-        if item.id not in stocked_amount:
-            stocked_amount[item.id] = 0
-        if item.id not in purchased_amount:
-            purchased_amount[item.id] = 0
-        item.profit = purchased_amount[item.id] - (stocked_amount[item.id] - (item.wholesale * item.in_stock))
-
-    # Show a warning to the admin if we have any items in stock but that people
-    # can't buy
-    if len(items_stocked_but_disabled) > 0:
-        err = 'Items '
-        err += ' '.join(['"{}",'.format(i.name) for i in items_stocked_but_disabled])
-        err = err[0:-1]
-        err += ' are stocked but marked disabled.'
-        request.session.flash(err, 'error')
-
-    return {'items': items}
+            # Calculate profit which is:
+            #
+            #  profit = (num_sold * price) - ((num_purchased - num_in_stock) * wholesale)
+            #
+            # Note: this is not perfect for two reasons.
+            #       1. when calculating how much we paid to the store for each item
+            #          in a box, we use the current box division percents, not
+            #          necessarily the ones used when we restocked the box.
+            #       2. We just use the current wholesale price for calculating
+            #          how much we have in stock. This may not be the same as what
+            #          we actually paid. Therefore, this will only be correct when
+            #          stock==0.
+            if item.id not in stocked_amount:
+                stocked_amount[item.id] = 0
+            if item.id not in purchased_amount:
+                purchased_amount[item.id] = 0
+            item.profit = purchased_amount[item.id] - (stocked_amount[item.id] - (item.wholesale * item.in_stock))
 
 
-@view_config(route_name='admin_items_edit_submit',
-             request_method='POST',
-             permission='manage')
-def admin_items_edit_submit(request):
-    updated = set()
-    for key in request.POST:
-        try:
-            item = Item.from_id(int(key.split('-')[2]))
-        except:
-            request.session.flash('No item with ID {}.  Skipped.'.format(key.split('-')[2]), 'error')
-            continue
-        name = item.name
-        try:
-            field = key.split('-')[1]
-            if field == 'price':
-                val = round(Decimal(request.POST[key]), 2)
-            elif field == 'wholesale':
-                val = round(Decimal(request.POST[key]), 4)
-            elif field == 'sales_tax':
-                val = request.POST[key] == 'on'
-            elif field == 'bottle_dep':
-                val = request.POST[key] == 'on'
-            else:
-                val = request.POST[key].strip()
+    else:
+        items = Item.disabled()
+        page  = 'disabled'
 
-            setattr(item, field, val)
-            DBSession.flush()
-        except ValueError:
-            # Could not parse price or wholesale as float
-            request.session.flash('Error updating {}'.format(name), 'error')
-            continue
-        except:
-            DBSession.rollback()
-            request.session.flash('Error updating {} for {}.  Skipped.'.\
-                    format(key.split('-')[1], name), 'error')
-            continue
-        updated.add(item.id)
-    if len(updated):
-        count = len(updated)
-        #request.session.flash('{} item{} properties updated successfully.'.format(count, ['s',''][count==1]), 'success')
-        request.session.flash('Items updated successfully.', 'success')
-    return HTTPFound(location=request.route_url('admin_items_edit'))
+         # Keep track of items which are in stock but disabled.
+        items_stocked_but_disabled = []
+
+        for item in items:
+            if item.in_stock != 0 and item.enabled == False:
+                items_stocked_but_disabled.append(item)
+
+        # Show a warning to the admin if we have any items in stock but that people
+        # can't buy
+        if len(items_stocked_but_disabled) > 0:
+            err = 'Items '
+            err += ' '.join(['"{}",'.format(i.name) for i in items_stocked_but_disabled])
+            err = err[0:-1]
+            err += ' are stocked but marked disabled.'
+            request.session.flash(err, 'error')
+
+    return {'items': items,
+            'items_page': page}
 
 
 @view_config(route_name='admin_item_edit',

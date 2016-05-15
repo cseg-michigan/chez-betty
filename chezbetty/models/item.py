@@ -71,6 +71,12 @@ class Item(Versioned, Base):
                         .order_by(cls.name).all()
 
     @classmethod
+    def disabled(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled==False)\
+                        .order_by(cls.name).all()
+
+    @classmethod
     def all_force(cls):
         return DBSession.query(cls)\
                         .order_by(cls.name).all()
