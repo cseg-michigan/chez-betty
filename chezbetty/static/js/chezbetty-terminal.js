@@ -472,7 +472,13 @@ function deposit_success (data) {
 
 		if ("error" in data) {
 			deposit_alert_error(data.error);
-			enable_button($(".btn-submit-deposit"));
+			enable_button($("#btn-confirm-deposit-yes"));
+
+			$("#deposit-main").hide();
+			$("#deposit-verify").hide();
+			$("#deposit-counting").hide();
+			$("#deposit-complete").hide();
+			$("#deposit-coins").show();
 		} else {
 			// On successful deposit, we switch to the frame that shows
 			// the successful deposit.
@@ -808,6 +814,8 @@ $("#btn-confirm-deposit-yes").click(function () {
 $("#btn-confirm-deposit-no").click(function () {
 	$("#deposit-verify").hide();
 	$("#deposit-coins").show();
+
+	enable_button($("#btn-confirm-deposit-yes"));
 });
 
 // Button press handler for the default deposit amount buttons
