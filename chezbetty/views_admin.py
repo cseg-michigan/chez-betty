@@ -2327,9 +2327,15 @@ def admin_pools(request):
 def admin_pool(request):
     try:
         pool = Pool.from_id(request.matchdict['pool_id'])
+
+        events, events_total = limitable_request(
+                request, pool.get_events, prefix='event', limit=10, count=True)
+
         return {'pool': pool,
                 'pool_owner': User.from_id(pool.owner),
-                'users': User.all()}
+                'users': User.all(),
+                'events': events,
+                'events_total': events_total}
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Unable to find pool.', 'error')
