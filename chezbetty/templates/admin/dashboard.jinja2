@@ -235,5 +235,17 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_histogram_panel("/admin/data/histogram/balances", "User Balances Histogram") }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  {{ graph.create_histogram_panel("/admin/data/histogram/dayssincepurchase", "Days Since Last Purchase Histogram") }}
+  </div>
+</div>
+
 
 {% endblock %}

@@ -260,7 +260,10 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_user_balance_json',    '/admin/data/user/{user_id}/balances')
 
-    config.add_route('admin_data_speed_items', '/admin/data/speed/items')
+    config.add_route('admin_data_speed_items',          '/admin/data/speed/items')
+
+    config.add_route('admin_data_histogram_balances',   '/admin/data/histogram/balances')
+    config.add_route('admin_data_histogram_dayssincepurchase',   '/admin/data/histogram/dayssincepurchase')
 
     # DYNAMIC CONTENT
     config.add_route('dynamic_item_img', '/dynamic/item/{item_id}.jpg')

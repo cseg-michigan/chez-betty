@@ -429,6 +429,116 @@ def item_sale_speed(num_days, only_item_id=None):
         return data
 
 
+#######
+### Calculate a histogram of user balances
+#
+# This has a special feature where it counts 0.00 as its own special bin
+def user_balance_histogram ():
+    bin_size = 5 # $5
+    bins = {}
+
+    def to_bin (x):
+        if x == Decimal(0):
+            return 0
+        start = int(bin_size * round(float(x)/bin_size))
+        if start == 0:
+            start = 0.01
+        return start
+
+    users = User.get_normal_users()
+    for user in users:
+        balance_bin = to_bin(user.balance)
+        if balance_bin not in bins:
+            bins[balance_bin] = 1
+        else:
+            bins[balance_bin] += 1
+
+    out = {}
+
+    out['raw'] = bins
+
+    last = None
+    x = []
+    y = []
+    for bin_start, count in sorted(bins.items()):
+        zero = False
+
+        # Handle near 0 special
+        if bin_start == 0:
+            zero = True
+
+        if bin_start == 0.01:
+            bin_start = 0
+
+        # Fill in missing bins, if needed
+        if last != None and bin_start-last > bin_size:
+            for i in range(last+bin_size, bin_start, bin_size):
+                b = '{} to {}'.format(i, i+bin_size)
+                x.append(b)
+                y.append(0)
+
+        if zero:
+            b = '0'
+        else:
+            b = '{} to {}'.format(bin_start, bin_start+bin_size)
+        x.append(b)
+        y.append(count)
+
+        last = bin_start
+
+    out['x'] = x
+    out['y'] = y
+
+    return out
+
+
+#######
+### Calculate a histogram of user days since last purchase
+#
+# This has a special feature where it counts 0.00 as its own special bin
+def user_dayssincepurchase_histogram ():
+    bin_size = 10 # days
+    bins = {}
+
+    def to_bin (x):
+        if x == None:
+            return None
+        return int(bin_size * round(float(x)/bin_size))
+
+    users = User.get_normal_users()
+    for user in users:
+        the_bin = to_bin(user.days_since_last_purchase)
+        if the_bin != None:
+            if the_bin not in bins:
+                bins[the_bin] = 1
+            else:
+                bins[the_bin] += 1
+
+    out = {}
+
+    out['raw'] = bins
+
+    last = None
+    x = []
+    y = []
+    for bin_start, count in sorted(bins.items()):
+        # Fill in missing bins, if needed
+        if last != None and bin_start-last > bin_size:
+            for i in range(last+bin_size, bin_start, bin_size):
+                b = '{} to {}'.format(i, i+bin_size)
+                x.append(b)
+                y.append(0)
+
+        b = '{} to {}'.format(bin_start, bin_start+bin_size)
+        x.append(b)
+        y.append(count)
+
+        last = bin_start
+
+    out['x'] = x
+    out['y'] = y
+
+    return out
 
 
 @view_config(route_name='admin_data_items_json',
@@ -552,4 +662,18 @@ def admin_data_user_balance_json(request):
              permission='manage')
 def admin_data_speed_items(request):
     return item_sale_speed(30)
+
+
+@view_config(route_name='admin_data_histogram_balances',
+             renderer='json',
+             permission='manage')
+def admin_data_histogram_balances(request):
+    return user_balance_histogram()
+
+
+@view_config(route_name='admin_data_histogram_dayssincepurchase',
+             renderer='json',
+             permission='manage')
+def admin_data_histogram_dayssincepurchase(request):
+    return user_dayssincepurchase_histogram()
 
