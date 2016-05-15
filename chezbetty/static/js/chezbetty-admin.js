@@ -348,7 +348,8 @@ function calculate_total () {
 
 	// Get the aggregate cost that should be split among all items.
 	var global_cost = parseFloatZero($("#restock-globalcost").val());
-	var total = subtotal + global_cost;
+	var donation = parseFloatZero($("#restock-donation").val());
+	var total = subtotal + global_cost - donation;
 
 	$("#restock-subtotal").html(format_price(subtotal));
 	$("#restock-coupon-total").html(format_price(coupon_total));

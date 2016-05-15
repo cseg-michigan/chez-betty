@@ -82,26 +82,24 @@ def undo_event(e, user):
         elif t.type == 'restock':
             # Include the global cost so we can repopulate the box on the
             # restock page.
-            line_items[0] = '{}'.format(t.amount_restock_cost)
+            line_items['global_cost'] = '{}'.format(t.amount_restock_cost)
 
             # Add all of the boxes and items to the return list
             # Also remove the stock this restock added to each item
             for i,s in zip(range(len(t.subtransactions)), t.subtransactions):
                 if s.type == 'restocklineitem':
                     item = Item.from_id(s.item_id)
-                    line_items[i+1] = '{},{},{},{},{},{},{}'.format(
+                    line_items[i] = '{},{},{},{},{},{},{}'.format(
                         'item', s.item_id, s.quantity, s.wholesale,
                         s.coupon_amount, s.sales_tax, s.bottle_deposit)
                     item.in_stock -= s.quantity
                 elif s.type == 'restocklinebox':
-                    line_items[i+1] = '{},{},{},{},{},{},{}'.format(
+                    line_items[i] = '{},{},{},{},{},{},{}'.format(
                         'box', s.box_id, s.quantity, s.wholesale,
                         s.coupon_amount, s.sales_tax, s.bottle_deposit)
                     for ss in s.subsubtransactions:
                         item = Item.from_id(ss.item_id)
                         item.in_stock -= ss.quantity
-
-
 
         elif t.type == 'inventory':
             # Change the stock of all the items by reversing the inventory count
@@ -109,6 +107,9 @@ def undo_event(e, user):
                 quantity_diff = s.quantity - s.quantity_counted
                 s.item.in_stock += quantity_diff
                 line_items[s.item_id] = s.quantity_counted
+
+        elif t.type == 'donation':
+            line_items['donation'] = '{}'.format(t.amount)
 
         # Don't need anything for emptycashbox. On those transactions no
         # other tables are changed.
@@ -353,13 +354,17 @@ def adjust_user_balance(user, adjustment, notes, admin):
 
 
 # Call this when an admin restocks chezbetty
-def restock(items, global_cost, admin, timestamp=None):
+def restock(items, global_cost, donation, admin, timestamp=None):
     e = event.Restock(admin, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Restock(e, Decimal(global_cost))
     DBSession.add(t)
     DBSession.flush()
+    if donation != Decimal(0):
+        d = transaction.Donation(e, donation)
+        DBSession.add(d)
+        DBSession.flush()
     # Start with the global cost when calculating the total amount
     amount = Decimal(global_cost)
 

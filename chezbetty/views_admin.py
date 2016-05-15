@@ -573,17 +573,22 @@ def admin_user_search_json(request):
              permission='manage')
 def admin_restock(request):
     restock_items = ''
-    index = 0
+    rows = 0
     global_cost = Decimal(0)
+    donation = Decimal(0)
     if len(request.GET) != 0:
         for index,packed_values in request.GET.items():
             values = packed_values.split(',')
-            if len(values) == 1:
-                # This is the global cost value
+            if index == 'global_cost':
                 try:
                     global_cost = round(Decimal(values[0] or 0), 2)
                 except:
                     global_cost = Decimal(0)
+            elif index == 'donation':
+                try:
+                    donation = round(Decimal(values[0] or 0), 2)
+                except:
+                    donation = Decimal(0)
             else:
                 line_values = {}
                 line_type = values[0]
@@ -604,12 +609,14 @@ def admin_restock(request):
                 restock_line = render('templates/admin/restock_row.jinja2',
                     {'item': item, 'box': box, 'line': line_values})
                 restock_items += restock_line.replace('-X', '-{}'.format(index))
+                rows += 1
 
     return {'items': Item.all_force(),
             'boxes': Box.all(),
             'restock_items': restock_items,
-            'restock_rows': int(index)+1,
-            'global_cost': global_cost}
+            'restock_rows': rows,
+            'global_cost': global_cost,
+            'donation': donation}
 
 
 @view_config(route_name='admin_restock_submit',
@@ -649,6 +656,10 @@ def admin_restock_submit(request):
     # Note: this can be negative to reflect a discount of some kind applied to
     # all items.
     global_cost = Decimal(request.POST['restock-globalcost'] or 0)
+
+    # Check for a global donation that should be given to chez betty and not
+    # to the items in the restock.
+    donation = Decimal(request.POST['restock-donation'] or 0)
 
     for key,val in request.POST.items():
 
@@ -764,7 +775,7 @@ def admin_restock_submit(request):
         restock_date = None
 
     try:
-        e = datalayer.restock(items, global_cost, request.user, restock_date)
+        e = datalayer.restock(items, global_cost, donation, request.user, restock_date)
         request.session.flash('Restock complete.', 'success')
         return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
     except Exception as e:

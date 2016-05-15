@@ -47,8 +47,12 @@
         <td id="restock-subtotal">$0.00</td>
       </tr>
       <tr>
-        <td colspan="6">Global Cost</td>
+        <td colspan="6">Global Cost <span style="font-weight: normal;">(Cost that should be spread across each item in the order. Example: truck rental, shipping, spoons, etc.)</span></td>
         <td><input type="text" id="restock-globalcost" class="form-control numeric" name="restock-globalcost" value="{{ global_cost }}"></td>
+      </tr>
+      <tr>
+        <td colspan="6">Donation <span style="font-weight: normal;">(Discount given to Betty that will be applied as a donation. Example: Costco 2% cash back, Boxed.com points, etc.)</span></td>
+        <td><input type="text" id="restock-donation" class="form-control numeric" name="restock-donation" value="{{ donation }}"></td>
       </tr>
       <tr>
         <td colspan="6">Total</td>
