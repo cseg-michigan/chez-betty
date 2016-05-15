@@ -96,7 +96,7 @@ function search_item_success (data) {
 		} else if (data.matches.length == 1) {
 			// One match just add it
 			add_item(data.matches[0][2]);
-			$("#restock-search-notice").text("One match found. Added.");
+			$("#restock-search-notice").text("One match found. Added " + data.matches[0][1] + ".");
 		} else {
 			for (i=0; i<data.matches.length; i++) {
 				new_row = $("#restock-search-row-0").clone().attr("id", "restock-search-row-"+(i+1));
