@@ -156,8 +156,6 @@ $("#new-item").click(function () {
 
 	// Update the number of new items to be added
 	$("#item-count").val(item_lines_count+1);
-
-	attach_keypad();
 });
 
 
@@ -358,8 +356,6 @@ $("#box-new-subitem").click(function () {
 
 	// Update the number of new items to be added
 	$("#box-subitem-count").val(item_lines_count+1);
-
-	attach_keypad();
 });
 
 
