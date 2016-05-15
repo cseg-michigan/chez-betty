@@ -350,7 +350,19 @@ def adjust_user_balance(user, adjustment, notes, admin):
     DBSession.flush()
     t = transaction.Adjustment(e, user, adjustment)
     DBSession.add(t)
-    return t
+    return e
+
+
+@top_debtor_wrapper
+def transfer_user_money(sender, recipient, amount, notes, admin):
+    e = event.Adjustment(admin, notes)
+    DBSession.add(e)
+    DBSession.flush()
+    t1 = transaction.Adjustment(e, sender, -1*amount)
+    DBSession.add(t1)
+    t2 = transaction.Adjustment(e, recipient, amount)
+    DBSession.add(t2)
+    return e
 
 
 # Call this when an admin restocks chezbetty

@@ -161,13 +161,18 @@ class User(account.Account):
         return u
 
     @classmethod
-    def from_fuzzy(cls, search_str):
-        return DBSession.query(cls)\
-                        .filter(or_(
+    def from_fuzzy(cls, search_str, any=True):
+        q = DBSession.query(cls)\
+                     .filter(or_(
                             cls.uniqname.ilike('%{}%'.format(search_str)),
                             cls.umid.ilike('%{}%'.format(search_str)),
                             cls.name.ilike('%{}%'.format(search_str))
-                        )).all()
+                      ))
+        if not any:
+            q = q.filter(cls.enabled)\
+                 .filter(cls.archived==False)
+
+        return q.all()
 
     @classmethod
     def all(cls):

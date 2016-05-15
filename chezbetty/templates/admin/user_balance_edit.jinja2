@@ -11,33 +11,71 @@
 
 <form role="form" action="/admin/user/balance/edit/submit" method="post">
 
-  <dl id="edit-balance" class="dl-horizontal">
-    <dt>Select User</dt>
-    <dd>
-      <select class="form-control" id="select-user" name="user">
-        {% for user in users %}
-        <option value="{{ user.id }}">{{ user.name~" ("~user.uniqname~")" }}</option>
-        {% endfor %}
-      </select>
-    </dd>
+  {% for person in ['sender', 'recipient'] %}
+  <table class="table user-balance-change-participant">
+    <tbody>
+      <tr>
+        <td style="width: 15%">{{ person|title }}:</td>
+        <td style="width: 50%">
+          <input type="text" id="{{ person }}-search-string" class="form-control">
+          <span id="{{ person }}-search-notice"></span>
+          <table id="{{ person }}-search-table" style="width: 100%">
+            <tr id="{{ person }}-search-row-0" class="{{ person }}-search-row" style="display:none;">
+              <td>
+                <input type="radio" name="{{ person }}-search-choice" value="userid">
+              </td>
+              <td class="{{ person }}-search-row-name">Name</td>
+              <td class="{{ person }}-search-row-uniqname">Uniqname</td>
+              <td class="{{ person }}-search-row-umid">UMID</td>
+              <td class="{{ person }}-search-row-balance">balance</td>
+            </tr>
+            <tr id="{{ person }}-search-row-1" class="{{ person }}-search-row">
+              <td>
+                <input type="radio" name="{{ person }}-search-choice" value="chezbetty" checked="checked">
+              </td>
+              <td class="{{ person }}-search-row-name">chezbetty</td>
+              <td class="{{ person }}-search-row-uniqname"></td>
+              <td class="{{ person }}-search-row-umid"></td>
+              <td class="{{ person }}-search-row-balance"></td>
+            </tr>
+          </table>
+        </td>
+        <td>
+          <button type="button" class="btn btn-success user-search-button" data-prefix="{{ person }}-search">Search {{ person|title }}</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% endfor %}
 
-    <dt>Current Balance</dt>
-    <dd>
-      {% for user in users %}
-      <span class="col-sm-3 current-balance" id="current-balance-{{ user.id }}" {% if loop.index != 1 %}style="display:none;"{% endif %}>{{ user.balance|format_currency|safe }}</span>
-      {% endfor %}
-    </dd>
-
-    <dt>Balance Adjustment</dt>
-    <dd><input type="text" class="form-control" id="balance-change-amount" name="amount"></dd>
-
-    <dt>New Balance</dt>
-    <dd id="new_balance">{{ users[0].balance|format_currency|safe }}</dd>
-
-    <dt>Reason</dt>
-    <dd><input type="text" class="form-control" id="balance-change-reason" name="reason"></dd>
-  </dl>
-
+  <table class="table">
+    <tbody>
+      <tr>
+        <td style="width: 15%">Transfer Amount:</td>
+        <td style="width: 50%">
+          <input type="text" class="form-control" id="balance-change-amount" name="amount">
+        </td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Sender's balance:</td>
+        <td><span id="sender-balance"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Receiver's balance:</td>
+        <td><span id="recipient-balance"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Reason:</td>
+        <td>
+          <input type="text" class="form-control" id="balance-change-reason" name="reason">
+        </td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
 
   <button type="submit" class="btn btn-success">Adjust Balance</button>
 

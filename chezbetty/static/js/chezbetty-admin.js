@@ -264,32 +264,33 @@ function search_item_only (search_str) {
 	});
 }
 
-// Callback when adding an item to the restock succeeds
-function search_user_success (data) {
+// Callback when looking up a user succeeds
+function search_user_success (data, prefix) {
 	alert_clear();
-	$("#user-search-notice").text("");
-	$(".user-search-addedrows").remove();
+	$("#"+prefix+"-notice").text("");
+	$("."+prefix+"-addedrows").remove();
 
 	if (data.status != "success") {
 		alert_error("Error occurred.");
 	} else {
 		if (data.matches.length == 0) {
 			// No matches tell user
-			$("#user-search-notice").text("No matches found.");
+			$("#"+prefix+"-notice").text("No matches found.");
 		} else {
 			for (i=0; i<data.matches.length; i++) {
-				var new_row = $("#user-search-row-0").clone().attr("id", "user-search-row-"+(i+1));
+				var new_row = $("#"+prefix+"-row-0").clone().removeAttr("id");
 				new_row.find("input[type=radio]").val(data.matches[i].id);
 				if (i == 0) {
 					new_row.find("input[type=radio]").attr('checked', 'checked');
 				}
-				new_row.find(".user-search-row-name").text(data.matches[i].name);
-				new_row.find(".user-search-row-uniqname").text(data.matches[i].uniqname);
-				new_row.find(".user-search-row-umid").text(data.matches[i].umid);
-				new_row.addClass("user-search-addedrows");
+				new_row.find("."+prefix+"-row-name").text(data.matches[i].name);
+				new_row.find("."+prefix+"-row-uniqname").text(data.matches[i].uniqname);
+				new_row.find("."+prefix+"-row-umid").text(data.matches[i].umid);
+				new_row.find("."+prefix+"-row-balance").html(format_price(data.matches[i].balance));
+				new_row.addClass(prefix+"-addedrows");
 				new_row.show();
 
-				$("#user-search-table").append(new_row);
+				$("#"+prefix+"-table").append(new_row);
 			}
 		}
 	}
@@ -300,11 +301,13 @@ function search_user_fail () {
 	alert_error("AJAX lookup failed.");
 }
 
-function search_user (search_str) {
+function search_user (search_str, prefix) {
 	$.ajax({
 		dataType: "json",
 		url: "/admin/user/search/"+search_str+"/json",
-		success: search_user_success,
+		success: function (data) {
+			search_user_success(data, prefix);
+		},
 		error: search_user_fail
 	});
 }
@@ -360,15 +363,35 @@ function calculate_total () {
 	$("#restock-total").html(format_price(total));
 }
 
-function update_new_balance () {
-	start = parseFloat(strip_price($(".current-balance:visible").text()));
-	amount = parseFloat($("#balance-change-amount").val());
-	if (isNaN(amount)) {
-		amount = 0.0;
+/******************************************************************************/
+// ADJUST USER BALANCE
+/******************************************************************************/
+
+function adjust_user_balance_update () {
+	var sender = $('input[name=sender-search-choice]:checked');
+	var sender_balance = parseFloat(strip_price(sender.closest('tr').find('.sender-search-row-balance').text()));
+	var recipient = $('input[name=recipient-search-choice]:checked');
+	var recipient_balance = parseFloat(strip_price(recipient.closest('tr').find('.recipient-search-row-balance').text()));
+	var amount = parseFloat($("#balance-change-amount").val() || 0);
+
+	if (!isNaN(sender_balance)) {
+		var new_sender = sender_balance - amount;
+		$("#sender-balance").html(format_price(new_sender));
+	} else {
+		$("#sender-balance").html('');
 	}
-	new_balance = format_price(start + amount);
-	$("#new_balance").html(new_balance);
+
+	if (!isNaN(recipient_balance)) {
+		var new_recipeint = recipient_balance + amount;
+		$("#recipient-balance").html(format_price(new_recipeint));
+	} else {
+		$("#recipient-balance").html('');
+	}
 }
+
+/******************************************************************************/
+// REQUESTS
+/******************************************************************************/
 
 function request_delete_success (data) {
 	if (data.status == "success") {

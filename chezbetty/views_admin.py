@@ -546,7 +546,7 @@ def admin_item_search_json(request):
              permission='manage')
 def admin_user_search_json(request):
     try:
-        users = User.from_fuzzy(request.matchdict['search'])
+        users = User.from_fuzzy(request.matchdict['search'], any=False)
 
         ret = {'matches': []}
 
@@ -555,6 +555,7 @@ def admin_user_search_json(request):
                                    'name':     u.name,
                                    'uniqname': u.uniqname,
                                    'umid':     u.umid,
+                                   'balance':  float(u.balance),
                                    'enabled':  u.enabled,
                                    'role':     u.role})
 
@@ -2099,8 +2100,7 @@ def admin_user_purchase_add_submit(request):
              renderer='templates/admin/user_balance_edit.jinja2',
              permission='admin')
 def admin_user_balance_edit(request):
-    users = DBSession.query(User).order_by(User.name).all()
-    return {'users': users}
+    return {}
 
 
 @view_config(route_name='admin_user_balance_edit_submit',
@@ -2108,20 +2108,58 @@ def admin_user_balance_edit(request):
              permission='admin')
 def admin_user_balance_edit_submit(request):
     try:
-        user = User.from_id(int(request.POST['user']))
-        adjustment = Decimal(request.POST['amount'])
+        if request.POST['sender-search-choice'] == 'chezbetty':
+            sender = 'chezbetty'
+        else:
+            sender = User.from_id(int(request.POST['sender-search-choice']))
+        if request.POST['recipient-search-choice'] == 'chezbetty':
+            recipient = 'chezbetty'
+        else:
+            recipient = User.from_id(int(request.POST['recipient-search-choice']))
+
+        # Can't both be betty
+        if sender == 'chezbetty' and recipient == 'chezbetty':
+            request.session.flash('At least one of sender/recipient must not be betty.', 'error')
+            return HTTPFound(location=request.route_url('admin_user_balance_edit'))
+
+        amount = Decimal(request.POST['amount'])
         reason = request.POST['reason'].strip()
-        datalayer.adjust_user_balance(user, adjustment, reason, request.user)
-        request.session.flash('User account updated.', 'success')
-        return HTTPFound(location=request.route_url('admin_user_balance_edit'))
+
+        event = None
+        if sender == 'chezbetty' or recipient == 'chezbetty':
+            # This boils down to just a user balance update
+            if recipient == 'chezbetty':
+                # Need to flip the sign
+                amount *= -1
+                user = sender
+            else:
+                user = recipient
+            event = datalayer.adjust_user_balance(user, amount, reason, request.user)
+
+        else:
+            # This is a transfer between two people.
+            # Maybe someday we'd support that transaction directly, but
+            # we don't have a transaction type for that right now, so we
+            # just use betty as a middle man
+            event = datalayer.transfer_user_money(sender, recipient, amount, reason, request.user)
+
+        request.session.flash('User(s) account updated.', 'success')
+        return HTTPFound(location=request.route_url('admin_event', event_id=event.id))
     except NoResultFound:
         request.session.flash('Invalid user?', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
     except decimal.InvalidOperation:
         request.session.flash('Invalid adjustment amount.', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
-    except event.NotesMissingException:
+    except __event.NotesMissingException:
         request.session.flash('Must include a reason', 'error')
+        return HTTPFound(location=request.route_url('admin_user_balance_edit'))
+    except KeyError:
+        request.session.flash('Must select a sender and recipient', 'error')
+        return HTTPFound(location=request.route_url('admin_user_balance_edit'))
+    except Exception as e:
+        if request.debug: raise(e)
+        request.session.flash('Error', 'error')
         return HTTPFound(location=request.route_url('admin_user_balance_edit'))
 
 @view_config(route_name='admin_user_password_create',

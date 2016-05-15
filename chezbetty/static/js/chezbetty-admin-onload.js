@@ -193,22 +193,6 @@ barcode_check_fn = function () {
 
 $(".barcode-check").on("input", barcode_check_fn);
 
-$("#select-user").change(function () {
-	user_id = $("#select-user option:selected").val();
-
-	// Hide all current balances
-	$(".current-balance").hide();
-
-	// Show the correct current balance for this user
-	$("#current-balance-"+user_id).show();
-
-	update_new_balance();
-});
-
-$("#balance-change-amount").on("input", function () {
-	update_new_balance();
-});
-
 // Update markup
 $("#edit-items").on("input", "input:text", function () {
 	var id = $(this).attr("id").split("-")[2];
@@ -219,6 +203,11 @@ $("#edit-items").on("input", "input:text", function () {
 	$("#item-markup-"+id).text(markup + "%");
 	$("#item-markup-"+id).attr("data-value", markup);
 });
+
+// ADJUST USER BALANCE
+$('.user-balance-change-participant').on('change', 'input[name=sender-search-choice]', adjust_user_balance_update);
+$('.user-balance-change-participant').on('change', 'input[name=recipient-search-choice]', adjust_user_balance_update);
+$("#balance-change-amount").on("input", adjust_user_balance_update);
 
 // RESTOCK
 
@@ -258,8 +247,9 @@ $(".restock-search-table").on("click", "button", function () {
 
 // USER PURCHASE ADD
 
-$("#user-purchase-add-search-user-button").on("click", function () {
-	search_user($("#user-purchase-add-search-user").val());
+$(".user-search-button").on("click", function () {
+	var prefix = $(this).attr('data-prefix');
+	search_user($("#"+prefix+"-string").val(), prefix);
 });
 
 $("#user-purchase-add-search-item-button").on("click", function () {
