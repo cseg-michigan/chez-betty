@@ -9,7 +9,6 @@
 
 {% block content %}
 
-<p>Scan items to add to stock.</p>
 <p>Check the sales tax box if sales tax was charged on those items.</p>
 
 <div id="scanner"></div>
@@ -92,13 +91,17 @@
         <td>
           <input type="text" id="restock-manual-search-input" class="form-control">
           <span id="restock-search-notice"></span>
-          <table id="restock-search-table">
+          <table id="restock-search-table" class="restock-search-table">
             <tr id="restock-search-row-0" class="restock-search-row" style="display:none;">
               <td class="restock-search-row-name">Name</td>
               <td>
                 <button type="button" id="restock-search-row-button-0" class="btn btn-default">Add</button>
               </td>
             </tr>
+          </table>
+
+          <p>Disabled products in search results:</p>
+          <table id="restock-search-table-disabled" class="restock-search-table">
           </table>
         </td>
         <td>

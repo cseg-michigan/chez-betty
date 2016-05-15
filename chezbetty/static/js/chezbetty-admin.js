@@ -113,7 +113,12 @@ function search_item_success (data) {
 				new_row.addClass("restock-search-addedrows");
 				new_row.show();
 
-				$("#restock-search-table").append(new_row);
+				if (data.matches[i][4]) {
+					// This product is enabled
+					$("#restock-search-table").append(new_row);
+				} else {
+					$("#restock-search-table-disabled").append(new_row);
+				}
 			}
 		}
 	}

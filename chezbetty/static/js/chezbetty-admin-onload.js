@@ -253,7 +253,7 @@ $("#restock-table").on("input", "input:text", function () {
 });
 
 // Add a searched for item to the restock table
-$("#restock-search-table").on("click", "button", function () {
+$(".restock-search-table").on("click", "button", function () {
 	var barcode = $(this).attr("data-item");
 	add_item(barcode);
 });

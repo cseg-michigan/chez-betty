@@ -520,16 +520,16 @@ def admin_item_search_json(request):
         ret = {'matches': []}
 
         for b in boxes:
-            ret['matches'].append(('box', b.name, b.barcode, b.id))
+            ret['matches'].append(('box', b.name, b.barcode, b.id, b.enabled))
 
         for bv in box_vendors:
-            ret['matches'].append(('box', bv.box.name, bv.box.barcode, bv.box.id))
+            ret['matches'].append(('box', bv.box.name, bv.box.barcode, bv.box.id, bv.box.enabled))
 
         for i in items:
-            ret['matches'].append(('item', i.name, i.barcode, i.id))
+            ret['matches'].append(('item', i.name, i.barcode, i.id, i.enabled))
 
         for iv in item_vendors:
-            ret['matches'].append(('item', iv.item.name, iv.item.barcode, iv.item.id))
+            ret['matches'].append(('item', iv.item.name, iv.item.barcode, iv.item.id, iv.item.enabled))
 
         ret['status'] = 'success'
 
