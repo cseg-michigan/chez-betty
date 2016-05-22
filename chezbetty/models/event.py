@@ -84,6 +84,7 @@ class Deposit(Event):
                         .filter(cls.user_id == user.id)\
                         .filter(cls.timestamp>=(datetime.datetime.utcnow()-datetime.timedelta(minutes=2)))\
                         .filter(cls.deleted == False)\
+                        .limit(1)\
                         .all()
 
 

@@ -228,7 +228,7 @@ def terminal_deposit(request):
         ret = {}
 
         if user:
-            deposit = datalayer.deposit(user, user, amount)
+            deposit = datalayer.deposit(user, user, amount, method != 'manual')
             ret['type'] = 'user'
             ret['amount'] = float(deposit['amount'])
             ret['event_id'] = deposit['event'].id

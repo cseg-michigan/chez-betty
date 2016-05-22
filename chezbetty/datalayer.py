@@ -254,8 +254,9 @@ def purchase(user, account, items):
 
 # Call this when a user puts money in the dropbox and needs to deposit it
 # to their account
+# If `merge==True`, then try to squash multiple deposits in a row together
 @top_debtor_wrapper
-def deposit(user, account, amount):
+def deposit(user, account, amount, merge=True):
     assert(amount > 0.0)
     assert(hasattr(user, "id"))
 
@@ -264,15 +265,16 @@ def deposit(user, account, amount):
 
     # Get recent deposits that we might merge with this one
     events_to_delete = []
-    recent_deposits = event.Deposit.get_user_recent(user)
-    for d in recent_deposits:
-        # Only look at transaction events with 1 CashDeposit transaction
-        if len(d.transactions) == 1 and d.transactions[0].type == 'cashdeposit':
-            t = d.transactions[0]
-            # Must be a deposit to the same account
-            if t.to_account_virt_id == account.id:
-                deposit_total += t.amount
-                events_to_delete.append(d)
+    if merge:
+        recent_deposits = event.Deposit.get_user_recent(user)
+        for d in recent_deposits:
+            # Only look at transaction events with 1 CashDeposit transaction
+            if len(d.transactions) == 1 and d.transactions[0].type == 'cashdeposit':
+                t = d.transactions[0]
+                # Must be a deposit to the same account
+                if t.to_account_virt_id == account.id:
+                    deposit_total += t.amount
+                    events_to_delete.append(d)
 
 
     # TODO (added on 2016/05/14): Make adding the new deposit and deleting
