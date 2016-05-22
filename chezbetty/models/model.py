@@ -15,7 +15,8 @@ from sqlalchemy import (
     ForeignKey,
     Boolean,
     LargeBinary,
-    desc
+    desc,
+    asc
     )
 
 from sqlalchemy.ext.declarative import declarative_base

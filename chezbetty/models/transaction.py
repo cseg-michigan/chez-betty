@@ -473,7 +473,7 @@ def __relevant_cash_deposits(self):
     # Now get all cash deposits between that cash box empty and this one
     q = object_session(self).query(event.Deposit)\
             .filter(event.Event.timestamp < self.timestamp)\
-            .filter(event.Event.deleted==False)
+            .order_by(asc(event.Event.timestamp))
 
     if previous_cb_empty:
         q = q.filter(event.Event.timestamp >= previous_cb_empty.timestamp)
