@@ -142,6 +142,54 @@
   </ul>
 </div>
 
+{% if event.type == 'emptycashbox' %}
+<div class="panel panel-default">
+  <div class="panel-heading">Cash Deposits Since Last Empty</div>
+  <div class="panel-body">
+    <table class="table table-condensed table-striped table-responsive">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Timestamp</th>
+          <th>Type</th>
+          <th>From Account:</th>
+          <th>To Account:</th>
+          <th class="right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in event.relevant_cash_deposits %}
+        {% for t in e.transactions %}
+          {% if t.type == 'cashdeposit' %}
+
+          <tr>
+            <td>{{ button.event(e.id) }}</td>
+            <td>{{ e.timestamp|pretty_date|safe }}</td>
+            <td>{{ t.type }}</td>
+            <td>
+              {{ t.fr_account_virt|make_link|safe if t.fr_account_virt else "n/a" }}
+              {# Add account balance next to name for easy lookup. #}
+              {% if t.fr_account_virt.balance is defined and t.fr_account_virt.type != 'virtual' %}
+                ({{ t.fr_account_virt.balance|format_currency|safe }})
+              {% endif %}
+            </td>
+            <td>
+              {{ t.to_account_virt|make_link|safe if t.to_account_virt else "n/a" }}
+              {% if t.to_account_virt.balance is defined and t.to_account_virt.type != 'virtual' %}
+                ({{ t.to_account_virt.balance|format_currency|safe }})
+              {% endif %}
+            </td>
+            <td class="right">{{ t.amount|format_currency|safe }}</td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
 <div class="panel panel-default">
   <div class="panel-heading">Upload Receipt</div>
   <div class="panel-body">

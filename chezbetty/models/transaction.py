@@ -460,6 +460,26 @@ def __lifetime_discounts(self):
 user.User.lifetime_discounts = __lifetime_discounts
 
 
+@property
+def __relevant_cash_deposits(self):
+    # Get the cashbox empty before this one
+    previous_cb_empty = object_session(self).query(event.Event)\
+            .filter(event.Event.type == 'emptycashbox')\
+            .filter(event.Event.timestamp < self.timestamp)\
+            .filter(event.Event.deleted == False)\
+            .order_by(desc(event.Event.timestamp))\
+            .first()
+
+    # Now get all cash deposits between that cash box empty and this one
+    q = object_session(self).query(event.Deposit)\
+            .filter(event.Event.timestamp < self.timestamp)\
+            .filter(event.Event.deleted==False)
+
+    if previous_cb_empty:
+        q = q.filter(event.Event.timestamp >= previous_cb_empty.timestamp)
+
+    return q.all()
+event.EmptyCashBox.relevant_cash_deposits = __relevant_cash_deposits
 
 ################################################################################
 ## Related Classes
