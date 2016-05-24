@@ -1,6 +1,7 @@
 Chez Betty
 ==========
 
+[![Build Status](https://travis-ci.org/um-cseg/chez-betty.svg?branch=master)](https://travis-ci.org/um-cseg/chez-betty)
 [![Code Climate](https://codeclimate.com/github/um-cseg/chez-betty/badges/gpa.svg)](https://codeclimate.com/github/um-cseg/chez-betty)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/um-cseg/chez-betty/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/um-cseg/chez-betty/?branch=master)
 
