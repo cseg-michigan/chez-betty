@@ -289,7 +289,9 @@ function calculate_wallofshame_fee_percent (balance, total) {
 		}
 	}
 
-	fee_percent = (fee / total) * 100;
+	if (total > 0) {
+		fee_percent = (fee / total) * 100;
+	}
 
 	if (fee_percent < 0.1) {
 		fee_percent = 0.1;
