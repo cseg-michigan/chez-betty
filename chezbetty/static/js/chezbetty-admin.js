@@ -240,6 +240,7 @@ function search_item_only_success (data) {
 						$(this).attr("data-item", data.matches[i][3]);
 					});
 					new_row.find(".user-search-row-item-name").text(data.matches[i][0] + ": " + data.matches[i][1]);
+					new_row.find(".user-search-row-item-stock").text('stock: ' + data.matches[i][5]);
 					new_row.addClass("user-search-item-addedrows");
 					new_row.show();
 
