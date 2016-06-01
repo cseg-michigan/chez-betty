@@ -2850,6 +2850,8 @@ def item_request_post_new(request):
     except Exception as e:
         if request.debug:
             raise(e)
+        else:
+            print(e)
         request.session.flash('Error posting comment.', 'error')
     return HTTPFound(location=request.route_url('admin_requests'))
 
