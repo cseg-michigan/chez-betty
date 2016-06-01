@@ -255,8 +255,6 @@ def item_request_new(request):
         if len(request_text) < 5:
             raise ValueError()
 
-        print(vendor)
-        print(vendor_url)
         datalayer.new_request(request.user, request_text, vendor, vendor_url)
 
         request.session.flash('Request added successfully', 'success')
@@ -287,6 +285,8 @@ def item_request_post_new(request):
     except Exception as e:
         if request.debug:
             raise(e)
+        else:
+            print(e)
         request.session.flash('Error posting comment.', 'error')
     return HTTPFound(location=request.route_url('user_item_request'))
 
