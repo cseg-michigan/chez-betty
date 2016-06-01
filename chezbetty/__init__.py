@@ -101,12 +101,10 @@ def main(global_config, **settings):
     config.add_route('shame',               '/shame')
     config.add_route('shame_csv',           '/shame.csv')
 
-    config.add_route('items',               '/items')
-    config.add_route('item_request',        '/item/request')
-    config.add_route('item_request_new',    '/item/request/new')
+    config.add_route('items',                    '/items')
 
-    config.add_route('paydebt',             '/paydebt/{uniqname}')
-    config.add_route('paydebt_submit',      '/paydebt/{uniqname}/submit')
+    config.add_route('paydebt',                  '/paydebt/{uniqname}')
+    config.add_route('paydebt_submit',           '/paydebt/{uniqname}/submit')
 
 
     # TERMINAL VIEWS
@@ -139,6 +137,10 @@ def main(global_config, **settings):
     config.add_route('user_deposit_cc_custom',     '/user/deposit_cc/custom')
     config.add_route('user_deposit_cc_submit',     '/user/deposit_cc/submit')
 
+    config.add_route('user_item_request',          '/user/item/request')
+    config.add_route('user_item_request_new',      '/user/item/request/new')
+    config.add_route('user_item_request_post_new', '/user/item/request/{id}/post/new')
+
     config.add_route('user_pools',                 '/user/pools')
     config.add_route('user_pools_new_submit',      '/user/pools/new/submit')
     config.add_route('user_pool',                  '/user/pool/{pool_id}')
@@ -153,7 +155,8 @@ def main(global_config, **settings):
     config.add_route('admin_index',             '/admin')
     config.add_route('admin_index_dashboard',   '/admin/dashboard')
 
-    config.add_route('admin_ajax_bool',         '/admin/ajax/bool/{object}/{id}/{field}/{state}')
+    config.add_route('admin_ajax_bool',         '/admin/ajax/bool/{object}/{id}/{field}/{value}')
+    config.add_route('admin_ajax_text',         '/admin/ajax/text/{object}/{id}/{field}')
     config.add_route('admin_ajax_new',          '/admin/ajax/new/{object}/{arg}')
     config.add_route('admin_ajax_connection',   '/admin/ajax/connection/{object1}/{object2}/{arg1}/{arg2}')
 
@@ -235,6 +238,7 @@ def main(global_config, **settings):
     config.add_route('admin_password_edit_submit',      '/admin/password/edit/submit')
 
     config.add_route('admin_requests',                  '/admin/requests')
+    config.add_route('admin_item_request_post_new',     '/admin/item/request/{id}/post/new')
 
     config.add_route('admin_announcements_edit',        '/admin/announcements/edit')
     config.add_route('admin_announcements_edit_submit', '/admin/announcements/edit/submit')

@@ -30,6 +30,7 @@ from .models.vendor import Vendor
 from .models.item_vendor import ItemVendor
 from .models.box_vendor import BoxVendor
 from .models.request import Request
+from .models.request_post import RequestPost
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.receipt import Receipt
@@ -120,16 +121,19 @@ def user_ajax_bool(request):
 
     if obj_str == 'pool':
         obj = Pool.from_id(obj_id)
-        if obj.owner != request.user.id:
-            request.response.status = 502
-            return request.response
+        obj_owner_id = obj.owner
     elif obj_str == 'pool_user':
         obj = PoolUser.from_id(obj_id)
-        if obj.pool.owner != request.user.id:
-            request.response.status = 502
-            return request.response
+        obj_owner_id = obj.pool.owner
+    elif obj_str == 'request_post':
+        obj = RequestPost.from_id(obj_id)
+        obj_owner_id = obj.user_id
     else:
         # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+    if obj_owner_id != request.user.id:
         request.response.status = 502
         return request.response
 
@@ -224,6 +228,70 @@ def user_deposit_cc_submit(request):
             )
 
     return HTTPFound(location=request.route_url('user_index'))
+
+
+
+@view_config(route_name='user_item_request',
+             renderer='templates/user/item_request.jinja2',
+             permission='user')
+def item_request(request):
+    requests = Request.all()
+    vendors = Vendor.all()
+    return {
+            'requests': requests,
+            'vendors': vendors,
+           }
+
+
+@view_config(route_name='user_item_request_new',
+             request_method='POST',
+             permission='user')
+def item_request_new(request):
+    try:
+        request_text = request.POST['request']
+        vendor_id = request.POST['vendor']
+        vendor = Vendor.from_id(vendor_id)
+        vendor_url = request.POST['vendor-url']
+        if len(request_text) < 5:
+            raise ValueError()
+
+        print(vendor)
+        print(vendor_url)
+        datalayer.new_request(request.user, request_text, vendor, vendor_url)
+
+        request.session.flash('Request added successfully', 'success')
+        return HTTPFound(location=request.route_url('user_item_request'))
+
+    except ValueError:
+        request.session.flash('Please include a detailed description of the item.', 'error')
+        return HTTPFound(location=request.route_url('user_item_request'))
+
+    except:
+        request.session.flash('Error adding request.', 'error')
+        return HTTPFound(location=request.route_url('user_item_request'))
+
+
+@view_config(route_name='user_item_request_post_new',
+             request_method='POST',
+             permission='user')
+def item_request_post_new(request):
+    try:
+        item_request = Request.from_id(request.matchdict['id'])
+        post_text = request.POST['post']
+        if post_text.strip() == '':
+            request.session.flash('Empty comment not saved.', 'error')
+            return HTTPFound(location=request.route_url('user_item_request'))
+        post = RequestPost(item_request, request.user, post_text)
+        DBSession.add(post)
+        DBSession.flush()
+    except Exception as e:
+        if request.debug:
+            raise(e)
+        request.session.flash('Error posting comment.', 'error')
+    return HTTPFound(location=request.route_url('user_item_request'))
+
+
+
 
 @view_config(route_name='user_pools',
              renderer='templates/user/pools.jinja2',

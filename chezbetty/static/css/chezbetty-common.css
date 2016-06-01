@@ -21,6 +21,22 @@
 	padding: 2px 5px 2px 5px;
 }
 
+.deleted {
+	background-color: #f0f0f0;
+	text-decoration: line-through;
+	display: none;
+}
+
+/* Highlight a form element that's required that was not filled out */
+.form-required-missing {
+	background-color: #ff8080;
+	padding: 2px 5px 2px 5px;
+}
+.form-required-message {
+	color: red;
+	display: none;
+}
+
 /* Support for auto-sizing text */
 .fitin {
 	overflow: hidden;

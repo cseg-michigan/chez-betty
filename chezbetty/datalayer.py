@@ -156,8 +156,8 @@ def delete_box(box):
 
 
 # Call this to make a new item request
-def new_request(user, request_text):
-    r = request.Request(user, request_text)
+def new_request(user, request_text, vendor, vendor_url=None):
+    r = request.Request(user, request_text, vendor, vendor_url)
     DBSession.add(r)
     DBSession.flush()
     return r

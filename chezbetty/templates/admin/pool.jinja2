@@ -18,7 +18,7 @@
 
     <dl class="dl-horizontal">
       <dt>Name</dt>
-      <dd>{{ button.ajax_saveable_input(pool.name, "/admin/pool/"~pool.id~"/name", pool.id)}}</dd>
+      <dd>{{ button.ajax_saveable_input(pool, "pool", "name")}}</dd>
       <dt>Owner</dt><dd>{{ pool_owner|make_link|safe }}</dd>
       <dt>Balance</dt><dd>{{ pool.balance|format_currency|safe }}</dd>
       <dt>Credit Limit</dt><dd>{{ pool.credit_limit|format_currency|safe }}</dd>

@@ -1,0 +1,131 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'item_request' %}
+{% block title %}{{ _('Item Request') }}{% endblock %}
+{% block header %}{{ _('Request a New Item at Chez Betty') }}{% endblock %}
+
+
+
+{% block content %}
+
+<p class="lead">{{ _('Expanding the store.') }}</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ _('New Item Request') }}</h3>
+  </div>
+  <div class="panel-body">
+
+  <p>
+    {{ _('Depending on your motivation, you could be the supplier of a new item. '
+         'For instance, if you are grocery shopping you can pick up a few extra of '
+         'what you want, add it the Betty system, and see if it sells well. '
+         'The process is pretty simple (particularly for small numbers of items) '
+         'and we can reimburse you by just writing a check.') }}
+    <a href="mailto:chezbetty@umich.edu?subject=Buying a New Item for Betty">{{ _('Get in touch with us if you are interested.') }}</a>
+  </p>
+
+
+  <hr />
+  <form role="form" action="/user/item/request/new" method="post" id="form-item-request" class="form-with-requirements">
+    <dl class="dl-horizontal">
+      <dt>{{ _('Item') }}</dt>
+      <dd><input type="text" class="form-control form-required" id="request-request" name="request"></dd>
+      <dt>{{ _('Store') }}</dt>
+      <dd>
+      <select class="form-control form-required" id="request-vendor" name="vendor">
+        <option value="-1" selected="selected" disabled="disabled">{{ _('Choose store') }}</option>
+        {% for vendor in vendors %}
+        <option value="{{ vendor.id }}" data-product-urls="{{ vendor.product_urls }}">{{ vendor.name }}</option>
+        {% endfor %}
+      </select>
+      </dd>
+      <dt></dt>
+      <dd><small>{{ _('Betty only shops at a few regular stores. If these stores do not sell your item, Betty will not be able to carry it regularly, sorry.') }}</small></dd>
+      <dt>{{ _('Product URL') }}</dt>
+      <dd><input type="url" class="form-control" id="request-vendor-url" name="vendor-url"></dd>
+    </dl>
+    <button type="submit" class="btn btn-success btn-lg" id="btn-submit-request">{{ _('Submit Request') }}</button>
+    <p class="form-required-message">* Please fill out all required fields</p>
+  </form>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ _('Open Item Requests') }}</h3>
+  </div>
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width: 20%;">When</th>
+          <th>Request</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for req in requests %}
+        <tr id="request-{{ req.id }}" class="request-row">
+          <td>{{ req.timestamp|human_date|safe }}</td>
+          <td>
+            <div class="row">
+              <div class="col-sm-11">
+                <dl class="dl-horizontal">
+                  <dt>Item</dt>
+                  <dd>{{ req.request }}</dd>
+                  <dt>Store</dt>
+                  <dd>{{ req.vendor.name }}</dd>
+                  {% if req.vendor_url %}
+                  <dt>URL</dt>
+                  <dd><a href="{{ req.vendor_url }}">{{ req.vendor_url }}</a></dd>
+                  {% endif %}
+                </dl>
+              </div>
+            </div>
+            {% if req.posts %}
+            <hr />
+            {% endif %}
+            {% for post in req.posts %}
+            <div class="row" id="request_post-{{ post.id }}">
+              <div class="col-sm-11">
+                <dl class="dl-horizontal">
+                  <dt>
+                  {{ post.timestamp|human_date|safe}}
+                  <br />
+                  {% if post.staff_post %}
+                  <i>Betty Staff</i>
+                  {% else %}
+                  <span style="font-weight: normal;">{{ post.user.name }}</span>
+                  {% endif %}
+                  </dt>
+                  <dd>{{ post.post }}</dd>
+                </dl>
+              </div>
+              <div class="col-sm-1">
+                {% if request.user == post.user %}
+                {{ button.delete("request_post", "deleted", post.id) }}
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+              <form role="form" action="/user/item/request/{{ req.id }}/post/new" method="post">
+                <dl class="dl-horizontal">
+                  <dt>
+                  <button type="submit" class="btn btn-info" id="request-add-comment-{{ req.id }}" disabled>{{ _('Add Comment') }}</button>
+                  </dt>
+                  <dd>
+                  <input type="text" class="form-control disable-controlled-when-empty" data-controlled="request-add-comment-{{ req.id }}" name="post">
+                  </dd>
+                </dl>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

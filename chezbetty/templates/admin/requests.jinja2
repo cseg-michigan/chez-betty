@@ -13,19 +13,75 @@
 
   <thead>
     <tr>
-      <th style="width: 20%;">Date</th>
-      <th>Request</th>
       <th style="width: 5%;">Delete</th>
+      <th style="width: 20%;">Date / User</th>
+      <th>Request / Response</th>
     </tr>
   </thead>
 
   <tbody>
 
-    {% for request in requests|reverse %}
+    {% for request in requests %}
     <tr id="request-{{ request.id }}" class="request-row">
-      <td>{{ request.timestamp|pretty_date|safe }}</td>
-      <td>{{ request.request }}</td>
       <td>{{ button.delete("request", "deleted", request.id) }}</td>
+      <td>
+        {{ request.timestamp|pretty_date|safe }}<br />{{ request.user|make_link|safe }}
+        {% if request.deleted_posts %}
+        <hr />
+        {{ button.showhide("request-" + request.id|string + "-deleted", "Show deleted comments", "Hide deleted comments") }}
+        {% endif %}
+      </td>
+      <td>
+            <div class="row">
+              <div class="col-sm-11">
+                <dl class="dl-horizontal">
+                  <dt>Item</dt>
+                  <dd>{{ request.request }}</dd>
+                  <dt>Store</dt>
+                  <dd>{{ request.vendor.name }}</dd>
+                  {% if request.vendor_url %}
+                  <dt>URL</dt>
+                  <dd><a href="{{ request.vendor_url }}">{{ request.vendor_url }}</a></dd>
+                  {% endif %}
+                </dl>
+              </div>
+            </div>
+            {% for post in request.all_posts %}
+            <div class="row{% if post.deleted %} deleted request-{{request.id}}-deleted{%endif%}" id="request_post-{{ post.id }}">
+              <div class="col-sm-11">
+                <dl class="dl-horizontal">
+                  <dt>
+                  {{ post.timestamp|human_date|safe}}
+                  <br />
+                  {% if post.staff_post %}
+                  <i>Staff Post ({{ post.user|make_link|safe }})</i>
+                  {% else %}
+                  <span style="font-weight: normal;">{{ post.user|make_link|safe }}</span>
+                  {% endif %}
+                  </dt>
+                  <dd>{{ post.post }}</dd>
+                </dl>
+              </div>
+              <div class="col-sm-1">
+                {% if not post.deleted %}
+                {{ button.delete("request_post", "deleted", post.id) }}
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+              <form role="form" action="/admin/item/request/{{ request.id }}/post/new" method="post">
+                <dl class="dl-horizontal">
+                  <dt>
+                  <button type="submit" class="btn btn-info" id="request-add-comment-{{ request.id }}" disabled>{{ _('Add Comment') }}</button>
+                  </dt>
+                  <dd>
+                  <input type="text" class="form-control disable-controlled-when-empty" data-controlled="request-add-comment-{{ request.id }}" name="post">
+                  </dd>
+                </dl>
+              </form>
+            </div>
+          </td>
     </tr>
     {% endfor %}
 

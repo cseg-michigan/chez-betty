@@ -3,10 +3,11 @@ from .model import *
 class Vendor(Base):
     __tablename__ = 'vendors'
 
-    id        = Column(Integer, primary_key=True, nullable=False)
-    name      = Column(String(255), nullable=False)
+    id           = Column(Integer, primary_key=True, nullable=False)
+    name         = Column(String(255), nullable=False)
 
-    enabled   = Column(Boolean, default=True, nullable=False)
+    enabled      = Column(Boolean, default=True, nullable=False)
+    product_urls = Column(Boolean)
 
     def __init__(self, name, enabled=True):
         self.name = name

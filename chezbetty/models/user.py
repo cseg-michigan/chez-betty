@@ -5,6 +5,8 @@ import os
 from .model import *
 from . import account
 from . import event
+from . import request
+from . import request_post
 from chezbetty import utility
 
 import ldap3
@@ -120,6 +122,13 @@ class User(account.Account):
 
     administrative_events = relationship(event.Event, foreign_keys=[event.Event.user_id], backref="admin")
     events_deleted        = relationship(event.Event, foreign_keys=[event.Event.deleted_user_id], backref="deleted_user")
+    requests              = relationship(request.Request, foreign_keys=[request.Request.user_id], backref="user")
+    request_posts         = relationship(
+                              request_post.RequestPost,
+                              foreign_keys=[request_post.RequestPost.user_id],
+                              backref="user",
+                            )
+
     __ldap = LDAPLookup()
 
     def __init__(self, uniqname, umid, name):

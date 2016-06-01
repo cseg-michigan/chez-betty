@@ -55,7 +55,9 @@ def shorten(s, l):
 		return s[0:l-1] + '…'
 
 def make_link(obj, str_len=0):
-	if type(obj) is box.Box:
+	if obj is None:
+		return ''
+	elif type(obj) is box.Box:
 		return '<a href="/admin/box/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	elif type(obj) is item.Item:
 		return '<a href="/admin/item/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))

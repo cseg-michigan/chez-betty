@@ -22,6 +22,7 @@ from .models.box import Box
 from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
 from .models.account import Account, VirtualAccount, CashAccount
 from .models.event import Event
+from .models.request import Request
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
@@ -62,30 +63,6 @@ def items(request):
             'disabled_items': disabled_items}
 
 
-@view_config(route_name='item_request', renderer='templates/public/item_request.jinja2')
-def item_request(request):
-    return {}
-
-
-@view_config(route_name='item_request_new', request_method='POST')
-def item_request_new(request):
-    try:
-        request_text = request.POST['request']
-        if len(request_text) < 5:
-            raise ValueError()
-
-        datalayer.new_request(None, request.POST['request'])
-
-        request.session.flash('Request added successfully', 'success')
-        return HTTPFound(location=request.route_url('index'))
-
-    except ValueError:
-        request.session.flash('If you are making a request, it should probably contain some characters.', 'error')
-        return HTTPFound(location=request.route_url('item_request'))
-
-    except:
-        request.session.flash('Error adding request.', 'error')
-        return HTTPFound(location=request.route_url('index'))
 
 def _get_shame_users():
     users = DBSession.query(User)\

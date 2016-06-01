@@ -2,8 +2,8 @@
 // Make the Demo Mode checkbox in the sidebar a pretty on/off slider
 $(".admin-switch").bootstrapSwitch();
 
-function ajax_bool (js_obj, object, field, id, status) {
-	var url = "/admin/ajax/bool/"+object+"/"+id+"/"+field+"/"+status;
+function ajax_bool (js_obj, object, field, id, state) {
+	var url = "/admin/ajax/bool/"+object+"/"+id+"/"+field+"/"+state;
 	$.ajax({
 		url: url,
 		context: js_obj,

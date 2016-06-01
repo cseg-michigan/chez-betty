@@ -1,9 +1,17 @@
+{% if role is not defined %}
+{% set role = 'user' %}
+{% endif %}
+
+{% macro showhide(class, text="Show/Hide", alt_text=none) %}
+<button type="button" id="btn-showhide-{{ class }}" class="btn btn-info button-showhide" data-class="{{ class }}" {% if alt_text %}data-alt-text="{{ alt_text }}"{% endif %}>{{ text }}</button>
+{% endmacro %}
+
 {% macro onoff_switch(object, field, id, status) %}
-<input type="checkbox" id="switch-onoff-{{ object }}-{{ field }}-{{ id }}" class="user-switch toggle-disabled ajax-bool-switch" data-parent="{{ object }}-{{ id }}" {% if status == True %}checked="checked"{% endif %}>
+<input type="checkbox" id="switch-onoff-{{ object }}-{{ field }}-{{ id }}" class="{{ role }}-switch toggle-disabled ajax-bool-switch" data-parent="{{ object }}-{{ id }}" {% if status == True %}checked="checked"{% endif %}>
 {% endmacro %}
 
 {% macro delete(object, field, id) %}
-<button type="button" id="btn-delete-{{ object }}-{{ field }}-{{ id }}-true" class="btn btn-danger button-delete ajax-bool-btn delete-entry" data-parent="{{ object }}-{{ id }}">X</button>
+<button type="button" id="btn-delete-{{ object }}-{{ field }}-{{ id }}-true" class="btn btn-danger ajax-bool-btn delete-entry" data-parent="{{ object }}-{{ id }}">X</button>
 {% endmacro %}
 
 {# Button that can only be clicked once. Will create an AJAX request to the
@@ -14,3 +22,16 @@
 {% macro ajax_singleuse_button(button_text, ajax_url, id) %}
 <button type="button" class="btn btn-info btn-ajax_singleuse" data-url="{{ ajax_url }}">{{ button_text }}</button>
 {% endmacro %}
+
+{% macro ajax_saveable_input(object, type, field) %}
+<input type="text"    class="form-content ajax-textlike"                                      id="ajax-input-{{ type }}-{{ field }}-{{ object.id }}" data-initial="{{ object[field] }}" value="{{ object[field] }}" />
+<button type="button" class="btn btn-info ajax-textlike-btn-save"      style="display: none;" id="ajax-input-{{ type }}-{{ field }}-{{ object.id }}-btn-save">Save</button>
+<button type="button" class="btn btn-default ajax-textlike-btn-revert" style="display: none;" id="ajax-input-{{ type }}-{{ field }}-{{ object.id }}-btn-revert">Cancel</button>
+{% endmacro %}
+
+{% macro ajax_saveable_textarea(object, type, field) %}
+<textarea rows="1"    class="form-control ajax-textlike"                                      id="ajax-textarea-{{ type }}-{{ field }}-{{ object.id }}" data-initial="{{ object[field] }}">{{ object[field] }}</textarea>
+<button type="button" class="btn btn-info ajax-textlike-btn-save"      style="display: none;" id="ajax-textarea-{{ type }}-{{ field }}-{{ object.id }}-btn-save">Save</button>
+<button type="button" class="btn btn-default ajax-textlike-btn-revert" style="display: none;" id="ajax-textarea-{{ type }}-{{ field }}-{{ object.id }}-btn-revert">Cancel</button>
+{% endmacro %}
+

@@ -67,7 +67,9 @@ def exception_view_handler(context, request):
         pass
     traceback.print_exc()
     print('-'*80)
-    return HTTPFound(location=request.route_url('exception_view'))
+    excepting_path = request.current_route_path()
+    return HTTPFound(location=request.route_url('exception_view',
+        _query={'excepting_path':excepting_path}))
 
 
 ###
@@ -169,11 +171,16 @@ def index(request):
              renderer='templates/public/login.jinja2')
 @forbidden_view_config(renderer='templates/public/login.jinja2')
 def login(request):
+    came_from = request.params.get('came_from', request.url)
+    try:
+        came_from = request.GET['redirect']
+    except KeyError:
+        pass
 
     return dict(
         login_message = '',
         url = '',
-        came_from = request.params.get('came_from', request.url),
+        came_from = came_from,
         login = '',
         password = ''
     )

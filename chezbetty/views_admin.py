@@ -30,6 +30,7 @@ from .models.vendor import Vendor
 from .models.item_vendor import ItemVendor
 from .models.box_vendor import BoxVendor
 from .models.request import Request
+from .models.request_post import RequestPost
 from .models.announcement import Announcement
 from .models.btcdeposit import BtcPendingDeposit
 from .models.receipt import Receipt
@@ -106,12 +107,10 @@ def is_terminal(event):
 ### Admin
 ###
 
-@view_config(route_name='admin_ajax_bool', permission='manage')
-def admin_ajax_bool(request):
+def _admin_ajax_general(request, obj_value):
     obj_str = request.matchdict['object']
     obj_id  = int(request.matchdict['id'])
     obj_field = request.matchdict['field']
-    obj_state = request.matchdict['state'].lower() == 'true'
 
     if obj_str == 'item':
         obj = Item.from_id(obj_id)
@@ -125,6 +124,8 @@ def admin_ajax_bool(request):
         obj = User.from_id(obj_id)
     elif obj_str == 'request':
         obj = Request.from_id(obj_id)
+    elif obj_str == 'request_post':
+        obj = RequestPost.from_id(obj_id)
     elif obj_str == 'pool':
         obj = Pool.from_id(obj_id)
     elif obj_str == 'pool_user':
@@ -135,19 +136,43 @@ def admin_ajax_bool(request):
         obj = ItemTag.from_id(obj_id)
     elif obj_str == 'cookie':
         # Set a cookie instead of change a property
-        request.response.set_cookie(obj_field, '1' if obj_state else '0')
+        if type(obj_value) == bool:
+            request.response.set_cookie(obj_field, '1' if obj_value else '0')
+        else:
+            request.response.set_cookie(obj_field, str(obj_value))
         return request.response
     else:
         # Return an error, object type not recognized
-        request.response.status = 502
-        return request.response
+        raise TypeError
 
 
-    setattr(obj, obj_field, obj_state)
+    setattr(obj, obj_field, obj_value)
 
     DBSession.flush()
 
+
+@view_config(route_name='admin_ajax_bool', permission='admin')
+def admin_ajax_bool(request):
+    obj_value = request.matchdict['value'].lower() == 'true'
+    try:
+        _admin_ajax_general(request, obj_value)
+    except Exception as e:
+        if request.debug:
+            raise(e)
+        request.response.status = 400
     return request.response
+
+@view_config(route_name='admin_ajax_text',
+             renderer='json',
+             permission='admin')
+def admin_ajax_text(request):
+    obj_value = request.POST['value']
+    _admin_ajax_general(request, obj_value)
+    return {
+            'status': 'success',
+            'msg': 'Saved.',
+            'value': obj_value,
+           }
 
 
 @view_config(route_name='admin_ajax_new',
@@ -2807,6 +2832,26 @@ def admin_password_edit_submit(request):
 def admin_requests(request):
     requests = Request.all()
     return {'requests': requests}
+
+
+@view_config(route_name='admin_item_request_post_new',
+             request_method='POST',
+             permission='admin')
+def item_request_post_new(request):
+    try:
+        item_request = Request.from_id(request.matchdict['id'])
+        post_text = request.POST['post']
+        if post_text.strip() == '':
+            request.session.flash('Empty comment not saved.', 'error')
+            return HTTPFound(location=request.route_url('admin_requests'))
+        post = RequestPost(item_request, request.user, post_text, staff_post=True)
+        DBSession.add(post)
+        DBSession.flush()
+    except Exception as e:
+        if request.debug:
+            raise(e)
+        request.session.flash('Error posting comment.', 'error')
+    return HTTPFound(location=request.route_url('admin_requests'))
 
 
 @view_config(route_name='admin_announcements_edit',
