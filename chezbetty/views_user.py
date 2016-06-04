@@ -231,6 +231,26 @@ def user_deposit_cc_submit(request):
 
 
 
+@view_config(route_name='user_item_list',
+             renderer='templates/user/item_list.jinja2',
+             permission='user')
+def item_list(request):
+    items = DBSession.query(Item)\
+                     .filter(Item.enabled==True)\
+                     .filter(Item.in_stock>0)\
+                     .order_by(Item.name).all()
+    out_of_stock_items = DBSession.query(Item)\
+                     .filter(Item.enabled==True)\
+                     .filter(Item.in_stock==0)\
+                     .order_by(Item.name).all()
+    disabled_items = DBSession.query(Item)\
+                     .filter(Item.enabled==False)\
+                     .order_by(Item.name).all()
+    return {'items': items,
+            'out_of_stock_items': out_of_stock_items,
+            'disabled_items': disabled_items}
+
+
 @view_config(route_name='user_item_request',
              renderer='templates/user/item_request.jinja2',
              permission='user')

@@ -137,6 +137,8 @@ def main(global_config, **settings):
     config.add_route('user_deposit_cc_custom',     '/user/deposit_cc/custom')
     config.add_route('user_deposit_cc_submit',     '/user/deposit_cc/submit')
 
+    config.add_route('user_item_list',             '/user/item/list')
+
     config.add_route('user_item_request',          '/user/item/request')
     config.add_route('user_item_request_new',      '/user/item/request/new')
     config.add_route('user_item_request_post_new', '/user/item/request/{id}/post/new')
