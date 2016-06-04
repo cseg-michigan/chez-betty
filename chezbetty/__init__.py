@@ -139,6 +139,7 @@ def main(global_config, **settings):
 
     config.add_route('user_item_list',             '/user/item/list')
 
+    config.add_route('user_ajax_item_request_fuzzy','/user/ajax/item/request/new/fuzzy')
     config.add_route('user_item_request',          '/user/item/request')
     config.add_route('user_item_request_new',      '/user/item/request/new')
     config.add_route('user_item_request_post_new', '/user/item/request/{id}/post/new')

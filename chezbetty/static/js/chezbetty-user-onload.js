@@ -62,3 +62,19 @@ $(".event-date-picker").each(function() {
 		startTime: $(this).value,
 	});
 });
+
+
+function item_request_new_fuzzy_success (data) {
+	$("#request-fuzzy").html(data);
+}
+
+$("#request-request").on('change', function () {
+	var url = "/user/ajax/item/request/new/fuzzy";
+	$.post(
+			url,
+			{
+				'new_item' : $(this).val()
+			},
+			item_request_new_fuzzy_success);
+});
+

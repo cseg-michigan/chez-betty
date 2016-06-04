@@ -1,0 +1,42 @@
+{% if in_stock or out_of_stock or disabled %}
+<hr />
+<h4>Hmm, this looks like it may be something Betty already sells:</h4>
+<dl class="dl-horizontal">
+  {% if in_stock %}
+  <dt>In Stock Items</dt>
+  <dd>
+  <div class="row">
+  {% for item in in_stock %}
+  <div class="col-sm-6">{{ item.name }} <small><b>[{{ item.in_stock }} in stock]</b></small></div>
+  {% endfor %}
+  </div>
+  </dd>
+  {% endif %}
+
+  {% if out_of_stock %}
+  <dt>Briefly Out of Stock</dt>
+  <dd>
+  <div class="row">
+  {% for item in out_of_stock %}
+  <div class="col-sm-6">{{ item.name }} <small><b>[Last sold {{ item.most_recent_purchase.transaction.event.timestamp|human_date|safe }}]</b></small></div>
+  {% endfor %}
+  </div>
+  </dd>
+  {% endif %}
+
+  {% if disabled %}
+  <dt>Items No Longer Sold</dt>
+  <dd>
+  <div class="row">
+  {% for item in disabled %}
+  <div class="col-sm-6">{{ item.name }}</div>
+  {% endfor %}
+  </div>
+  <p><i>Some items Betty discontinues because they did not sell well, or had very
+    high theft rates (such as jerky). If you want to request the return of a
+    discontinued item, please talk to us in person.</i></p>
+  </dd>
+  {% endif %}
+</dl>
+{% endif %}
+

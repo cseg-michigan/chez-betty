@@ -251,6 +251,28 @@ def item_list(request):
             'disabled_items': disabled_items}
 
 
+@view_config(route_name='user_ajax_item_request_fuzzy',
+             renderer='templates/user/item_request_fuzzy.jinja2',
+             permission='user')
+def item_request_fuzzy(request):
+    new_item = request.POST['new_item']
+    matches = DBSession.query(Item)\
+            .filter(Item.name.ilike('%'+new_item+'%'))\
+            .order_by(Item.name)
+    enabled = matches.filter(Item.enabled==True)
+    in_stock = enabled.filter(Item.in_stock>0).all()
+    out_of_stock = enabled.filter(Item.in_stock==0).all()
+    for item in out_of_stock:
+        purchase = SubTransaction.all_item_purchases(item.id, limit=1)[0]
+        item.most_recent_purchase = purchase
+    disabled = matches.filter(Item.enabled==False).all()
+    return {
+            'in_stock': in_stock,
+            'out_of_stock': out_of_stock,
+            'disabled': disabled,
+            }
+
+
 @view_config(route_name='user_item_request',
              renderer='templates/user/item_request.jinja2',
              permission='user')
