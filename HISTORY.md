@@ -1,6 +1,11 @@
 History of Chez Betty
 =====================
 
+- June 16, 2016: Tried to hire a moving company to pick up our
+Costco order, and have Costco put our order on pallets. We did get the
+food, but it was a bit of an ordeal.
+- June 9, 2016: Added a 42"x18"x54" inch shelf to betty to hold bins
+full of chips and other bagged food.
 - May 14, 2016: Added a bill acceptor to Betty. This should prevent
 most of the loss from cash deposits being entered but the money
 not being in the cash box.
