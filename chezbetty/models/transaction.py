@@ -301,7 +301,7 @@ def __get_events(self):
 
 @property
 def __events(self):
-    return __get_events(self).all()
+    return __get_events(self)
 
 account.Account.get_events = __get_events
 account.Account.events = __events

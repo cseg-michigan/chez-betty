@@ -756,6 +756,12 @@ $('#tag-items').on('click', '.tag-item', function () {
 	$('#panel-purchase').show();
 });
 
+$('#recently-purchased').on('click', '.tag-item', function () {
+	console.log($(this));
+	var item_id = $(this).attr('data-item-id');
+	add_item_id(item_id);
+});
+
 // DEPOSIT
 
 // Called to let the user know we got the bill, we just need time to count it.

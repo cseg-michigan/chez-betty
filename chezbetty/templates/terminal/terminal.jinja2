@@ -262,8 +262,31 @@
           </div>
         </div>
 
+        {# Recently purchased items #}
+        <hr />
+        <h4>Quick-Select Most Recently Purchased Items</h4>
+        <div id="recently-purchased" class="row">
+          <div class="col-md-1"></div>
+          {% for item in user.iterate_recent_items(limit=5) %}
+          <div class="col-md-2">
+            <div class="tag-item" data-item-id="{{ item.id }}">
+              {% if item.img %}
+              <img src="/dynamic/item/{{item.id}}.jpg" width="150px" />
+              {% else %}
+              <img src="{{'chezbetty:static/placeholder_300px.png'|static_url}}" width="150px" />
+              {% endif %}
+              <div class="tag-item-name">
+                {{ item.name }}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <hr />
+
         {# Purchase buttons #}
-        <div class="row">
+        <div id="purchase-buttons" class="row">
           <div class="col-md-12">
             <button type="button" id="purchase-button-logout" class="btn btn-success btn-lg btn-submit btn-submit-purchase">{{ _('Logout') }}</button>
             <button type="button" id="purchase-button-purchaselogout" class="btn btn-success btn-lg btn-submit btn-submit-purchase" style="display:none;">{{ _('Purchase & Logout') }}</button>
