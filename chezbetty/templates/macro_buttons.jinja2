@@ -19,8 +19,8 @@
    will be removed and banner displayed. If failure, button will stay and error
    will be displayed.
  #}
-{% macro ajax_singleuse_button(button_text, ajax_url, id) %}
-<button type="button" class="btn btn-info btn-ajax_singleuse" data-url="{{ ajax_url }}">{{ button_text }}</button>
+{% macro ajax_singleuse_button(button_text, ajax_url, klass) %}
+<button type="button" class="btn btn-info btn-ajax_singleuse {{ klass }}" data-url="{{ ajax_url }}">{{ button_text }}</button>
 {% endmacro %}
 
 {% macro ajax_saveable_input(object, type, field) %}
