@@ -156,6 +156,7 @@ def terminal(request):
                 'purchase_pools': purchase_pools,
                 'purchase_fee_percent': purchase_fee_percent,
                 'tags_with_nobarcode_items': tags_with_nobarcode_items,
+                'nobarcode_notag_items': Item.get_nobarcode_notag_items(),
                 'existing_items': cart_html,
                 'deposit': deposit}
 

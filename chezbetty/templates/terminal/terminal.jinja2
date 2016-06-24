@@ -184,7 +184,9 @@
           {% for tag in tags_with_nobarcode_items %}
           <button type="button" class="btn btn-nobarcode-tag btn-default" data-tagid="{{ tag.id }}">{{ tag.name }}</button>
           {% endfor %}
+          {% if nobarcode_notag_items %}
           <button type="button" class="btn btn-nobarcode-tag btn-default" data-tagid="other">Other</button>
+          {% endif %}
 
           <div>
             <button type="button" id="btn-nobarcode-tags-back" class="btn btn-warning btn-back">Back</button>
