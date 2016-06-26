@@ -93,8 +93,24 @@ def shame_csv(request):
 def paydebt(request):
     uniqname = request.matchdict['uniqname']
     user = User.from_uniqname(uniqname, local_only=True)
+
+    # Calculate all of the important balance metrics server side
+    values = {}
+    for newval in [0, 10, 25, 50, 100]:
+        amount      = newval - user.balance  # how much will go into the user's account
+        total       = (amount + Decimal('0.3')) / Decimal('0.971') # how much we must charge to offset stripe
+        fee         = total - amount         # how much more to make stripe happy
+        total_cents = (total*100).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+        values[newval] = {
+            'amount': amount,
+            'total': total,
+            'fee': fee,
+            'total_cents': total_cents
+        }
+
     return {'user': user,
-            'stripe_pk': request.registry.settings['stripe.publishable_key']}
+            'stripe_pk': request.registry.settings['stripe.publishable_key'],
+            'values': values}
 
 
 @view_config(route_name='paydebt_submit',

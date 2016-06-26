@@ -2,173 +2,120 @@
 {% extends "base.jinja2" %}
 {% block title %}Pay Debt{% endblock %}
 
-{% set amount = -(user.balance|float) %}
-
-{% set charge = (amount + 0.3) / 0.971 %}
-{% set fee = charge - amount %}
-{% set total_cents = (charge*100)|round|int %}
-
-{% set t_amount = amount + 25 %}
-{% set t_charge = (t_amount + 0.3) / 0.971 %}
-{% set t_fee = t_charge - t_amount %}
-{% set t_total_cents = (t_charge*100)|round|int %}
+{% block top %}{% endblock %}
 
 {% block content %}
 
-<h1>Pay Debt</h1>
-<hr />
+{# Header #}
+<div class="row">
+  <div class="col-md-12">
+    <div class="jumbotron top">
+      <img class="pull-right" src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:120px;" />
+
+      <h1>{{ _('Chez Betty') }}</h1>
+      <p>{{ _('The 24/7 food co-op for all members of the CSE community.') }}</p>
+    </div>
+  </div>
+</div>
 
 {% if user.balance <= -0.01 %}
 
-<h3>
-{{ _('We use stripe to process credit card transactions.') }}
-</h3>
-<p>
-{{ _('Stripe charges 2.9% + $0.30 for each transaction.') }}
-{{ _('We pass this charge directly onto you.') }}
-</p>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Pay Debt</h3>
+        </div>
+        <div class="panel-body">
+          <h3>
+            {{ _('We use stripe to process credit card transactions.') }}
+          </h3>
+          <p>
+            {{ _('Stripe charges 2.9% + $0.30 for each transaction.') }}
+            {{ _('We pass this charge directly onto you.') }}
+          </p>
 
-<h3>
-  {{ _('Your current balance is %(balance)s and your card will be charged %(charge)s.')|format(balance=user.balance|format_currency,charge=charge|format_currency)|safe }}
-</h3>
+          <h3>
+            {{ _('Your current balance is %(balance)s and your card will be charged %(charge)s.')|format(balance=user.balance|format_currency,charge=values[0].total|format_currency)|safe }}
+          </h3>
 
-<hr />
+          <button class="btn btn-success btn-huge btn-paydebt" data-stripepubkey="{{ stripe_pk }}" data-newval="0" data-amount="{{ values[0].amount }}" data-total-cents="{{ values[0].total_cents }}" data-uniqname="{{ user.uniqname }}" data-imageurl="{{ 'chezbetty:static/chezbetty_1000px.jpg'|static_url }}">Pay Debt</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<button id="pay_btn" class="btn btn-success btn-huge">Pay Debt</button>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Pay To a Positive Balance</h3>
+        </div>
+        <div class="panel-body">
+          <p>
+            {{ _('We encourage users to keep a positive balance (you even get a discount!).') }}
+          </p>
+          <p>
+            {{ _('If you are still around, please strongly consider paying up to a positive balance.') }}
+          </p>
 
-<script src="https://checkout.stripe.com/checkout.js"></script>
-<script>
-var handler = StripeCheckout.configure({
-  key: '{{ stripe_pk }}',
-  image: '{{"chezbetty:static/chezbetty_1000px.jpg"|static_url}}',
-  token: function(token) {
-    console.log(token);
-    // Callback w/ token.id to create a charge and token.email
-    $.ajax({
-      type: "POST",
-      url: "/paydebt/{{ user.uniqname }}/submit",
-      data: {
-        stripeToken: token.id,
-        betty_amount: '{{ amount }}',
-        betty_total_cents: '{{ total_cents }}'
-        },
-      success: function () {
-        window.location.reload();
-      },
-      error: function (e) {
-        console.log(e);
-        alert("Error posting data to server");
-      },
-      dataType: "json"
-    });
-  },
-  name: 'Chez Betty',
-  description: '${{ "%0.2f"|format(amount) }} Deposit (${{ "%0.2f"|format(total_cents/100) }} Charge)',
-  amount: {{ total_cents }},
-});
+          {% for key, value in values.items()|sort %}
+            {% if key > 0 %}
+              <button class="btn btn-success btn-huge btn-paydebt" data-stripepubkey="{{ stripe_pk }}" data-newval="0" data-amount="{{ value.amount }}" data-total-cents="{{ value.total_cents }}" data-uniqname="{{ user.uniqname }}" data-imageurl="{{ 'chezbetty:static/chezbetty_1000px.jpg'|static_url }}">{{ _('Pay to $'~key~' Balance') }}</button>
+              <br />
+              <br />
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
 
-$('#pay_btn').on('click', function(e) {
-  handler.open();
-  e.preventDefault();
-});
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Manage Your Account</h3>
+        </div>
+        <div class="panel-body">
+          <p><a href="/user">Log in</a> to view your account.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-$(window).on('popstate', function() {
-  handler.close();
-});
-</script>
 
-<hr />
-
-<p>
-{{ _('We encourage users to keep a positive balance (you even get a discount!).') }}
-</p>
-<p>
-{{ _('If you are still around, please strongly consider paying up to a positive balance.') }}
-</p>
-<button id="pay_t_btn" class="btn btn-success btn-huge">{{ _('Pay to $25 Balance') }}</button>
-
-<script>
-var t_handler = StripeCheckout.configure({
-  key: '{{ stripe_pk }}',
-  image: '{{"chezbetty:static/chezbetty_1000px.jpg"|static_url}}',
-  token: function(token) {
-    console.log(token);
-    // Callback w/ token.id to create a charge and token.email
-    $.ajax({
-      type: "POST",
-      url: "/paydebt/{{ user.uniqname }}/submit",
-      data: {
-        stripeToken: token.id,
-        betty_amount: '{{ t_amount }}',
-        betty_total_cents: '{{ t_total_cents }}'
-        },
-      success: function () {
-        window.location.reload();
-      },
-      error: function (e) {
-        console.log(e);
-        alert("Error posting data to server");
-      },
-      dataType: "json"
-    });
-  },
-  name: 'Chez Betty',
-  description: '${{ "%0.2f"|format(t_amount) }} Deposit (${{ "%0.2f"|format(t_total_cents/100) }} Charge)',
-  amount: {{ t_total_cents }},
-});
-
-$('#pay_t_btn').on('click', function(e) {
-  t_handler.open();
-  e.preventDefault();
-});
-
-$(window).on('popstate', function() {
-  t_handler.close();
-});
-</script>
-
-<hr />
-
-<h3>
-<a href="/user">{{ _('For more options and transaction history, log in to your user account') }}</a>
-</h3>
-
-{#
-<form action="/user/deposit_cc/submit" method="POST">
-<input type="hidden" name="betty_amount" value="{{ amount }}">
-<input type="hidden" name="betty_total_cents" value="{{ total_cents }}">
-<input type="hidden" name="betty_to_account" value="{{ account }}" class="cc-betty-to-account">
-<script
-  id="cc-script-{{ amount }}"
-  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-  data-key="{{ stripe_pk }}"
-  data-amount="{{ total_cents }}"
-  data-name="Chez Betty"
-  data-description="${{ '%0.2f'|format(amount) }} Deposit (${{ '%0.2f'|format(total_cents/100) }} Charge)"
-  data-image="{{'chezbetty:static/chezbetty_1000px.jpg'|static_url}}">
-</script>
-</form>
-#}
-
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+  <script src="{{'chezbetty:static/js/chezbetty-paydebt.js'|static_url}}"></script>
 
 {% else %} {# user.balance >= 0 #}
 
-<h3>
-  {{ _('You currently do not owe Chez Betty any money.') }}
-</h3>
-<h3>
-  {{ _('Thank you for paying your debts.') }}
-</h3>
-<hr />
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Pay To a Positive Balance</h3>
+        </div>
+        <div class="panel-body">
+          <h3>
+            {{ _('You currently do not owe Chez Betty any money.') }}
+          </h3>
+          <h3>
+            {{ _('Thank you for paying your debts.') }}
+          </h3>
+          <hr />
 
-<a href="/user" class="btn btn-success btn-huge">
-  {{ _('Log into your user account') }}
-</a>
-<a href="/" class="btn btn-default btn-huge pull-right">
-  {{ _('Chez Betty Home') }}
-</a>
+          <a href="/user" class="btn btn-success btn-huge">
+            {{ _('Log into your user account') }}
+          </a>
+          <a href="/" class="btn btn-default btn-huge pull-right">
+            {{ _('Chez Betty Home') }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endif %}
 
 {% endblock %}
-
