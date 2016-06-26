@@ -1,0 +1,47 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'tags_list' %}
+{% block title %}List Tags{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Tags ({{ tags|length }})</h1>
+{% endblock %}
+
+{% block content %}
+
+
+<div id="list-tags">
+
+  {% for tag in tags %}
+  <h3>{{ tag.name }}</h3>
+
+
+  <table class="table sortable sticky">
+
+    <thead>
+      <tr>
+        <th style="width: 70%">Item</th>
+        <th style="width: 15%">Item Price</th>
+        <th style="width: 15%">In Stock</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      {% for itemtag in tag.items %}
+      {% set item = itemtag.item %}
+      <tr id="item-{{ item.id }}">
+        <td>{{ item|make_link|safe }}</td>
+        <td>{{ item.price|format_currency|safe }}</td>
+        <td>{{ item.in_stock }}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+  {% endfor %}
+
+</div>
+
+{% endblock %}
+

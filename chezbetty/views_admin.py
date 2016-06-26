@@ -83,6 +83,7 @@ def add_counts(event):
        event['renderer_name'].startswith('templates/admin'):
         count = {}
         count['items']        = Item.count()
+        count['tags']         = Tag.count()
         count['boxes']        = Box.count()
         count['vendors']      = Vendor.count()
         count['users']        = User.count()
@@ -1529,6 +1530,15 @@ def admin_item_delete(request):
         if request.debug: raise(e)
         request.session.flash('Error occurred while deleting item.', 'error')
         return HTTPFound(location=request.route_url('admin_items_edit'))
+
+
+@view_config(route_name='admin_tags_list',
+             renderer='templates/admin/tags_list.jinja2',
+             permission='manage')
+def admin_tags_list(request):
+    tags = Tag.all()
+
+    return {'tags': tags}
 
 
 @view_config(route_name='admin_box_add',

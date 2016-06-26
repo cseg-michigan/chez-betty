@@ -179,6 +179,8 @@ def main(global_config, **settings):
     config.add_route('admin_item_barcode_pdf',  '/admin/item/barcode/{item_id}.pdf')
     config.add_route('admin_item_delete',       '/admin/item/delete/{item_id}')
 
+    config.add_route('admin_tags_list',         '/admin/tags/list')
+
     config.add_route('admin_box_add',           '/admin/box/add')
     config.add_route('admin_box_add_submit',    '/admin/box/add/submit')
     config.add_route('admin_boxes_edit',        '/admin/boxes/edit')
