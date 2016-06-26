@@ -10,7 +10,7 @@
 {% include "items_menu.jinja2" %}
 {% endblock %}
 
-{% block content %}
+{% block contentwide %}
 
 {% set sort=request.GET["sort"]|default(None) %}
 {% set dir=request.GET["direction"]|default("asc") %}
@@ -35,6 +35,8 @@
         <th {% if sort=="inventorypercent" %}data-defaultsort="{{ dir }}"{% endif %}>Inventory Percent</th>
         <th {% if sort=="theftiness" %}      data-defaultsort="{{ dir }}"{% endif %}>Theftiness</th>
         <th {% if sort=="profit" %}          data-defaultsort="{{ dir }}"{% endif %}>Profit</th>
+        <th {% if sort=="barcode" %}         data-defaultsort="{{ dir }}"{% endif %}>Barcode</th>
+        <th {% if sort=="tags" %}            data-defaultsort="{{ dir }}"{% endif %}>Tags</th>
         {% endif %}
       </tr>
     </thead>
@@ -78,6 +80,8 @@
         <td data-value="{{ item.inventory_percent|round(2) }}">{{ item.inventory_percent|round(2) }}%</td>
         <td data-value="{{ item.theftiness|round(2) }}">{{ item.theftiness|round(2) }}%</td>
         <td data-value="{{ item.profit|round(2) }}">{{ item.profit|format_currency|safe }}</td>
+        <td data-value="{{ item.barcode }}">{{ item.barcode }}</td>
+        <td data-value="{{ item.tags|length }}">{{ item.tags|length }}</td>
         {% endif %}
       </tr>
       {% endfor %}
