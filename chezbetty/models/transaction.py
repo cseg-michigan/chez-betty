@@ -132,16 +132,36 @@ class Transaction(Base):
                      .filter(event.Event.deleted==False).one()
 
     @classmethod
-    def count(cls, trans_type=None):
-        if not trans_type:
-            return DBSession.query(func.count(cls.id).label('c'))\
+    def count(cls, *, trans_type=None, start=None, end=None):
+        r = DBSession.query(func.count(cls.id).label('c'))\
                             .join(event.Event)\
-                            .filter(event.Event.deleted==False).one().c
-        else:
-            return DBSession.query(func.count(cls.id).label('c'))\
-                            .join(event.Event)\
-                            .filter(cls.type==trans_type)\
-                            .filter(event.Event.deleted==False).one().c
+                            .filter(event.Event.deleted==False)
+
+        if trans_type:
+            r = r.filter(cls.type==trans_type)
+        if start:
+            r = r.filter(event.Event.timestamp>=start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+
+        return r.one().c
+
+    @classmethod
+    def distinct(cls, *, distinct_on=None, start=None, end=None):
+        r = DBSession.query(cls).join(event.Event)\
+                .filter(event.Event.deleted==False)
+
+        if start:
+            r = r.filter(event.Event.timestamp>=start)
+        if end:
+            r = r.filter(event.Event.timestamp<end)
+
+        if distinct_on is None:
+            raise NotImplementedError("required argument distinct_on missing")
+
+        r = r.distinct(distinct_on)
+
+        return r.count()
 
     @classmethod
     def total(cls, start=None, end=None):

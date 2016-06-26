@@ -210,6 +210,10 @@
               <td>Fees</td>
               <td class="right">{{ today_fees|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>Active Users</td>
+              <td class="right">{{ today_users }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -259,6 +263,10 @@
             <tr>
               <td>Fees</td>
               <td class="right">{{ yesterday_fees|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Active Users</td>
+              <td class="right">{{ yesterday_users }}</td>
             </tr>
           </tbody>
         </table>

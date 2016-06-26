@@ -65,6 +65,10 @@
               <td>Total Deposits</td>
               <td class="right">{{ total_deposits|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>Total Active Users</td>
+              <td class="right">{{ total_active_users }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -115,6 +119,10 @@
               <td>YTD Fees</td>
               <td class="right">{{ ytd_fees|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>YTD Active Users</td>
+              <td class="right">{{ ytd_users }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -164,6 +172,10 @@
             <tr>
               <td>MTD Fees</td>
               <td class="right">{{ mtd_fees|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>MTD Active Users</td>
+              <td class="right">{{ mtd_users }}</td>
             </tr>
           </tbody>
         </table>
