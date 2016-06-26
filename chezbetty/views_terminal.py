@@ -54,7 +54,10 @@ class DepositException(Exception):
              permission='service')
 def terminal_umid_check(request):
     try:
-        User.from_umid(request.POST['umid'])
+        user = User.from_umid(request.POST['umid'])
+        if user.role == 'serviceaccount':
+            # n.b. don't expose a different error path here
+            raise User.InvalidUserException
         return {}
     except:
         return {'error': get_localizer(request).translate(
