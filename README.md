@@ -13,14 +13,14 @@ UMich version is an homage to UCSD's [Chez Bob](http://chezbob.ucsd.edu/).
 Chez Betty runs [here](http://chezbetty.eecs.umich.edu).
 
 Chez Betty is written as a Python web app designed to run on a server with
-a browser based user interface. It supports cash and bitcoin deposits. The
+a browser based user interface. It supports cash and credit card deposits. The
 user interface expects a card swiper and barcode scanner to be attached to
 the machine. See the list at the end of this README for products we use.
 To test / demo the system without hardware, turn on "Demo mode" in the admin
 interface.
 
 Installation
-============
+------------
 
 The Chez Betty application is developed using Python Pyramid. To get a
 development environment set up, do the following:
@@ -37,7 +37,7 @@ development environment set up, do the following:
 1. Setup virtualenv with Python3:
 
         cd chez-betty
-        
+
         # Python cannot decide on how it wants to do this. So
         # we have multiple iterations that we have tried.
         ## Way back:
@@ -47,7 +47,7 @@ development environment set up, do the following:
         # ^ *not* pyvenv ., that installed python2 in my venv for w/e reason
         ## Newest (only do this with Python 3.4+):
         pyvenv-3.5 venv
-        
+
         source venv/bin/activate
 
 2. Install the dependencies:
@@ -89,18 +89,16 @@ development environment set up, do the following:
         # n.b. pserve will be in your path if your virtualenv is active
 
 
-LDAP
-====
+### LDAP
 
 TODO: add information about how to setup LDAP connection.
 
-Bitcoin
-=======
+### Bitcoin
 
 TODO: add info about how to setup bitcoin/coinbase.
 
 Usage
-=====
+-----
 
 View the client interface using
 
@@ -109,9 +107,11 @@ View the client interface using
 View the admin interface using
 
     http://127.0.0.1:6543/admin
+    username: admin
+    password: chezbettyadmin
 
 Tools
-=====
+-----
 
 Chez Betty currently runs using:
 

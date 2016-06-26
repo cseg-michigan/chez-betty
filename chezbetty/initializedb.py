@@ -46,6 +46,7 @@ def main(argv=sys.argv):
     Base.metadata.create_all(engine)
 
     with transaction.manager:
+        # Setup a few initial items
         DBSession.add(Item(
            "Nutrigrain Raspberry",
            "038000358210",
@@ -87,43 +88,8 @@ def main(argv=sys.argv):
             True
         )
         DBSession.add(coke)
-        # user = User(
-        #    "zakir",
-        #    "95951361",
-        #    "Zakir Durumeric"
-        # )
-        # user.role = "administrator"
-        # user.password = "test"
-        # DBSession.add(user)
-        user = User(
-           "bradjc",
-           "11519022",
-           "Brad Campbell"
-        )
-        user.role = "administrator"
-        user.password = "test"
-        DBSession.add(user)
-        user = User(
-               "ppannuto",
-               "64880621",
-               "Pat Pannuto"
-               )
-        user.role = "administrator"
-        user.password = "test2"
-        DBSession.add(user)
-        user = User(
-               "betty",
-               "00000000",
-               "Betty"
-               )
-        user.role = "serviceaccount"
-        user.password = "cb"
-        DBSession.add(user)
-        account.get_virt_account("chezbetty")
-        account.get_cash_account("cashbox")
-        account.get_cash_account("safe")
-        account.get_cash_account("chezbetty")
-        account.get_cash_account("btcbox")
+
+        # Add a test box
         coke_box = Box(
                 "Coke 32 pack", # name
                 "049000042511", # barcode
@@ -135,6 +101,34 @@ def main(argv=sys.argv):
         DBSession.add(coke_box)
         DBSession.flush()
         DBSession.add(BoxItem(coke_box, coke, 32, 100))
+
+        # Add the betty user
+        DBSession.add(coke)
+        user = User(
+               "betty",
+               "00000000",
+               "Betty"
+               )
+        user.role = "serviceaccount"
+        user.password = "chezbetty"
+        DBSession.add(user)
+
+        # Add an admin user
+        user = User(
+               "admin",
+               "56785678",
+               "Administrator"
+               )
+        user.role = "administrator"
+        user.password = "chezbettyadmin"
+        DBSession.add(user)
+
+        # Init the accounts we need
+        account.get_virt_account("chezbetty")
+        account.get_cash_account("cashbox")
+        account.get_cash_account("safe")
+        account.get_cash_account("chezbetty")
+        account.get_cash_account("btcbox")
 
 if __name__ == "__main__":
     main()
