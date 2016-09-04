@@ -3,13 +3,13 @@
     <ul class="nav navbar-nav">
       <li {% if event_filter == 'all' %}class="active"{% endif %}><a href="/admin/events">All Transactions</a></li>
       {% if request.has_permission("admin") %}
-      <li {% if event_filter == 'deleted' %}class="active"{% endif %}><a href="/admin/events?filter=deleted">Deleted Transactions</a></li>
-      <li {% if event_filter == 'cash' %}class="active"{% endif %}><a href="/admin/events?filter=cash">Cash Transactions</a></li>
-      <li {% if event_filter == 'restock' %}class="active"{% endif %}><a href="/admin/events?filter=restock">Restocks</a></li>
-      <li {% if event_filter == 'emptycash' %}class="active"{% endif %}><a href="/admin/events?filter=emptycash">Cashbox Empties</a></li>
-      <li {% if event_filter == 'deposit' %}class="active"{% endif %}><a href="/admin/events?filter=deposit">Deposits</a></li>
-      <li {% if event_filter == 'donation' %}class="active"{% endif %}><a href="/admin/events?filter=donation">Donations/Withdrawals</a></li>
-      <li {% if event_filter == 'reimbursement' %}class="active"{% endif %}><a href="/admin/events?filter=reimbursement">Reimbursements</a></li>
+      <li {% if event_filter == 'status:deleted' %}class="active"{% endif %}><a href="/admin/events?filter=status:deleted">Deleted Transactions</a></li>
+      <li {% if event_filter == 'type:cash' %}class="active"{% endif %}><a href="/admin/events?filter=type:cash">Cash Transactions</a></li>
+      <li {% if event_filter == 'type:restock' %}class="active"{% endif %}><a href="/admin/events?filter=type:restock">Restocks</a></li>
+      <li {% if event_filter == 'type:emptycash' %}class="active"{% endif %}><a href="/admin/events?filter=type:emptycash">Cashbox Empties</a></li>
+      <li {% if event_filter == 'type:deposit' %}class="active"{% endif %}><a href="/admin/events?filter=type:deposit">Deposits</a></li>
+      <li {% if event_filter == 'type:donation' %}class="active"{% endif %}><a href="/admin/events?filter=type:donation">Donations/Withdrawals</a></li>
+      <li {% if event_filter == 'type:reimbursement' %}class="active"{% endif %}><a href="/admin/events?filter=type:reimbursement">Reimbursements</a></li>
       {% endif %}
     </ul>
   </div>

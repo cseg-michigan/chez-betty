@@ -29,7 +29,7 @@
 
             {% for reimbursee in reimbursees %}
             <tr id="reimbursee-{{ reimbursee.id }}" class="reimbursee-row">
-              <td>{{ reimbursee.name }}</td>
+              <td><a href="/admin/events?filter=cash_account:{{ reimbursee.id }}">{{ reimbursee.name }}</a></td>
               <td>{{ reimbursee.balance|format_currency|safe }}</td>
             </tr>
             {% endfor %}

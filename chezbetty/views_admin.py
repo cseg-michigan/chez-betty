@@ -2795,20 +2795,20 @@ def admin_btc_reconcile_submit(request):
 
 
 def _get_event_filter_function(event_filter):
-    if event_filter in (
-            'deleted',
-            'cash',
-            'restock',
-            'emptycash',
-            'deposit',
-            'donation',
-            'reimbursement'
-            ):
-        try:
-            return getattr(Event, 'get_'+event_filter+'_events')
-        except AttributeError:
-            request.session.flash('Ignoring invalid filter', 'error')
-    return Event.all
+    fields = event_filter.split(':')
+    if fields[0] == 'type':
+        def filterfn (*args, **kwargs):
+            return Event.get_events_by_type(fields[1], *args, **kwargs)
+        return filterfn
+    elif fields[0] == 'status':
+        if fields[1] == 'deleted':
+            return Event.get_deleted_events
+    elif fields[0] == 'cash_account':
+        def filterfn (*args, **kwargs):
+            return Event.get_events_by_cashaccount(int(fields[1]), *args, **kwargs)
+        return filterfn
+    else:
+        return Event.all
 
 
 @view_config(route_name='admin_events',

@@ -354,78 +354,51 @@ account.Account.total_purchases = __total_purchase_amount
 # This is in a stupid place due to circular input problems
 @classmethod
 @limitable_all
-def __get_cash_events(cls):
-    return DBSession.query(event.Event)\
-            .join(Transaction)\
-            .filter(or_(
+def __get_events_by_type(cls, event_type):
+    q = DBSession.query(event.Event)\
+            .join(Transaction)
+
+    if event_type == 'cash':
+        q = q.filter(or_(
                       Transaction.to_account_cash_id == account.get_cash_account("chezbetty").id,
-                      Transaction.fr_account_cash_id == account.get_cash_account("chezbetty").id))\
-            .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp))
-event.Event.get_cash_events = __get_cash_events
-
-# This is in a stupid place due to circular input problems
-@classmethod
-@limitable_all
-def __get_restock_events(cls):
-    return DBSession.query(event.Event)\
-            .join(Transaction)\
-            .filter(Transaction.type == 'restock')\
-            .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp))
-event.Event.get_restock_events = __get_restock_events
-
-# This is in a stupid place due to circular input problems
-@classmethod
-@limitable_all
-def __get_emptycash_events(cls):
-    return DBSession.query(event.Event)\
-            .join(Transaction)\
-            .filter(or_(
+                      Transaction.fr_account_cash_id == account.get_cash_account("chezbetty").id))
+    elif event_type == 'restock':
+        q = q.filter(Transaction.type == 'restock')
+    elif event_type == 'emptycash':
+        q = q.filter(or_(
                       Transaction.type == 'emptycashbox',
                       Transaction.type == 'emptysafe',
-                      Transaction.type == 'emptybitcoin'))\
-            .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp))
-event.Event.get_emptycash_events = __get_emptycash_events
-
-# This is in a stupid place due to circular input problems
-@classmethod
-@limitable_all
-def __get_deposit_events(cls):
-    return DBSession.query(event.Event)\
-            .join(Transaction)\
-            .filter(or_(
+                      Transaction.type == 'emptybitcoin'))
+    elif event_type == 'deposit':
+        q = q.filter(or_(
                       Transaction.type == 'cashdeposit',
                       Transaction.type == 'ccdeposit',
-                      Transaction.type == 'btcdeposit'))\
-            .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp))
-event.Event.get_deposit_events = __get_deposit_events
+                      Transaction.type == 'btcdeposit'))
+    elif event_type == 'donation':
+        q = q.filter(or_(
+                      Transaction.type == 'donation',
+                      Transaction.type == 'withdrawal'))
+    elif event_type == 'reimbursement':
+        q = q.filter(Transaction.type == 'reimbursement')
+
+    q = q.filter(event.Event.deleted==False)\
+         .order_by(desc(event.Event.timestamp))
+    return q
+event.Event.get_events_by_type = __get_events_by_type
 
 # This is in a stupid place due to circular input problems
 @classmethod
 @limitable_all
-def __get_donation_events(cls):
-    return DBSession.query(event.Event)\
+def __get_events_by_cashaccount(cls, account_id):
+    q = DBSession.query(event.Event)\
             .join(Transaction)\
             .filter(or_(
-                      Transaction.type == 'donation',
-                      Transaction.type == 'withdrawal'))\
+                      Transaction.to_account_cash_id == account_id,
+                      Transaction.fr_account_cash_id == account_id))\
             .filter(event.Event.deleted==False)\
             .order_by(desc(event.Event.timestamp))
-event.Event.get_donation_events = __get_donation_events
-
-# This is in a stupid place due to circular input problems
-@classmethod
-@limitable_all
-def __get_reimbursement_events(cls):
-    return DBSession.query(event.Event)\
-            .join(Transaction)\
-            .filter(Transaction.type == 'reimbursement')\
-            .filter(event.Event.deleted==False)\
-            .order_by(desc(event.Event.timestamp))
-event.Event.get_reimbursement_events = __get_reimbursement_events
+    return q
+event.Event.get_events_by_cashaccount = __get_events_by_cashaccount
 
 # This is in a stupid place due to circular input problems
 @classmethod
