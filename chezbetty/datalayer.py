@@ -571,7 +571,7 @@ def add_donation(amount, notes, admin, timestamp=None):
     DBSession.flush()
     t = transaction.Donation(e, amount)
     DBSession.add(t)
-    return t
+    return e
 
 
 # Call this to withdraw cash funds from Chez Betty into another account
@@ -581,7 +581,7 @@ def add_withdrawal(amount, notes, reimbursee, admin, timestamp=None):
     DBSession.flush()
     t = transaction.Withdrawal(e, amount, reimbursee)
     DBSession.add(t)
-    return t
+    return e
 
 
 # Call this to reimburse a reimbursee

@@ -2568,10 +2568,10 @@ def admin_cash_donation_submit(request):
             # Could not parse date
             event_date = None
 
-        datalayer.add_donation(amount, request.POST['notes'], request.user, event_date)
+        e = datalayer.add_donation(amount, request.POST['notes'], request.user, event_date)
 
         request.session.flash('Donation recorded successfully', 'success')
-        return HTTPFound(location=request.route_url('admin_index'))
+        return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
 
     except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for donation amount', 'error')
@@ -2612,10 +2612,10 @@ def admin_cash_withdrawal_submit(request):
             # Could not parse date
             event_date = None
 
-        datalayer.add_withdrawal(amount, request.POST['notes'], reimbursee, request.user, event_date)
+        e = datalayer.add_withdrawal(amount, request.POST['notes'], reimbursee, request.user, event_date)
 
         request.session.flash('Withdrawal recorded successfully', 'success')
-        return HTTPFound(location=request.route_url('admin_index'))
+        return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
 
     except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for withdrawal amount', 'error')
