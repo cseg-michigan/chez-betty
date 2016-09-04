@@ -314,6 +314,7 @@ def admin_index(request):
     today_discounts = Purchase.discounts(now, None)
     today_fees      = Purchase.fees(now, None)
     today_users     = Purchase.distinct(distinct_on=Event.user_id, start=now)
+    today_new_users = User.get_number_new_users(start=now)
 
     # Also get statistics for yesterday
     yesterday = now - datetime.timedelta(days=1)
@@ -328,6 +329,7 @@ def admin_index(request):
     yesterday_discounts = Purchase.discounts(yesterday, now)
     yesterday_fees      = Purchase.fees(yesterday, now)
     yesterday_users     = Purchase.distinct(distinct_on=Event.user_id, start=yesterday, end=now)
+    yesterday_new_users = User.get_number_new_users(start=yesterday, end=now)
 
     return dict(events=events,
                 users_shame=users_shame,
@@ -357,6 +359,7 @@ def admin_index(request):
                 today_discounts=today_discounts,
                 today_fees=today_fees,
                 today_users=today_users,
+                today_new_users=today_new_users,
                 yesterday_sales=yesterday_sales,
                 yesterday_profit=yesterday_profit,
                 yesterday_lost=yesterday_lost,
@@ -367,6 +370,7 @@ def admin_index(request):
                 yesterday_discounts=yesterday_discounts,
                 yesterday_fees=yesterday_fees,
                 yesterday_users=yesterday_users,
+                yesterday_new_users=yesterday_new_users,
                 )
 
 
@@ -424,6 +428,7 @@ def admin_dashboard(request):
     ytd_discounts = Purchase.discounts(now.replace(month=1,day=1), None)
     ytd_fees      = Purchase.fees(now.replace(month=1,day=1), None)
     ytd_users     = Purchase.distinct(distinct_on=Event.user_id, start=now.replace(month=1, day=1))
+    ytd_new_users = User.get_number_new_users(start=now.replace(month=1, day=1))
 
     mtd_sales     = Purchase.total(now.replace(day=1), None)
     mtd_profit    = PurchaseLineItem.profit_on_sales(now.replace(day=1), None)
@@ -435,6 +440,7 @@ def admin_dashboard(request):
     mtd_discounts = Purchase.discounts(now.replace(day=1), None)
     mtd_fees      = Purchase.fees(now.replace(day=1), None)
     mtd_users     = Purchase.distinct(distinct_on=Event.user_id, start=now.replace(day=1))
+    mtd_new_users = User.get_number_new_users(start=now.replace(day=1))
 
     graph_deposits_day_total = views_data.create_dict('deposits', 'day', 21)
     graph_deposits_day_cash  = views_data.create_dict('deposits_cash', 'day', 21)
@@ -472,6 +478,7 @@ def admin_dashboard(request):
                 ytd_discounts=ytd_discounts,
                 ytd_fees=ytd_fees,
                 ytd_users=ytd_users,
+                ytd_new_users=ytd_new_users,
                 mtd_sales=mtd_sales,
                 mtd_profit=mtd_profit,
                 mtd_lost=mtd_lost,
@@ -482,6 +489,7 @@ def admin_dashboard(request):
                 mtd_discounts=mtd_discounts,
                 mtd_fees=mtd_fees,
                 mtd_users=mtd_users,
+                mtd_new_users=mtd_new_users,
                 graph_sales_day=views_data.create_dict('sales', 'day', 21),
                 graph_deposits_day=graph_deposits_day
                 )

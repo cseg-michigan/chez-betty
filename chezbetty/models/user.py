@@ -232,6 +232,18 @@ class User(account.Account):
                         .order_by(cls.name).all()
 
     @classmethod
+    def get_number_new_users(cls, start=None, end=None):
+        r = DBSession.query(cls)\
+                        .filter(cls.enabled == True)
+
+        if start:
+            r = r.filter(cls.created_at>=start)
+        if end:
+            r = r.filter(cls.created_at<end)
+
+        return r.count()
+
+    @classmethod
     def get_users_total(cls):
         return DBSession.query(func.sum(User.balance).label("total_balance"))\
                         .one().total_balance or Decimal(0.0)
