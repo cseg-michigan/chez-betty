@@ -270,7 +270,8 @@ class User(account.Account):
                         .all()
         return utility.timeseries_cumulative(rows)
 
-    def iterate_recent_items(self, limit=None, allow_duplicates=False):
+    def iterate_recent_items(self, limit=None, allow_duplicates=False, pictures_only=True):
+        cap_search = 20
         items = set()
         count = 0
         for e in self.events:
@@ -278,12 +279,16 @@ class User(account.Account):
                 for transaction in e.transactions:
                     if transaction.type == 'purchase':
                         for line_item in transaction.subtransactions:
+                            cap_search -= 1
+                            if cap_search == 0:
+                                return
                             if (line_item.item not in items) or allow_duplicates:
-                                count += 1
-                                if limit is not None and count > limit:
-                                    return
-                                yield line_item.item
-                                items.add(line_item.item)
+                                if (line_item.item.img) or not pictures_only:
+                                    count += 1
+                                    if limit is not None and count > limit:
+                                        return
+                                    yield line_item.item
+                                    items.add(line_item.item)
 
     def __make_salt(self):
         return binascii.b2a_base64(open("/dev/urandom", "rb").read(32))[:-3].decode("ascii")
