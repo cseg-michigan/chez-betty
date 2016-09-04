@@ -2802,6 +2802,7 @@ def _get_event_filter_function(event_filter):
             'emptycash',
             'deposit',
             'donation',
+            'reimbursement'
             ):
         try:
             return getattr(Event, 'get_'+event_filter+'_events')
