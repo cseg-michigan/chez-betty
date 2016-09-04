@@ -22,6 +22,7 @@ class Event(Base):
     type = Column(Enum("purchase", "deposit", "adjustment", "restock",
                        "inventory", "emptycashbox", "emptysafe", "emptybitcoin", "reconcile",
                        "donation", "withdrawal",
+                       "reimbursement",
                        name="event_type"), nullable=False)
     __mapper_args__ = {'polymorphic_on': type}
 
@@ -148,5 +149,11 @@ class Withdrawal(Event):
         if len(notes) < 3:
             raise NotesMissingException()
         Event.__init__(self, admin, notes, timestamp)
+
+
+class Reimbursement(Event):
+    __mapper_args__ = {'polymorphic_identity': 'reimbursement'}
+    def __init__(self, admin, timestamp):
+        Event.__init__(self, admin, None, timestamp)
 
 

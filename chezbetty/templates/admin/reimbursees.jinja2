@@ -9,35 +9,93 @@
 
 {% block content %}
 
-<table class="table">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Reimbursees</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
 
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Balance</th>
-    </tr>
-  </thead>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
 
-  <tbody>
+          <tbody>
 
-    {% for reimbursee in reimbursees %}
-    <tr id="reimbursee-{{ reimbursee.id }}" class="reimbursee-row">
-      <td>{{ reimbursee.name }}</td>
-      <td>{{ reimbursee.balance|format_currency|safe }}</td>
-    </tr>
-    {% endfor %}
+            {% for reimbursee in reimbursees %}
+            <tr id="reimbursee-{{ reimbursee.id }}" class="reimbursee-row">
+              <td>{{ reimbursee.name }}</td>
+              <td>{{ reimbursee.balance|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
 
-  </tbody>
+          </tbody>
 
-</table>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
-<h3>Add New Reimbursee</h3>
 
-<form role="form" action="/admin/reimbursees/add/submit" method="post" id="form-add-reimbursee">
 
-  <input type="text" class="form-control" id="reimbursee-name-new" name="reimbursee-name-new"></td>
-  <button type="submit" class="btn btn-success">Add New Reimbursee</button>
 
-</form>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Create Reimbursement</h3>
+      </div>
+      <div class="panel-body">
+        <form role="form" action="/admin/reimbursees/reimbursement/submit" method="post" id="form-reimbursement">
+          Reimbursee:
+          <select class="form-control" id="reimbursee" name="reimbursee">
+            {% for reimbursee in reimbursees %}
+            <option value="{{ reimbursee.id }}">{{ reimbursee.name }}</option>
+            {% endfor %}
+          </select>
+
+          Amount:
+          <input type="text" class="form-control" id="reimbursement-amount" name="amount">
+
+          <div>
+            Set custom time for this reimbursement or leave blank to use current time:<br />
+            <input type="text" id="reimbursement-date" name="reimbursement-date" class="event-date-picker">
+          </div>
+
+          <button type="submit" class="btn btn-success">Create Reimbursement</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Add New Reimbursee</h3>
+      </div>
+      <div class="panel-body">
+        <form role="form" action="/admin/reimbursees/add/submit" method="post" id="form-add-reimbursee">
+
+          <input type="text" class="form-control" id="reimbursee-name-new" name="reimbursee-name-new"></td>
+          <button type="submit" class="btn btn-success">Add New Reimbursee</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 {% endblock %}

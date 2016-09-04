@@ -39,6 +39,7 @@ class Transaction(Base):
                        "found",         # None                              null      -> chezbetty/cashbox/btcbox  Yes
                        "donation",      # null         -> chezbetty         null      -> chezbetty          Yes
                        "withdrawal",    # chezbetty    -> null              chezbetty -> null               Yes
+                       "reimbursement", # None                              reimbursee-> null
                        name="transaction_type"), nullable=False)
     __mapper_args__ = {'polymorphic_on': type}
 
@@ -708,6 +709,12 @@ class Withdrawal(Transaction):
         chezbetty_v = account.get_virt_account("chezbetty")
         chezbetty_c = account.get_cash_account("chezbetty")
         Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, reimbursee, amount)
+
+
+class Reimbursement(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'reimbursement'}
+    def __init__(self, event, amount, reimbursee):
+        Transaction.__init__(self, event, None, None, reimbursee, None, amount)
 
 
 ################################################################################

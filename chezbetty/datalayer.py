@@ -49,7 +49,8 @@ def top_debtor_wrapper(fn):
 def can_undo_event(e):
     if e.type != 'deposit' and e.type != 'purchase' and e.type != 'restock' \
        and e.type != 'inventory' and e.type != 'emptycashbox' \
-       and e.type != 'donation' and e.type != 'withdrawal':
+       and e.type != 'donation' and e.type != 'withdrawal' \
+       and e.type != 'reimbursement':
         return False
     if e.deleted:
         return False
@@ -581,6 +582,17 @@ def add_withdrawal(amount, notes, reimbursee, admin, timestamp=None):
     t = transaction.Withdrawal(e, amount, reimbursee)
     DBSession.add(t)
     return t
+
+
+# Call this to reimburse a reimbursee
+def add_reimbursement(amount, reimbursee, admin, timestamp=None):
+    e = event.Reimbursement(admin, timestamp)
+    DBSession.add(e)
+    DBSession.flush()
+    t = transaction.Reimbursement(e, amount, reimbursee)
+    DBSession.add(t)
+    return e
+
 
 def upload_receipt(event, admin, rfile):
     r = receipt.Receipt(event, admin, rfile)

@@ -2021,6 +2021,49 @@ def admin_reimbursees_add_submit(request):
     return HTTPFound(location=request.route_url('admin_reimbursees'))
 
 
+@view_config(route_name='admin_reimbursees_reimbursement_submit',
+             request_method='POST',
+             permission='manage')
+def admin_reimbursees_reimbursement_submit(request):
+    try:
+        reimbursee = Reimbursee.from_id(int(request.POST['reimbursee']))
+        amount = Decimal(request.POST['amount'])
+
+        # Check that we are not trying to reimburse too much
+        if amount > reimbursee.balance:
+            request.session.flash('Error: Cannot reimburse more than user is owed.', 'error')
+            return HTTPFound(location=request.route_url('admin_reimbursees'))
+
+        # Check that we are not trying to reimburse a negative amount
+        if amount <= 0:
+            request.session.flash('Error: Cannot reimburse zero or a negative amount.', 'error')
+            return HTTPFound(location=request.route_url('admin_reimbursees'))
+
+        # Look for custom date
+        try:
+            if request.POST['reimbursement-date']:
+                event_date = datetime.datetime.strptime(request.POST['reimbursement-date'].strip(),
+                    '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            else:
+                event_date = None
+        except Exception as e:
+            if request.debug: raise(e)
+            # Could not parse date
+            event_date = None
+
+        e = datalayer.add_reimbursement(amount, reimbursee, request.user, event_date)
+
+        request.session.flash('Reimbursement recorded successfully', 'success')
+        return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
+
+    except decimal.InvalidOperation:
+        request.session.flash('Error: Bad value for reimbursement amount', 'error')
+        return HTTPFound(location=request.route_url('admin_reimbursees'))
+    except:
+        request.session.flash('Error: Unable to add reimbursement', 'error')
+        return HTTPFound(location=request.route_url('admin_reimbursees'))
+
+
 ################################################################################
 # USERS
 ################################################################################
@@ -2494,6 +2537,10 @@ def admin_pool_addmember_submit(request):
         request.session.flash('Error adding user to pool.', 'error')
         return HTTPFound(location=request.route_url('admin_pools'))
 
+
+################################################################################
+# CASH
+################################################################################
 
 @view_config(route_name='admin_cash_donation',
              renderer='templates/admin/cash_donation.jinja2',

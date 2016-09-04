@@ -195,6 +195,7 @@ def main(global_config, **settings):
 
     config.add_route('admin_reimbursees',               '/admin/reimbursees')
     config.add_route('admin_reimbursees_add_submit',    '/admin/reimbursees/add/submit')
+    config.add_route('admin_reimbursees_reimbursement_submit',    '/admin/reimbursees/reimbursement/submit')
 
     config.add_route('admin_inventory',                 '/admin/inventory')
     config.add_route('admin_inventory_submit',          '/admin/inventory/submit')
