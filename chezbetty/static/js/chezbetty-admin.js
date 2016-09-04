@@ -58,11 +58,9 @@ function add_item_success (data) {
 			restock_update_line_total(num_rows);
 		} else {
 			// Already have this item in the table
-			// Take another barcode scan as an increase in quantity
+			// Move it to the bottom so it's visible
 			row_obj = $(".restock-"+data.type+"-"+data.id+":last");
-			quantity_obj = row_obj.find(".quantity input");
-			quantity_obj.val(parseInt(quantity_obj.val()) + 1);
-			restock_update_line_total(row_obj.attr("id").split("-")[1]);
+			row_obj.insertAfter(".restock:last");
 		}
 	}
 }
