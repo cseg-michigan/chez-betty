@@ -574,11 +574,11 @@ def add_donation(amount, notes, admin, timestamp=None):
 
 
 # Call this to withdraw cash funds from Chez Betty into another account
-def add_withdrawal(amount, notes, admin, timestamp=None):
+def add_withdrawal(amount, notes, reimbursee, admin, timestamp=None):
     e = event.Withdrawal(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Withdrawal(e, amount)
+    t = transaction.Withdrawal(e, amount, reimbursee)
     DBSession.add(t)
     return t
 

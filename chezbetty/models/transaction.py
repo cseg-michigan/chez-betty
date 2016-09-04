@@ -704,10 +704,10 @@ class Donation(Transaction):
 
 class Withdrawal(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'withdrawal'}
-    def __init__(self, event, amount):
+    def __init__(self, event, amount, reimbursee):
         chezbetty_v = account.get_virt_account("chezbetty")
         chezbetty_c = account.get_cash_account("chezbetty")
-        Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, None, amount)
+        Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, reimbursee, amount)
 
 
 ################################################################################

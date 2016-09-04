@@ -21,6 +21,17 @@
     <dt>Reason</dt>
     <dd><input type="text" class="form-control" id="withdrawal-reason" name="notes"></dd>
   </dl>
+  <dl class="dl-horizontal">
+    <dt>Receiver</dt>
+    <dd>
+      <select class="form-control" id="withdrawal-reimbursee" name="reimbursee">
+        {% for reimbursee in reimbursees %}
+        {# {% if reimbursee_selected == reimbursee.id %}selected="selected"{% endif %} #}
+        <option value="{{ reimbursee.id }}">{{ reimbursee.name }}</option>
+        {% endfor %}
+      </select>
+    </dd>
+  </dl>
 
   <div>
     Set custom time for this withdrawal or leave blank to use current time:<br />

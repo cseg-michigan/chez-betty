@@ -2541,7 +2541,8 @@ def admin_cash_donation_submit(request):
              renderer='templates/admin/cash_withdrawal.jinja2',
              permission='admin')
 def admin_cash_withdrawal(request):
-    return {}
+    reimbursees = Reimbursee.all()
+    return {'reimbursees': reimbursees}
 
 
 @view_config(route_name='admin_cash_withdrawal_submit',
@@ -2550,6 +2551,7 @@ def admin_cash_withdrawal(request):
 def admin_cash_withdrawal_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
+        reimbursee = Reimbursee.from_id(int(request.POST['reimbursee']))
 
         # Look for custom date
         try:
@@ -2563,7 +2565,7 @@ def admin_cash_withdrawal_submit(request):
             # Could not parse date
             event_date = None
 
-        datalayer.add_withdrawal(amount, request.POST['notes'], request.user, event_date)
+        datalayer.add_withdrawal(amount, request.POST['notes'], reimbursee, request.user, event_date)
 
         request.session.flash('Withdrawal recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))
