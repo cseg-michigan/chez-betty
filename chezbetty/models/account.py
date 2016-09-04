@@ -6,7 +6,7 @@ class Account(Versioned, Base):
     __tablename__ = "accounts"
 
     id               = Column(Integer, primary_key=True, nullable=False)
-    type             = Column(Enum("user", "virtual", "cash", "pool", name="account_type"), nullable=False)
+    type             = Column(Enum("user", "virtual", "cash", "pool", "reimbursee", name="account_type"), nullable=False)
     name             = Column(String(255), nullable=False)
     balance          = Column(Numeric, nullable=False)
     archived_balance = Column(Numeric, nullable=True)

@@ -30,7 +30,7 @@ class Transaction(Base):
                        "ccdeposit",     # null         -> user_account.     null      -> chezbetty
                        "btcdeposit",    # null         -> user_account      null      -> btcbox
                        "adjustment",    # chezbetty   <-> user              None                            Yes
-                       "restock",       # chezbetty    -> null              chezbetty -> null
+                       "restock",       # chezbetty    -> null              chezbetty -> null/reimbursee
                        "inventory",     # chezbetty   <-> null              None
                        "emptycashbox",  # None                              cashbox   -> safe
                        "emptysafe",     # None                              safe      -> chezbetty
@@ -643,10 +643,10 @@ class Restock(Transaction):
     # Additional cost that should get distributed over the entire restock
     amount_restock_cost = Column(Numeric, nullable=True)
 
-    def __init__(self, event, global_cost):
+    def __init__(self, event, global_cost, reimbursee=None):
         chezbetty_v = account.get_virt_account("chezbetty")
         chezbetty_c = account.get_cash_account("chezbetty")
-        Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, None, Decimal(0.0))
+        Transaction.__init__(self, event, chezbetty_v, None, chezbetty_c, reimbursee, Decimal(0.0))
         self.amount_restock_cost = global_cost
 
 
@@ -696,10 +696,10 @@ class Found(Transaction):
 
 class Donation(Transaction):
     __mapper_args__ = {'polymorphic_identity': 'donation'}
-    def __init__(self, event, amount):
+    def __init__(self, event, amount, donator=None):
         chezbetty_v = account.get_virt_account("chezbetty")
         chezbetty_c = account.get_cash_account("chezbetty")
-        Transaction.__init__(self, event, None, chezbetty_v, None, chezbetty_c, amount)
+        Transaction.__init__(self, event, None, chezbetty_v, donator, chezbetty_c, amount)
 
 
 class Withdrawal(Transaction):

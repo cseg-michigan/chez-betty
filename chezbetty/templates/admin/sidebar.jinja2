@@ -24,6 +24,10 @@
   <li><span>Manage Vendors</span></li>
   <li {% if active_page == 'vendors_edit' %}class="active"{% endif %}><a href="/admin/vendors/edit">Edit Vendors<span class="badge pull-right">{{ counts["vendors"] }}</span></a></li>
 </ul>
+<ul class="nav nav-sidebar">
+  <li><span>Manage Reimbursees</span></li>
+  <li {% if active_page == 'reimbursees' %}class="active"{% endif %}><a href="/admin/reimbursees">Manage Reimbursees<span class="badge pull-right">{{ counts["reimbursees"] }}</span></a></li>
+</ul>
 {% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
   <li><span>Manage Users</span></li>

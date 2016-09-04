@@ -38,6 +38,7 @@ from .models.pool import Pool
 from .models.pool_user import PoolUser
 from .models.tag import Tag
 from .models.item_tag import ItemTag
+from .models.reimbursee import Reimbursee
 
 from .utility import suppress_emails
 from .utility import send_email
@@ -91,6 +92,7 @@ def add_counts(event):
         count['restocks']     = Transaction.count(trans_type="restock")
         count['requests']     = Request.count()
         count['pools']        = Pool.count()
+        count['reimbursees']  = Reimbursee.count()
         event.rendering_val['counts'] = count
 
 @subscriber(BeforeRender)
@@ -272,6 +274,8 @@ def admin_index(request):
     inventory       = DBSession.query(func.sum(Item.in_stock * Item.wholesale).label("wholesale"),
                                       func.sum(Item.in_stock * Item.price).label("price")).one()
 
+    owed_reimbursements = Reimbursee.get_owed()
+
     chezbetty       = get_virt_account("chezbetty")
     safe            = get_cash_account("safe")
     cashbox         = get_cash_account("cashbox")
@@ -336,6 +340,7 @@ def admin_index(request):
                 users_balance=users_balance,
                 held_for_users=held_for_users,
                 owed_by_users=owed_by_users,
+                owed_reimbursements=owed_reimbursements,
                 safe=safe,
                 cashbox=cashbox,
                 btcbox=btcbox,
@@ -621,6 +626,8 @@ def admin_restock(request):
     rows = 0
     global_cost = Decimal(0)
     donation = Decimal(0)
+    reimbursees = Reimbursee.all()
+    reimbursee_selected = 'none'
     if len(request.GET) != 0:
         for index,packed_values in request.GET.items():
             values = packed_values.split(',')
@@ -634,6 +641,8 @@ def admin_restock(request):
                     donation = round(Decimal(values[0] or 0), 2)
                 except:
                     donation = Decimal(0)
+            elif index == 'reimbursee':
+                reimbursee_selected = values[0]
             else:
                 line_values = {}
                 line_type = values[0]
@@ -661,7 +670,9 @@ def admin_restock(request):
             'restock_items': restock_items,
             'restock_rows': rows,
             'global_cost': global_cost,
-            'donation': donation}
+            'donation': donation,
+            'reimbursees': reimbursees,
+            'reimbursee_selected': reimbursee_selected}
 
 
 @view_config(route_name='admin_restock_submit',
@@ -705,6 +716,12 @@ def admin_restock_submit(request):
     # Check for a global donation that should be given to chez betty and not
     # to the items in the restock.
     donation = Decimal(request.POST['restock-donation'] or 0)
+
+    # Check who we should credit this restock to
+    if request.POST['restock-reimbursee'] == 'none':
+        reimbursee = None
+    else:
+        reimbursee = Reimbursee.from_id(int(request.POST['restock-reimbursee']))
 
     for key,val in request.POST.items():
 
@@ -820,7 +837,7 @@ def admin_restock_submit(request):
         restock_date = None
 
     try:
-        e = datalayer.restock(items, global_cost, donation, request.user, restock_date)
+        e = datalayer.restock(items, global_cost, donation, reimbursee, request.user, restock_date)
         request.session.flash('Restock complete.', 'success')
         return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
     except Exception as e:
@@ -1934,6 +1951,10 @@ def admin_box_delete(request):
         return HTTPFound(location=request.route_url('admin_boxes_edit'))
 
 
+################################################################################
+# VENDORS
+################################################################################
+
 @view_config(route_name='admin_vendors_edit',
              renderer='templates/admin/vendors_edit.jinja2',
              permission='manage')
@@ -1972,6 +1993,37 @@ def admin_vendors_edit_submit(request):
     request.session.flash('Vendors updated successfully.', 'success')
     return HTTPFound(location=request.route_url('admin_vendors_edit'))
 
+
+################################################################################
+# REIMBURSEES
+################################################################################
+
+@view_config(route_name='admin_reimbursees',
+             renderer='templates/admin/reimbursees.jinja2',
+             permission='manage')
+def admin_reimbursees(request):
+    reimbursees = Reimbursee.all()
+    return {'reimbursees': reimbursees}
+
+
+@view_config(route_name='admin_reimbursees_add_submit',
+             request_method='POST',
+             permission='manage')
+def admin_reimbursees_add_submit(request):
+
+    new_reimbursee_name = request.POST['reimbursee-name-new'].strip()
+    new_reimbursee = Reimbursee(new_reimbursee_name)
+
+    DBSession.add(new_reimbursee)
+    DBSession.flush()
+
+    request.session.flash('Reimbursee added successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_reimbursees'))
+
+
+################################################################################
+# USERS
+################################################################################
 
 @view_config(route_name='admin_users_list',
              renderer='templates/admin/users_list.jinja2',

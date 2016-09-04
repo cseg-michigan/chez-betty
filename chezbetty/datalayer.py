@@ -84,6 +84,10 @@ def undo_event(e, user):
             # restock page.
             line_items['global_cost'] = '{}'.format(t.amount_restock_cost)
 
+            # Record who we reimbursed this to
+            if t.to_account_cash:
+                line_items['reimbursee'] = t.to_account_cash.id
+
             # Add all of the boxes and items to the return list
             # Also remove the stock this restock added to each item
             for i,s in zip(range(len(t.subtransactions)), t.subtransactions):
@@ -368,15 +372,15 @@ def transfer_user_money(sender, recipient, amount, notes, admin):
 
 
 # Call this when an admin restocks chezbetty
-def restock(items, global_cost, donation, admin, timestamp=None):
+def restock(items, global_cost, donation, reimbursee, admin, timestamp=None):
     e = event.Restock(admin, timestamp)
     DBSession.add(e)
     DBSession.flush()
-    t = transaction.Restock(e, Decimal(global_cost))
+    t = transaction.Restock(e, Decimal(global_cost), reimbursee)
     DBSession.add(t)
     DBSession.flush()
     if donation != Decimal(0):
-        d = transaction.Donation(e, donation)
+        d = transaction.Donation(e, donation, reimbursee)
         DBSession.add(d)
         DBSession.flush()
     # Start with the global cost when calculating the total amount

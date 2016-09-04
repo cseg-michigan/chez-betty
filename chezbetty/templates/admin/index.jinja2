@@ -373,5 +373,34 @@
 </div>
 {% endif %}
 
+{% if owed_reimbursements %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><a href="/admin/reimbursees">Outstanding Reimbursements</a></h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed table-striped table-responsive">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th class="right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for reimbursee in owed_reimbursements %}
+            <tr>
+              <td>{{ reimbursee.name }}</td>
+              <td class="right">{{ reimbursee.balance|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 
 {% endblock %}

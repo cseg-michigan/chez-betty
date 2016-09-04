@@ -122,6 +122,16 @@
     <input type="checkbox" id="restock-noprice" name="restock-noprice">
   </div>
 
+  <div>
+    Who paid for this restock:
+    <select class="form-control" id="restock-reimbursee" name="restock-reimbursee">
+      {% for reimbursee in reimbursees %}
+      <option value="{{ reimbursee.id }}" {% if reimbursee_selected == reimbursee.id %}selected="selected"{% endif %}>{{ reimbursee.name }}</option>
+      {% endfor %}
+      <option value="none" {% if reimbursee_selected == 'none' %}selected="selected"{% endif %}>No one, paid directly from Betty</option>
+    </select>
+  </div>
+
   <div style="margin-top:15px;">
     <button type="submit" id="restock-button" class="btn btn-success">Restock Items</button>
   </div>

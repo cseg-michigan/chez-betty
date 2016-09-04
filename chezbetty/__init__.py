@@ -25,6 +25,7 @@ from .models import pool
 from .models import pool_user
 from .models import tag
 from .models import tag_relations
+from .models import reimbursee
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
@@ -191,6 +192,9 @@ def main(global_config, **settings):
 
     config.add_route('admin_vendors_edit',              '/admin/vendors/edit')
     config.add_route('admin_vendors_edit_submit',       '/admin/vendors/edit/submit')
+
+    config.add_route('admin_reimbursees',               '/admin/reimbursees')
+    config.add_route('admin_reimbursees_add_submit',    '/admin/reimbursees/add/submit')
 
     config.add_route('admin_inventory',                 '/admin/inventory')
     config.add_route('admin_inventory_submit',          '/admin/inventory/submit')

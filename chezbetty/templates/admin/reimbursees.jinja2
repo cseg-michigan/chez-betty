@@ -1,0 +1,43 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'reimbursees' %}
+{% block title %}Reimbursees{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Reimbursees</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<table class="table">
+
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    {% for reimbursee in reimbursees %}
+    <tr id="reimbursee-{{ reimbursee.id }}" class="reimbursee-row">
+      <td>{{ reimbursee.name }}</td>
+      <td>{{ reimbursee.balance|format_currency|safe }}</td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+<h3>Add New Reimbursee</h3>
+
+<form role="form" action="/admin/reimbursees/add/submit" method="post" id="form-add-reimbursee">
+
+  <input type="text" class="form-control" id="reimbursee-name-new" name="reimbursee-name-new"></td>
+  <button type="submit" class="btn btn-success">Add New Reimbursee</button>
+
+</form>
+
+{% endblock %}
