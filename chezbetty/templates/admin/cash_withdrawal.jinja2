@@ -9,7 +9,9 @@
 
 {% block content %}
 
-<p>Withdraw cash from Chez Betty to move to a different account</p>
+<p>Withdraw cash from Chez Betty to move to a different account.</p>
+<p>This is most useful for entering reimbursements for events or other things
+that Betty is paying for.</p>
 
 <form role="form" action="/admin/cash/withdrawal/submit" method="post">
 
@@ -26,7 +28,6 @@
     <dd>
       <select class="form-control" id="withdrawal-reimbursee" name="reimbursee">
         {% for reimbursee in reimbursees %}
-        {# {% if reimbursee_selected == reimbursee.id %}selected="selected"{% endif %} #}
         <option value="{{ reimbursee.id }}">{{ reimbursee.name }}</option>
         {% endfor %}
       </select>
