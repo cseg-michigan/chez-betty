@@ -19,6 +19,7 @@
   <li {% if active_page == 'boxes_add'  %}class="active"{% endif %}><a href="/admin/box/add">Add Boxes</a></li>
   <li {% if active_page == 'boxes_edit' %}class="active"{% endif %}><a href="/admin/boxes/edit">Edit Boxes<span class="badge pull-right">{{ counts["boxes"] }}</span></a></li>
   <li {% if active_page == 'tags_list' %}class="active"{% endif %}><a href="/admin/tags/list">List Tags<span class="badge pull-right">{{ counts["tags"] }}</span></a></li>
+  <li {% if active_page == 'badscans' %}class="active"{% endif %}><a href="/admin/badscans/list">Bad Scans</a></li>
 </ul>
 <ul class="nav nav-sidebar">
   <li><span>Manage Vendors</span></li>

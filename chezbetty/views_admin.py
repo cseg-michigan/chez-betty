@@ -39,6 +39,7 @@ from .models.pool_user import PoolUser
 from .models.tag import Tag
 from .models.item_tag import ItemTag
 from .models.reimbursee import Reimbursee
+from .models.badscan import BadScan
 
 from .utility import suppress_emails
 from .utility import send_email
@@ -1593,6 +1594,23 @@ def admin_item_delete(request):
         request.session.flash('Error occurred while deleting item.', 'error')
         return HTTPFound(location=request.route_url('admin_items_edit'))
 
+
+################################################################################
+# BAD SCANS
+################################################################################
+
+@view_config(route_name='admin_badscans_list',
+             renderer='templates/admin/badscans.jinja2',
+             permission='manage')
+def admin_inventory(request):
+    badscans = BadScan.get_scans_with_counts()
+
+    return {'badscans': badscans}
+
+
+################################################################################
+# TAGS
+################################################################################
 
 @view_config(route_name='admin_tags_list',
              renderer='templates/admin/tags_list.jinja2',

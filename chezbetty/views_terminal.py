@@ -27,6 +27,7 @@ from .models.btcdeposit import BtcPendingDeposit
 from .models.pool import Pool
 from .models.tag import Tag
 from .models.ephemeron import Ephemeron
+from .models.badscan import BadScan
 
 from .utility import user_password_reset
 from .utility import send_email
@@ -285,6 +286,10 @@ def get_item_from_barcode(barcode):
             else:
                 return 'Cannot add that entire box to your order. Please scan an individual item.'
         except:
+            badscan = BadScan(barcode)
+            DBSession.add(badscan)
+            DBSession.flush()
+
             return 'Could not find that item.'
 
     if not item.enabled:

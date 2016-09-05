@@ -1,0 +1,30 @@
+{% extends "base.jinja2" %}
+{% set active_page = 'badscans' %}
+{% block title %}Bad Scans{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Barcode Scans that Errored</h1>
+{% endblock %}
+
+{% block contentwide %}
+
+<table class="table table-condensed table-striped sticky sortable" id="events_table">
+  <thead>
+    <tr>
+      <th>Scan</th>
+      <th>Count</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for badscan in badscans %}
+  <tr>
+    <td>{{ badscan.badscan }}</td>
+    <td>{{ badscan.count }}</td>
+    <td>{{ badscan.timestamp|pretty_date|safe }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

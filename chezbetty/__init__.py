@@ -26,6 +26,7 @@ from .models import pool_user
 from .models import tag
 from .models import tag_relations
 from .models import reimbursee
+from .models import badscan
 from .models.model import *
 from .models.user import LDAPLookup, groupfinder, get_user, User
 from .btc import Bitcoin
@@ -179,6 +180,7 @@ def main(global_config, **settings):
     config.add_route('admin_item_edit',         '/admin/item/edit/{item_id}')
     config.add_route('admin_item_barcode_pdf',  '/admin/item/barcode/{item_id}.pdf')
     config.add_route('admin_item_delete',       '/admin/item/delete/{item_id}')
+    config.add_route('admin_badscans_list',     '/admin/badscans/list')
 
     config.add_route('admin_tags_list',         '/admin/tags/list')
 
