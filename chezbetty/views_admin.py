@@ -276,6 +276,9 @@ def admin_index(request):
 
     owed_reimbursements = Reimbursee.get_owed()
 
+    debt_forgiven   = User.get_debt_forgiven()
+    balance_absorbed= User.get_amount_absorbed()
+
     chezbetty       = get_virt_account("chezbetty")
     safe            = get_cash_account("safe")
     cashbox         = get_cash_account("cashbox")
@@ -341,6 +344,8 @@ def admin_index(request):
                 held_for_users=held_for_users,
                 owed_by_users=owed_by_users,
                 owed_reimbursements=owed_reimbursements,
+                debt_forgiven=debt_forgiven,
+                balance_absorbed=balance_absorbed,
                 safe=safe,
                 cashbox=cashbox,
                 btcbox=btcbox,

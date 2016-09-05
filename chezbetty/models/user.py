@@ -263,6 +263,21 @@ class User(account.Account):
                         .filter(User.balance<0)\
                         .one().total_balance or Decimal(0.0)
 
+    # Sum the amount of debt that has been moved to archived user
+    @classmethod
+    def get_debt_forgiven(cls):
+        return DBSession.query(func.sum(User.archived_balance).label("total_balance"))\
+                        .filter(User.archived_balance<0)\
+                        .one().total_balance or Decimal(0.0)
+
+    # Sum the amount of user balances that we have tentatively absorbed into the
+    # main betty balance
+    @classmethod
+    def get_amount_absorbed(cls):
+        return DBSession.query(func.sum(User.archived_balance).label("total_balance"))\
+                        .filter(User.archived_balance>0)\
+                        .one().total_balance or Decimal(0.0)
+
     @classmethod
     def get_user_count_cumulative(cls):
         rows = DBSession.query(cls.created_at)\

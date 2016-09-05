@@ -24,6 +24,9 @@
       <th {% if sort=="uniqname" %}data-defaultsort="{{ dir }}"{% endif %}>uniqname</th>
       <th {% if sort=="role" %}    data-defaultsort="{{ dir }}"{% endif %} class="filterable-row">Role</th>
       <th {% if sort=="balance" %} data-defaultsort="{{ dir }}"{% endif %} class="right">Balance</th>
+      {% if user_page == 'archived' %}
+      <th {% if sort=="archived_balance" %} data-defaultsort="{{ dir }}"{% endif %} class="right">Archived Balance</th>
+      {% endif %}
       <th {% if sort=="date" %}    data-defaultsort="{{ dir }}"{% endif %}>Created Date</th>
     </tr>
   </thead>
@@ -35,6 +38,9 @@
       <td data-value="{{ user.uniqname }}">{{ user.uniqname }}</td>
       <td data-value="{{ user.role }}">{{ roles[user.role] }}</td>
       <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
+      {% if user_page == 'archived' %}
+      <td class="right" data-value="{{ user.archived_balance|round(2) }}">{{ user.archived_balance|format_currency|safe }}</td>
+      {% endif %}
       <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>
     </tr>
     {% endfor %}

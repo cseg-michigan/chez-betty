@@ -113,6 +113,14 @@
               <td>Estimated Net</td>
               <td class="right">{{ estimated_net|format_currency|safe }}</td>
             </tr>
+            <tr>
+              <td>Debt Forgiven</td>
+              <td class="right">{{ debt_forgiven|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Absorbed From Users</td>
+              <td class="right">{{ balance_absorbed|format_currency|safe }}</td>
+            </tr>
 
           </tbody>
         </table>
