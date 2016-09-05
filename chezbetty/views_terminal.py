@@ -268,49 +268,6 @@ def terminal_deposit(request):
         return {'error': str(e)}
 
 
-# ## Delete a just completed transaction.
-# @view_config(route_name='terminal_deposit_delete',
-#              request_method='POST',
-#              renderer='json',
-#              permission='service')
-# def terminal_deposit_delete(request):
-#     try:
-#         user = User.from_umid(request.POST['umid'])
-#         old_event = Event.from_id(request.POST['old_event_id'])
-
-#         if old_event.type != 'deposit' or \
-#            old_event.transactions[0].type != 'cashdeposit' or \
-#            (old_event.transactions[0].to_account_virt_id != user.id and \
-#             old_event.user_id != user.id):
-#            # Something went wrong, can't undo this deposit
-#            raise DepositException('Cannot undo that deposit')
-
-#         # Now undo old deposit
-#         datalayer.undo_event(old_event, user)
-
-#         purchase_pools = []
-#         for pool in Pool.all_by_owner(user, True):
-#             if pool.balance > (pool.credit_limit * -1):
-#                 purchase_pools.append({'id': pool.id, 'balance': float(pool.balance)})
-
-#         for pu in user.pools:
-#             if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
-#                 purchase_pools.append({'id': pu.pool.id, 'balance': float(pu.pool.balance)})
-
-#         return {'user_balance': float(user.balance),
-#                 'pools': purchase_pools}
-
-#     except __user.InvalidUserException as e:
-#         return {'error': 'Invalid user error. Please try again.'}
-
-#     except DepositException as e:
-#         return {'error': str(e)}
-
-#     except Exception as e:
-#         if request.debug: raise(e)
-#         return {'error': 'Error.'}
-
-
 def get_item_from_barcode(barcode):
     try:
         item = Item.from_barcode(barcode)
