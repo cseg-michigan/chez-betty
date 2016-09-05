@@ -1103,6 +1103,8 @@ def admin_items_list(request):
         page  = 'active'
         items = Item.all()
 
+        last_activity = {}
+
         # Calculate the number sold here (much faster)
         # Also calculate how much each sale was worth to us
         purchased_items = PurchaseLineItem.all()
@@ -1113,6 +1115,7 @@ def admin_items_list(request):
                 purchased_quantities[pi.item_id] = 0
             if pi.item_id not in purchased_amount:
                 purchased_amount[pi.item_id] = 0
+
             purchased_quantities[pi.item_id] += pi.quantity
             purchased_amount[pi.item_id] += pi.amount
 
@@ -1131,6 +1134,12 @@ def admin_items_list(request):
             if si.item_id not in stocked_amount:
                 stocked_amount[si.item_id] = 0
             stocked_amount[si.item_id] += si.amount
+
+            if si.item_id not in last_activity:
+                last_activity[si.item_id] = si.transaction.event.timestamp
+            elif si.transaction.event.timestamp > last_activity[si.item_id]:
+                last_activity[si.item_id] = si.transaction.event.timestamp
+
         stocked_boxes = RestockLineBox.all()
         for sb in stocked_boxes:
             for sbi in sb.box.items:
@@ -1142,11 +1151,18 @@ def admin_items_list(request):
                     percentage = 0
                 stocked_amount[sbi.item_id] += (percentage * sb.amount)
 
+                if sbi.item_id not in last_activity:
+                    last_activity[sbi.item_id] = sb.transaction.event.timestamp
+                elif sb.transaction.event.timestamp > last_activity[sbi.item_id]:
+                    last_activity[sbi.item_id] = sb.transaction.event.timestamp
+
         # Get the sale speed
         sale_speeds = views_data.item_sale_speed(30)
 
         # Get the total amount of inventory we have
         inventory_total = Item.total_inventory_wholesale()
+
+        now = arrow.now()
 
         for item in items:
             if item.id in purchased_quantities:
@@ -1210,6 +1226,12 @@ def admin_items_list(request):
             if item.id not in purchased_amount:
                 purchased_amount[item.id] = 0
             item.profit = purchased_amount[item.id] - (stocked_amount[item.id] - (item.wholesale * item.in_stock))
+
+            # Record the most recent activity of the item
+            if item.id not in last_activity:
+                item.last_activity = None
+            else:
+                item.last_activity = (now - last_activity[item.id]).days
 
 
     else:

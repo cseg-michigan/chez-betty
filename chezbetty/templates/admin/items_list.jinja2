@@ -37,6 +37,7 @@
         <th {% if sort=="profit" %}          data-defaultsort="{{ dir }}"{% endif %}>Profit</th>
         <th {% if sort=="barcode" %}         data-defaultsort="{{ dir }}"{% endif %}>Barcode</th>
         <th {% if sort=="tags" %}            data-defaultsort="{{ dir }}"{% endif %}>Tags</th>
+        <th {% if sort=="activity" %}        data-defaultsort="{{ dir }}"{% endif %}>Days Since Restock</th>
         {% endif %}
       </tr>
     </thead>
@@ -82,6 +83,7 @@
         <td data-value="{{ item.profit|round(2) }}">{{ item.profit|format_currency|safe }}</td>
         <td data-value="{{ item.barcode }}">{{ item.barcode }}</td>
         <td data-value="{{ item.tags|length }}">{{ item.tags|length }}</td>
+        <td data-value="{{ item.last_activity }}">{{ item.last_activity }}</td>
         {% endif %}
       </tr>
       {% endfor %}
