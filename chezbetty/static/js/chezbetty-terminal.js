@@ -632,6 +632,9 @@ $("#purchase-table tbody").on("click", ".btn-remove-item", function () {
 
 // Click handler to remove an item from a purchase.
 $("#purchase-table tbody").on("click", ".btn-decrement-item", function () {
+	// Make sure scanning doesn't push this button
+	this.blur();
+
 	var quantity_span = $(this).parent().parent().find(".item-quantity span");
 	var quantity = parseInt(quantity_span.text()) - 1;
 	quantity_span.text(quantity);
@@ -646,6 +649,9 @@ $("#purchase-table tbody").on("click", ".btn-decrement-item", function () {
 
 // Increase the number of a given item in the cart
 $("#purchase-table tbody").on("click", ".btn-increment-item", function () {
+	// Make sure scanning doesn't push this button
+	this.blur();
+
 	var quantity_span = $(this).parent().parent().find(".item-quantity span");
 	var quantity = parseInt(quantity_span.text()) + 1;
 	quantity_span.text(quantity);
