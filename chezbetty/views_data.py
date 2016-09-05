@@ -410,6 +410,13 @@ def item_sale_speed(num_days, only_item_id=None):
     for purchase in purchases:
         item_id = purchase.item_id
         quantity = purchase.quantity
+
+        # Not sure this check should be necessary, but just make sure
+        if item_id not in data_onsale:
+            data_onsale[item_id] = {'days_on_sale': 0,
+                                    'date_in_stock': None,
+                                    'num_sold': 0}
+
         data_onsale[item_id]['num_sold'] += quantity
 
 
