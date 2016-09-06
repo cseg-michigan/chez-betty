@@ -268,6 +268,7 @@ class User(account.Account):
     def get_debt_forgiven(cls):
         return DBSession.query(func.sum(User.archived_balance).label("total_balance"))\
                         .filter(User.archived_balance<0)\
+                        .filter(User.archived==True)\
                         .one().total_balance or Decimal(0.0)
 
     # Sum the amount of user balances that we have tentatively absorbed into the
@@ -276,6 +277,7 @@ class User(account.Account):
     def get_amount_absorbed(cls):
         return DBSession.query(func.sum(User.archived_balance).label("total_balance"))\
                         .filter(User.archived_balance>0)\
+                        .filter(User.archived==True)\
                         .one().total_balance or Decimal(0.0)
 
     @classmethod
