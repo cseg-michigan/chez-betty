@@ -1602,7 +1602,7 @@ def admin_item_delete(request):
 @view_config(route_name='admin_badscans_list',
              renderer='templates/admin/badscans.jinja2',
              permission='manage')
-def admin_inventory(request):
+def admin_badscans_list(request):
     badscans = BadScan.get_scans_with_counts()
 
     return {'badscans': badscans}
