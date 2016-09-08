@@ -2219,6 +2219,16 @@ def admin_user_purchase_add_submit(request):
         # Get the user from the POST data
         user = User.from_id(int(request.POST['user-search-choice']))
 
+        # Get the deposit amount (if any)
+        try:
+            deposit_amount = Decimal(request.POST['user-purchase-add-deposit'])
+        except Exception:
+            deposit_amount = Decimal(0)
+
+        if deposit_amount < 0:
+            request.session.flash('Cannot deposit a negative amount.', 'error')
+            return HTTPFound(location=request.route_url('admin_user_purchase_add'))
+
         # Group all of the items into the correct structure
         items = {}
         for key,value in request.POST.items():
@@ -2233,14 +2243,24 @@ def admin_user_purchase_add_submit(request):
                         item = Item.from_id(item_id)
                         items[item] = quantity
 
-        if len(items) == 0:
-            # Nothing to purchase?
-            request.session.flash('Must buy at least one item.', 'error')
+        if len(items) == 0 and deposit_amount == 0:
+            # Nothing to purchase or deposit?
+            request.session.flash('Must buy at least one item or make a deposit.', 'error')
             return HTTPFound(location=request.route_url('admin_user_purchase_add'))
 
-        # Commit the purchase
-        purchase = datalayer.purchase(user, user, items)
-        request.session.flash('Purchase added. Event ID: {}.'.format(purchase.event.id), 'success')
+        response_string = ''
+
+        if len(items) > 0:
+            # Commit the purchase
+            purchase = datalayer.purchase(user, user, items)
+            response_string += 'Purchase added. Event ID: <a href="/admin/event/{0}">{0}</a>.'.format(purchase.event.id)
+
+        if deposit_amount > 0:
+            # Add the deposit
+            deposit = datalayer.deposit(user, user, deposit_amount, False)
+            response_string += ' Deposit added. Event ID: <a href="/admin/event/{0}">{0}</a>.'.format(deposit['event'].id)
+
+        request.session.flash(response_string, 'success')
         return HTTPFound(location=request.route_url('admin_user_purchase_add'))
     except NoResultFound:
         request.session.flash('Invalid user?', 'error')

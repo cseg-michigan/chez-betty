@@ -1,13 +1,17 @@
 {% extends "base.jinja2" %}
 {% set active_page = 'user_purchase_add' %}
-{% block title %}Add User Purchase{% endblock %}
+{% block title %}Add User Purchase/Deposit{% endblock %}
 
 {% block top %}
-<h1 class="page-header">Add User Purchase</h1>
+<h1 class="page-header">Add User Purchase/Deposit</h1>
 {% endblock %}
 
 
 {% block content %}
+
+<p>
+  Manually add a purchase, deposit, or both for a user.
+</p>
 
 <form role="form" action="/admin/user/purchase/add/submit" method="post">
 
@@ -87,7 +91,21 @@
     </tfoot>
   </table>
 
-  <button type="submit" class="btn btn-success">Submit Purchase</button>
+  <table class="table">
+    <tbody>
+      <tr>
+        <td>Deposit Amount:</td>
+        <td>
+          <input type="text" id="user-purchase-add-deposit" name="user-purchase-add-deposit" class="form-control">
+        </td>
+        <td>
+          Leave empty to not add a deposit.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button type="submit" class="btn btn-success">Submit Purchase/Deposit</button>
 
 </form>
 
