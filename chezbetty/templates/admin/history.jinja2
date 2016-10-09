@@ -1,0 +1,148 @@
+{% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
+{% import "macro_graph.jinja2" as graph %}
+
+{% set active_page = 'history' %}
+{% block title %}History{% endblock %}
+
+
+{% block top %}
+
+<h1 class="page-header">History</h1>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<div class="row">
+
+  {% for metric_year in metrics %}
+  {% set metric = metric_year[1] %}
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ metric_year[0] }}</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>Sales</td>
+              <td class="right">{{ metric.sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Profit on Sales</td>
+              <td class="right">{{ metric.profit|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Inventory Lost</td>
+              <td class="right">{{ metric.lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Total Deposits</td>
+              <td class="right">{{ metric.dep|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Total Cash Deposits</td>
+              <td class="right">{{ metric.dep_cash|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Total BTC Deposits</td>
+              <td class="right">{{ metric.dep_btc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Total CC Deposits</td>
+              <td class="right">{{ metric.dep_cc|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Discounts</td>
+              <td class="right">{{ metric.discounts|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Fees</td>
+              <td class="right">{{ metric.fees|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Active Users</td>
+              <td class="right">{{ metric.users }}</td>
+            </tr>
+            <tr>
+              <td>New Users</td>
+              <td class="right">{{ metric.new_users }}</td>
+            </tr>
+            <tr>
+              <td>Cashbox Lost</td>
+              <td class="right">{{ metric.cashbox_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Safe Lost</td>
+              <td class="right">{{ metric.safe_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>BTC Lost</td>
+              <td class="right">{{ metric.btcbox_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Cashbox Found</td>
+              <td class="right">{{ metric.cashbox_found|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Safe Found</td>
+              <td class="right">{{ metric.safe_found|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>BTC Found</td>
+              <td class="right">{{ metric.btcbox_found|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Chez Betty Lost</td>
+              <td class="right">{{ metric.chezbetty_lost|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Chez Betty Found</td>
+              <td class="right">{{ metric.chezbetty_found|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Store</td>
+              <td class="right">{{ metric.store|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Donation</td>
+              <td class="right">{{ metric.donation|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Withdrawal</td>
+              <td class="right">{{ metric.withdrawal|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Bookings</td>
+              <td class="right">{{ metric.bookings|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Revenue</td>
+              <td class="right">{{ metric.revenue|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Deferred Revenue</td>
+              <td class="right">{{ metric.deferred_revenue|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Net</td>
+              <td class="right">{{ metric.net|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+
+
+
+{% endblock %}
