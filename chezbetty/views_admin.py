@@ -466,6 +466,53 @@ def admin_dashboard(request):
                                  graph_deposits_day_cash['avg_hack'][0],
                                  graph_deposits_day_btc['avg_hack'][0]]}
 
+
+    def metrics_per_time(start, end):
+
+
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
+        print(Transaction.get_balance("restock", account.get_cash_account("chezbetty"), start=start, end=end))
+
+        return {
+            "sales":      Purchase.total(start, end),
+            "profit":     PurchaseLineItem.profit_on_sales(start, end),
+            "lost":       Inventory.total(start, end),
+            "dep":        Deposit.total(start, end),
+            "dep_cash":   CashDeposit.total(start, end),
+            "dep_btc":    BTCDeposit.total(start, end),
+            "dep_cc":     CCDeposit.total(start, end),
+            "discounts":  Purchase.discounts(start, end),
+            "fees":       Purchase.fees(start, end),
+            "users":      Purchase.distinct(distinct_on=Event.user_id, start=start, end=end),
+            "new_users":  User.get_number_new_users(start=start, end=end),
+            "cashbox_lost": Transaction.get_balance("lost", account.get_cash_account("cashbox"), start=start, end=end).balance,
+            # safe_lost       = Transaction.get_balance("lost", account.get_cash_account("safe"))
+            # cashbox_found   = Transaction.get_balance("found", account.get_cash_account("cashbox"))
+            # safe_found      = Transaction.get_balance("found", account.get_cash_account("safe"))
+            # btcbox_lost     = Transaction.get_balance("lost", account.get_cash_account("btcbox"))
+            # btcbox_found    = Transaction.get_balance("found", account.get_cash_account("btcbox"))
+            # chezbetty_lost  = Transaction.get_balance("lost", account.get_cash_account("chezbetty"))
+            # chezbetty_found = Transaction.get_balance("found", account.get_cash_account("chezbetty"))
+            "store":          Transaction.get_balance("restock", account.get_cash_account("chezbetty"), start=start, end=end).balance,
+            # donation        = Transaction.get_balance("donation", account.get_cash_account("chezbetty"))
+            # withdrawal      = Transaction.get_balance("withdrawal", account.get_cash_account("chezbetty"))
+        }
+
+
+    metrics_2014 = metrics_per_time(arrow.get(2014, 1, 1), arrow.get(2015, 1, 1))
+
+
     return dict(best_selling_items=bsi,
                 total_sales=total_sales,
                 profit_on_sales=profit_on_sales,
@@ -502,8 +549,91 @@ def admin_dashboard(request):
                 mtd_users=mtd_users,
                 mtd_new_users=mtd_new_users,
                 graph_sales_day=views_data.create_dict('sales', 'day', 21),
-                graph_deposits_day=graph_deposits_day
+                graph_deposits_day=graph_deposits_day,
+                metrics=[metrics_2014],
                 )
+
+@view_config(route_name='admin_index_history',
+             renderer='templates/admin/history.jinja2',
+             permission='manage')
+def admin_index_history(request):
+
+    def metrics_per_time(start, end):
+        metrics = {
+            "sales":      Purchase.total(start, end),
+            "profit":     PurchaseLineItem.profit_on_sales(start, end),
+            "lost":       Inventory.total(start, end),
+            "dep":        Deposit.total(start, end),
+            "dep_cash":   CashDeposit.total(start, end),
+            "dep_btc":    BTCDeposit.total(start, end),
+            "dep_cc":     CCDeposit.total(start, end),
+            "discounts":  Purchase.discounts(start, end),
+            "fees":       Purchase.fees(start, end),
+            "users":      Purchase.distinct(distinct_on=Event.user_id, start=start, end=end),
+            "new_users":  User.get_number_new_users(start=start, end=end),
+            "cashbox_lost":    Transaction.get_balance("lost", account.get_cash_account("cashbox"), start=start, end=end).balance,
+            "safe_lost":       Transaction.get_balance("lost", account.get_cash_account("safe"), start=start, end=end).balance,
+            "cashbox_found":   Transaction.get_balance("found", account.get_cash_account("cashbox"), start=start, end=end).balance,
+            "safe_found":      Transaction.get_balance("found", account.get_cash_account("safe"), start=start, end=end).balance,
+            "btcbox_lost":     Transaction.get_balance("lost", account.get_cash_account("btcbox"), start=start, end=end).balance,
+            "btcbox_found":    Transaction.get_balance("found", account.get_cash_account("btcbox"), start=start, end=end).balance,
+            "chezbetty_lost":  Transaction.get_balance("lost", account.get_cash_account("chezbetty"), start=start, end=end).balance,
+            "chezbetty_found": Transaction.get_balance("found", account.get_cash_account("chezbetty"), start=start, end=end).balance,
+            "store":           Transaction.get_balance("restock", account.get_cash_account("chezbetty"), start=start, end=end).balance,
+            "donation":        Transaction.get_balance("donation", account.get_cash_account("chezbetty"), start=start, end=end).balance,
+            "withdrawal":      Transaction.get_balance("withdrawal", account.get_cash_account("chezbetty"), start=start, end=end).balance,
+        }
+
+        # Deposits is a rosy view. We must subtract what we didn't actually get
+        deposits_lost = metrics["cashbox_lost"] + metrics["safe_lost"] + metrics["btcbox_lost"]
+        deposits_net = metrics["dep"] - deposits_lost
+
+        # Sometimes we find money. We need to add that to our donations
+        other_donations = metrics["cashbox_found"] + metrics["safe_found"] + metrics["btcbox_found"] + metrics["chezbetty_found"]
+        total_donations = metrics["donation"] + other_donations
+
+        # It's possible we lose money magically. Note that
+        other_withdrawals = metrics["chezbetty_lost"]
+        total_withdrawals = metrics["withdrawal"] + other_withdrawals
+
+        # Bookings: The amount of money that users have "committed to spend",
+        # aka the money they've deposited to their user accounts
+        bookings = deposits_net
+
+        # Revenue: The amount of money that people have actually spent
+        revenue = metrics['sales']
+
+        # Deferred Revenue: Money that people have committed to spend that
+        # Betty is holding that we have not yet spend (aka Bookings - Revenue).
+        # This counts as a liability against Betty's gross assets on the balance sheet
+        deferred_revenue = bookings - revenue
+
+
+
+
+        net = revenue + total_donations - metrics["store"] - total_withdrawals - deferred_revenue
+
+        metrics['bookings'] = bookings
+        metrics['revenue'] = revenue
+        metrics['deferred_revenue'] = deferred_revenue
+        metrics["net"] = net
+
+        return metrics
+
+
+    # Calculate for all years
+    start = 2014
+    end = arrow.now().year
+
+    metrics = []
+    for i in range(start, end+1):
+        metrics.append([i, metrics_per_time(arrow.get(i, 1, 1), arrow.get(i+1, 1, 1))])
+
+    print(metrics)
+
+    return {
+        "metrics": metrics
+    }
 
 
 @view_config(route_name='admin_item_barcode_json',

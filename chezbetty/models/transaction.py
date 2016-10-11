@@ -122,15 +122,22 @@ class Transaction(Base):
                         .filter(cls.id == id).one()
 
     @classmethod
-    def get_balance(cls, trans_type, account_obj):
-        return DBSession.query(coalesce(func.sum(cls.amount), 0).label("balance"))\
+    def get_balance(cls, trans_type, account_obj, start=None, end=None):
+        r = DBSession.query(coalesce(func.sum(cls.amount), 0).label("balance"))\
                      .join(event.Event)\
                      .filter(or_(cls.fr_account_cash_id==account_obj.id,
                                  cls.to_account_cash_id==account_obj.id,
                                  cls.fr_account_virt_id==account_obj.id,
                                  cls.to_account_virt_id==account_obj.id))\
                      .filter(cls.type==trans_type)\
-                     .filter(event.Event.deleted==False).one()
+                     .filter(event.Event.deleted==False)
+
+        if start:
+            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
+        if end:
+            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
+
+        return r.one()
 
     @classmethod
     def count(cls, *, trans_type=None, start=None, end=None):

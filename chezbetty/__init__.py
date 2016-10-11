@@ -159,6 +159,7 @@ def main(global_config, **settings):
     # ADMIN
     config.add_route('admin_index',             '/admin')
     config.add_route('admin_index_dashboard',   '/admin/dashboard')
+    config.add_route('admin_index_history',     '/admin/history')
 
     config.add_route('admin_ajax_bool',         '/admin/ajax/bool/{object}/{id}/{field}/{value}')
     config.add_route('admin_ajax_text',         '/admin/ajax/text/{object}/{id}/{field}')
