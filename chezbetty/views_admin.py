@@ -559,16 +559,19 @@ def admin_dashboard(request):
 def admin_index_history(request):
 
     def metrics_per_time(start, end):
+        xmas_start = start.replace(month=12, day=23)
+        xmas_end = end.replace(month=1, day=2)
+
         metrics = {
-            "sales":      Purchase.total(start, end),
-            "profit":     PurchaseLineItem.profit_on_sales(start, end),
-            "lost":       Inventory.total(start, end),
-            "dep":        Deposit.total(start, end),
-            "dep_cash":   CashDeposit.total(start, end),
-            "dep_btc":    BTCDeposit.total(start, end),
-            "dep_cc":     CCDeposit.total(start, end),
-            "discounts":  Purchase.discounts(start, end),
-            "fees":       Purchase.fees(start, end),
+            "sales":      Purchase.total(start=start, end=end),
+            "profit":     PurchaseLineItem.profit_on_sales(start=start, end=end),
+            "lost":       Inventory.total(start=start, end=end),
+            "dep":        Deposit.total(start=start, end=end),
+            "dep_cash":   CashDeposit.total(start=start, end=end),
+            "dep_btc":    BTCDeposit.total(start=start, end=end),
+            "dep_cc":     CCDeposit.total(start=start, end=end),
+            "discounts":  Purchase.discounts(start=start, end=end),
+            "fees":       Purchase.fees(start=start, end=end),
             "users":      Purchase.distinct(distinct_on=Event.user_id, start=start, end=end),
             "new_users":  User.get_number_new_users(start=start, end=end),
             "cashbox_lost":    Transaction.get_balance("lost", account.get_cash_account("cashbox"), start=start, end=end).balance,
@@ -582,6 +585,15 @@ def admin_index_history(request):
             "store":           Transaction.get_balance("restock", account.get_cash_account("chezbetty"), start=start, end=end).balance,
             "donation":        Transaction.get_balance("donation", account.get_cash_account("chezbetty"), start=start, end=end).balance,
             "withdrawal":      Transaction.get_balance("withdrawal", account.get_cash_account("chezbetty"), start=start, end=end).balance,
+
+            "weekend_sales":         Purchase.total(start=start, end=end, weekend_only=True),
+            "weekday_sales":         Purchase.total(start=start, end=end, weekday_only=True),
+            "business_hours_sales":  Purchase.total(start=start, end=end, weekday_only=True, business_hours_only=True),
+            "business_full_sales":   Purchase.total(start=start, end=end, business_hours_only=True),
+            "evening_hours_sales":   Purchase.total(start=start, end=end, evening_hours_only=True),
+            "latenight_hours_sales": Purchase.total(start=start, end=end, latenight_hours_only=True),
+            "ugos_closed_sales":     Purchase.total(start=start, end=end, ugos_closed_hours=True),
+            "xmas_sales":            Purchase.total(start=xmas_start, end=xmas_end),
         }
 
         # Deposits is a rosy view. We must subtract what we didn't actually get

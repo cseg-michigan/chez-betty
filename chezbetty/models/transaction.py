@@ -8,7 +8,93 @@ from chezbetty import utility
 
 import arrow
 from pyramid.threadlocal import get_current_registry
+from sqlalchemy.sql import extract
 
+
+def datefilter_one_or_zero(label=None):
+    def wrap(fn_being_decorated):
+        @functools.wraps(fn_being_decorated)
+        def wrapped_fn(*args,
+                start=None, end=None,
+                dow_start=None, dow_end=None,
+                weekend_only=False, weekday_only=False,
+                business_hours_only=False, evening_hours_only=False, latenight_hours_only=False,
+                ugos_closed_hours=False,
+                **kwargs):
+            print(args)
+            print(kwargs)
+            print("&" * 100)
+            r = fn_being_decorated(*args, **kwargs)
+
+            if start:
+                r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
+            if end:
+                r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
+
+            # n.b. this is a postgres function we're calling here
+            # The day of the week (0 - 6; Sunday is 0) (for timestamp values only)
+            # n0 m1 t2 w3 h4 f5 s6
+            if dow_start:
+                r = r.filter(extract('dow', event.Event.timestamp) >= dow_start)
+            if dow_end:
+                r = r.filter(extract('dow', event.Event.timestamp) < dow_start)
+            if weekend_only:
+                r = r.filter(or_(
+                    extract('dow', event.Event.timestamp) == 0,
+                    extract('dow', event.Event.timestamp) == 6
+                ))
+            if weekday_only:
+                r = r.filter(extract('dow', event.Event.timestamp) > 0)
+                r = r.filter(extract('dow', event.Event.timestamp) < 6)
+
+            if business_hours_only:
+                r = r.filter(extract('hour', event.Event.timestamp) >= 8)
+                r = r.filter(extract('hour', event.Event.timestamp) < 17)
+            if evening_hours_only:
+                r = r.filter(extract('hour', event.Event.timestamp) >= 17)
+            if latenight_hours_only:
+                r = r.filter(extract('hour', event.Event.timestamp) < 8)
+            if ugos_closed_hours:
+                r = r.filter(or_(
+                    # m-th 8-mid
+                    and_(
+                        extract('hour', event.Event.timestamp) < 8, # 8-mid
+                        extract('dow', event.Event.timestamp) > 0,  # no sunday
+                        extract('dow', event.Event.timestamp) < 5,  # no fri/sat
+                        ),
+                    # fr 8-8pm
+                    and_(
+                        or_(
+                            extract('hour', event.Event.timestamp) < 8,   # before open
+                            extract('hour', event.Event.timestamp) >= 20, # after close
+                            ),
+                        extract('dow', event.Event.timestamp) == 5,       # friday
+                        ),
+                    # sat noon-5pm
+                    and_(
+                        or_(
+                            extract('hour', event.Event.timestamp) < 12,   # before open
+                            extract('hour', event.Event.timestamp) >= 17, # after close
+                            ),
+                        extract('dow', event.Event.timestamp) == 6,       # saturday
+                        ),
+                    # sun 3pm-11pm
+                    and_(
+                        or_(
+                            extract('hour', event.Event.timestamp) < 15,   # before open
+                            extract('hour', event.Event.timestamp) >= 23, # after close
+                            ),
+                        extract('dow', event.Event.timestamp) == 0,       # sunday
+                        ),
+                    ))
+
+
+            if label:
+                return getattr(r.one(), label) or Decimal(0.0)
+            else:
+                return r.one() or Decimal(0.0)
+        return wrapped_fn
+    return wrap
 
 class Transaction(Base):
     __tablename__ = 'transactions'
@@ -122,7 +208,8 @@ class Transaction(Base):
                         .filter(cls.id == id).one()
 
     @classmethod
-    def get_balance(cls, trans_type, account_obj, start=None, end=None):
+    @datefilter_one_or_zero(label=None)
+    def get_balance(cls, trans_type, account_obj):
         r = DBSession.query(coalesce(func.sum(cls.amount), 0).label("balance"))\
                      .join(event.Event)\
                      .filter(or_(cls.fr_account_cash_id==account_obj.id,
@@ -131,13 +218,7 @@ class Transaction(Base):
                                  cls.to_account_virt_id==account_obj.id))\
                      .filter(cls.type==trans_type)\
                      .filter(event.Event.deleted==False)
-
-        if start:
-            r = r.filter(event.Event.timestamp>=start.replace(tzinfo=None))
-        if end:
-            r = r.filter(event.Event.timestamp<end.replace(tzinfo=None))
-
-        return r.one()
+        return r
 
     @classmethod
     def count(cls, *, trans_type=None, start=None, end=None):
@@ -172,17 +253,12 @@ class Transaction(Base):
         return r.count()
 
     @classmethod
-    def total(cls, start=None, end=None):
+    @datefilter_one_or_zero(label='a')
+    def total(cls):
         r = DBSession.query(func.sum(cls.amount).label('a'))\
                         .join(event.Event)\
                         .filter(event.Event.deleted==False)
-
-        if start:
-            r = r.filter(event.Event.timestamp>=start)
-        if end:
-            r = r.filter(event.Event.timestamp<end)
-
-        return r.one().a or Decimal(0.0)
+        return r
 
     # Get the total amount of discounts people have received for keeping
     # money in their account

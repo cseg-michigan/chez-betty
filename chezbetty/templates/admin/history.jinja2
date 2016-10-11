@@ -135,6 +135,44 @@
             </tr>
           </tbody>
         </table>
+        <hr />
+        <h3>Sales Metrics</h3>
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <td>Weekday Sales</td>
+              <td class="right">{{ metric.weekday_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Weekend Sales</td>
+              <td class="right">{{ metric.weekend_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Business Hours (M-F,8-5)</td>
+              <td class="right">{{ metric.business_hours_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Business+Weekend (8-5)</td>
+              <td class="right">{{ metric.business_full_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Evening Hours (5-12)</td>
+              <td class="right">{{ metric.evening_hours_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Latenight (12-8)</td>
+              <td class="right">{{ metric.latenight_hours_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Ugo's Closed !(m-th 8-mid, fr 8-8, sat 12-5, sun 3-11)</td>
+              <td class="right">{{ metric.ugos_closed_sales|format_currency|safe }}</td>
+            </tr>
+            <tr>
+              <td>Xmas (Dec 23 - Jan 2)</td>
+              <td class="right">{{ metric.xmas_sales|format_currency|safe }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
