@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
 "POT-Creation-Date: 2015-04-07 18:36-0400\n"
-"PO-Revision-Date: 2015-04-07 18:37-0500\n"
-"Last-Translator: sanae <sanae@umich.edu>\n"
+"PO-Revision-Date: 2016-10-20 12:37-0500\n"
+"Last-Translator: cyanliu <cyanliu@umich.edu>\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr "Supprimez ce dépôt"
 
 #: chezbetty/templates/item_request.jinja2:2
 msgid "Item Request"
-msgstr "Demande de l'Article"
+msgstr "Demande de l'article"
 
 #: chezbetty/templates/item_request.jinja2:3
 msgid "Request a New Item at Chez Betty"
@@ -104,7 +104,7 @@ msgstr "Déposez"
 
 #: chezbetty/templates/deposit.jinja2:21
 msgid "Cash"
-msgstr "Les Espèces"
+msgstr "Les espèces"
 
 #: chezbetty/templates/deposit.jinja2:22
 msgid "Your Deposit Limit: %(limit)s"
@@ -116,7 +116,7 @@ msgstr "Bitcoin"
 
 #: chezbetty/templates/deposit.jinja2:56
 msgid "Credit Card"
-msgstr "Carte de Crédit"
+msgstr "Carte de crédit"
 
 #: chezbetty/templates/deposit.jinja2:58 chezbetty/templates/index.jinja2:36
 msgid "Betty now accepts credit cards!"
@@ -128,7 +128,7 @@ msgid ""
 "in your browser."
 msgstr ""
 "Pour déposer avec une carte de crédit, s'il vous plaît visitez chezbetty."
-"eecs.umich.edu dans votre navigateur Web."
+"eecs.umich.edu/user dans votre navigateur Web."
 
 #: chezbetty/templates/purchase.jinja2:3 chezbetty/templates/purchase.jinja2:4
 #: chezbetty/templates/user_info.jinja2:39
@@ -164,7 +164,7 @@ msgstr "Prix Total"
 
 #: chezbetty/templates/purchase.jinja2:47
 msgid "Order Empty"
-msgstr "Commande Vide"
+msgstr "Commande vide"
 
 #: chezbetty/templates/purchase.jinja2:48
 msgid "Scan an item to begin"
@@ -177,7 +177,7 @@ msgstr "Sous total"
 
 #: chezbetty/templates/purchase.jinja2:61
 msgid "Good Standing Discount"
-msgstr "Réduction pour Patrons en Règle"
+msgstr "Réduction pour patrons en règle"
 
 #: chezbetty/templates/purchase.jinja2:67 chezbetty/templates/user.jinja2:76
 #: chezbetty/templates/purchase_complete.jinja2:53
@@ -190,7 +190,7 @@ msgstr "Payez avec votre compte"
 
 #: chezbetty/templates/purchase.jinja2:80
 msgid "Pay With %(pool_name)s Pool"
-msgstr "Payez avec %(pool_name)s"
+msgstr "Payez avec %(pool_name)s groupe"
 
 #: chezbetty/templates/user_info.jinja2:6
 msgid "Customer"
@@ -235,7 +235,7 @@ msgstr "Salut %(name)s,"
 
 #: chezbetty/templates/base.jinja2:62
 msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
-msgstr "Vous devez Betty %(big_debt)s actuellement.  C'est beaucoup d'argent!"
+msgstr "Vous devez Betty %(big_debt)s actuellement. C'est beaucoup d'argent !"
 
 #: chezbetty/templates/base.jinja2:64
 msgid ""
@@ -243,10 +243,10 @@ msgid ""
 "if people owe Betty lots of money, it's hard to keep things in stock. Please "
 "try to pay Betty back soon!"
 msgstr ""
-"Nous somes heureux que vous aimez Betty.  Nous sommes content de vous offrir "
+"Nous somes heureux que vous aimez Betty. Nous sommes content de vous offrir "
 "une petite marge de credit, mais si les gens doivent Betty beaucoup "
 "d'argent, c'est difficile de garder beaucoup en stock. Essayez de rembourser "
-"Betty bientôt, svp!"
+"Betty bientôt, s'il vous plaît !"
 
 #: chezbetty/templates/base.jinja2:73
 msgid "You currently owe Betty %(debt)s."
@@ -254,7 +254,7 @@ msgstr "Vous devez Betty %(debt)s actuellement."
 
 #: chezbetty/templates/base.jinja2:74
 msgid "Please try to pay Betty back soon, thanks!"
-msgstr "Essayez de rembourser Betty bientôt, s'il vous plaît!"
+msgstr "Essayez de rembourser Betty bientôt, s'il vous plaît !"
 
 #: chezbetty/templates/user.jinja2:14
 msgid "Transaction History"
@@ -318,7 +318,7 @@ msgid ""
 msgstr ""
 "Chez Betty est une coopérative utilizant le système d'honneur pour les "
 "etudiants diplômés, la faculté, et le personnel au Informatique a "
-"L'Université de Michigan.  Le nom  \"Chez Betty\" est une homage à Chez Bob, "
+"l'Université de Michigan. Le nom  \"Chez Betty\" est une homage à Chez Bob, "
 "une système similaire à UCSD."
 
 # http://www.nakedtranslations.com/en/2003/acronyms
@@ -350,7 +350,7 @@ msgstr ""
 
 #: chezbetty/templates/about.jinja2:28
 msgid "How to Use Betty like a Pro"
-msgstr "Comment Utilizer Betty Comme un Pro"
+msgstr "Comment utilizer Betty comme un pro"
 
 #: chezbetty/templates/about.jinja2:30
 msgid "Keep a positive balance."
@@ -361,12 +361,12 @@ msgid ""
 "Tracking down debtors sucks for us and for you. You don't want to end up on "
 "the Wall of Shame!"
 msgstr ""
-"Nous n'aiment pas poursuivre les débiteurs, et vous non plus. Vous ne "
-"voudriez pas se trouver sur le Mur de la Honte!"
+"Nous n'aimons pas poursuivre les débiteurs, et vous non plus. Vous ne "
+"voudriez pas vous trouver sur le Mur de la Honte!"
 
 #: chezbetty/templates/about.jinja2:33
 msgid "Take advantage of the Bank of Betty."
-msgstr "Profitez de la Banque de Betty."
+msgstr "Profitez de la banque de Betty."
 
 #: chezbetty/templates/about.jinja2:34
 msgid ""
@@ -374,7 +374,7 @@ msgid ""
 "$20 to use until that runs out. Remembering cash every time you want to use "
 "Betty is no fun."
 msgstr ""
-"Les grands utilizateurs normalement déposent 100$ par année environ.  La "
+"Les grands utilizateurs normalement déposent 100$ par année environ. La "
 "majorité dépose 20$ pour utilizer jusqu'à c'est fini. Ce n'est pas amusant "
 "de se souvenir de porter l'argent chaque fois qu'on utilize Betty."
 
@@ -390,7 +390,7 @@ msgid ""
 msgstr ""
 "Betty est dirigée par des bénévoles qui ont de la temps limitée.  Si vous "
 "prenez une boisson froide, remplace-la avec une boisson chaude (mais ne la "
-"mettez pas au devant!) Si vous finissez une boîte de nourriture, remplace-la "
+"mettez pas au devant !) Si vous finissez une boîte de nourriture, remplace-la "
 "avec une pleine."
 
 #: chezbetty/templates/about.jinja2:42
@@ -403,7 +403,7 @@ msgstr "Connectez à Chez Betty en passant votre MCarte au terminal."
 
 #: chezbetty/templates/about.jinja2:47
 msgid "Accounts are tied to your UMID."
-msgstr "Les comptes sont attachés a vos IDUMs."
+msgstr "Les comptes sont attachés a vos IDUM."
 
 #: chezbetty/templates/about.jinja2:48
 msgid ""
@@ -415,7 +415,7 @@ msgstr ""
 
 #: chezbetty/templates/about.jinja2:50
 msgid "Look at your Account Balance. If you're low, deposit some money."
-msgstr "Regardez votre solde.  Si c'est bas, versez de l'argent."
+msgstr "Vérifiez votre solde. Si elle est basse versez-y de l'argent."
 
 #: chezbetty/templates/about.jinja2:52
 msgid ""
@@ -423,7 +423,7 @@ msgid ""
 "they've put in."
 msgstr ""
 "Chaque utilizateur a une compte avec Chez Betty qui suit combien d'argent "
-"ils ont versés"
+"ils ont versés."
 
 #: chezbetty/templates/about.jinja2:53
 msgid ""
@@ -461,8 +461,8 @@ msgid ""
 "Betty's trusting nature, the service will have to shut down :(."
 msgstr ""
 "L'idée, c'est de donner une service commode aux membres de la communauté "
-"informatique de UM.  Betty fait un profit petit de chaque vente, un portion "
-"qui sera utilizé pour couvrir les pertes inévitables.  Si trop de gens "
+"informatique de UM. Betty fait un profit petit de chaque vente, un portion "
+"qui sera utilizé pour couvrir les pertes inévitables. Si trop de gens "
 "abusent la confiance de Betty, la service devrait se fermer :("
 
 #: chezbetty/templates/about.jinja2:67
@@ -554,7 +554,7 @@ msgstr ""
 #: chezbetty/templates/shame.jinja2:2 chezbetty/templates/shame.jinja2:3
 #: chezbetty/templates/index.jinja2:27
 msgid "Wall of Shame"
-msgstr "Mur de la Honte"
+msgstr "Le Mur de la Honte"
 
 #: chezbetty/templates/shame.jinja2:13
 msgid "These users owe Chez Betty more than $5."
@@ -614,7 +614,7 @@ msgstr "Tout ce que Betty a à offrir."
 
 #: chezbetty/templates/items.jinja2:20 chezbetty/templates/index.jinja2:25
 msgid "Request an Item"
-msgstr "Demandez quelque chose"
+msgstr "Demandez quelque article"
 
 #: chezbetty/templates/items.jinja2:22
 msgid "Touch columns to change sort order."
@@ -638,7 +638,7 @@ msgstr "Bas"
 
 #: chezbetty/templates/items.jinja2:37
 msgid "In Stock"
-msgstr "En Stock"
+msgstr "En stock"
 
 #: chezbetty/templates/items.jinja2:38
 msgid "Wholesale"
@@ -650,7 +650,7 @@ msgstr "Prix"
 
 #: chezbetty/templates/items.jinja2:56
 msgid "Temporarily Out-of-Stock Items:"
-msgstr "Articles Temporairement Pas en Stock:"
+msgstr "Articles temporairement pas en stock:"
 
 #: chezbetty/templates/items.jinja2:75
 msgid "Discontinued Items:"
