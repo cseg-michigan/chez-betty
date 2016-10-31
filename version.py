@@ -62,7 +62,7 @@ _GIT_DESCRIPTION_RE = b'^v(?P<ver>' + _PEP386_SHORT_VERSION_RE + b')-(?P<commits
 
 def readGitVersion():
     try:
-        proc = subprocess.Popen(('git', 'describe', '--long',
+        proc = subprocess.Popen(('git', 'describe', '--long', '--tags',
                                  '--match', 'v[0-9]*.*'),
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         data, _ = proc.communicate()
