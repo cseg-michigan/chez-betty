@@ -1,0 +1,758 @@
+#
+# Romanian translations for PACKAGE package
+# This file is distributed under the same license as the PACKAGE package.
+# Tiberiu Vilcu <tiberiu@umich.edu>, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE 1.0\n"
+"POT-Creation-Date: 2015-04-07 18:36-0400\n"
+"PO-Revision-Date: 2016-11-03 17:38-0400\n"
+"Last-Translator: Tiberiu Vilcu <tiberiu@umich.edu>\n"
+"Language-Team: Romanian\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Lingua 3.9\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+
+#. Default: User is not enabled. Please contact ${email}.
+#: chezbetty/views.py:136
+msgid "user-not-enabled"
+msgstr "utilizator-nu-activat"
+
+#. Default: Failed to read M-Card. Please try swiping again.
+#: chezbetty/views.py:173
+msgid "mcard-error"
+msgstr "mcard-eroare"
+
+#: chezbetty/views_user.py:165
+msgid "Deposit amount must be greater than $0.00. Card NOT charged."
+msgstr "Suma de depozit trebuie să fie mai mare decât $0.00. Card NU a fost redus."
+
+#: chezbetty/templates/deposit_edit.jinja2:3
+#: chezbetty/templates/deposit_edit.jinja2:4
+msgid "Edit Deposit"
+msgstr "Edita depozit"
+
+#: chezbetty/templates/deposit_edit.jinja2:16
+msgid "New Deposit Amount"
+msgstr "Sumă Nouă Depozit"
+
+#: chezbetty/templates/deposit_edit.jinja2:28
+#: chezbetty/templates/deposit.jinja2:28
+msgid "Deposit To Your Account"
+msgstr "Depozit în Contul Tău"
+
+#: chezbetty/templates/deposit_edit.jinja2:30
+#: chezbetty/templates/deposit.jinja2:30
+msgid "Deposit To %(pool_name)s Pool"
+msgstr "Depozit La Grupu Lui %(pool_name)s"
+
+#: chezbetty/templates/deposit_edit.jinja2:35
+msgid "Delete Deposit"
+msgstr "Șterge Depozit"
+
+#: chezbetty/templates/item_request.jinja2:2
+msgid "Item Request"
+msgstr "Cerere Produs"
+
+#: chezbetty/templates/item_request.jinja2:3
+msgid "Request a New Item at Chez Betty"
+msgstr "Cere un nou produs la Chez Betty"
+
+#: chezbetty/templates/item_request.jinja2:10
+#: chezbetty/templates/about.jinja2:13 chezbetty/templates/about.jinja2:105
+#: chezbetty/templates/shame.jinja2:10 chezbetty/templates/items.jinja2:19
+msgid "Home"
+msgstr "Acasă"
+
+#: chezbetty/templates/item_request.jinja2:15
+msgid "New Item Request"
+msgstr "Cerere Nou Produs"
+
+#: chezbetty/templates/item_request.jinja2:20
+msgid ""
+"Enter an item you would like to see Betty sell. Please include where you "
+"purchased the item from before so we have a chance at finding it. We "
+"normally shop at Costco, Meijer, and Kroger, so if those stores do not carry "
+"it, it is unlikely that Betty will either."
+msgstr ""
+"Scrie un produs pe care doriți Berry sa vinde. Va rog includeți unde ați "
+"cumparat-o inainte că avem o șansă de găsind-o. Noi normal facem cumpărături "
+"la Costco, Meijer, și Kroger. Dacă nu-o găsim aceste magazine, probabil "
+"nu veți găsi la Betty."
+
+#: chezbetty/templates/item_request.jinja2:26
+msgid ""
+"Also, depending on your motivation, you could be the supplier of a new item. "
+"For instance, if you are grocery shopping you can pick up a few extra of "
+"what you want, add it the Betty system, and see if it sells well. The "
+"process is pretty simple (particularly for small numbers of items) and we "
+"can reimburse you by just writing a check. Get in touch with us if you are "
+"interested."
+msgstr ""
+"Dacă vreți, ați putea fi furnizorul unui produs nou. "
+"Dacă sunteți la cumpărături puteți cumpăra câteva lucruri în plus, adăuga în "
+"systemul Betty, și vedeți dacă se vinde. Processul este simplu (îndeosebi "
+"puţine lucruri) și vă putem rambursa cu un cec. Contacteaza-ne dacă "
+"sunteți interesat."
+
+#: chezbetty/templates/item_request.jinja2:38
+msgid "Submit Request"
+msgstr "Trimite Cerera"
+
+#: chezbetty/templates/deposit.jinja2:3 chezbetty/templates/deposit.jinja2:4
+#: chezbetty/templates/deposit.jinja2:13
+#: chezbetty/templates/user_info.jinja2:45
+#: chezbetty/templates/deposit_complete.jinja2:12
+msgid "Deposit"
+msgstr "Depozit"
+
+#: chezbetty/templates/deposit.jinja2:21
+msgid "Cash"
+msgstr "Bani"
+
+#: chezbetty/templates/deposit.jinja2:22
+msgid "Your Deposit Limit: %(limit)s"
+msgstr "Limita De Depunere: %(limit)s"
+
+#: chezbetty/templates/deposit.jinja2:45
+msgid "Bitcoin"
+msgstr "Bitcoin"
+
+#: chezbetty/templates/deposit.jinja2:56
+msgid "Credit Card"
+msgstr "Card de Credit"
+
+#: chezbetty/templates/deposit.jinja2:58 chezbetty/templates/index.jinja2:36
+msgid "Betty now accepts credit cards!"
+msgstr "Betty acum acceptă carduri de credit!"
+
+#: chezbetty/templates/deposit.jinja2:61 chezbetty/templates/index.jinja2:38
+msgid ""
+"To deposit using a credit card, please visit chezbetty.eecs.umich.edu/user "
+"in your browser."
+msgstr ""
+"Pentru a depozita folosind un card de credit, vizitați "
+"chezbetty.eecs.umich.edu/user."
+
+#: chezbetty/templates/purchase.jinja2:3 chezbetty/templates/purchase.jinja2:4
+#: chezbetty/templates/user_info.jinja2:39
+msgid "Purchase"
+msgstr "Cumpărare"
+
+#: chezbetty/templates/purchase.jinja2:17
+#: chezbetty/templates/purchase_complete.jinja2:13
+msgid "Order Summary"
+msgstr "Rezumat de Comanda"
+
+#: chezbetty/templates/purchase.jinja2:34 chezbetty/templates/user.jinja2:45
+#: chezbetty/templates/items.jinja2:36 chezbetty/templates/items.jinja2:61
+#: chezbetty/templates/items.jinja2:84
+#: chezbetty/templates/purchase_complete.jinja2:20
+msgid "Item"
+msgstr "Produs"
+
+#: chezbetty/templates/purchase.jinja2:35 chezbetty/templates/user.jinja2:46
+#: chezbetty/templates/purchase_complete.jinja2:21
+msgid "Quantity"
+msgstr "Cantitate"
+
+#: chezbetty/templates/purchase.jinja2:36 chezbetty/templates/user.jinja2:47
+#: chezbetty/templates/purchase_complete.jinja2:22
+msgid "Item Price"
+msgstr "Preț de Produs"
+
+#: chezbetty/templates/purchase.jinja2:37 chezbetty/templates/user.jinja2:48
+#: chezbetty/templates/purchase_complete.jinja2:23
+msgid "Total Price"
+msgstr "Preț Total"
+
+#: chezbetty/templates/purchase.jinja2:47
+msgid "Order Empty"
+msgstr "Comanda Gol"
+
+#: chezbetty/templates/purchase.jinja2:48
+msgid "Scan an item to begin"
+msgstr "Scanda un produs să incepeți."
+
+#: chezbetty/templates/purchase.jinja2:57 chezbetty/templates/user.jinja2:67
+#: chezbetty/templates/purchase_complete.jinja2:42
+msgid "Subtotal"
+msgstr "Subtotală"
+
+#: chezbetty/templates/purchase.jinja2:61
+msgid "Good Standing Discount"
+msgstr "Reducere de Stare Bună"
+
+#: chezbetty/templates/purchase.jinja2:67 chezbetty/templates/user.jinja2:76
+#: chezbetty/templates/purchase_complete.jinja2:53
+msgid "Total"
+msgstr "Total"
+
+#: chezbetty/templates/purchase.jinja2:78
+msgid "Pay With Your User Account"
+msgstr "Plătiți Cu Contul de Utilizator"
+
+#: chezbetty/templates/purchase.jinja2:80
+msgid "Pay With %(pool_name)s Pool"
+msgstr "Plătiți Cu Grupul %(pool_name)s"
+
+#: chezbetty/templates/user_info.jinja2:6
+msgid "Customer"
+msgstr "Client"
+
+#: chezbetty/templates/user_info.jinja2:11 chezbetty/templates/shame.jinja2:23
+msgid "Name"
+msgstr "Nume"
+
+#: chezbetty/templates/user_info.jinja2:14 chezbetty/templates/shame.jinja2:25
+#: chezbetty/templates/user/deposit_cc.jinja2:23
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:26
+#: chezbetty/templates/user/index.jinja2:18
+msgid "Account Balance"
+msgstr "Valorarea Contului"
+
+#: chezbetty/templates/user_info.jinja2:18
+#: chezbetty/templates/user/deposit_cc.jinja2:31
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:33
+msgid "%(pool_name)s Balance"
+msgstr "Valorarea Contului %(pool_name)s"
+
+#: chezbetty/templates/user_info.jinja2:35
+msgid "Links"
+msgstr "Link-uri"
+
+#: chezbetty/templates/user_info.jinja2:42
+msgid "Account"
+msgstr "Cont"
+
+#: chezbetty/templates/user_info.jinja2:47
+msgid "Logout"
+msgstr "Logout"
+
+#: chezbetty/templates/user_info.jinja2:49
+msgid "Admin"
+msgstr "Administrator"
+
+#: chezbetty/templates/base.jinja2:61 chezbetty/templates/base.jinja2:72
+msgid "Hi %(name)s,"
+msgstr "Bună %(name)s"
+
+#: chezbetty/templates/base.jinja2:62
+msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
+msgstr "Vă datorez Betty %(big_debt)s. O mulțime de bani!"
+
+#: chezbetty/templates/base.jinja2:64
+msgid ""
+"We're glad you like Betty. We're happy to extend a small line of credit, but "
+"if people owe Betty lots of money, it's hard to keep things in stock. Please "
+"try to pay Betty back soon!"
+msgstr ""
+"Ne bucurăm că iti place Betty. Ne bucurăm să extindăm un pic de "
+"credit, duar dacă oamenii datorez o mulțime de bani la Betty, "
+"este greu să ținem lucrurile în stoc. Vă rog sa plăti înapoi "
+"pe Betty îndată!"
+
+#: chezbetty/templates/base.jinja2:73
+msgid "You currently owe Betty %(debt)s."
+msgstr "Vă datorez Betty %(debt)s."
+
+#: chezbetty/templates/base.jinja2:74
+msgid "Please try to pay Betty back soon, thanks!"
+msgstr "Vă rog sa plăti înapoi pe Betty îndată. Mulțumiri!"
+
+#: chezbetty/templates/user.jinja2:14
+msgid "Transaction History"
+msgstr "Istoricul Tranzactiilor"
+
+#: chezbetty/templates/user.jinja2:32
+msgid "Purchase totaling %(amount)s"
+msgstr "Valoare totală %(amount)s"
+
+#: chezbetty/templates/user.jinja2:33 chezbetty/templates/user.jinja2:101
+#: chezbetty/templates/user.jinja2:110
+msgid "touch to show"
+msgstr "atingeți pentru a arăta"
+
+#: chezbetty/templates/user.jinja2:34
+msgid "touch to hide"
+msgstr "atingeți pentru a ascunde"
+
+#: chezbetty/templates/user.jinja2:71
+#: chezbetty/templates/purchase_complete.jinja2:46
+msgid "Discounts"
+msgstr "Reducere"
+
+#: chezbetty/templates/user.jinja2:86
+msgid "Deposit of %(amount)s"
+msgstr "Depozit de %(amount)s"
+
+#: chezbetty/templates/user.jinja2:93
+msgid "Credit Card Deposit of %(amount)s"
+msgstr "Depozit Card de Credit de %(amount)s"
+
+#: chezbetty/templates/user.jinja2:94
+msgid "Card ending in %(last4)s"
+msgstr "Card se termină în %(last4)s"
+
+#: chezbetty/templates/user.jinja2:101
+msgid "Adjustment of %(amount)s by %(admin_name)s "
+msgstr "Ajustare de %(amount)s de %(admin_name)s "
+
+#: chezbetty/templates/user.jinja2:110
+msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
+msgstr "BTC Depozit de  %(amount_in_usd)s (%(amount_in_btc)s) "
+
+#: chezbetty/templates/user.jinja2:126
+msgid "No transactions."
+msgstr "Zero tranzacții."
+
+#: chezbetty/templates/user.jinja2:130
+msgid "Show All"
+msgstr "Arata Tot"
+
+#: chezbetty/templates/about.jinja2:2 chezbetty/templates/about.jinja2:3
+msgid "About Chez Betty"
+msgstr "Despre Chez Betty"
+
+#: chezbetty/templates/about.jinja2:8
+msgid ""
+"Chez Betty is an honor-system based food cooperative for graduate students, "
+"faculty, and staff in Computer Science at the University of Michigan. The "
+"name \"Chez Betty\" is an homage to Chez Bob, a similar system at UCSD."
+msgstr ""
+"Chez Betty este o cooperativă pentu alimente pe sistem de noare pentru "
+"studenți, facultate, și personalul în informatică la Universitatea din "
+"Michigan. Numele \"Chez Betty\" este un omagiu adus lui Chez Bob, un "
+"sistem similar la UCSD."
+
+#: chezbetty/templates/about.jinja2:16
+msgid "FAQ"
+msgstr "FAQ"
+
+#: chezbetty/templates/about.jinja2:18
+msgid "Touch questions to show/hide."
+msgstr "Atingeți întrebări pentru a arăta/ascunda."
+
+#: chezbetty/templates/about.jinja2:22
+msgid "Who are the awesome people who run Chez Betty?"
+msgstr "Care sunt cei minunat care conduc Chez Betty?"
+
+#: chezbetty/templates/about.jinja2:24
+msgid "Chez Betty is run by CSEG, the CSE graduate student group."
+msgstr "Chez Betty este condus de CSEG, grupul de student absolvent CSE."
+
+#: chezbetty/templates/about.jinja2:25
+msgid ""
+"Currently, Betty is primarily maintained by Brad Campbell, Pat Pannuto, and "
+"Zakir Durumeriç"
+msgstr ""
+"În prezent, este menținut de Brad Campbell, Pan Pannuto, și Zakir Durumeriç"
+
+#: chezbetty/templates/about.jinja2:28
+msgid "How to Use Betty like a Pro"
+msgstr "Cum Aă Folositi Betty Ca Un Profesionist"
+
+#: chezbetty/templates/about.jinja2:30
+msgid "Keep a positive balance."
+msgstr "Păstra un sold pozitiv."
+
+#: chezbetty/templates/about.jinja2:31
+msgid ""
+"Tracking down debtors sucks for us and for you. You don't want to end up on "
+"the Wall of Shame!"
+msgstr ""
+"Urmărire debitori ie rahat pentru noi și pentru tine. Nu doriti să ajungi "
+"pe Zidul de Rușine!"
+
+#: chezbetty/templates/about.jinja2:33
+msgid "Take advantage of the Bank of Betty."
+msgstr "Să profite de Bank of Betty."
+
+#: chezbetty/templates/about.jinja2:34
+msgid ""
+"Our power users usually deposit $100 once a year or so. Most people deposit "
+"$20 to use until that runs out. Remembering cash every time you want to use "
+"Betty is no fun."
+msgstr ""
+"Utilizatorii noștri de putere de depozit, de obicei, $100 odata pe "
+"an. Cei mai mulți oameni depozit de $20 pentru a utiliza până nu mai au. "
+"Amintindu banii de fiecare dată când doriți să folositi Betty nu este "
+"distractiv!"
+
+#: chezbetty/templates/about.jinja2:36
+msgid "Help restock."
+msgstr "Ajuta la repopulare."
+
+#: chezbetty/templates/about.jinja2:37
+msgid ""
+"Betty is run by volunteers who have finite time. If you grab a cold drink, "
+"put a warm one in to get cold (though, don't put it in front!). If you "
+"finish a box of food, grab a full box and replace it."
+msgstr ""
+"Betty este lucrat de voluntari care nu au timp infinit. Dacă obțineți o "
+"băutură rece, puneți o băutură caldă în frigider să devine rece (Dar nu "
+"în partea din față!) Dacă terminați o cutie de alimente, înlocuiți-l cu "
+"unul nou."
+
+#: chezbetty/templates/about.jinja2:42
+msgid "How do I buy things from Chez Betty?"
+msgstr "Cum pot cumpărar lucruri de la Chez Betty?"
+
+#: chezbetty/templates/about.jinja2:45
+msgid "Log in to Chez Betty by swiping your MCard at the terminal."
+msgstr "Log in la betty trecându MCard la terminalul."
+
+#: chezbetty/templates/about.jinja2:47
+msgid "Accounts are tied to your UMID."
+msgstr "Conturile sunt conectate la UMID."
+
+#: chezbetty/templates/about.jinja2:48
+msgid ""
+"A new account is automatically created for first-time users on the the fly "
+"the first time you log in."
+msgstr ""
+"Un cont nou este creat automat pentru prima dată utilizatorilor prima dată "
+"când vă log in."
+
+#: chezbetty/templates/about.jinja2:50
+msgid "Look at your Account Balance. If you're low, deposit some money."
+msgstr ""
+"Uita-te la Valorarea Contului. Dacă nu aveți prea mult, depune "
+"niște bani."
+
+#: chezbetty/templates/about.jinja2:52
+msgid ""
+"Every user has an account with Chez Betty that keeps track of how much money "
+"they've put in."
+msgstr "Fiecare utilizator are un cont cu Chez Betty, care urmărește banilor."
+
+#: chezbetty/templates/about.jinja2:53
+msgid ""
+"Betty doesn't make change, instead excess money stays in your account for "
+"your next transaction."
+msgstr ""
+"Betty nu dă mărunţiş. Excesul de bani stă în cont pentru următoarea "
+"tranzacție."
+
+#: chezbetty/templates/about.jinja2:54
+msgid "You can run into the red, see below."
+msgstr "Puteți merge negativ, vedeți mai jos."
+
+#: chezbetty/templates/about.jinja2:56
+msgid "Grab what you'd like from Chez Betty and scan your items."
+msgstr "Luați tot ce va place de la Chez Betty și le scanați."
+
+#: chezbetty/templates/about.jinja2:57
+msgid "Touch \"Submit Purchase\" and you're done!"
+msgstr "Atingeți \"Submit Purchase\" și ați terminat!"
+
+#: chezbetty/templates/about.jinja2:61
+msgid "Wait... Couldn't people steal from this really easily?"
+msgstr "Nu a putut fura oamenii din Chez Betty?"
+
+#: chezbetty/templates/about.jinja2:63
+msgid "Yes. (But please don't)."
+msgstr "Da. Vă rugăm să nu."
+
+#: chezbetty/templates/about.jinja2:64
+msgid ""
+"The idea is to provide a convenient service to members of the UM CSE "
+"community. Betty makes a small profit off each sale, some of which will be "
+"used to cover the inevitable losses. If too many people take advantage of "
+"Betty's trusting nature, the service will have to shut down :(."
+msgstr ""
+"Ideea este de a oferi un serviciu convenabil pentru membrii UM CSE. "
+"Betty face un mic profit de pe fiecare vânzare, care vor fi folosite "
+"pentru a acoperi pierderile. În cazul în care prea mulți oameni să profite "
+"de încrederea lui Betty, serviciul va trebui să se închidă. :("
+
+
+#: chezbetty/templates/about.jinja2:67
+msgid "Tell me more about my Chez Betty account?"
+msgstr "Spune-mi mai mult despre contul meu."
+
+#: chezbetty/templates/about.jinja2:69
+msgid ""
+"Chez Betty sells things nearly at-cost (usually about a 15% markup). Since "
+"no one likes change and Betty is a self-service operation, it's set up so "
+"that each user has an account with Betty. You can put in $20 (or however "
+"much) at a time and use that balance until it runs out."
+msgstr ""
+"Betty vinde lucruri aproape prețul de piață (de obicei, un marcaj de 15%). "
+"Nimeni nu îi place mărunţiş și Betty este o operație de auto-service, "
+"fiecare utilizator are un cont cu Betty. Puteți pune în $20 (sau oricât de "
+"mult) și folositi-l până se termină."
+
+#: chezbetty/templates/about.jinja2:75
+msgid "What if I don't have any money / Can my account balance go negative?"
+msgstr ""
+"Ce se întâmplă dacă nu am bani / Poate valorarea contului meu "
+"să fie negativ?"
+
+#: chezbetty/templates/about.jinja2:77
+msgid ""
+"Yes. Chez Betty allows you to spend beyond your immediate means under that "
+"assumption that you'll pay Betty back eventually. The idea is to let you "
+"grab stuff when you need it and keep track of what owe, instead of "
+"incentivizing folks to steal. There is a <a href=\"/shame\">Wall of Shame</"
+"a> for persons who owe Betty more than $5."
+msgstr ""
+"Da. Chez Betty vă permite să cheltuiți mai mult decât aveți de ceea ce ai "
+"sub presupunerea că veți plăti Betty înapoi mai târziu. Ideea este să vă "
+"permite să obțineți lucruri când aveți nevoie de ea și de a urmări datorie, "
+"mai degrabă decât oamenii să fure. Există un <a href=\"/shame\">Zid de "
+"Rușine</a> pentru cei care datorez mai mult de $5."
+
+#: chezbetty/templates/about.jinja2:85
+msgid "How does Betty set prices?"
+msgstr "Cum stabilaza Betty prețurile?"
+
+#: chezbetty/templates/about.jinja2:87
+msgid ""
+"Betty sells things just above wholesale, usually a 15% markup. If you're "
+"interested in the actual algorithm, check out Betty's source code at github."
+"com/um-cseg/chez-betty."
+msgstr ""
+"Betty vinde lucruri aproape prețul de piață (de obicei, un marcaj de 15%). "
+"Dacă algoritmul real vă interesează, vizitați cod sursa lui Betty la "
+"github.com/um-cseg/chez-betty."
+
+#: chezbetty/templates/about.jinja2:90
+msgid ""
+"Current wholesale and Betty prices are always available on <a href=\"/items"
+"\">the items page</a>."
+msgstr ""
+"Prețurile curente en-gros și a lui Betty sunt întotdeauna disponibile "
+"la <a href=\"/items\">pagina de articole</a>."
+
+#: chezbetty/templates/about.jinja2:93
+msgid "What does Betty do with her profits?"
+msgstr "Ce face Betty cu profituri ei?"
+
+#: chezbetty/templates/about.jinja2:95
+msgid ""
+"First, Betty has to pay her debts (e.g. any losses incurred from dishonest "
+"Chez Betty users). After that, Betty's profits roll into the CSEG general "
+"fund. They're used to fund improvements to Betty, buy miscellaneous needs (e."
+"g. new ping pong paddles and balls), or to throw events (e.g. bar nights) "
+"for CSEG."
+msgstr ""
+"Betty trebuie să plătească datoriile ei (ce și-a pierdut de la utilizatori "
+"necinstit). Dupa ce, profiturile Betty intra în fondul general al lui CSEG. "
+"Banii sunt folosite pentru a plăti pentru îmbunătățiri la Betty și pentru a "
+"cumpăra orice altceva este nevoie (cum ar fi palete și mingi de ping pong), "
+"sau pentru a găzdui petreceri pentru CSEG."
+
+#: chezbetty/templates/about.jinja2:100
+msgid ""
+"If you have more questions / concerns, please feel free to talk to the CSEG "
+"officers."
+msgstr ""
+"Dacă aveți mai multe întrebări sau nelămuriri, vă rugăm să discutați cu "
+"ofițerii CSEG."
+
+#: chezbetty/templates/shame.jinja2:2 chezbetty/templates/shame.jinja2:3
+#: chezbetty/templates/index.jinja2:27
+msgid "Wall of Shame"
+msgstr "Zidul de Rușine"
+
+#: chezbetty/templates/shame.jinja2:13
+msgid "These users owe Chez Betty more than $5."
+msgstr "Cei care datoreaza Chez Betty mai mult de $5."
+
+#: chezbetty/templates/shame.jinja2:17
+msgid "Users in Debt"
+msgstr "Utilizatorii Care Au Aatorii"
+
+#: chezbetty/templates/shame.jinja2:24
+msgid "uniqname"
+msgstr "uniqname"
+
+#: chezbetty/templates/deposit_complete.jinja2:20
+msgid "Old Balance"
+msgstr "Valorarea Dinaintea"
+
+#: chezbetty/templates/deposit_complete.jinja2:23
+msgid "Deposit Amount"
+msgstr "Sumă de depozit"
+
+#: chezbetty/templates/deposit_complete.jinja2:26
+msgid "New Balance"
+msgstr "Valorarea Nou"
+
+#: chezbetty/templates/deposit_complete.jinja2:29
+msgid "Transaction"
+msgstr "Tranzacţie"
+
+#: chezbetty/templates/deposit_complete.jinja2:35
+msgid "Thank you!"
+msgstr "Mulțumesc!"
+
+#: chezbetty/templates/deposit_complete.jinja2:38
+msgid "You successfully deposited %(amount)s into your account"
+msgstr "Ați depus cu succes %(amount)s în cont"
+
+#: chezbetty/templates/deposit_complete.jinja2:41
+msgid "You successfully deposited %(amount)s in the %(pool_name)s Pool"
+msgstr "Ați depus cu succes %(amount)s în grupul %(pool_name)s"
+
+#: chezbetty/templates/deposit_complete.jinja2:50
+msgid "Edit this Deposit"
+msgstr "Edica Acest Depozit"
+
+#: chezbetty/templates/items.jinja2:2 chezbetty/templates/items.jinja2:13
+msgid "Items"
+msgstr "Produse"
+
+#: chezbetty/templates/items.jinja2:3
+msgid "Items at Chez Betty"
+msgstr "Produse la Chez Betty"
+
+#: chezbetty/templates/items.jinja2:7
+msgid "All that Betty has to offer."
+msgstr "Tot ce Chez Betty are de oferit."
+
+#: chezbetty/templates/items.jinja2:20 chezbetty/templates/index.jinja2:25
+msgid "Request an Item"
+msgstr "Cere un Produs"
+
+#: chezbetty/templates/items.jinja2:22
+msgid "Touch columns to change sort order."
+msgstr "Atingeți pentru coloane pentru a modifica ordinea de sortare."
+
+#: chezbetty/templates/items.jinja2:25
+msgid "Top"
+msgstr "Partea de sus"
+
+#: chezbetty/templates/items.jinja2:26
+msgid "Up"
+msgstr "Sus"
+
+#: chezbetty/templates/items.jinja2:27
+msgid "Down"
+msgstr "Jos"
+
+#: chezbetty/templates/items.jinja2:28
+msgid "Bottom"
+msgstr "Partea de jos"
+
+#: chezbetty/templates/items.jinja2:37
+msgid "In Stock"
+msgstr "În stoc"
+
+#: chezbetty/templates/items.jinja2:38
+msgid "Wholesale"
+msgstr "Prețul de piață"
+
+#: chezbetty/templates/items.jinja2:39
+msgid "Price"
+msgstr "Preț"
+
+#: chezbetty/templates/items.jinja2:56
+msgid "Temporarily Out-of-Stock Items:"
+msgstr "Produse nu în stoc temporar:"
+
+#: chezbetty/templates/items.jinja2:75
+msgid "Discontinued Items:"
+msgstr "Produse întrerupt:"
+
+#: chezbetty/templates/items.jinja2:77
+msgid ""
+"Betty discontinues items that did not sell well or that wecannot buy any "
+"more. If you would like to request the return ofa discontinued item, please "
+"e-mail chez-betty@umich.edu."
+msgstr ""
+"Betty întrerupe produse care nu vinde bine și care nu putem cumpăra. Dacă "
+"doriți să cere un produs întrerupt, vă rugăm să trimiteți un email la "
+"chez-betty@umich.edu."
+
+#: chezbetty/templates/purchase_complete.jinja2:3
+#: chezbetty/templates/purchase_complete.jinja2:4
+msgid "Purchase Complete"
+msgstr "Cumpăraturi Complet"
+
+#: chezbetty/templates/purchase_complete.jinja2:55
+msgid "(Paid with your user account)"
+msgstr "(Plătit cu contul de utilizator)"
+
+#: chezbetty/templates/purchase_complete.jinja2:57
+msgid "(Paid with %(pool_name)s Pool)"
+msgstr "(Plătit cu grupul %(pool_name)s)"
+
+#: chezbetty/templates/purchase_complete.jinja2:68
+msgid "If this was a mistake, touch here to undo this transaction."
+msgstr "Dacă acest a fost o greșeală, atingeți aici pentru a anula tranzacția."
+
+#: chezbetty/templates/index.jinja2:12
+msgid "Welcome to Chez Betty!"
+msgstr "Bine ați venit la Chez Betty!"
+
+#: chezbetty/templates/index.jinja2:13
+msgid "The 24/7 food co-op for all members of the CSE community."
+msgstr "Programul 24/7 alimentar pentru toți membrii CSE."
+
+#: chezbetty/templates/index.jinja2:18
+msgid "Swipe your M-Card to login"
+msgstr "Treaca MCard să vă login"
+
+#: chezbetty/templates/index.jinja2:24
+msgid "Item List"
+msgstr "Lista de Produse"
+
+#: chezbetty/templates/index.jinja2:26
+msgid "About"
+msgstr "Despre"
+
+#: chezbetty/templates/index.jinja2:30
+msgid "Administration"
+msgstr "Administrare"
+
+#: chezbetty/templates/index.jinja2:62
+msgid "Can you help translate Betty? E-mail chez-betty@umich.edu."
+msgstr ""
+"Puteți ajuta traduce Betty? Trimiteți un e-mail la "
+"chez-betty@umich.edu"
+
+#: chezbetty/templates/user/deposit_cc.jinja2:4
+#: chezbetty/templates/user/deposit_cc.jinja2:7
+msgid "Credit Card Deposit"
+msgstr "Depozit cu Card de Credit"
+
+#: chezbetty/templates/user/deposit_cc.jinja2:14
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:14
+msgid "We use stripe to process credit card transactions."
+msgstr ""
+"Vom folosi stripe pentru a procesa tranzacțiile cu "
+"carduri de credit"
+
+#: chezbetty/templates/user/deposit_cc.jinja2:15
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:15
+msgid "Stripe charges 2.9% + $0.30 for each transaction."
+msgstr "Stripe cere 2,9% + $0,30 pentru fiecare tranzacție."
+
+#: chezbetty/templates/user/deposit_cc.jinja2:16
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:16
+msgid "We pass this charge directly onto you."
+msgstr "Noi cerem această taxă de la tine direct."
+
+#: chezbetty/templates/user/deposit_cc.jinja2:17
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:17
+msgid ""
+"That is, if you wish to deposit $20 to your account, we will charge your "
+"card 20 + (20*0.029 + 0.30) = $20.88."
+msgstr ""
+"Dacă doriți să depuneți $20 în cont, vă vom cere din cartea de credit "
+"20 + (20*0,029 + 0,30) = $20,88."
+
+#: chezbetty/templates/user/deposit_cc.jinja2:48
+msgid "User Account"
+msgstr "Contul Utilizatorului"
+
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:4
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:7
+msgid "Custom Credit Card Deposit"
+msgstr "Depozit Cu Card de Credit Personalizat"
