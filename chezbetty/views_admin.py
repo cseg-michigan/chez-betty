@@ -201,6 +201,23 @@ def admin_ajax_new(request):
             'arg': obj_arg}
 
 
+@view_config(route_name='admin_ajax_delete',
+             renderer='json',
+             permission='admin')
+def admin_ajax_delete(request):
+    obj_str = request.matchdict['object']
+    obj_id  = request.matchdict['id']
+
+    if obj_str == 'badscan':
+        BadScan.delete_scans(obj_id)
+    else:
+        # Return an error, object type not recognized
+        request.response.status = 502
+        return request.response
+
+    return {'status': 'success'}
+
+
 @view_config(route_name='admin_ajax_connection',
              renderer='json',
              permission='admin')

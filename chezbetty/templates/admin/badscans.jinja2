@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
 {% set active_page = 'badscans' %}
 {% block title %}Bad Scans{% endblock %}
 
@@ -12,16 +13,18 @@
   <thead>
     <tr>
       <th>Scan</th>
-      <th>Count</th>
+      <th data-defaultsort="desc">Count</th>
       <th>Timestamp</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
   {% for badscan in badscans %}
-  <tr>
+  <tr id="badscan-row-{{ loop.index }}">
     <td>{{ badscan.badscan }}</td>
     <td>{{ badscan.count }}</td>
     <td>{{ badscan.timestamp|pretty_date|safe }}</td>
+    <td>{{ button.force_delete('badscan', badscan.badscan, 'badscan-row-'+loop.index|string) }}</td>
   </tr>
   {% endfor %}
   </tbody>

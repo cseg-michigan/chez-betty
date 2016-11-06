@@ -39,3 +39,7 @@ class BadScan(Base):
             })
 
         return out
+
+    @classmethod
+    def delete_scans(cls, badscan):
+        DBSession.query(cls).filter(cls.badscan==badscan).delete()

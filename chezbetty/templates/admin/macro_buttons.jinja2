@@ -6,6 +6,10 @@
 <a href="/admin/box/edit/{{ id }}"><button type="button" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-search"></span></button></a>
 {% endmacro %}
 
+{% macro force_delete(object, id, to_remove) %}
+<button type="button" class="btn btn-danger btn-xs btn-delete" data-object="{{ object }}" data-id="{{ id }}" data-to-remove="{{ to_remove }}">X</button>
+{% endmacro %}
+
 {% set role = 'admin' %}
 {% extends "../macro_buttons.jinja2" %}
 

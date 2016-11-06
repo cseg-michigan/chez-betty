@@ -449,6 +449,25 @@ function tag_disconnected_fail () {
 	alert_error("Could not remove the tag from the item.");
 }
 
+//
+// Deletions
+//
+
+$(".btn-delete").click(function () {
+	var object = $(this).attr('data-object');
+	var id = $(this).attr('data-id');
+	var to_remove = $(this).attr('data-to-remove');
+
+	$.ajax({
+		url: '/admin/ajax/delete/' + object + '/' + id,
+		success: function (data) {
+			$('#' + to_remove).remove();
+		},
+		error: function () {
+			alert_error('Could not delete that object.');
+		}
+	});
+});
 
 
 // filterable tables

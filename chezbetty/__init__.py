@@ -164,6 +164,7 @@ def main(global_config, **settings):
     config.add_route('admin_ajax_bool',         '/admin/ajax/bool/{object}/{id}/{field}/{value}')
     config.add_route('admin_ajax_text',         '/admin/ajax/text/{object}/{id}/{field}')
     config.add_route('admin_ajax_new',          '/admin/ajax/new/{object}/{arg}')
+    config.add_route('admin_ajax_delete',       '/admin/ajax/delete/{object}/{id}')
     config.add_route('admin_ajax_connection',   '/admin/ajax/connection/{object1}/{object2}/{arg1}/{arg2}')
 
     config.add_route('admin_ajaxed_field',      '/admin/ajax/field/{field}')
