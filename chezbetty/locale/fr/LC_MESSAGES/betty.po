@@ -709,7 +709,7 @@ msgstr "Administration"
 
 #: chezbetty/templates/index.jinja2:62
 msgid "Can you help translate Betty? E-mail chez-betty@umich.edu."
-msgstr "Pouvez-vous aider à traduire Betty? Email chez-betty@umich.edu."
+msgstr "Pouvez-vous aider à traduire Betty? Envoyez un email à chez-betty@umich.edu."
 
 #: chezbetty/templates/user/deposit_cc.jinja2:4
 #: chezbetty/templates/user/deposit_cc.jinja2:7
@@ -719,8 +719,7 @@ msgstr "Dépot de Carte de Crédit"
 #: chezbetty/templates/user/deposit_cc.jinja2:14
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:14
 msgid "We use stripe to process credit card transactions."
-msgstr ""
-"Nous utilisons stripe pour traiter les transactions par carte de crédit."
+msgstr "Nous utilisons stripe pour traiter les transactions par carte de crédit."
 
 #: chezbetty/templates/user/deposit_cc.jinja2:15
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:15
@@ -743,7 +742,7 @@ msgstr ""
 
 #: chezbetty/templates/user/deposit_cc.jinja2:48
 msgid "User Account"
-msgstr "Utilisateur Compte"
+msgstr "Compte utilisateur"
 
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:4
 #: chezbetty/templates/user/deposit_cc_custom.jinja2:7
