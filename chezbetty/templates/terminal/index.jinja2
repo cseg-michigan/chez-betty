@@ -157,7 +157,7 @@ body {
   {% for user in shame_users %}
   {% if (-user.balance / 5)|round(method='floor') < tax_header %}
   {% set tax_header = (-user.balance / 5)|round(method='floor') %}
-  <h2 class="big-debt"><strong>{{ (tax_header + 4)|int }}% Tax</strong></h2>
+  <h2 class="big-debt"><strong>{{ (tax_header * 5)|int }}% Tax</strong></h2>
   {% endif %}
   <div>
     <p style="{%if user.balance < -20%}font-weight: bold;{%endif%}{%if loop.index <= 5%}font-size: 150%;{%endif%}">
