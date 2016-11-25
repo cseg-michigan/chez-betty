@@ -446,27 +446,27 @@ def admin_dashboard(request):
     # Walk back to the beginning of the day for all these statistics
     now = now.replace(hour=0, minute=0, seconds=0)
 
-    ytd_sales     = Purchase.total(now.replace(month=1,day=1), None)
-    ytd_profit    = PurchaseLineItem.profit_on_sales(now.replace(month=1,day=1), None)
-    ytd_lost      = Inventory.total(now.replace(month=1,day=1), None)
-    ytd_dep       = Deposit.total(now.replace(month=1,day=1), None)
-    ytd_dep_cash  = CashDeposit.total(now.replace(month=1,day=1), None)
-    ytd_dep_btc   = BTCDeposit.total(now.replace(month=1,day=1), None)
-    ytd_dep_cc    = CCDeposit.total(now.replace(month=1,day=1), None)
-    ytd_discounts = Purchase.discounts(now.replace(month=1,day=1), None)
-    ytd_fees      = Purchase.fees(now.replace(month=1,day=1), None)
+    ytd_sales     = Purchase.total(start=now.replace(month=1,day=1), end=None)
+    ytd_profit    = PurchaseLineItem.profit_on_sales(start=now.replace(month=1,day=1), end=None)
+    ytd_lost      = Inventory.total(start=now.replace(month=1,day=1), end=None)
+    ytd_dep       = Deposit.total(start=now.replace(month=1,day=1), end=None)
+    ytd_dep_cash  = CashDeposit.total(start=now.replace(month=1,day=1), end=None)
+    ytd_dep_btc   = BTCDeposit.total(start=now.replace(month=1,day=1), end=None)
+    ytd_dep_cc    = CCDeposit.total(start=now.replace(month=1,day=1), end=None)
+    ytd_discounts = Purchase.discounts(start=now.replace(month=1,day=1), end=None)
+    ytd_fees      = Purchase.fees(start=now.replace(month=1,day=1), end=None)
     ytd_users     = Purchase.distinct(distinct_on=Event.user_id, start=now.replace(month=1, day=1))
     ytd_new_users = User.get_number_new_users(start=now.replace(month=1, day=1))
 
-    mtd_sales     = Purchase.total(now.replace(day=1), None)
-    mtd_profit    = PurchaseLineItem.profit_on_sales(now.replace(day=1), None)
-    mtd_lost      = Inventory.total(now.replace(day=1), None)
-    mtd_dep       = Deposit.total(now.replace(day=1), None)
-    mtd_dep_cash  = CashDeposit.total(now.replace(day=1), None)
-    mtd_dep_btc   = BTCDeposit.total(now.replace(day=1), None)
-    mtd_dep_cc    = CCDeposit.total(now.replace(day=1), None)
-    mtd_discounts = Purchase.discounts(now.replace(day=1), None)
-    mtd_fees      = Purchase.fees(now.replace(day=1), None)
+    mtd_sales     = Purchase.total(start=now.replace(day=1), end=None)
+    mtd_profit    = PurchaseLineItem.profit_on_sales(start=now.replace(day=1), end=None)
+    mtd_lost      = Inventory.total(start=now.replace(day=1), end=None)
+    mtd_dep       = Deposit.total(start=now.replace(day=1), end=None)
+    mtd_dep_cash  = CashDeposit.total(start=now.replace(day=1), end=None)
+    mtd_dep_btc   = BTCDeposit.total(start=now.replace(day=1), end=None)
+    mtd_dep_cc    = CCDeposit.total(start=now.replace(day=1), end=None)
+    mtd_discounts = Purchase.discounts(start=now.replace(day=1), end=None)
+    mtd_fees      = Purchase.fees(start=now.replace(day=1), end=None)
     mtd_users     = Purchase.distinct(distinct_on=Event.user_id, start=now.replace(day=1))
     mtd_new_users = User.get_number_new_users(start=now.replace(day=1))
 
@@ -485,32 +485,18 @@ def admin_dashboard(request):
 
 
     def metrics_per_time(start, end):
-
-
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
-        print("JFKDLHFKJSDKJFDSFDSKJNFKJn")
         print(Transaction.get_balance("restock", account.get_cash_account("chezbetty"), start=start, end=end))
 
         return {
-            "sales":      Purchase.total(start, end),
-            "profit":     PurchaseLineItem.profit_on_sales(start, end),
-            "lost":       Inventory.total(start, end),
-            "dep":        Deposit.total(start, end),
-            "dep_cash":   CashDeposit.total(start, end),
-            "dep_btc":    BTCDeposit.total(start, end),
-            "dep_cc":     CCDeposit.total(start, end),
-            "discounts":  Purchase.discounts(start, end),
-            "fees":       Purchase.fees(start, end),
+            "sales":      Purchase.total(start=start, end=end),
+            "profit":     PurchaseLineItem.profit_on_sales(start=start, end=end),
+            "lost":       Inventory.total(start=start, end=end),
+            "dep":        Deposit.total(start=start, end=end),
+            "dep_cash":   CashDeposit.total(start=start, end=end),
+            "dep_btc":    BTCDeposit.total(start=start, end=end),
+            "dep_cc":     CCDeposit.total(start=start, end=end),
+            "discounts":  Purchase.discounts(start=start, end=end),
+            "fees":       Purchase.fees(start=start, end=end),
             "users":      Purchase.distinct(distinct_on=Event.user_id, start=start, end=end),
             "new_users":  User.get_number_new_users(start=start, end=end),
             "cashbox_lost": Transaction.get_balance("lost", account.get_cash_account("cashbox"), start=start, end=end).balance,
