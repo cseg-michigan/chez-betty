@@ -139,7 +139,7 @@ body {
   <h1>In the meantime, we're trying to raise some money to pay for that.</h1>
   <h1>The current user debt is: <strong>{{ owed_by_users|format_debt|safe }}</strong>.</h1>
   <h1>We could use some help getting that repaid.</h1>
-  <h1>So please, e-mail a stranger and ask them to pay Betty back so we can restock.</h1>
+  <h1>So please, if you owe Betty money pay back today.</h1>
   <div class="pull-right">
     <br />
     <h4>
@@ -152,7 +152,7 @@ body {
   </div>
   <div class="clearfix"></div>
   <hr />
-  <div class="fitin" data-fitin-width="1570" data-fitin-height="500" data-fitin-columns="true" style="-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size: 15px;">
+  <div class="fitin" data-fitin-width="1570" data-fitin-height="600" data-fitin-columns="true" style="-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size: 15px;">
   {% set tax_header = 100 %} {# start much greater than max tax #}
   {% for user in shame_users %}
   {% if (-user.balance / 5)|round(method='floor') < tax_header %}
@@ -173,21 +173,19 @@ body {
 
 {# Secondary splash page #}
 <div id="splash2" class="container" style="display: none;">
-  <div style="font-size: 90px;">
-    <h1 style="font-size: 90px;">
+  <div style="font-size: 90px; width: 100%;">
+    <h1 style="font-size: 80px;">
       Seriously. We need some help from some social pressure.
     </h1>
-    <h1 style="font-size: 90px;">
-      Please email <span style="color: red;">{{ shame_users[0].uniqname }}@umich.edu</span>
-      and ask them why they have not paid Betty back.
-    </h1>
-    <h1 style="font-size: 60px; color: blue;">
-      They have been on the Wall of Shame for {{ shame_users[0].days_on_shame }} days.
-    </h1>
-    <h1 style="font-size: 60px; color: red;">
-      They made a {{shame_users[0].most_recent_purchase.amount|format_currency|safe}} purchase {{shame_users[0].most_recent_purchase.event.timestamp|human_date|safe}}.
-    </h1>
-    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash2").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
+    <div style="width: 75%; margin: 100px auto;">
+      <h1 style="font-size: 50px;">
+        <span style="color:red; font-weight: bold;">{{ shame_users[0].name }}</span> ({{ shame_users[0].uniqname }}@umich.edu)
+        owes {{ shame_users[0].balance|format_debt|safe }},
+        has been on the Wall of Shame for {{ shame_users[0].days_on_shame }} days,
+        and made a {{shame_users[0].most_recent_purchase.amount|format_currency|safe}} purchase {{shame_users[0].most_recent_purchase.event.timestamp|human_date|safe}}.
+      </h1>
+    </div>
+    <a class="btn btn-deftaul btn-huge btn-bordered" style="float:right;" onclick='$("#splash2").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
   </div>
 </div>
 
