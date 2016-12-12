@@ -547,6 +547,15 @@ def __lifetime_discounts(self):
             .filter(event.Event.deleted==False).one().f or Decimal(0.0)
 user.User.lifetime_discounts = __lifetime_discounts
 
+# This is in a stupid place due to circular input problems
+@property
+def __number_of_purchases(self):
+    return object_session(self).query(func.count(Purchase.id).label("c"))\
+            .join(event.Event)\
+            .filter(Purchase.fr_account_virt_id == self.id)\
+            .filter(event.Event.type == 'purchase')\
+            .filter(event.Event.deleted==False).one().c or 0
+user.User.number_of_purchases = __number_of_purchases
 
 @property
 def __relevant_cash_deposits(self):

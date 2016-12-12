@@ -282,6 +282,7 @@ def main(global_config, **settings):
 
     config.add_route('admin_data_histogram_balances',   '/admin/data/histogram/balances')
     config.add_route('admin_data_histogram_dayssincepurchase',   '/admin/data/histogram/dayssincepurchase')
+    config.add_route('admin_data_histogram_numberofpurchases',   '/admin/data/histogram/numberofpurchases')
 
     # DYNAMIC CONTENT
     config.add_route('dynamic_item_img', '/dynamic/item/{item_id}.jpg')

@@ -548,6 +548,49 @@ def user_dayssincepurchase_histogram ():
     return out
 
 
+#######
+### Calculate a histogram of number of purchases by each user
+#
+#
+def user_numberofpurchases_histogram ():
+    bins = {}
+
+    users = User.get_normal_users()
+    for user in users:
+        number_purchases = user.number_of_purchases
+        if number_purchases > 200:
+            number_purchases = 200
+
+        if number_purchases not in bins:
+            bins[number_purchases] = 1
+        else:
+            bins[number_purchases] += 1
+
+    out = {}
+
+    last = None
+    x = []
+    y = []
+    for bin_start, count in sorted(bins.items()):
+        # Fill in missing bins, if needed
+        if last != None and bin_start-last > 1:
+            for i in range(last, bin_start):
+                b = '{}'.format(i)
+                x.append(b)
+                y.append(0)
+
+        b = '{}'.format(bin_start)
+        x.append(b)
+        y.append(count)
+
+        last = bin_start
+
+    out['x'] = x
+    out['y'] = y
+
+    return out
+
+
 @view_config(route_name='admin_data_items_json',
              renderer='json',
              permission='manage')
@@ -683,4 +726,11 @@ def admin_data_histogram_balances(request):
              permission='manage')
 def admin_data_histogram_dayssincepurchase(request):
     return user_dayssincepurchase_histogram()
+
+
+@view_config(route_name='admin_data_histogram_numberofpurchases',
+             renderer='json',
+             permission='manage')
+def admin_data_histogram_numberofpurchases(request):
+    return user_numberofpurchases_histogram()
 
