@@ -2218,6 +2218,7 @@ def admin_reimbursees_reimbursement_submit(request):
     try:
         reimbursee = Reimbursee.from_id(int(request.POST['reimbursee']))
         amount = Decimal(request.POST['amount'])
+        notes = request.POST['notes']
 
         # Check that we are not trying to reimburse too much
         if amount > reimbursee.balance:
@@ -2241,7 +2242,7 @@ def admin_reimbursees_reimbursement_submit(request):
             # Could not parse date
             event_date = None
 
-        e = datalayer.add_reimbursement(amount, reimbursee, request.user, event_date)
+        e = datalayer.add_reimbursement(amount, notes, reimbursee, request.user, event_date)
 
         request.session.flash('Reimbursement recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_event', event_id=e.id))

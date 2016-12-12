@@ -586,8 +586,8 @@ def add_withdrawal(amount, notes, reimbursee, admin, timestamp=None):
 
 
 # Call this to reimburse a reimbursee
-def add_reimbursement(amount, reimbursee, admin, timestamp=None):
-    e = event.Reimbursement(admin, timestamp)
+def add_reimbursement(amount, notes, reimbursee, admin, timestamp=None):
+    e = event.Reimbursement(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
     t = transaction.Reimbursement(e, amount, reimbursee)

@@ -153,7 +153,7 @@ class Withdrawal(Event):
 
 class Reimbursement(Event):
     __mapper_args__ = {'polymorphic_identity': 'reimbursement'}
-    def __init__(self, admin, timestamp):
-        Event.__init__(self, admin, None, timestamp)
+    def __init__(self, admin, notes, timestamp):
+        Event.__init__(self, admin, notes, timestamp)
 
 
