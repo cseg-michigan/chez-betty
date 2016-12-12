@@ -450,6 +450,15 @@ function tag_disconnected_fail () {
 }
 
 //
+// Reimbursements
+//
+
+$('#reimbursee').change(function () {
+	var amount = $('#reimbursee option:selected').attr('data-amount');
+	$('#reimbursement-amount').val(amount);
+})
+
+//
 // Deletions
 //
 

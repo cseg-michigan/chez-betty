@@ -56,7 +56,7 @@
           Reimbursee:
           <select class="form-control" id="reimbursee" name="reimbursee">
             {% for reimbursee in reimbursees %}
-            <option value="{{ reimbursee.id }}">{{ reimbursee.name }}</option>
+            <option value="{{ reimbursee.id }}" data-amount="{{ reimbursee.balance }}">{{ reimbursee.name }}</option>
             {% endfor %}
           </select>
 
