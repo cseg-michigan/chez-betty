@@ -411,4 +411,25 @@
 </div>
 {% endif %}
 
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><a href="/admin/items/list">Quick Item Lookup</a></h3>
+      </div>
+      <div class="panel-body">
+        <input type="text" id="user-purchase-add-search-item" class="form-control">
+        <button type="button" id="user-purchase-add-search-item-button" class="btn btn-success">Search Item</button>
+        <span id="user-search-notice-item"></span>
+        <table id="user-search-table-items" style="width: 100%">
+          <tr id="user-search-item-row-0" class="user-search-row" style="display:none;">
+            <td class="user-search-row-item-name">Name</td>
+            <td class="user-search-row-item-stock">Stock</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

@@ -237,7 +237,7 @@ function search_item_only_success (data) {
 						$(this).attr("id", new_id);
 						$(this).attr("data-item", data.matches[i][3]);
 					});
-					new_row.find(".user-search-row-item-name").text(data.matches[i][0] + ": " + data.matches[i][1]);
+					new_row.find(".user-search-row-item-name").html(data.matches[i][0] + ': <a href="/admin/item/edit/'+data.matches[i][3]+'">'+data.matches[i][1]+'</a>');
 					new_row.find(".user-search-row-item-stock").text('stock: ' + data.matches[i][5]);
 					new_row.addClass("user-search-item-addedrows");
 					new_row.show();
