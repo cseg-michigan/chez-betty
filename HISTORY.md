@@ -1,6 +1,8 @@
 History of Chez Betty
 =====================
 
+- January 3, 2017: Added new shelves. Both for drink storage and for
+more food display.
 - June 16, 2016: Tried to hire a moving company to pick up our
 Costco order, and have Costco put our order on pallets. We did get the
 food, but it was a bit of an ordeal.
