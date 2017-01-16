@@ -15,8 +15,6 @@ addons:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y postgresql-server-dev-9.4 libjpeg-dev python-enchant
-    # Latest version pre-install on Travis images 2016-05-03
-  - nvm use 4.1.2 && npm install bower bower-installer
 
 install:
   - if [ ! -e RELEASE-VERSION ]; then echo "v.Travis" > RELEASE-VERSION; fi
@@ -24,7 +22,8 @@ install:
   - python setup.py develop
   - cp development.ini.example development.ini
   - python chezbetty/initializedb.py development.ini
-  - bower-installer
+  # Latest version pre-install on Travis images 2016-05-03
+  - nvm use 4.1.2 && npm install bower bower-installer && bower-installer
 
 script:
   - proutes development.ini
