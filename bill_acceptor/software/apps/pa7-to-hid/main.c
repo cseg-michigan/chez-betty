@@ -56,10 +56,9 @@ void usbsuspHookExitingSuspend(void) {
     GPIOPowIntDisable(BSP_KEY_DIR_BASE, BSP_KEY_DIR_ALL);
 }
 
-uint8_t send = 0;
-uint8_t count = 0;
-uint32_t last_interrupt_time = 0;
-uint32_t rising_edge_time = 0;
+volatile uint8_t send = 0;
+volatile uint8_t count = 0;
+//uint32_t last_interrupt_time = 0;
 
 void gpio_toggle (uint32_t base, uint8_t ui8Leds) {
     uint32_t ui32Toggle = GPIOPinRead(base, ui8Leds);
@@ -73,6 +72,8 @@ void gpio_toggle (uint32_t base, uint8_t ui8Leds) {
 
 
 void GPIOBIntHandler(void) {
+    static uint32_t rising_edge_time = 0;
+
     uint32_t ui32GPIOIntStatus;
 
     bspLedToggle(BSP_LED_1);
