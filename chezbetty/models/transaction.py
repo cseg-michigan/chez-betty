@@ -21,9 +21,6 @@ def datefilter_one_or_zero(label=None):
                 business_hours_only=False, evening_hours_only=False, latenight_hours_only=False,
                 ugos_closed_hours=False,
                 **kwargs):
-            print(args)
-            print(kwargs)
-            print("&" * 100)
             r = fn_being_decorated(*args, **kwargs)
 
             if start:
