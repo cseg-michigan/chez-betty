@@ -1,0 +1,553 @@
+#
+# Language cn translations for PACKAGE package
+# This file is distributed under the same license as the PACKAGE package.
+# Yufan Sun <yufansun@umich.edu>, 2017.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE 1.0\n"
+"POT-Creation-Date: 2017-02-05 11:48-0500\n"
+"PO-Revision-Date: 2017-02-05 13:24-0400\n"
+"Last-Translator: Yufan Sun <yufansun@umich.edu>\n"
+"Language-Team: Simplified Chinese\n"
+"Language: cn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Lingua 3.9\n"
+"X-Generator: Poedit 1.7.5\n"
+
+#. Default: User is not enabled. Please contact ${email}.
+#: chezbetty/views.py:117
+msgid "user-not-enabled"
+msgstr "使用者尚未启用"
+
+#. Default: Failed to read M-Card. Please try swiping again.
+#: chezbetty/views.py:154
+msgid "mcard-error"
+msgstr "MCard错误"
+
+#: chezbetty/templates/deposit_edit.jinja2:2
+#: chezbetty/templates/deposit_edit.jinja2:3
+msgid "Edit Deposit"
+msgstr "编辑储值"
+
+#: chezbetty/templates/deposit_edit.jinja2:16
+msgid "New Deposit Amount"
+msgstr "新储值金额"
+
+#: chezbetty/templates/deposit_edit.jinja2:28
+#: chezbetty/templates/deposit.jinja2:28
+msgid "Deposit To Your Account"
+msgstr "存款到你的帐户"
+
+#: chezbetty/templates/deposit_edit.jinja2:30
+#: chezbetty/templates/deposit.jinja2:30
+msgid "Deposit To %(pool_name)s Pool"
+msgstr "存款到 %(pool_name)s "
+
+#: chezbetty/templates/deposit_edit.jinja2:35
+msgid "Delete Deposit"
+msgstr "删除储值"
+
+#: chezbetty/templates/item_request.jinja2:2
+msgid "Item Request"
+msgstr "要求新商品"
+
+#: chezbetty/templates/item_request.jinja2:3
+msgid "Request a New Item at Chez Betty"
+msgstr "要求Chez Betty贩售新物品"
+
+#: chezbetty/templates/item_request.jinja2:10
+#: chezbetty/templates/about.jinja2:13 chezbetty/templates/about.jinja2:105
+#: chezbetty/templates/shame.jinja2:10 chezbetty/templates/items.jinja2:19
+msgid "Home"
+msgstr "首页"
+
+#: chezbetty/templates/item_request.jinja2:15
+msgid "New Item Request"
+msgstr "要求新商品"
+
+#: chezbetty/templates/item_request.jinja2:21
+msgid "Submit Request"
+msgstr "发送请求"
+
+#: chezbetty/templates/deposit.jinja2:2 chezbetty/templates/deposit.jinja2:3
+#: chezbetty/templates/deposit.jinja2:13
+#: chezbetty/templates/user_info.jinja2:40
+#: chezbetty/templates/deposit_complete.jinja2:12
+msgid "Deposit"
+msgstr "储值"
+
+#: chezbetty/templates/deposit.jinja2:21
+msgid "Cash"
+msgstr "现金"
+
+#: chezbetty/templates/deposit.jinja2:22
+msgid "Your Deposit Limit: %(limit)s"
+msgstr "储值上限 %(limit)s"
+
+#: chezbetty/templates/deposit.jinja2:45
+msgid "Bitcoin"
+msgstr "比特币"
+
+#: chezbetty/templates/deposit.jinja2:56
+msgid "Credit Card"
+msgstr "信用卡"
+
+#: chezbetty/templates/deposit.jinja2:57
+msgid "Coming soon."
+msgstr "即将来临"
+
+#: chezbetty/templates/purchase.jinja2:2 chezbetty/templates/purchase.jinja2:3
+#: chezbetty/templates/user_info.jinja2:34
+msgid "Purchase"
+msgstr "购买"
+
+#: chezbetty/templates/purchase.jinja2:17
+#: chezbetty/templates/purchase_complete.jinja2:13
+msgid "Order Summary"
+msgstr "购物总结"
+
+#: chezbetty/templates/purchase.jinja2:34 chezbetty/templates/user.jinja2:45
+#: chezbetty/templates/items.jinja2:36 chezbetty/templates/items.jinja2:61
+#: chezbetty/templates/items.jinja2:84
+#: chezbetty/templates/purchase_complete.jinja2:20
+msgid "Item"
+msgstr "项目"
+
+#: chezbetty/templates/purchase.jinja2:35 chezbetty/templates/user.jinja2:46
+#: chezbetty/templates/purchase_complete.jinja2:21
+msgid "Quantity"
+msgstr "数量"
+
+#: chezbetty/templates/purchase.jinja2:36 chezbetty/templates/user.jinja2:47
+#: chezbetty/templates/purchase_complete.jinja2:22
+msgid "Item Price"
+msgstr "物品价格"
+
+#: chezbetty/templates/purchase.jinja2:37 chezbetty/templates/user.jinja2:48
+#: chezbetty/templates/purchase_complete.jinja2:23
+msgid "Total Price"
+msgstr "总价"
+
+#: chezbetty/templates/purchase.jinja2:47
+msgid "Order Empty"
+msgstr "购物车内没有商品"
+
+#: chezbetty/templates/purchase.jinja2:48
+msgid "Scan an item to begin"
+msgstr "扫描任意商品"
+
+#: chezbetty/templates/purchase.jinja2:57 chezbetty/templates/user.jinja2:67
+#: chezbetty/templates/purchase_complete.jinja2:42
+msgid "Subtotal"
+msgstr "小计"
+
+#: chezbetty/templates/purchase.jinja2:61
+msgid "Good Standing Discount"
+msgstr "信誉良好折扣"
+
+#: chezbetty/templates/purchase.jinja2:67 chezbetty/templates/user.jinja2:76
+#: chezbetty/templates/purchase_complete.jinja2:53
+msgid "Total"
+msgstr "总额"
+
+#: chezbetty/templates/purchase.jinja2:78
+msgid "Pay With Your User Account"
+msgstr "使用你的账户付款"
+
+#: chezbetty/templates/purchase.jinja2:80
+msgid "Pay With %(pool_name)s Pool"
+msgstr "使用 %(pool_name)s 付款"
+
+#: chezbetty/templates/user_info.jinja2:6
+msgid "Customer"
+msgstr "顾客"
+
+#: chezbetty/templates/user_info.jinja2:11 chezbetty/templates/shame.jinja2:23
+msgid "Name"
+msgstr "名字"
+
+#: chezbetty/templates/user_info.jinja2:14 chezbetty/templates/shame.jinja2:25
+msgid "Account Balance"
+msgstr "账户余额"
+
+#: chezbetty/templates/user_info.jinja2:30
+msgid "Links"
+msgstr "链接"
+
+#: chezbetty/templates/user_info.jinja2:37
+msgid "Account"
+msgstr "帐户"
+
+#: chezbetty/templates/user_info.jinja2:42
+msgid "Logout"
+msgstr "登出"
+
+#: chezbetty/templates/user_info.jinja2:44
+msgid "Admin"
+msgstr "管理者"
+
+#: chezbetty/templates/base.jinja2:58 chezbetty/templates/base.jinja2:69
+msgid "Hi %(name)s,"
+msgstr "你好 %(name)s"
+
+#: chezbetty/templates/base.jinja2:59
+msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
+msgstr "你目前欠Betty %(big_debt)s。这不是一笔小数目！"
+
+#: chezbetty/templates/base.jinja2:61
+msgid "We're glad you like Betty. We're happy to extend a small line of credit, but if people owe Betty lots of money, it's hard to keep things in stock. Please try to pay Betty back soon!"
+msgstr "我们很高兴您喜欢Betty。我们允许使用者赊一点帐，但是如果大家欠Betty很多钱的话，我们很难维持商品的数量。请尽快还清欠款。"
+
+#: chezbetty/templates/base.jinja2:70
+msgid "You currently owe Betty %(debt)s."
+msgstr "你目前欠Betty %(debt)s"
+
+#: chezbetty/templates/base.jinja2:71
+msgid "Please try to pay Betty back soon, thanks!"
+msgstr "请尽快还清欠款，谢谢！"
+
+#: chezbetty/templates/user.jinja2:14
+msgid "Transaction History"
+msgstr "购买记录"
+
+#: chezbetty/templates/user.jinja2:32
+msgid "Purchase totaling %(amount)s"
+msgstr "总共购买 %(amount)s"
+
+#: chezbetty/templates/user.jinja2:33 chezbetty/templates/user.jinja2:93
+#: chezbetty/templates/user.jinja2:102
+msgid "touch to show"
+msgstr "显示"
+
+#: chezbetty/templates/user.jinja2:34
+msgid "touch to hide"
+msgstr "隐藏"
+
+#: chezbetty/templates/user.jinja2:71
+#: chezbetty/templates/purchase_complete.jinja2:46
+msgid "Discounts"
+msgstr "折扣"
+
+#: chezbetty/templates/user.jinja2:86
+msgid "Deposit of %(amount)s"
+msgstr "储值 %(amount)s"
+
+#: chezbetty/templates/user.jinja2:93
+msgid "Adjustment of %(amount)s by %(admin_name)s "
+msgstr "%(admin_name)s 调整 %(amount)s"
+
+#: chezbetty/templates/user.jinja2:102
+msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
+msgstr "从比特币储值了%(amount_in_usd) (%(amount_in_bts)s比特幣)"
+
+#: chezbetty/templates/user.jinja2:118
+msgid "No transactions."
+msgstr "没有交易"
+
+#: chezbetty/templates/user.jinja2:122
+msgid "Show All"
+msgstr "显示全部"
+
+#: chezbetty/templates/about.jinja2:2 chezbetty/templates/about.jinja2:3
+msgid "About Chez Betty"
+msgstr "关于Chez Betty"
+
+#: chezbetty/templates/about.jinja2:8
+msgid "Chez Betty is an honor-system based food cooperative for graduate students, faculty, and staff in Computer Science at the University of Michigan. The name \"Chez Betty\" is an homage to Chez Bob, a similar system at UCSD."
+msgstr "Chez Betty 是一个给密西根大学计算机工程系的研究生，教授，职员们的“荣誉制”自助食物贩卖部。Chez Betty的命名，表达了我们对Chez Bob的尊敬。Chez Bob是一个在加州大学圣地亚哥分校的类似系统。"
+
+#: chezbetty/templates/about.jinja2:16
+msgid "FAQ"
+msgstr "问答集"
+
+#: chezbetty/templates/about.jinja2:18
+msgid "Touch questions to show/hide."
+msgstr "点击问题以显示或隐藏"
+
+#: chezbetty/templates/about.jinja2:22
+msgid "Who are the awesome people who run Chez Betty?"
+msgstr "Chez Betty由谁经营？"
+
+#: chezbetty/templates/about.jinja2:24
+msgid "Chez Betty is run by CSEG, the CSE graduate student group."
+msgstr "Chez Betty是由CSE的研究生组织的CSEG所经营。"
+
+#: chezbetty/templates/about.jinja2:25
+msgid "Currently, Betty is primarily maintained by Brad Campbell, Pat Pannuto, and Zakir Durumeriç"
+msgstr "Betty主要由Brad Campbell, Pat Pannuto, Zakir Durumeriç所维护。"
+
+#: chezbetty/templates/about.jinja2:28
+msgid "How to Use Betty like a Pro"
+msgstr "如何像专家一样的使用Betty？"
+
+#: chezbetty/templates/about.jinja2:30
+msgid "Keep a positive balance."
+msgstr "保持账户余额"
+
+#: chezbetty/templates/about.jinja2:31
+msgid "Tracking down debtors sucks for us and for you. You don't want to end up on the Wall of Shame!"
+msgstr "为我们也为你，帮忙追击这些欠债的人。你不会想要被列在羞耻墙上！"
+
+#: chezbetty/templates/about.jinja2:33
+msgid "Take advantage of the Bank of Betty."
+msgstr "善用Betty银行"
+
+#: chezbetty/templates/about.jinja2:34
+msgid "Our power users usually deposit $100 once a year or so. Most people deposit $20 to use until that runs out. Remembering cash every time you want to use Betty is no fun."
+msgstr "专家级使用者通常每次储值$100左右。多数的使用者每次存款$20直到余额用完。"
+
+#: chezbetty/templates/about.jinja2:36
+msgid "Help restock."
+msgstr "帮忙整理货架"
+
+#: chezbetty/templates/about.jinja2:37
+msgid "Betty is run by volunteers who have finite time. If you grab a cold drink, put a warm one in to get cold (though, don't put it in front!). If you finish a box of food, grab a full box and replace it."
+msgstr "Betty是由一群时间有限的志愿者所维护，如果你买了一罐冷饮，请拿一罐常温的到冰箱（请不要放在冰箱前面）。如果你买了盒子里的最后一点商品，打开一个新的吧。"
+
+#: chezbetty/templates/about.jinja2:42
+msgid "How do I buy things from Chez Betty?"
+msgstr "要如何在Chez Betty买东西？"
+
+#: chezbetty/templates/about.jinja2:45
+msgid "Log in to Chez Betty by swiping your MCard at the terminal."
+msgstr "刷你的MCard来登入Chez Betty"
+
+#: chezbetty/templates/about.jinja2:47
+msgid "Accounts are tied to your UMID."
+msgstr "帐户是根据你的UMID"
+
+#: chezbetty/templates/about.jinja2:48
+msgid "A new account is automatically created for first-time users on the the fly the first time you log in."
+msgstr "用户第一次使用登入时，系统会自动产生一个新的帐户"
+
+#: chezbetty/templates/about.jinja2:50
+msgid "Look at your Account Balance. If you're low, deposit some money."
+msgstr "如果余额不多的話，储值点钱吧。"
+
+#: chezbetty/templates/about.jinja2:52
+msgid "Every user has an account with Chez Betty that keeps track of how much money they've put in."
+msgstr "每个用户在Chez Betty都有一个帐户，用来记录用户存了多少钱"
+
+#: chezbetty/templates/about.jinja2:53
+msgid "Betty doesn't make change, instead excess money stays in your account for your next transaction."
+msgstr "Betty并不找零，余额将会留在你的帐户供日后其他交易"
+
+#: chezbetty/templates/about.jinja2:54
+msgid "You can run into the red, see below."
+msgstr "你账户可能会赤字，请往下看"
+
+#: chezbetty/templates/about.jinja2:56
+msgid "Grab what you'd like from Chez Betty and scan your items."
+msgstr "从Chez Betty自取你想要的商品，并扫描条码"
+
+#: chezbetty/templates/about.jinja2:57
+msgid "Touch \"Submit Purchase\" and you're done!"
+msgstr "点击“购买”就完成了！"
+
+#: chezbetty/templates/about.jinja2:61
+msgid "Wait... Couldn't people steal from this really easily?"
+msgstr "等等？这样人们不就可以轻易地偷东西吗？"
+
+#: chezbetty/templates/about.jinja2:63
+msgid "Yes. (But please don't)."
+msgstr "没错。(但请不要这么做)"
+
+#: chezbetty/templates/about.jinja2:64
+msgid "The idea is to provide a convenient service to members of the UM CSE community. Betty makes a small profit off each sale, some of which will be used to cover the inevitable losses. If too many people take advantage of Betty's trusting nature, the service will have to shut down :(."
+msgstr "这个点子是提供给计算机工程系社群的一个便利的服务。Betty只从中获取很少的利润，其中一部分被用來弥补无法避免的损失。如果太多人借这个荣誉系统贪小便宜，这个服务将会被终止。"
+
+#: chezbetty/templates/about.jinja2:67
+msgid "Tell me more about my Chez Betty account?"
+msgstr "更多关于Chez Betty账户的信息？"
+
+#: chezbetty/templates/about.jinja2:69
+msgid "Chez Betty sells things nearly at-cost (usually about a 15% markup). Since no one likes change and Betty is a self-service operation, it's set up so that each user has an account with Betty. You can put in $20 (or however much) at a time and use that balance until it runs out."
+msgstr "Chez Betty的售价仅比成本高一点点 (通常比进货定价15%)。因为没有人喜欢零钱，而且Betty是一个全自动的系统，所以每个人在Betty都会有个账户。你可以每次存$20 (或是更多) 到你的账户直到余额用完为止。"
+
+#: chezbetty/templates/about.jinja2:75
+msgid "What if I don't have any money / Can my account balance go negative?"
+msgstr "如果我账户没有任何余额，我可以欠债吗？"
+
+#: chezbetty/templates/about.jinja2:77
+msgid "Yes. Chez Betty allows you to spend beyond your immediate means under that assumption that you'll pay Betty back eventually. The idea is to let you grab stuff when you need it and keep track of what owe, instead of incentivizing folks to steal. There is a <a href=\"/shame\">Wall of Shame</a> for persons who owe Betty more than $5."
+msgstr "可以。在你终究会还清的前提下，Chez Betty允许你欠债。这个概念是为了让你在需要的時候可以购买商品，而不是偷窃。欠债多于$5的使用者将会被刊登在<a href=\"/shame\">羞耻墙</a>。"
+
+#: chezbetty/templates/about.jinja2:85
+msgid "How does Betty set prices?"
+msgstr "Betty如何定价？"
+
+#: chezbetty/templates/about.jinja2:87
+msgid "Betty sells things just above wholesale, usually a 15% markup. If you're interested in the actual algorithm, check out Betty's source code at github.com/um-cseg/chez-betty."
+msgstr "Betty的售价通常是批发价加上15%。如果你对于实际的算法有兴趣，请参考Betty的源代码 github.com/um-cseg/chez-betty"
+
+#: chezbetty/templates/about.jinja2:90
+msgid "Current wholesale and Betty prices are always available on <a href=\"/items\">the items page</a>."
+msgstr "目前的Betty售价详列在<a href=\"/items\">商品</a>页"
+
+#: chezbetty/templates/about.jinja2:93
+msgid "What does Betty do with her profits?"
+msgstr "这些盈余会被拿来做什么？"
+
+#: chezbetty/templates/about.jinja2:95
+msgid "First, Betty has to pay her debts (e.g. any losses incurred from dishonest Chez Betty users). After that, Betty's profits roll into the CSEG general fund. They're used to fund improvements to Betty, buy miscellaneous needs (e.g. new ping pong paddles and balls), or to throw events (e.g. bar nights) for CSEG."
+msgstr "首先，Betty需要偿还债务(任何不诚实的使用者所造成的损失)。之后，Betty的盈余将会并入CSEG general fund。这些基金将会被用于改造Betty，满足各种需求(例如购买乒乓球及球拍)，或是举办CSEG活动(bar night)"
+
+#: chezbetty/templates/about.jinja2:100
+msgid "If you have more questions / concerns, please feel free to talk to the CSEG officers."
+msgstr "如果你有任何疑虑或问题，请与CSEG干部联系。"
+
+#: chezbetty/templates/shame.jinja2:2 chezbetty/templates/shame.jinja2:3
+#: chezbetty/templates/index.jinja2:27
+msgid "Wall of Shame"
+msgstr "羞 耻 墙"
+
+#: chezbetty/templates/shame.jinja2:13
+msgid "These users owe Chez Betty more than $5."
+msgstr "以下用户欠Chez Betty超过五元"
+
+#: chezbetty/templates/shame.jinja2:17
+msgid "Users in Debt"
+msgstr "欠债用户"
+
+#: chezbetty/templates/shame.jinja2:24
+msgid "uniqname"
+msgstr "uniqname"
+
+#: chezbetty/templates/deposit_complete.jinja2:20
+msgid "Old Balance"
+msgstr "原有余额"
+
+#: chezbetty/templates/deposit_complete.jinja2:23
+msgid "Deposit Amount"
+msgstr "储值金额"
+
+#: chezbetty/templates/deposit_complete.jinja2:26
+msgid "New Balance"
+msgstr "新的余额"
+
+#: chezbetty/templates/deposit_complete.jinja2:29
+msgid "Transaction"
+msgstr "交易"
+
+#: chezbetty/templates/deposit_complete.jinja2:35
+msgid "Thank you!"
+msgstr "谢谢！"
+
+#: chezbetty/templates/deposit_complete.jinja2:38
+msgid "You successfully deposited %(amount)s into your account"
+msgstr "成功储值 %(amount)s 到你的账户"
+
+#: chezbetty/templates/deposit_complete.jinja2:41
+msgid "You successfully deposited %(amount)s in the %(pool_name)s Pool"
+msgstr "成功储值 %(amount)s 到这个 %(pool_name)s 账户"
+
+#: chezbetty/templates/deposit_complete.jinja2:50
+msgid "Edit this Deposit"
+msgstr "编辑这次储值"
+
+#: chezbetty/templates/items.jinja2:2 chezbetty/templates/items.jinja2:13
+msgid "Items"
+msgstr "商品"
+
+#: chezbetty/templates/items.jinja2:3
+msgid "Items at Chez Betty"
+msgstr "Chez Betty的商品"
+
+#: chezbetty/templates/items.jinja2:7
+msgid "All that Betty has to offer."
+msgstr "所有Betty需要提供的"
+
+#: chezbetty/templates/items.jinja2:20 chezbetty/templates/index.jinja2:25
+msgid "Request an Item"
+msgstr "要求商品"
+
+#: chezbetty/templates/items.jinja2:22
+msgid "Touch columns to change sort order."
+msgstr "点击栏位排序"
+
+#: chezbetty/templates/items.jinja2:25
+msgid "Top"
+msgstr "顶部"
+
+#: chezbetty/templates/items.jinja2:26
+msgid "Up"
+msgstr "往上"
+
+#: chezbetty/templates/items.jinja2:27
+msgid "Down"
+msgstr "往下"
+
+#: chezbetty/templates/items.jinja2:28
+msgid "Bottom"
+msgstr "底部"
+
+#: chezbetty/templates/items.jinja2:37
+msgid "In Stock"
+msgstr "库存"
+
+#: chezbetty/templates/items.jinja2:38
+msgid "Wholesale"
+msgstr "批发"
+
+#: chezbetty/templates/items.jinja2:39
+msgid "Price"
+msgstr "价格"
+
+#: chezbetty/templates/items.jinja2:56
+msgid "Temporarily Out-of-Stock Items:"
+msgstr "暂时无库存商品："
+
+#: chezbetty/templates/items.jinja2:75
+msgid "Discontinued Items:"
+msgstr "终止销售商品："
+
+#: chezbetty/templates/items.jinja2:77
+msgid "Betty discontinues items that did not sell well or that wecannot buy any more. If you would like to request the return ofa discontinued item, please e-mail chez-betty@umich.edu."
+msgstr "终止售卖的商品可能是因为销售不佳或是无法继续采购。如果你想要购买停卖商品，请邮件联系 chez-betty@umich.edu"
+
+#: chezbetty/templates/purchase_complete.jinja2:2
+#: chezbetty/templates/purchase_complete.jinja2:3
+msgid "Purchase Complete"
+msgstr "交易完成"
+
+#: chezbetty/templates/purchase_complete.jinja2:55
+msgid "(Paid with your user account)"
+msgstr "(使用您的账户付款)"
+
+#: chezbetty/templates/purchase_complete.jinja2:57
+msgid "(Paid with %(pool_name)s Pool)"
+msgstr "(使用 %(pool_name)s 付款)"
+
+#: chezbetty/templates/purchase_complete.jinja2:68
+msgid "If this was a mistake, touch here to undo this transaction."
+msgstr "如果这个交易有误，点击这里取消"
+
+#: chezbetty/templates/index.jinja2:12
+msgid "Welcome to Chez Betty!"
+msgstr "欢迎光临 Chez Betty"
+
+#: chezbetty/templates/index.jinja2:13
+msgid "The 24/7 food co-op for all members of the CSE community."
+msgstr "CSE社群24小时自助贩卖部"
+
+#: chezbetty/templates/index.jinja2:18
+msgid "Swipe your M-Card to login"
+msgstr "刷M-Card登入"
+
+#: chezbetty/templates/index.jinja2:24
+msgid "Item List"
+msgstr "商品列表"
+
+#: chezbetty/templates/index.jinja2:26
+msgid "About"
+msgstr "关于"
+
+#: chezbetty/templates/index.jinja2:30
+msgid "Administration"
+msgstr "管理"
+
+#: chezbetty/templates/index.jinja2:54
+msgid "Can you help translate Betty? E-mail chez-betty@umich.edu."
+msgstr "能帮我们翻译Betty吗？请邮件联系 chez-betty@umich.edu"
