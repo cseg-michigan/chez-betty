@@ -13,79 +13,88 @@
   <div class="panel-heading">
     <h3 class="panel-title">{{ _('Items') }}</h3>
   </div>
-  <div class="panel-body">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="tabel-responsive" style="height: 800px; overflow: auto;">
-          <table class="table table-bordered table-striped sortable">
-            <thead>
-              <tr>
-                <th>{{ _('Item') }}</th>
-                <th class="item-stock" style="width: 15%">{{ _('In Stock') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                <th class="item-cost" style="width: 15%">{{ _('Wholesale') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                <th class="item-price" style="width: 15%">{{ _('Price') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-              </tr>
-            </thead>
+  
+  <div class="panel-body" style="height: 600px; overflow: auto;">
+     <table class="table table-bordered table-striped sortable">
+        <thead>
+          <tr>
+            <th>{{ _('Item') }}</th>
+            <th class="item-stock" style="width: 15%">{{ _('In Stock') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th class="item-cost" style="width: 15%">{{ _('Wholesale') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th class="item-price" style="width: 15%">{{ _('Price') }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+          </tr>
+        </thead>
 
-            <tbody>
-            {% for item in items %}
-              <tr>
-                <td class="item-name">{{ item.name }}</td>
-                <td class="item-stock">{{ item.in_stock }}</td>
-                <td class="item-cost">{{ item.wholesale|format_currency|safe }}</td>
-                <td class="item-price">{{ item.price|format_currency|safe }}</td>
-              </tr>
-            {% endfor %}
-            </tbody>
+        <tbody>
+        {% for item in items %}
+          <tr>
+            <td class="item-name">{{ item.name }}</td>
+            <td class="item-stock">{{ item.in_stock }}</td>
+            <td class="item-cost">{{ item.wholesale|format_currency|safe }}</td>
+            <td class="item-price">{{ item.price|format_currency|safe }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
 
-          </table>
+      </table>
 
-          <h4>{{ _('Temporarily Out-of-Stock Items:') }}</h4>
+  </div>
+</div>
 
-          <table class="table table-bordered table-striped sortable">
-            <thead>
-              <tr>
-                <th>{{ _('Item') }}</th>
-              </tr>
-            </thead>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ _('Temporarily Out-of-Stock Items:') }}</h3>
+  </div>
+      
+  <div class="panel-body" style="height: 600px; overflow: auto;">
+    <table class="table table-bordered table-striped sortable">
+      <thead>
+        <tr>
+          <th>{{ _('Item') }}</th>
+        </tr>
+      </thead>
 
-            <tbody>
-            {% for item in out_of_stock_items %}
-              <tr>
-                <td class="item-name">{{ item.name }}</td>
-              </tr>
-            {% endfor %}
-            </tbody>
+      <tbody>
+      {% for item in out_of_stock_items %}
+        <tr>
+          <td class="item-name">{{ item.name }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
 
-          </table>
+    </table>
+  </div>
+</div>
 
-          <h4>{{ _('Discontinued Items:') }}</h4>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ _('Discontinued Items:') }}</h3>
+  </div>
+  
+  <div class="panel-body" style="height: 600px; overflow: auto;">
+    <p>{{ _('Betty discontinues items that did not sell well or that we'
+    ' cannot buy any more. If you would like to request the return of'
+    ' a discontinued item, please e-mail
+    <a href="mailto:chezbetty@umich.edu">chezbetty@umich.edu</a>.')|safe
+    }}</p>
 
-          <p>{{ _('Betty discontinues items that did not sell well or that we'
-          ' cannot buy any more. If you would like to request the return of'
-          ' a discontinued item, please e-mail
-          <a href="mailto:chezbetty@umich.edu">chezbetty@umich.edu</a>.')|safe
-          }}</p>
+    <table class="table table-bordered table-striped sortable">
+      <thead>
+        <tr>
+          <th>{{ _('Item') }}</th>
+        </tr>
+      </thead>
 
-          <table class="table table-bordered table-striped sortable">
-            <thead>
-              <tr>
-                <th>{{ _('Item') }}</th>
-              </tr>
-            </thead>
+      <tbody>
+      {% for item in disabled_items %}
+        <tr>
+          <td class="item-name">{{ item.name }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
 
-            <tbody>
-            {% for item in disabled_items %}
-              <tr>
-                <td class="item-name">{{ item.name }}</td>
-              </tr>
-            {% endfor %}
-            </tbody>
+    </table>
 
-          </table>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 
