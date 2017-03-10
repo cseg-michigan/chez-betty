@@ -135,9 +135,8 @@ body {
 
 
 {# Splash page saying we need people to pay us back. #}
-<div id="splash-disabled" class="container" style="display: none;">
-  <h1>Hey, we know Betty has been a little empty lately, but we are working on doing a Costco restock.</h1>
-  <h1>In the meantime, we're trying to raise some money to pay for that.</h1>
+<div id="splash" class="container">
+  <h1>We're glad everyone is using Betty, but we do need to get paid back.</h1>
   <h1>The current user debt is: <strong>{{ owed_by_users|format_debt|safe }}</strong>.</h1>
   <h1>We could use some help getting that repaid.</h1>
   <h1>So please, if you owe Betty money pay back today.</h1>
@@ -149,7 +148,7 @@ body {
     </h4>
   </div>
   <div class="pull-left">
-    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#splash2").show();'>Continue to Betty</a>
+    <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
   </div>
   <div class="clearfix"></div>
   <hr />
