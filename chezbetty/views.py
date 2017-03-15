@@ -195,7 +195,7 @@ def login_submit(request):
     messages = []
 
     # See if this is a valid login attempt
-    login    = request.params.get('login', '')
+    login    = request.params.get('login', '').lower()
     password = request.params.get('password', '')
     user     = DBSession.query(User).filter(User.uniqname == login).first()
     if user and not user.enabled:
