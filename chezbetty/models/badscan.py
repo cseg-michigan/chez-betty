@@ -10,7 +10,7 @@ class BadScan(Base):
     badscan   = Column(String(255), nullable=False)
 
     def __init__(self, scan):
-        self.badscan = scan
+        self.badscan = scan[0:255]
 
     @classmethod
     def from_id(cls, id):
