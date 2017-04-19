@@ -2675,6 +2675,9 @@ def admin_users_email_all(request):
     users = User.all()
 
     for user in users:
+        if user.archived:
+            # TODO Expose this as a checkbox or option
+            continue
         send_email(
                 TO       = user.uniqname + '@umich.edu',
                 SUBJECT  = request.POST['subject'],
