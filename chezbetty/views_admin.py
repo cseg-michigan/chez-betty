@@ -2689,6 +2689,27 @@ def admin_users_email_all(request):
     return HTTPFound(location=request.route_url('admin_index'))
 
 
+@view_config(route_name='admin_users_email_alumni',
+             request_method='POST',
+             permission='admin')
+def admin_users_email_all(request):
+    users = User.all()
+
+    for user in users:
+        if not user.archived:
+            # TODO Expose this as a checkbox or option
+            continue
+        send_email(
+                TO       = user.uniqname + '@umich.edu',
+                SUBJECT  = request.POST['subject'],
+                body     = request.POST['body'],
+                encoding = request.POST['encoding'],
+                )
+
+    request.session.flash('All archived users emailed.', 'success')
+    return HTTPFound(location=request.route_url('admin_index'))
+
+
 @view_config(route_name='admin_pools',
              renderer='templates/admin/pools.jinja2',
              permission='admin')

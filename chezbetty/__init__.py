@@ -212,6 +212,7 @@ def main(global_config, **settings):
     config.add_route('admin_users_email_deadbeats',     '/admin/users/email/deadbeats')
     config.add_route('admin_users_email_oneperson',     '/admin/users/email/oneperson')
     config.add_route('admin_users_email_all',           '/admin/users/email/all')
+    config.add_route('admin_users_email_alumni',        '/admin/users/email/alumni')
     config.add_route('admin_user',                      '/admin/user/{user_id}')
     config.add_route('admin_uniqname',                  '/admin/uniqname/{uniqname}')
     config.add_route('admin_user_details',              '/admin/user/{user_id}/details')

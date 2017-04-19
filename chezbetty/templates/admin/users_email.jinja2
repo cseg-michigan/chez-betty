@@ -122,5 +122,35 @@
   </div>
 </div>
 
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Email Alumni (Archived Users)</h3>
+  </div>
+  <div class="panel-body">
+    <p>Send an email to all archived users</p>
+
+    <form role="form" action="/admin/users/email/alumni" method="post">
+    <dl class="dl-horizontal">
+      <dt>Subject</dt>
+      <dd> <input class="form-control" name="subject" value="A message from Chez Betty"> </dd>
+      <dt>Body</dt>
+      <dd> <textarea class="form-control" name="body"></textarea> </dd>
+      <hr />
+      <dt>Encoding</dt>
+      <dd> <select name="encoding" class="form-control">
+        <option value="text" selected>Plain text</option>
+        <option value="html">HTML Formatted text</option>
+      </select>
+      <p style="font-style: italic;">Recall with HTML formatted text all whitespace
+      (critically line breaks) will be removed. You need to add explicit &lt;p&gt;,
+      &lt;h1&gt;, etc tags.</p>
+      </dd>
+    </dl>
+
+      <button type="submit" class="btn btn-success">Email All Users</button>
+    </form>
+  </div>
+</div>
+
 
 {% endblock %}
