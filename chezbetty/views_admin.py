@@ -2674,12 +2674,13 @@ def admin_users_email_oneperson(request):
 def admin_users_email_all(request):
     users = User.all()
 
-    send_bcc_email(
-            BCC='@umich.edu, '.join(map(lambda x: x.uniqname, users)) + '@umich.edu',
-            SUBJECT  = request.POST['subject'],
-            body     = request.POST['body'],
-            encoding = request.POST['encoding'],
-            )
+    for user in users:
+        send_email(
+                TO       = user.uniqname + '@umich.edu',
+                SUBJECT  = request.POST['subject'],
+                body     = request.POST['body'],
+                encoding = request.POST['encoding'],
+                )
 
     request.session.flash('All users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
