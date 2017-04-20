@@ -2692,7 +2692,7 @@ def admin_users_email_all(request):
 @view_config(route_name='admin_users_email_alumni',
              request_method='POST',
              permission='admin')
-def admin_users_email_all(request):
+def admin_users_email_alumni(request):
     users = User.all()
 
     for user in users:
