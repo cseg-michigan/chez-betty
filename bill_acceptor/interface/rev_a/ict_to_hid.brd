@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="8.0.2">
+<eagle version="8.1.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -171,6 +171,15 @@
 <text x="3.81" y="14.478" size="1.016" layer="21" font="vector" ratio="12" align="center-left">+</text>
 <text x="3.81" y="11.938" size="1.016" layer="21" font="vector" ratio="12" align="center-left">-</text>
 <text x="3.81" y="9.398" size="1.016" layer="21" font="vector" ratio="12" align="center-left">GND</text>
+<text x="18.288" y="11.938" size="1.27" layer="21" font="vector" ratio="12" align="bottom-center">Bill Acceptor
+Interface</text>
+<text x="15.748" y="1.524" size="1.016" layer="21" font="vector" ratio="12" align="center">A</text>
+<wire x1="14.732" y1="0.508" x2="16.51" y2="0.508" width="0.254" layer="21"/>
+<wire x1="16.51" y1="0.508" x2="16.51" y2="2.54" width="0.254" layer="21"/>
+<wire x1="16.51" y1="2.54" x2="14.732" y2="2.54" width="0.254" layer="21"/>
+<wire x1="14.732" y1="2.54" x2="14.732" y2="0.508" width="0.254" layer="21"/>
+<text x="19.05" y="7.112" size="0.889" layer="21" font="vector" ratio="12" align="bottom-center">Brad Campbell
+2017/04/22</text>
 </plain>
 <libraries>
 <library name="passives">
@@ -831,9 +840,9 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 <wire x1="29.718" y1="19.939" x2="27.813" y2="19.939" width="0.254" layer="1"/>
 <wire x1="27.813" y1="19.939" x2="26.797" y2="18.923" width="0.254" layer="1"/>
 <wire x1="26.797" y1="18.923" x2="26.797" y2="17.018" width="0.254" layer="1"/>
-<via x="26.797" y="17.018" extent="1-16" drill="0.254"/>
+<via x="26.797" y="17.018" extent="1-16" drill="0.3048"/>
 <wire x1="26.797" y1="17.018" x2="26.797" y2="14.986" width="0.254" layer="16"/>
-<via x="26.797" y="14.986" extent="1-16" drill="0.254"/>
+<via x="26.797" y="14.986" extent="1-16" drill="0.3048"/>
 <wire x1="26.797" y1="14.986" x2="24.958" y2="13.147" width="0.254" layer="1"/>
 <wire x1="24.958" y1="13.147" x2="24.958" y2="11.818" width="0.254" layer="1"/>
 </signal>
@@ -842,12 +851,12 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 <contactref element="U1" pad="30"/>
 <wire x1="32.512" y1="21.463" x2="33.147" y2="20.828" width="0.254" layer="1"/>
 <wire x1="33.147" y1="20.828" x2="34.29" y2="20.828" width="0.254" layer="1"/>
-<via x="34.29" y="20.828" extent="1-16" drill="0.254"/>
+<via x="34.29" y="20.828" extent="1-16" drill="0.3048"/>
 <wire x1="34.29" y1="20.828" x2="30.353" y2="20.828" width="0.254" layer="16"/>
 <wire x1="30.353" y1="20.828" x2="29.464" y2="21.717" width="0.254" layer="16"/>
 <wire x1="29.464" y1="21.717" x2="26.035" y2="21.717" width="0.254" layer="16"/>
 <wire x1="26.035" y1="21.717" x2="23.749" y2="24.003" width="0.254" layer="16"/>
-<via x="23.749" y="24.003" extent="1-16" drill="0.254"/>
+<via x="23.749" y="24.003" extent="1-16" drill="0.3048"/>
 <wire x1="23.749" y1="24.003" x2="25.3208" y2="24.003" width="0.254" layer="1"/>
 <wire x1="25.3208" y1="24.003" x2="25.3349" y2="23.9889" width="0.254" layer="1"/>
 </signal>
@@ -865,15 +874,14 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 <contactref element="U1" pad="22"/>
 <wire x1="31.242" y1="21.463" x2="30.353" y2="22.352" width="0.254" layer="1"/>
 <wire x1="30.353" y1="22.352" x2="30.353" y2="25.146" width="0.254" layer="1"/>
-<via x="30.353" y="25.146" extent="1-16" drill="0.254"/>
-<wire x1="22.987" y1="18.669" x2="22.987" y2="24.13" width="0.254" layer="16"/>
-<wire x1="22.987" y1="18.669" x2="22.733" y2="18.415" width="0.254" layer="16"/>
-<via x="22.733" y="18.415" extent="1-16" drill="0.254"/>
+<via x="30.353" y="25.146" extent="1-16" drill="0.3048"/>
+<wire x1="22.733" y1="18.415" x2="22.733" y2="24.384" width="0.254" layer="16"/>
+<via x="22.733" y="18.415" extent="1-16" drill="0.3048"/>
 <wire x1="22.733" y1="18.415" x2="22.733" y2="16.433" width="0.254" layer="1"/>
 <wire x1="22.733" y1="16.433" x2="22.756" y2="16.41" width="0.254" layer="1"/>
 <wire x1="29.464" y1="26.035" x2="30.353" y2="25.146" width="0.254" layer="16"/>
-<wire x1="22.987" y1="24.13" x2="24.892" y2="26.035" width="0.254" layer="16"/>
-<wire x1="24.892" y1="26.035" x2="29.464" y2="26.035" width="0.254" layer="16"/>
+<wire x1="22.733" y1="24.384" x2="24.384" y2="26.035" width="0.254" layer="16"/>
+<wire x1="24.384" y1="26.035" x2="29.464" y2="26.035" width="0.254" layer="16"/>
 </signal>
 <signal name="BOOTLOADER_CTRL">
 <contactref element="J4" pad="5"/>
@@ -884,9 +892,9 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 <wire x1="33.909" y1="17.653" x2="31.877" y2="15.621" width="0.254" layer="1"/>
 <wire x1="31.877" y1="15.621" x2="26.035" y2="15.621" width="0.254" layer="1"/>
 <wire x1="26.035" y1="15.621" x2="25.4" y2="14.986" width="0.254" layer="1"/>
-<via x="25.4" y="14.986" extent="1-16" drill="0.254"/>
+<via x="25.4" y="14.986" extent="1-16" drill="0.3048"/>
 <wire x1="25.4" y1="14.986" x2="25.4" y2="17.018" width="0.254" layer="16"/>
-<via x="25.4" y="17.018" extent="1-16" drill="0.254"/>
+<via x="25.4" y="17.018" extent="1-16" drill="0.3048"/>
 <wire x1="25.4" y1="17.018" x2="25.4" y2="17.9238" width="0.254" layer="1"/>
 <wire x1="25.4" y1="17.9238" x2="25.3349" y2="17.9889" width="0.254" layer="1"/>
 </signal>
@@ -975,4 +983,10 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 </signals>
 </board>
 </drawing>
+<compatibility>
+<note version="6.3" minversion="6.2.2" severity="warning">
+Since Version 6.2.2 text objects can contain more than one line,
+which will not be processed correctly with this version.
+</note>
+</compatibility>
 </eagle>
