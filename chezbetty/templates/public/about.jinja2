@@ -28,7 +28,7 @@ Shoot us an e-mail at <a href="mailto:chezbetty@umich.edu">chezbetty@umich.edu</
 <h3 class="faq-q">{{ _('How to Use Betty like a Pro') }}</h3>
 <div class="faq-a">
 	<p><strong>{{ _('Keep a positive balance.') }}</strong>
-		{{ _("Tracking down debtors sucks for us and for you. You don't want to end up on the Wall of Shame!") }}
+		{{ _("Tracking down debtors sucks for us and for you. We cannot restock when there is too much user debt.") }}
 	</p>
 	<p><strong>{{ _('Take advantage of the Bank of Betty.') }}</strong>
 		{{ _("Our power users usually deposit $100 once a year or so. Most people deposit $20 to use until that runs out. Remembering cash every time you want to use Betty is no fun.") }}
@@ -76,17 +76,15 @@ Shoot us an e-mail at <a href="mailto:chezbetty@umich.edu">chezbetty@umich.edu</
 <div class="faq-a">
 	<p>{{ _("Yes. Chez Betty allows you to spend beyond your immediate means "
 	"under that assumption that you'll pay Betty back eventually. The idea "
-	"is to let you grab stuff when you need it and keep track of what owe, "
-	"instead of incentivizing folks to steal. There is a "
-	'<a href="/shame">Wall of Shame</a> for persons who owe Betty '
-	"more than $5.")|safe }}</p>
+	"is to let you grab stuff when you need it and keep track of what you owe, "
+	"instead of incentivizing folks to steal.") }}</p>
 </div>
 
 <h3 class="faq-q">{{ _("How does Betty set prices?") }}</h3>
 <div class="faq-a">
 	<p>{{ _("Betty sells things just above wholesale, usually a 15% markup. "
 	"If you're interested in the actual algorithm, check out Betty's source "
-	"code at github.com/um-cseg/chez-betty.") }}</p>
+	"on GitHub.") }}</p>
 	<p>{{ _('Current wholesale and Betty prices are always available on <a href="/items">the items page</a>.')|safe }}</p>
 </div>
 
@@ -95,15 +93,15 @@ Shoot us an e-mail at <a href="mailto:chezbetty@umich.edu">chezbetty@umich.edu</
 	<p>{{ _("If you keep an account balance with $20 or more, Betty will give you a 5% discount on all purchases!") }}</p>
 </div>
 
-<h3 class="faq-q">{{ _("What's the Wall of Shame Tax?") }}</h3>
+<h3 class="faq-q">{{ _("What's the Debtor's Tax?") }}</h3>
 <div class="faq-a">
 	<p>
 	{{
-	_("For people on the Wall of Shame (anyone with less than $5 in their account), Betty charges a progressive tax on all purchases.")
+	_("For anyone with less than $5 in their account, Betty charges a progressive tax on all purchases.")
 	+ ' ' +
 	_("The tax begins at 5% and increases an additional 5% for every additional $5 you are in debt ($10-15 debt is 10%, $15-20 is 15%, and so on).")
 	+ ' ' +
-	_("If you are on the Wall of Shame, the Betty terminal will very clearly show the tax being applied as you check out.")
+	_("If you are more than $5 in debt, the Betty terminal will very clearly show the tax being applied as you check out.")
 	}}
 	</p>
 </div>
