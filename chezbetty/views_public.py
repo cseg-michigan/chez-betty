@@ -64,29 +64,29 @@ def items(request):
 
 
 
-def _get_shame_users():
-    users = DBSession.query(User)\
-                     .filter(User.balance < -5)\
-                     .order_by(User.balance).all()
-    for user in users:
-        user.days_on_shame = Transaction.get_days_in_debt_for_user(user)
-    return users
-
-@view_config(route_name='shame', renderer='templates/public/shame.jinja2')
-def shame(request):
-    users = _get_shame_users()
-    return {'users': users}
-
-@view_config(route_name='shame_csv', renderer='csv')
-def shame_csv(request):
-    users = _get_shame_users()
-    header = ['uniqname','balance','name','days_on_shame']
-    rows = [[user.uniqname, user.balance, user.name, user.days_on_shame] for user in users]
-
-    return {
-            'header': header,
-            'rows': rows,
-            }
+#def _get_shame_users():
+#    users = DBSession.query(User)\
+#                     .filter(User.balance < -5)\
+#                     .order_by(User.balance).all()
+#    for user in users:
+#        user.days_on_shame = Transaction.get_days_in_debt_for_user(user)
+#    return users
+#
+#@view_config(route_name='shame', renderer='templates/public/shame.jinja2')
+#def shame(request):
+#    users = _get_shame_users()
+#    return {'users': users}
+#
+#@view_config(route_name='shame_csv', renderer='csv')
+#def shame_csv(request):
+#    users = _get_shame_users()
+#    header = ['uniqname','balance','name','days_on_shame']
+#    rows = [[user.uniqname, user.balance, user.name, user.days_on_shame] for user in users]
+#
+#    return {
+#            'header': header,
+#            'rows': rows,
+#            }
 
 
 @view_config(route_name='paydebt', renderer='templates/public/paydebt.jinja2')

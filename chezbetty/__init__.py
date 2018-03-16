@@ -100,8 +100,8 @@ def main(global_config, **settings):
     config.add_route('lang',                '/lang-{code}')
 
     config.add_route('about',               '/about')
-    config.add_route('shame',               '/shame')
-    config.add_route('shame_csv',           '/shame.csv')
+    #config.add_route('shame',               '/shame')
+    #config.add_route('shame_csv',           '/shame.csv')
 
     config.add_route('items',                    '/items')
 

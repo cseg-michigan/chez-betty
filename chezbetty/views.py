@@ -154,17 +154,7 @@ def terminal_force_index(request):
              renderer='templates/public/index.jinja2',
              custom_predicates=(IsTerminalPredicate(False),))
 def index(request):
-
-    try:
-        top_debtors = DBSession.query(User)\
-                         .filter(User.balance < -5)\
-                         .order_by(User.balance)\
-                         .limit(5).all()
-    except NoResultFound:
-        top_debtors = None
-
-    return {'top_debtors': top_debtors,
-            'owed_by_users': User.get_amount_owed()}
+    return {}
 
 # Login routes
 @view_config(route_name='login',
