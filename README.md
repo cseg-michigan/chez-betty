@@ -48,7 +48,9 @@ development environment set up, do the following:
         # python3 -m venv .
         # ^ *not* pyvenv ., that installed python2 in my venv for w/e reason
         ## Newest (only do this with Python 3.4+):
-        pyvenv-3.5 venv
+        # pyvenv-3.5 venv
+        ## Python 3.6 changes it again!
+        python3.6 -m venv
 
         source venv/bin/activate
 
