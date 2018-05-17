@@ -205,6 +205,28 @@ class Transaction(Base):
                         .filter(cls.id == id).one()
 
     @classmethod
+    @limitable_all
+    def all(cls, start=None, end=None, trans_type=None):
+        if not trans_type:
+            q = DBSession.query(cls)\
+                    .join(event.Event)\
+                    .filter(event.Event.deleted==False)
+        else:
+            q = DBSession.query(cls)\
+                    .join(event.Event)\
+                    .filter(cls.type==trans_type)\
+                    .filter(event.Event.deleted==False)
+
+        if start:
+            q = q.filter(event.Event.timestamp>=start)
+        if end:
+            q = q.filter(event.Event.timestamp<end)
+
+        q = q.order_by(desc(event.Event.timestamp))
+
+        return q
+
+    @classmethod
     @datefilter_one_or_zero(label=None)
     def get_balance(cls, trans_type, account_obj):
         r = DBSession.query(coalesce(func.sum(cls.amount), 0).label("balance"))\
@@ -864,20 +886,27 @@ class SubTransaction(Base):
 
     @classmethod
     @limitable_all
-    def all(cls, trans_type=None):
+    def all(cls, start=None, end=None, trans_type=None):
         if not trans_type:
-            return DBSession.query(cls)\
-                            .join(Transaction)\
-                            .join(event.Event)\
-                            .filter(event.Event.deleted==False)\
-                            .order_by(desc(event.Event.timestamp))
+            q = DBSession.query(cls)\
+                    .join(Transaction)\
+                    .join(event.Event)\
+                    .filter(event.Event.deleted==False)
         else:
-            return DBSession.query(cls)\
-                            .join(Transaction)\
-                            .join(event.Event)\
-                            .filter(cls.type==trans_type)\
-                            .filter(event.Event.deleted==False)\
-                            .order_by(desc(event.Event.timestamp))
+            q = DBSession.query(cls)\
+                    .join(Transaction)\
+                    .join(event.Event)\
+                    .filter(cls.type==trans_type)\
+                    .filter(event.Event.deleted==False)
+
+        if start:
+            q = q.filter(event.Event.timestamp>=start)
+        if end:
+            q = q.filter(event.Event.timestamp<end)
+
+        q = q.order_by(desc(event.Event.timestamp))
+
+        return q
 
 class PurchaseLineItem(SubTransaction):
     __mapper_args__ = {'polymorphic_identity': 'purchaselineitem'}

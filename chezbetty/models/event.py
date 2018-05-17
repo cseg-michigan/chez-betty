@@ -43,16 +43,23 @@ class Event(Base):
 
     @classmethod
     @limitable_all
-    def all(cls, trans_type=None):
+    def all(cls, start=None, end=None, trans_type=None):
         if not trans_type:
-            return DBSession.query(cls)\
-                            .filter(cls.deleted == False)\
-                            .order_by(desc(cls.id))
+            q = DBSession.query(cls)\
+                    .filter(cls.deleted == False)
         else:
-            return DBSession.query(cls)\
-                            .filter(cls.deleted == False)\
-                            .filter(cls.type==trans_type)\
-                            .order_by(desc(cls.id))
+            q = DBSession.query(cls)\
+                    .filter(cls.deleted == False)\
+                    .filter(cls.type==trans_type)
+
+        if start:
+            q = q.filter(cls.timestamp>=start)
+        if end:
+            q = q.filter(cls.timestamp<end)
+
+        q = q.order_by(desc(cls.id))
+
+        return q
 
     @classmethod
     def some(cls, count):

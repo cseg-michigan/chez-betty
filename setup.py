@@ -33,6 +33,7 @@ requires = [
     'stripe',
     'arrow',
     'sqlalchemy_utils',
+    'XlsxWriter',
     ]
 
 setup(name='chezbetty',
