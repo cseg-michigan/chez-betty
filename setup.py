@@ -9,6 +9,7 @@ with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
 
 requires = [
+    'wheel',
     'pyramid',
     'pyramid_jinja2',
     'pyramid_debugtoolbar',
