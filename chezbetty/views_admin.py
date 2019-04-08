@@ -1610,6 +1610,12 @@ def admin_item_edit_submit(request):
                     val = round(Decimal(request.POST[key]), 4)
                 elif field == 'barcode':
                     val = request.POST[key].strip() or None
+                elif field == 'sales_tax':
+                    val = request.POST[key] == 'on'
+                elif field == 'bottle_dep':
+                    val = request.POST[key] == 'on'
+                elif field == 'sticky_price':
+                    val = request.POST[key] == 'on'
                 elif field == 'img':
                     try:
                         ifile = request.POST[key].file
