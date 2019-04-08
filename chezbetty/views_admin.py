@@ -982,7 +982,7 @@ def admin_restock_submit(request):
             item.wholesale = round((total/quantity) + global_cost_item_addition, 4)
             # Set the item price
             if not item.sticky_price:
-                item.price = round(item.wholesale * Decimal('1.15'), 2)
+                item.price = round(item.wholesale * Decimal('1.20'), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
