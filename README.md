@@ -10,7 +10,7 @@ and use it to purchase food and other items. The system is linked
 to the UMich ldap server so users can swipe their M-Card to login.
 
 UMich version is an homage to UCSD's [Chez Bob](http://chezbob.ucsd.edu/).
-Chez Betty runs [here](http://chezbetty.eecs.umich.edu).
+Chez Betty runs [here](http://chezbetty.store).
 
 Chez Betty is written as a Python web app designed to run on a server with
 a browser based user interface. It supports cash and credit card deposits. The
