@@ -45,11 +45,11 @@ class LDAPLookup(object):
 
     def __connect(self):
         if not self.__conn:
-            s = ldap3.Server(self.SERVER, port=636, use_ssl=True, get_info=ldap3.GET_ALL_INFO)
+            s = ldap3.Server(self.SERVER, port=636, use_ssl=True, get_info=ldap3.ALL)
             self.__conn = ldap3.Connection(s, auto_bind=True,
                     user=self.USERNAME, password=self.PASSWORD,
-                    client_strategy=ldap3.STRATEGY_SYNC,
-                    authentication=ldap3.AUTH_SIMPLE
+                    client_strategy=ldap3.SYNC,
+                    authentication=ldap3.SIMPLE
             )
 
 
@@ -59,7 +59,7 @@ class LDAPLookup(object):
         try:
             self.__conn.search(self.BASE_DN,
                     query,
-                    ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
+                    ldap3.SUBTREE,
                     attributes=attributes
             )
         except:
@@ -68,7 +68,7 @@ class LDAPLookup(object):
             self.__connect()
             self.__conn.search(self.BASE_DN,
                     query,
-                    ldap3.SEARCH_SCOPE_WHOLE_SUBTREE,
+                    ldap3.SUBTREE,
                     attributes=attributes
             )
 
