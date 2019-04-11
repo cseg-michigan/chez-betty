@@ -97,10 +97,10 @@
               <td>Cash+Safe</td>
               <td class="right">{{ (chezbetty_cash.balance + safe.balance)|format_currency|safe }}</td>
             </tr>
-            <tr>
+            {# <tr>
               <td>Coinbase</td>
                 <td class="right ajaxed_field" id="index-bitcoin">Loading...</td>
-            </tr>
+            </tr> #}
             <tr>
               <td>Inventory (Wholesale)</td>
               <td class="right">{{ inventory.wholesale|format_currency|safe }}</td>
