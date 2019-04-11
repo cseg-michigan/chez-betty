@@ -1261,6 +1261,10 @@ def admin_items_list(request):
         page  = 'active'
         items = Item.all()
 
+    elif group == 'detailed':
+        page  = 'detailed'
+        items = Item.all()
+
         last_activity = {}
 
         # Calculate the number sold here (much faster)
@@ -1392,11 +1396,11 @@ def admin_items_list(request):
                 item.last_activity = (now - last_activity[item.id]).days
 
 
-    else:
+    elif group == 'disabled':
         items = Item.disabled()
         page  = 'disabled'
 
-         # Keep track of items which are in stock but disabled.
+        # Keep track of items which are in stock but disabled.
         items_stocked_but_disabled = []
 
         for item in items:
@@ -1411,6 +1415,10 @@ def admin_items_list(request):
             err = err[0:-1]
             err += ' are stocked but marked disabled.'
             request.session.flash(err, 'error')
+
+    else:
+        items = []
+        page = 'unknown'
 
     return {'items': items,
             'items_page': page}
