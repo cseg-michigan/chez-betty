@@ -1,6 +1,18 @@
 History of Chez Betty
 =====================
 
+- April 8, 2019: Betty has a soft opening. The shelves only contain Soylent,
+Starbucks, and BBQ chips, but things are running again!
+- April 3, 2019: After nearly two years, Chez Betty is approved to re-open!
+- April 1, 2019: The freezer is removed because Betty no longer carries any
+frozen food.
+- Summer, 2017: Betty stops restocking and is temporarily shut down having run
+afoul of University regulations on student run food operations. The maintainers
+of Betty begin the process to meet University policies.
+- April, 2017: The University notifies Betty that it does not meet University
+requirements and must close. Gracious supporters launch a call and email
+campaign to try to save Betty. The University relents and permits Betty
+to apply to re-open after meeting the requirements.
 - January 3, 2017: Added new shelves. Both for drink storage and for
 more food display.
 - June 16, 2016: Tried to hire a moving company to pick up our
