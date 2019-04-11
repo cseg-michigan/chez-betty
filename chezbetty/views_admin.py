@@ -1567,7 +1567,7 @@ def admin_item_edit(request):
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Unable to find item {}'.format(request.matchdict['item_id']), 'error')
-        return HTTPFound(location=request.route_url('admin_items_edit'))
+        return HTTPFound(location=request.route_url('admin_items_list'))
 
 
 @view_config(route_name='admin_item_edit_submit',
@@ -1645,7 +1645,7 @@ def admin_item_edit_submit(request):
 
     except NoResultFound:
         request.session.flash('Error when updating product.', 'error')
-        return HTTPFound(location=request.route_url('admin_items_edit'))
+        return HTTPFound(location=request.route_url('admin_items_list'))
 
     except IntegrityError:
         request.session.flash('Error updating item. Probably conflicting barcodes.', 'error')
@@ -1748,14 +1748,14 @@ def admin_item_delete(request):
         if datalayer.can_delete_item(item):
             datalayer.delete_item(item)
             request.session.flash('Item has been deleted', 'success')
-            return HTTPFound(location=request.route_url('admin_items_edit'))
+            return HTTPFound(location=request.route_url('admin_items_list'))
         else:
             request.session.flash('Item has dependencies. It cannot be deleted.', 'error')
             return HTTPFound(location=request.route_url('admin_item_edit', item_id=item.id))
     except Exception as e:
         if request.debug: raise(e)
         request.session.flash('Error occurred while deleting item.', 'error')
-        return HTTPFound(location=request.route_url('admin_items_edit'))
+        return HTTPFound(location=request.route_url('admin_items_list'))
 
 
 ################################################################################
