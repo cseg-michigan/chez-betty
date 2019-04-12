@@ -1,6 +1,8 @@
 History of Chez Betty
 =====================
 
+- April 12, 2019: Betty's second official opening, almost five years after
+the first. Betty is back!!
 - April 8, 2019: Betty has a soft opening. The shelves only contain Soylent,
 Starbucks, and BBQ chips, but things are running again!
 - April 3, 2019: After nearly two years, Chez Betty is approved to re-open!
