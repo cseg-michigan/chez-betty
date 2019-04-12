@@ -51,7 +51,8 @@ def can_undo_event(e):
        and e.type != 'inventory' and e.type != 'emptycashbox' \
        and e.type != 'emptysafe' \
        and e.type != 'donation' and e.type != 'withdrawal' \
-       and e.type != 'reimbursement':
+       and e.type != 'reimbursement' \
+       and e.type != 'reconcile':
         return False
     if e.deleted:
         return False
