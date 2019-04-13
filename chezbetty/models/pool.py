@@ -59,3 +59,18 @@ class Pool(account.Account):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.enabled==True)\
                         .one().c
+
+    # Sum the total amount of money in user accounts that we are holding for
+    # pools. This is different from just getting the total because it doesn't
+    # count pools with negative balances
+    @classmethod
+    def get_amount_held(cls):
+        return DBSession.query(func.sum(Pool.balance).label("total_balance"))\
+                        .filter(Pool.balance>0)\
+                        .one().total_balance or Decimal(0.0)
+
+    @classmethod
+    def get_amount_owed(cls):
+        return DBSession.query(func.sum(Pool.balance).label("total_balance"))\
+                        .filter(Pool.balance<0)\
+                        .one().total_balance or Decimal(0.0)

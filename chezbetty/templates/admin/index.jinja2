@@ -36,12 +36,20 @@
                   <td class="right">{{ chezbetty.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Users</td>
-                  <td class="right">{{ users_balance|format_currency|safe }}</td>
+                  <td>Users Have</td>
+                  <td class="right">{{ held_for_users|format_currency|safe }}</td>
                 </tr>
                 <tr>
                   <td>Users Owe</td>
                   <td class="right">{{ owed_by_users|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Pools Have</td>
+                  <td class="right">{{ held_for_pools|format_currency|safe }}</td>
+                </tr>
+                <tr>
+                  <td>Pools Owe</td>
+                  <td class="right">{{ owed_by_pools|format_currency|safe }}</td>
                 </tr>
               </tbody>
             </table>
@@ -66,14 +74,10 @@
                   <td>Cash Box</td>
                   <td class="right">{{ cashbox.balance|format_currency|safe }}</td>
                 </tr>
-                <tr>
+                {#<tr>
                   <td>Bitcoin Box</td>
                   <td class="right">{{ btcbox.balance|format_currency|safe }}</td>
-                </tr>
-                <tr>
-                  <td>Users Cash</td>
-                  <td class="right">{{ held_for_users|format_currency|safe }}</td>
-                </tr>
+                </tr>#}
               </tbody>
             </table>
           </div>
@@ -83,7 +87,7 @@
     </div>
   </div>
 
-  <div class="col-md-4">
+  <div class="col-md-3">
 
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -93,6 +97,10 @@
 
         <table class="table">
           <tbody>
+            <tr>
+              <td>Bank Account</td>
+              <td class="right">{{ (bank_balance)|format_currency|safe }}</td>
+            </tr>
             <tr>
               <td>Cash+Safe</td>
               <td class="right">{{ (chezbetty_cash.balance + safe.balance)|format_currency|safe }}</td>
@@ -109,18 +117,6 @@
               <td>Inventory (Price)</td>
               <td class="right">{{ inventory.price|format_currency|safe }}</td>
             </tr>
-            <tr>
-              <td>Estimated Net</td>
-              <td class="right">{{ estimated_net|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Debt Forgiven</td>
-              <td class="right">{{ debt_forgiven|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Absorbed From Users</td>
-              <td class="right">{{ balance_absorbed|format_currency|safe }}</td>
-            </tr>
 
           </tbody>
         </table>
@@ -129,39 +125,31 @@
     </div>
   </div>
 
-  <div class="col-md-3">
+  <div class="col-md-4">
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Cash Summary</h3>
+        <h3 class="panel-title">Other</h3>
       </div>
       <div class="panel-body">
 
         <table class="table">
           <tbody>
             <tr>
-              <td>Cashbox Net</td>
-              <td class="right">{{ cashbox_net|format_currency|safe }}</td>
+              <td>Estimated Net</td>
+              <td class="right">{{ estimated_net|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Bitcoin Net</td>
-              <td class="right">{{ btcbox_net|format_currency|safe }}</td>
+              <td>Reimbursements Owed</td>
+              <td class="right">{{ owed_reimbursements_total|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Misc Net</td>
-              <td class="right">{{ chezbetty_net|format_currency|safe }}</td>
+              <td>Debt Forgiven</td>
+              <td class="right">{{ debt_forgiven|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Store</td>
-              <td class="right">{{ restock.balance|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Donation</td>
-              <td class="right">{{ donation.balance|format_currency|safe }}</td>
-            </tr>
-            <tr>
-              <td>Withdrawal</td>
-              <td class="right">{{ withdrawal.balance|format_currency|safe }}</td>
+              <td>Absorbed From Users</td>
+              <td class="right">{{ balance_absorbed|format_currency|safe }}</td>
             </tr>
           </tbody>
         </table>

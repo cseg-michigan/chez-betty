@@ -289,11 +289,14 @@ def admin_index(request):
     users_balance   = User.get_users_total()
     held_for_users  = User.get_amount_held()
     owed_by_users   = User.get_amount_owed()
+    held_for_pools  = Pool.get_amount_held()
+    owed_by_pools   = Pool.get_amount_owed()
 
     inventory       = DBSession.query(func.sum(Item.in_stock * Item.wholesale).label("wholesale"),
                                       func.sum(Item.in_stock * Item.price).label("price")).one()
 
     owed_reimbursements = Reimbursee.get_owed()
+    owed_reimbursements_total = Reimbursee.get_outstanding_reimbursements_total()
 
     debt_forgiven   = User.get_debt_forgiven()
     balance_absorbed= User.get_amount_absorbed()
@@ -323,6 +326,11 @@ def admin_index(request):
     # refunded all account holders, defaulted on our loan, and sold all inventory
     # for what we paid for it.
     estimated_net = chezbetty_cash.balance + safe.balance + cashbox.balance + btcbox.balance - held_for_users + inventory.wholesale
+
+    # Calculate how much money we have in the bank. This should be
+    # whats in the betty cash account, plus how much is owed in reimbursements
+    # that haven't been paid out.
+    bank_balance = chezbetty_cash.balance + owed_reimbursements_total
 
     # Get the current date that it is in the eastern time zone
     now = arrow.now()
@@ -362,7 +370,11 @@ def admin_index(request):
                 users_balance=users_balance,
                 held_for_users=held_for_users,
                 owed_by_users=owed_by_users,
+                held_for_pools=held_for_pools,
+                owed_by_pools=owed_by_pools,
                 owed_reimbursements=owed_reimbursements,
+                owed_reimbursements_total=owed_reimbursements_total,
+                bank_balance=bank_balance,
                 debt_forgiven=debt_forgiven,
                 balance_absorbed=balance_absorbed,
                 safe=safe,
@@ -526,6 +538,8 @@ def admin_dashboard(request):
                 total_btc_deposits=total_btc_deposits,
                 total_cc_deposits=total_cc_deposits,
                 total_active_users=total_active_users,
+                withdrawal=withdrawal,
+                donation=donation,
                 restock=restock,
                 cashbox_net=cashbox_net,
                 btcbox_net=btcbox_net,
