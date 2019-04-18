@@ -1,4 +1,5 @@
 from .model import *
+import re
 
 class ItemImage(Base):
     __tablename__ = 'items_images'
@@ -36,7 +37,7 @@ class Item(Versioned, Base):
     def __init__(self, name, barcode, price, wholesale, bottle_dep, sales_tax,
                  in_stock, enabled):
         self.name = name
-        self.barcode = barcode
+        self.barcode = re.compile(r'[^\d;]+').sub('', barcode) #remove any characters that aren't digits or delimiters
         self.price = price
         self.wholesale = wholesale
         self.bottle_dep = bottle_dep
@@ -51,6 +52,16 @@ class Item(Versioned, Base):
     @classmethod
     def from_barcode(cls, barcode):
         return DBSession.query(cls).filter(cls.barcode == barcode).one()
+
+    @classmethod
+    def from_barcode_sub(cls, barcode):
+        item_list = DBSession.query(cls).filter(cls.barcode.ilike('%{}%'.format(barcode))).all()
+        if(len(item_list) == 1):
+            return item_list[0]
+        else: #list length other than 1 is likely a bad scan, so search for exact match to throw exception if needed
+            return DBSession.query(cls).filter(cls.barcode == barcode).one()
+        #TODO: handle the two cases where len(item_list) != 1 (len is 0, len is > 1)
+
 
     @classmethod
     def from_fuzzy(cls, search_str):
@@ -96,6 +107,17 @@ class Item(Versioned, Base):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.barcode == barcode).one().c > 0
 
+    @classmethod #search for all delimited barcodes in database; return true if any matches are found
+    def exists_barcode_sub(cls, barcode):
+        sub = re.compile(r'[^\d;]+').sub('', barcode).split(';') #remove any characters that aren't digits or delimiters
+        result = False
+        for single_barcode in sub:
+            result = DBSession.query(func.count(cls.id).label('c'))\
+                        .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
+            if(result):
+                return result
+        return result
+
     @classmethod
     def total_inventory_wholesale(cls):
         return DBSession.query(func.sum(cls.wholesale * cls.in_stock).label('c'))\
@@ -105,4 +127,4 @@ class Item(Versioned, Base):
         return "<Item (%s)>" % self.name
 
     __repr__ = __str__
-
+    
