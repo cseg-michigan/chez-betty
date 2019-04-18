@@ -1622,6 +1622,7 @@ def admin_item_edit_submit(request):
                 elif field == 'wholesale':
                     val = round(Decimal(request.POST[key]), 4)
                 elif field == 'barcode':
+                    val = request.POST[key].strip() or None
                 elif field == 'sales_tax':
                     val = request.POST[key] == 'on'
                 elif field == 'bottle_dep':
