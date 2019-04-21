@@ -1,9 +1,9 @@
 {% extends "base.jinja2" %}
 {% set active_page = 'cash_reconcile' %}
-{% block title %}Cash Box{% endblock %}
+{% block title %}Cash Box and Safe{% endblock %}
 
 {% block top %}
-<h1 class="page-header">Cash Box</h1>
+<h1 class="page-header">Cash Box and Safe</h1>
 {% endblock %}
 
 
@@ -14,8 +14,8 @@
     <h3 class="panel-title">Empty Cashbox</h3>
   </div>
   <div class="panel-body">
-    This will move all money that should be in the cashbox to the safe.
-    We don't count here, so no need to enter an amount.
+    <p>This will move all money that should be in the cashbox to the safe.
+    We don't count here, so no need to enter an amount.</p>
 
     <form role="form" action="/admin/cash/reconcile/submit" method="post">
       <input type="hidden" name="cash-box-reconcile-type" value="cashboxtosafe">
@@ -30,31 +30,40 @@
     <h3 class="panel-title">Deposit to Bank</h3>
   </div>
   <div class="panel-body">
-    This will move money from the safe to the bank. It will not, however, empty
+    <p>This will move money from the safe to the bank. It will not, however, empty
     the cashbox. So, if you emptied the cashbox on the way to the bank,
-    you should click the "Move Cashbox to Safe" button first.
+    you should click the "Move Cashbox to Safe" button first.</p>
 
-    <form role="form" action="/admin/cash/reconcile/submit" method="post">
+    <form role="form" action="/admin/cash/reconcile/submit" method="post" class="form-horizontal">
       <input type="hidden" name="cash-box-reconcile-type" value="safetobank">
 
-      <dl class="dl-horizontal">
-        <dt>Amount deposited to bank</dt>
-        <dd><input type="number" min="0" step="0.01" class="form-control numeric" id="cash-box-amount" name="amount"></dd>
-      </dl>
+      <div class="form-group">
+        <label for="cash-box-amount" class="col-sm-3 control-label">Amount deposited to bank:</label>
+        <div class="col-sm-9">
+          <div class="input-group">
+            <span class="input-group-addon">$</span>
+            <input type="text" class="form-control" id="cash-box-amount" name="amount">
+          </div>
+        </div>
+      </div>
 
-
-      <input type="hidden" name="cash-box-reconcile" value="off">
-      <input type="checkbox" id="cash-box-reconcile" name="cash-box-reconcile" checked="checked">
-      <label for="cash-box-reconcile">Check if the safe is completely empty and you
+      <div class="form-group">
+        <label for="cash-box-reconcile" class="col-sm-3 control-label">Check if the safe is completely empty and you
       want to reconcile cash deposits.</label>
+        <div class="col-sm-9">
+          <input type="hidden" name="cash-box-reconcile" value="off">
+          <input type="checkbox" id="cash-box-reconcile" name="cash-box-reconcile" checked="checked">
+        </div>
+      </div>
 
-      <br />
-      <button type="submit" class="btn btn-success">Deposit</button>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          <button type="submit" class="btn btn-success">Deposit</button>
+        </div>
+      </div>
+
     </form>
   </div>
 </div>
-
-
-
 
 {% endblock %}

@@ -8,10 +8,10 @@
   <li><span>Manage The Kiosk</span></li>
   <li {% if active_page == 'restock' %}class="active"{% endif %}><a href="/admin/restock">Restock</a></li>
   <li {% if active_page == 'inventory' %}class="active"{% endif %}><a href="/admin/inventory">Run Inventory</a></li>
-  <li {% if active_page == 'cash_reconcile' %}class="active"{% endif %}><a href="/admin/cash/reconcile">Empty Cash Box</a></li>
+  <li {% if active_page == 'cash_reconcile' %}class="active"{% endif %}><a href="/admin/cash/reconcile">Cash Box &amp; Safe</a></li>
   <li {% if active_page == 'announcements' %}class="active"{% endif %}><a href="/admin/announcements/edit">Announcements</a></li>
   {% if request.has_permission("admin") %}
-  <li {% if active_page == 'btc_reconcile' %}class="active"{% endif %}><a href="/admin/btc/reconcile">Deposit Bitcoins</a></li>
+  {# <li {% if active_page == 'btc_reconcile' %}class="active"{% endif %}><a href="/admin/btc/reconcile">Deposit Bitcoins</a></li> #}
   {% endif %}
 </ul>
 <ul class="nav nav-sidebar">
