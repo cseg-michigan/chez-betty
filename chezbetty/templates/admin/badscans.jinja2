@@ -9,19 +9,19 @@
 
 {% block contentwide %}
 
-<table class="table table-condensed table-striped sticky sortable" id="events_table">
+<table class="table table-condensed table-striped sticky sortable" id="events_table" style="table-layout:fixed;">
   <thead>
     <tr>
-      <th>Scan</th>
-      <th data-defaultsort="desc">Count</th>
-      <th>Timestamp</th>
+      <th style="width: 65%">Scan</th>
+      <th data-defaultsort="desc" style="width: 10%">Count</th>
+      <th style="width: 20%">Timestamp</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
   {% for badscan in badscans %}
   <tr id="badscan-row-{{ loop.index }}">
-    <td>{{ badscan.badscan }}</td>
+    <td style="word-wrap:break-word;">{{ badscan.badscan }}</td>
     <td>{{ badscan.count }}</td>
     <td>{{ badscan.timestamp|pretty_date|safe }}</td>
     <td>{{ button.force_delete('badscan', badscan.badscan, 'badscan-row-'+loop.index|string) }}</td>
