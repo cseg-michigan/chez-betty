@@ -95,6 +95,7 @@ def add_counts(event):
         count['requests']     = Request.count()
         count['pools']        = Pool.count()
         count['reimbursees']  = Reimbursee.count()
+        count['badscans']     = BadScan.count()
         event.rendering_val['counts'] = count
 
 @subscriber(BeforeRender)

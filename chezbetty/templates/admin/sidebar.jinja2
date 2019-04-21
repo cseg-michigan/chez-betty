@@ -20,17 +20,10 @@
   <li {% if active_page == 'items_list' %}class="active"{% endif %}><a href="/admin/items/list">List Items<span class="badge pull-right">{{ counts["items"] }}</span></a></li>
   <li {% if active_page == 'boxes_add'  %}class="active"{% endif %}><a href="/admin/box/add">Add Boxes</a></li>
   <li {% if active_page == 'boxes_list' %}class="active"{% endif %}><a href="/admin/boxes/list">List Boxes<span class="badge pull-right">{{ counts["boxes"] }}</span></a></li>
+  <li {% if active_page == 'vendors_edit' %}class="active"{% endif %}><a href="/admin/vendors/edit">Edit Vendors<span class="badge pull-right">{{ counts["vendors"] }}</span></a></li>
   <li {% if active_page == 'tags_list' %}class="active"{% endif %}><a href="/admin/tags/list">List Tags<span class="badge pull-right">{{ counts["tags"] }}</span></a></li>
   <li {% if active_page == 'requests' %}class="active"{% endif %}><a href="/admin/requests">Requests<span class="badge pull-right">{{ counts["requests"] }}</span></a></li>
-  <li {% if active_page == 'badscans' %}class="active"{% endif %}><a href="/admin/badscans/list">Bad Scans</a></li>
-</ul>
-<ul class="nav nav-sidebar">
-  <li><span>Manage Vendors</span></li>
-  <li {% if active_page == 'vendors_edit' %}class="active"{% endif %}><a href="/admin/vendors/edit">Edit Vendors<span class="badge pull-right">{{ counts["vendors"] }}</span></a></li>
-</ul>
-<ul class="nav nav-sidebar">
-  <li><span>Manage Reimbursees</span></li>
-  <li {% if active_page == 'reimbursees' %}class="active"{% endif %}><a href="/admin/reimbursees">Manage Reimbursees<span class="badge pull-right">{{ counts["reimbursees"] }}</span></a></li>
+  <li {% if active_page == 'badscans' %}class="active"{% endif %}><a href="/admin/badscans/list">Bad Scans<span class="badge pull-right">{{ counts["badscans"] }}</span></a></li>
 </ul>
 {% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
@@ -53,6 +46,7 @@
 {% if request.has_permission("admin") %}
 <ul class="nav nav-sidebar">
   <li><span>Move Money</span></li>
+  <li {% if active_page == 'reimbursees' %}class="active"{% endif %}><a href="/admin/reimbursees">Manage Reimbursees<span class="badge pull-right">{{ counts["reimbursees"] }}</span></a></li>
   <li {% if active_page == 'adjustment' %}class="active"{% endif %}><a href="/admin/cash/adjustment">Cash Adjustments</a></li>
 </ul>
 {% endif %}

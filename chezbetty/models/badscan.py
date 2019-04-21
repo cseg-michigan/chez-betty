@@ -22,6 +22,11 @@ class BadScan(Base):
                         .order_by(cls.timestamp).all()
 
     @classmethod
+    def count(cls):
+        return DBSession.query(func.count(cls.id).label('c'))\
+                        .one().c
+
+    @classmethod
     def get_scans_with_counts(cls):
         out = []
         badscans = DBSession.query(cls.badscan, func.count(cls.badscan).label('count'))\

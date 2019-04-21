@@ -9,43 +9,48 @@
 
 {% block content %}
 
-<form role="form" action="/admin/vendors/edit/submit" method="post" id="form-edit-vendors">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Edit and Update Vendors</h3>
+      </div>
+      <div class="panel-body">
 
-  <div id="edit-vendors">
+        <form role="form" action="/admin/vendors/edit/submit" method="post" id="form-edit-vendors">
 
-    <table class="table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Enable</th>
+              </tr>
+            </thead>
 
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Enable</th>
-        </tr>
-      </thead>
+            <tbody>
+              {% for vendor in vendors %}
+              <tr id="vendor-{{ vendor.id }}" class="edit-vendor-row {% if vendor.enabled == False %} disabled-row {% endif %}">
+                <td>
+                  <input type="text" class="form-control" id="vendor-enable-{{ vendor.id }}" name="vendor-name-{{ vendor.id }}" value="{{ vendor.name }}">
+                </td>
+                <td>{{ button.onoff_switch("vendor", "enabled", vendor.id, vendor.enabled) }}</td>
+              </tr>
+              {% endfor %}
 
-      <tbody>
+              <tr>
+                <td><input type="text" class="form-control" id="vendor-name-new" name="vendor-name-new"></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
 
-        {% for vendor in vendors %}
-        <tr id="vendor-{{ vendor.id }}" class="edit-vendor-row {% if vendor.enabled == False %} disabled-row {% endif %}">
-          <td>
-            <input type="text" class="form-control" id="vendor-enable-{{ vendor.id }}" name="vendor-name-{{ vendor.id }}" value="{{ vendor.name }}">
-          </td>
-          <td>{{ button.onoff_switch("vendor", "enabled", vendor.id, vendor.enabled) }}</td>
-        </tr>
-        {% endfor %}
+          <button type="submit" class="btn btn-success">Update Vendors</button>
 
-        <tr>
-          <td><input type="text" class="form-control" id="vendor-name-new" name="vendor-name-new"></td>
-          <td></td>
-        </tr>
+        </form>
 
-      </tbody>
-
-    </table>
-
-    <button type="submit" class="btn btn-success">Update Vendors</button>
-
+      </div>
+    </div>
   </div>
-
-</form>
+</div>
 
 {% endblock %}
