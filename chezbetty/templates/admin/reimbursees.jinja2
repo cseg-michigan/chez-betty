@@ -1,4 +1,5 @@
 {% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
 {% set active_page = 'reimbursees' %}
 {% block title %}Reimbursees{% endblock %}
 
@@ -22,6 +23,7 @@
             <tr>
               <th>Name</th>
               <th>Balance</th>
+              <th>Enabled</th>
             </tr>
           </thead>
 
@@ -31,6 +33,7 @@
             <tr id="reimbursee-{{ reimbursee.id }}" class="reimbursee-row">
               <td><a href="/admin/events?filter=cash_account:{{ reimbursee.id }}">{{ reimbursee.name }}</a></td>
               <td>{{ reimbursee.balance|format_currency|safe }}</td>
+              <td>{{ button.onoff_switch("reimbursee", "enabled", reimbursee.id, reimbursee.enabled) }}</td>
             </tr>
             {% endfor %}
 
@@ -52,26 +55,53 @@
         <h3 class="panel-title">Create Reimbursement</h3>
       </div>
       <div class="panel-body">
-        <form role="form" action="/admin/reimbursees/reimbursement/submit" method="post" id="form-reimbursement">
-          Reimbursee:
-          <select class="form-control" id="reimbursee" name="reimbursee">
-            {% for reimbursee in reimbursees %}
-            <option value="{{ reimbursee.id }}" data-amount="{{ reimbursee.balance }}">{{ reimbursee.name }}</option>
-            {% endfor %}
-          </select>
-
-          Amount:
-          <input type="text" class="form-control" id="reimbursement-amount" name="amount">
-
-          Notes:
-          <input type="text" class="form-control" id="reimbursement-notes" name="notes">
-
-          <div>
-            Set custom time for this reimbursement or leave blank to use current time:<br />
-            <input type="text" id="reimbursement-date" name="reimbursement-date" class="event-date-picker">
+        <p>
+          Add a reimbursement here after writing a check or otherwise transferring
+          money to the reimbursee.
+        </p>
+        <form role="form" action="/admin/reimbursees/reimbursement/submit" method="post" id="form-reimbursement" class="form-horizontal">
+          <div class="form-group">
+            <label for="reimbursee" class="col-sm-2 control-label">Reimbursee:</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="reimbursee" name="reimbursee">
+                {% for reimbursee in reimbursees %}
+                <option value="{{ reimbursee.id }}" data-amount="{{ reimbursee.balance }}">{{ reimbursee.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
 
-          <button type="submit" class="btn btn-success">Create Reimbursement</button>
+          <div class="form-group">
+            <label for="reimbursement-amount" class="col-sm-2 control-label">Amount:</label>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input type="text" class="form-control" id="reimbursement-amount" name="amount">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reimbursement-notes" class="col-sm-2 control-label">Notes:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="reimbursement-notes" name="notes">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reimbursement-date" class="col-sm-2 control-label">
+              Set custom time for this reimbursement or leave blank to use current time:
+            </label>
+            <div class="col-sm-10">
+              <input type="text" id="reimbursement-date" name="reimbursement-date" class="event-date-picker">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-success">Create Reimbursement</button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -88,17 +118,64 @@
         <h3 class="panel-title">Add New Reimbursee</h3>
       </div>
       <div class="panel-body">
-        <form role="form" action="/admin/reimbursees/add/submit" method="post" id="form-add-reimbursee">
+        <p>
+          This creates a special account for people who have paid for things
+          on Betty's behalf and need to be reimbursed eventually.
+        </p>
 
-          <input type="text" class="form-control" id="reimbursee-name-new" name="reimbursee-name-new"></td>
-          <button type="submit" class="btn btn-success">Add New Reimbursee</button>
-
+        <form role="form" action="/admin/reimbursees/add/submit" method="post" id="form-add-reimbursee" class="form-horizontal">
+          <div class="form-group">
+            <label for="reimbursee-name-new" class="col-sm-2 control-label">Reimbursee Name</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="reimbursee-name-new" name="reimbursee-name-new">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-success">Add New Reimbursee</button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
   </div>
 </div>
 
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Disabled Reimbursees</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Balance</th>
+              <th>Enabled</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for reimbursee in reimbursees_disabled %}
+            <tr id="reimbursee-{{ reimbursee.id }}" class="reimbursee-row">
+              <td><a href="/admin/events?filter=cash_account:{{ reimbursee.id }}">{{ reimbursee.name }}</a></td>
+              <td>{{ reimbursee.balance|format_currency|safe }}</td>
+              <td>{{ button.onoff_switch("reimbursee", "enabled", reimbursee.id, reimbursee.enabled) }}</td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 {% endblock %}

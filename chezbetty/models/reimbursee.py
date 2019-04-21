@@ -30,6 +30,13 @@ class Reimbursee(account.Account):
                         .all()
 
     @classmethod
+    def disabled(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled == False)\
+                        .order_by(cls.name)\
+                        .all()
+
+    @classmethod
     def get_owed(cls):
         return DBSession.query(cls)\
                         .filter(cls.enabled)\

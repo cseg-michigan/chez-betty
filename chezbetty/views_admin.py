@@ -127,6 +127,8 @@ def _admin_ajax_general(request, obj_value):
         obj = Vendor.from_id(obj_id)
     elif obj_str == 'user':
         obj = User.from_id(obj_id)
+    elif obj_str == 'reimbursee':
+        obj = Reimbursee.from_id(obj_id)
     elif obj_str == 'request':
         obj = Request.from_id(obj_id)
     elif obj_str == 'request_post':
@@ -2238,7 +2240,9 @@ def admin_vendors_edit_submit(request):
              permission='manage')
 def admin_reimbursees(request):
     reimbursees = Reimbursee.all()
-    return {'reimbursees': reimbursees}
+    reimbursees_disabled = Reimbursee.disabled()
+    return {'reimbursees': reimbursees,
+            'reimbursees_disabled': reimbursees_disabled}
 
 
 @view_config(route_name='admin_reimbursees_add_submit',
