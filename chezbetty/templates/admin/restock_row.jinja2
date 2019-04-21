@@ -7,34 +7,60 @@
   {% if item %}
   <td class="name">
     {{ item|make_link|safe }}
-    <dl class="dl-horizontal">
-      <dt>Barcode</dt><dd>{{ item.barcode }}</dd>
-      {% for iv in item.vendors %}
-      <dt>{{ iv.vendor.name }}</dt><dd>{{ iv.item_number }}</dd>
-      {% endfor %}
-    </dl>
+
+    <div class="row">
+      <div class="col-sm-7">Barcode</div>
+      <div class="col-sm-5">{{ item.barcode }}</div>
+    </div>
+
+    {% for iv in item.vendors %}
+    <div class="row">
+      <div class="col-sm-7">{{ iv.vendor.name }}</div>
+      <div class="col-sm-5">{{ iv.item_number }}</div>
+    </div>
+    {% endfor %}
+
   </td>
   {% elif box %}
   <td class="box-name">
-    Box: {{ box|make_link|safe }}<br />
-    <dl class="dl-horizontal">
-      {% for boxitem in box.items %}
-      <dt>{{ boxitem.item.name }}</dt>
-      <dd>{{ boxitem.quantity }}</dd>
-      {% endfor %}
-    </dl>
-    <dl class="dl-horizontal">
-      <dt>Barcode</dt><dd>{{ box.barcode }}</dd>
-      {% for bv in box.vendors %}
-      <dt>{{ bv.vendor.name }}</dt><dd>{{ bv.item_number }}</dd>
-      {% endfor %}
-    </dl>
+    Box: {{ box|make_link|safe }}
+
+    {% for boxitem in box.items %}
+    <div class="row">
+      <div class="col-sm-10">{{ boxitem.item.name }}</div>
+      <div class="col-sm-2">{{ boxitem.quantity }}</div>
+    </div>
+    {% endfor %}
+
+    <div class="row">
+      <div class="col-sm-7">Barcode</div>
+      <div class="col-sm-5">{{ box.barcode }}</div>
+    </div>
+
+    {% for bv in box.vendors %}
+    <div class="row">
+      <div class="col-sm-7">{{ bv.vendor.name }}</div>
+      <div class="col-sm-5">{{ bv.item_number }}</div>
+    </div>
+    {% endfor %}
   </td>
   {% endif %}
   <td class="quantity"><input type="text" class="form-control restock-quantity numeric" id="restock-quantity-X" name="restock-quantity-X" value="{% if line.quantity %}{{ line.quantity }}{% else %}1{% endif %}"></td>
-  <td class="wholesale"><input type="text" class="form-control restock-cost numeric" id="restock-wholesale-X" name="restock-wholesale-X" value="{% if line.wholesale %}{{ line.wholesale|round(4) }}{% elif item %}{{ item.wholesale|round(4) }}{% elif box %}{{ box.wholesale|round(4) }}{% endif %}"></td>
+  <td class="wholesale">
+    <input type="text" class="form-control restock-cost numeric" id="restock-wholesale-X" name="restock-wholesale-X" value="{% if line.wholesale %}{{ line.wholesale|round(4) }}{% elif item %}{{ item.wholesale|round(4) }}{% elif box %}{{ box.wholesale|round(4) }}{% endif %}">
+    <div class="row">
+      <div class="col-sm-8">Sales Tax</div>
+      <div class="col-sm-4">
+        <input type="checkbox" class="restock-salestax" id="restock-salestax-X" name="restock-salestax-X" value="on" {% if line.salestax or (box and box.sales_tax) or (item and item.sales_tax) %}checked="checked"{% endif %}>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-8">Bottle Dep</div>
+      <div class="col-sm-4">
+        <input type="checkbox" class="restock-bottledeposit" id="restock-bottledeposit-X" name="restock-bottledeposit-X" value="on" {% if line.btldeposit or (box and box.bottle_dep) or (item and item.bottle_dep) %}checked="checked"{% endif %}>
+      </div>
+    </div>
+  </td>
   <td class="coupon"><input type="text" class="form-control restock-coupon numeric" id="restock-coupon-X" name="restock-coupon-X" value="{% if line.coupon %}{{ line.coupon|round(4) }}{% endif %}"></td>
-  <td class="salestax"><input type="checkbox" class="restock-salestax" id="restock-salestax-X" name="restock-salestax-X" value="on" {% if line.salestax or (box and box.sales_tax) or (item and item.sales_tax) %}checked="checked"{% endif %}></td>
-  <td class="bottledeposit"><input type="checkbox" class="restock-bottledeposit" id="restock-bottledeposit-X" name="restock-bottledeposit-X" value="on" {% if line.btldeposit or (box and box.bottle_dep) or (item and item.bottle_dep) %}checked="checked"{% endif %}></td>
   <td class="total"><input type="text" class="form-control restock-total numeric" id="restock-total-X" name="restock-total-X"></td>
 </tr>

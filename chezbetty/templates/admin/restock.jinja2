@@ -17,119 +17,171 @@
 
   <input type="hidden" id="row-count" name="row-count" value="{{ restock_rows|default(0) }}">
 
-  <table id="restock-table" class="table table-bordered">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Restock Items</h3>
+        </div>
+        <div class="panel-body">
 
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th style="width: 5%;">Quantity</th>
-        <th style="width: 15%;">Wholesale Cost</th>
-        <th style="width: 15%;">Coupon Discount (Each)</th>
-        <th style="width: 5%;">Sales Tax</th>
-        <th style="width: 5%;">Bottle Deposit</th>
-        <th style="width: 15%;">Total Cost</th>
-      </tr>
-    </thead>
+          <table id="restock-table" class="table table-bordered">
 
-    <tbody>
-    {{ restock_items|safe }}
-    </tbody>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="width: 5%;">Quantity</th>
+                <th style="width: 20%;">Wholesale Cost</th>
+                <th style="width: 15%;">Coupon Discount (Each)</th>
+                <th style="width: 12%;">Total Cost</th>
+              </tr>
+            </thead>
 
-    <tfoot>
-      <tr>
-        <td colspan="3">Coupon Total</td>
-        <td id="restock-coupon-total">$0.00</td>
-        <td colspan="3"></td>
-      </tr>
-      <tr>
-        <td colspan="6">Subtotal</td>
-        <td id="restock-subtotal">$0.00</td>
-      </tr>
-      <tr>
-        <td colspan="6">Global Cost <span style="font-weight: normal;">(Cost that should be spread across each item in the order. Example: truck rental, shipping, spoons, etc.)</span></td>
-        <td><input type="text" id="restock-globalcost" class="form-control numeric" name="restock-globalcost" value="{{ global_cost }}"></td>
-      </tr>
-      <tr>
-        <td colspan="6">Donation <span style="font-weight: normal;">(Discount given to Betty that will be applied as a donation. Example: Costco 2% cash back, Boxed.com points, etc.)</span></td>
-        <td><input type="text" id="restock-donation" class="form-control numeric" name="restock-donation" value="{{ donation }}"></td>
-      </tr>
-      <tr>
-        <td colspan="6">Total</td>
-        <td id="restock-total">$0.00</td>
-      </tr>
-    </tfoot>
-  </table>
+            <tbody>
+            {{ restock_items|safe }}
+            </tbody>
 
-
-  <table class="table">
-    <tbody>
-      <tr>
-        <td style="width:50%;">
-          <select class="form-control" id="restock-manual-item-select">
-            {% for item in items %}
-            <option value="{{ item.barcode }}">{{ item.name }}</option>
-            {% endfor %}
-          </select>
-        </td>
-        <td>
-          <button type="button" id="restock-manual-item-button" class="btn btn-success restock-manual">Add Item</button>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <select class="form-control" id="restock-manual-box-select">
-            {% for box in boxes %}
-            <option value="{{ box.barcode }}">{{ box.name }}</option>
-            {% endfor %}
-          </select>
-        </td>
-        <td>
-          <button type="button" id="restock-manual-box-button" class="btn btn-success restock-manual">Add Box</button>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <input type="text" id="restock-manual-search-input" class="form-control">
-          <span id="restock-search-notice"></span>
-          <table id="restock-search-table" class="restock-search-table">
-            <tr id="restock-search-row-0" class="restock-search-row" style="display:none;">
-              <td class="restock-search-row-name">Name</td>
-              <td>
-                <button type="button" id="restock-search-row-button-0" class="btn btn-default">Add</button>
-              </td>
-            </tr>
+            <tfoot>
+              <tr>
+                <td colspan="3">Coupon Total</td>
+                <td id="restock-coupon-total">$0.00</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="4">Subtotal</td>
+                <td id="restock-subtotal">$0.00</td>
+              </tr>
+              <tr>
+                <td colspan="4">Global Cost <span style="font-weight: normal;">(Cost that should be spread across each item in the order. Example: truck rental, shipping, spoons, etc.)</span></td>
+                <td><input type="text" id="restock-globalcost" class="form-control numeric" name="restock-globalcost" value="{{ global_cost }}"></td>
+              </tr>
+              <tr>
+                <td colspan="4">Donation <span style="font-weight: normal;">(Discount given to Betty that will be applied as a donation. Example: Costco 2% cash back, Boxed.com points, etc.)</span></td>
+                <td><input type="text" id="restock-donation" class="form-control numeric" name="restock-donation" value="{{ donation }}"></td>
+              </tr>
+              <tr>
+                <td colspan="4">Total</td>
+                <td id="restock-total">$0.00</td>
+              </tr>
+            </tfoot>
           </table>
 
-          <p>Disabled products in search results:</p>
-          <table id="restock-search-table-disabled" class="restock-search-table">
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Choose Items</h3>
+        </div>
+        <div class="panel-body">
+
+
+          <table class="table">
+            <tbody>
+              <tr>
+                <td style="width:70%;">
+                  <select class="form-control" id="restock-manual-item-select">
+                    {% for item in items %}
+                    <option value="{{ item.barcode }}">{{ item.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" id="restock-manual-item-button" class="btn btn-success restock-manual">Add Item</button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <select class="form-control" id="restock-manual-box-select">
+                    {% for box in boxes %}
+                    <option value="{{ box.barcode }}">{{ box.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" id="restock-manual-box-button" class="btn btn-success restock-manual">Add Box</button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="text" id="restock-manual-search-input" class="form-control">
+                </td>
+                <td>
+                  <button type="button" id="restock-manual-search-button" class="btn btn-success restock-manual">Search Item</button>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <span id="restock-search-notice"></span>
+                  <table id="restock-search-table" class="restock-search-table">
+                    <tr id="restock-search-row-0" class="restock-search-row" style="display:none;">
+                      <td class="restock-search-row-name">Name</td>
+                      <td>
+                        <button type="button" id="restock-search-row-button-0" class="btn btn-default">Add</button>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <p>Disabled products in search results:</p>
+                  <table id="restock-search-table-disabled" class="restock-search-table">
+                  </table>
+                </td>
+              </tr>
+            </tbody>
           </table>
-        </td>
-        <td>
-          <button type="button" id="restock-manual-search-button" class="btn btn-success restock-manual">Search Item</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 
+        </div>
+      </div>
+    </div>
 
-  <div>
-    Set custom time for this restock or leave blank to use current time:<br />
-    <input type="text" id="restock-date" name="restock-date" class="event-date-picker">
   </div>
 
-  <div>
-    Do NOT update item prices with this restock:
-    <input type="checkbox" id="restock-noprice" name="restock-noprice">
-  </div>
 
-  <div>
-    Who paid for this restock:
-    <select class="form-control" id="restock-reimbursee" name="restock-reimbursee">
-      {% for reimbursee in reimbursees %}
-      <option value="{{ reimbursee.id }}" {% if reimbursee_selected|string == reimbursee.id|string %}selected="selected"{% endif %}>{{ reimbursee.name }}</option>
-      {% endfor %}
-      <option value="none" {% if reimbursee_selected == 'none' %}selected="selected"{% endif %}>No one, paid directly from Betty</option>
-    </select>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Restock Options</h3>
+        </div>
+        <div class="panel-body">
+
+          <div class="form-group">
+            <label for="restock-date" class="col-sm-4 control-label">
+              Set custom time for this restock or leave blank to use current time:
+            </label>
+            <div class="col-sm-8">
+              <input type="text" id="restock-date" name="restock-date" class="event-date-picker">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="restock-noprice" name="restock-noprice">
+                  Do NOT update item prices with this restock
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="restock-reimbursee" class="col-sm-4 control-label">Who paid for this restock:</label>
+            <div class="col-sm-8">
+              <select class="form-control" id="restock-reimbursee" name="restock-reimbursee">
+                {% for reimbursee in reimbursees %}
+                <option value="{{ reimbursee.id }}" {% if reimbursee_selected|string == reimbursee.id|string %}selected="selected"{% endif %}>{{ reimbursee.name }}</option>
+                {% endfor %}
+                <option value="none" {% if reimbursee_selected == 'none' %}selected="selected"{% endif %}>No one, paid directly from Betty</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 
   <div style="margin-top:15px;">

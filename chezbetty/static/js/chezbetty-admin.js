@@ -52,15 +52,15 @@ function add_item_success (data) {
 			row = data.data.replace(/-X/g, "-"+num_rows);
 
 			// Add the row to the table
-			$("#restock-table tbody").append(row);
+			$("#restock-table tbody").prepend(row);
 
 			$("#row-count").val(num_rows+1)
 			restock_update_line_total(num_rows);
 		} else {
 			// Already have this item in the table
-			// Move it to the bottom so it's visible
-			row_obj = $(".restock-"+data.type+"-"+data.id+":last");
-			row_obj.insertAfter(".restock:last");
+			// Move it to the top so it's visible
+			row_obj = $(".restock-"+data.type+"-"+data.id+":first");
+			row_obj.insertBefore(".restock:first");
 		}
 	}
 }
