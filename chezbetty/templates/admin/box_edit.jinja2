@@ -9,141 +9,201 @@
 
 {% block content %}
 
-<form role="form" action="/admin/box/edit/submit" method="post" id="form-edit-box">
+<form role="form" action="/admin/box/edit/submit" method="post" id="form-edit-box" class="form-horizontal">
   <input type="hidden" id="box-id" name="box-id" value="{{ box.id }}">
 
-  <div class="panel panel-default">
-    <div class="panel-heading">Box Details</div>
-    <div class="panel-body">
-      <dl class="dl-horizontal">
-        <dt>Name</dt>
-        <dd><input type="text" class="form-control" id="box-name" name="box-name" value="{{ box.name }}"></dd>
 
-        <dt>Barcode</dt>
-        <dd><input type="text" class="form-control barcode-check" id="box-barcode" name="box-barcode" value="{{ box.barcode }}"></dd>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Box Details</h3>
+        </div>
+        <div class="panel-body">
 
-        <dt>Wholesale</dt>
-        <dd><input type="text" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}"></dd>
+          <div class="form-group">
+            <label for="box-name" class="col-sm-2 control-label">Name:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="box-name" name="box-name" value="{{ box.name }}">
+            </div>
+          </div>
 
-        <dt>Sales Tax</dt>
-        <input type="hidden" name="box-sales_tax" value="off">
-        <dd><input type="checkbox" id="box-sales_tax" name="box-sales_tax" {% if box.sales_tax == True %}checked="checked"{% endif %}></input></dd>
+          <div class="form-group">
+            <label for="box-barcode" class="col-sm-2 control-label">Barcode:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control barcode-check" id="box-barcode" name="box-barcode" value="{{ box.barcode }}">
+            </div>
+          </div>
 
-        <dt>Bottle Deposit</dt>
-        <input type="hidden" name="box-bottle_dep" value="off">
-        <dd><input type="checkbox" id="box-bottle_dep" name="box-bottle_dep" {% if box.bottle_dep == True %}checked="checked"{% endif %}></input></dd>
+          <div class="form-group">
+            <label for="box-wholesale" class="col-sm-2 control-label">Wholesale:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}">
+            </div>
+          </div>
 
-        <hr />
-        <dt>Enabled</dt>
-        <dd>{{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}</dd>
-      </dl>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+                <label>
+                  <input type="hidden" name="box-sales_tax" value="off">
+                  <input type="checkbox" id="box-sales_tax" name="box-sales_tax" {% if box.sales_tax == True %}checked="checked"{% endif %}></input>
+                  Sales Tax
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+                <label>
+                  <input type="hidden" name="box-bottle_dep" value="off">
+                  <input type="checkbox" id="box-bottle_dep" name="box-bottle_dep" {% if box.bottle_dep == True %}checked="checked"{% endif %}></input>
+                  Bottle Deposit
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="box-enabled" class="col-sm-2 control-label">Enabled:</label>
+            <div class="col-sm-10">
+              {{ button.onoff_switch("box", "enabled", box.id, box.enabled) }}
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
+  </div>
 
-    <ul class="list-group">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Box Items</h3>
+        </div>
+        <div class="panel-body">
 
-      <table class="table">
 
-        <thead>
-          <tr>
-            <th>Sub Item</th>
-            <th>Quantity</th>
-            <th>Percentage</th>
-          </tr>
-        </thead>
+          <table class="table">
 
-        <tbody>
+            <thead>
+              <tr>
+                <th>Sub Item</th>
+                <th>Quantity</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
 
-          {% for bi in box.items %}
-          {% if bi.enabled %}
-          <tr>
+            <tbody>
 
-            <td>{{ bi.item|make_link|safe }} <input type="hidden" name="box-item-id-{{ bi.id}}" value="{{ bi.item_id }}"></td>
-            <td>
-              <input type="text" class="form-control" id="box-item-quantity-{{ bi.id }}" name="box-item-quantity-{{ bi.id }}" value="{{ bi.quantity }}">
-            </td>
-            <td>
-              <input type="text" class="form-control" id="box-item-percentage-{{ bi.id }}" name="box-item-percentage-{{ bi.id }}" value="{{ bi.percentage }}">
-            </td>
+              {% for bi in box.items %}
+              {% if bi.enabled %}
+              <tr>
 
-          </tr>
-          {% endif %}
-          {% endfor %}
+                <td>{{ bi.item|make_link|safe }} <input type="hidden" name="box-item-id-{{ bi.id}}" value="{{ bi.item_id }}"></td>
+                <td>
+                  <input type="text" class="form-control" id="box-item-quantity-{{ bi.id }}" name="box-item-quantity-{{ bi.id }}" value="{{ bi.quantity }}">
+                </td>
+                <td>
+                  <input type="text" class="form-control" id="box-item-percentage-{{ bi.id }}" name="box-item-percentage-{{ bi.id }}" value="{{ bi.percentage }}">
+                </td>
 
-          {% if new_items %}
-          <tr>
-
-            <td>
-              <select class="form-control" id="box-item-id-new" name="box-item-id-new">
-                {% for item in new_items %}
-                <option value="{{ item.id }}">{{ item.name }}</option>
-                {% endfor %}
-              </select>
-            </td>
-            <td>
-              <input type="text" class="form-control" id="box-item-quantity-new" name="box-item-quantity-new">
-            </td>
-            <td>
-              <input type="text" class="form-control" id="box-item-percentage-new" name="box-item-percentage-new">
-            </td>
-
-          </tr>
-          {% endif %}
-
-        </tbody>
-      </table>
-    </ul>
-
-    <ul class="list-group">
-
-      <table class="table">
-
-        <thead>
-          <tr>
-            <th>Vendor</th>
-            <th>Box Number</th>
-            <th>Link</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          {% for vb in box.vendors %}
-          {% if vb.enabled %}
-          <tr>
-
-            <td>{{ vb.vendor.name }} <input type="hidden" name="box-vendor-id-{{ vb.id}}" value="{{ vb.vendor_id }}"></td>
-            <td>
-              <input type="text" class="form-control" id="box-vendor-item_num-{{ vb.id }}" name="box-vendor-item_num-{{ vb.id }}" value="{{ vb.item_number }}">
-            </td>
-            <td>
-              {% if vb.vendor.name == "Costco" %}
-              <a href="http://www.costcobusinessdelivery.com/CatalogSearch?storeId=11301&catalogId=11701&langId=-1&keyword={{ vb.item_number }}">View on Costco</a>
+              </tr>
               {% endif %}
-            </td>
-          </tr>
-          {% endif %}
-          {% endfor %}
+              {% endfor %}
 
-          {% if new_vendors %}
-          <tr>
+              {% if new_items %}
+              <tr>
 
-            <td>
-              <select class="form-control" id="box-vendor-id-new" name="box-vendor-id-new">
-                {% for vendor in new_vendors %}
-                <option value="{{ vendor.id }}">{{ vendor.name }}</option>
-                {% endfor %}
-              </select>
-            </td>
-            <td>
-              <input type="text" class="form-control" id="box-vendor-item_num-new" name="box-vendor-item_num-new">
-            </td>
+                <td>
+                  <select class="form-control" id="box-item-id-new" name="box-item-id-new">
+                    {% for item in new_items %}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <input type="text" class="form-control" id="box-item-quantity-new" name="box-item-quantity-new">
+                </td>
+                <td>
+                  <input type="text" class="form-control" id="box-item-percentage-new" name="box-item-percentage-new">
+                </td>
 
-          </tr>
-          {% endif %}
+              </tr>
+              {% endif %}
 
-        </tbody>
-      </table>
-    </ul>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Box Vendors</h3>
+        </div>
+        <div class="panel-body">
+
+          <table class="table">
+
+            <thead>
+              <tr>
+                <th>Vendor</th>
+                <th>Box Number</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {% for vb in box.vendors %}
+              {% if vb.enabled %}
+              <tr>
+
+                <td>{{ vb.vendor.name }} <input type="hidden" name="box-vendor-id-{{ vb.id}}" value="{{ vb.vendor_id }}"></td>
+                <td>
+                  <input type="text" class="form-control" id="box-vendor-item_num-{{ vb.id }}" name="box-vendor-item_num-{{ vb.id }}" value="{{ vb.item_number }}">
+                </td>
+                <td>
+                  {% if vb.vendor.name == "Costco" %}
+                  <a href="http://www.costcobusinessdelivery.com/CatalogSearch?storeId=11301&catalogId=11701&langId=-1&keyword={{ vb.item_number }}">View on Costco</a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+
+              {% if new_vendors %}
+              <tr>
+
+                <td>
+                  <select class="form-control" id="box-vendor-id-new" name="box-vendor-id-new">
+                    {% for vendor in new_vendors %}
+                    <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <input type="text" class="form-control" id="box-vendor-item_num-new" name="box-vendor-item_num-new">
+                </td>
+
+              </tr>
+              {% endif %}
+
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
   </div>
 
   <button type="submit" class="btn btn-success">Update Box</button>
