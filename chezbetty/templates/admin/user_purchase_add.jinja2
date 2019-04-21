@@ -9,19 +9,25 @@
 
 {% block content %}
 
+<form role="form" action="/admin/user/purchase/add/submit" method="post">
+
 <p>
   Manually add a purchase, deposit, or both for a user.
 </p>
 
-<form role="form" action="/admin/user/purchase/add/submit" method="post">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose User</h3>
+      </div>
+      <div class="panel-body">
 
-  <table class="table">
-    <tbody>
-      <tr>
-        <td>User:</td>
-        <td>
-          <input type="text" id="user-search-string" class="form-control">
+        <div class="input-group" style="width:100%">
+          <input type="text" id="user-search-string" class="form-control" style="width:50%">
+          <button type="button" class="btn btn-success user-search-button" data-prefix="user-search">Search User</button>
           <span id="user-search-notice"></span>
+
           <table id="user-search-table" style="width: 100%">
             <tr id="user-search-row-0" class="user-search-row" style="display:none;">
               <td>
@@ -32,21 +38,26 @@
               <td class="user-search-row-umid">UMID</td>
             </tr>
           </table>
-        </td>
-        <td>
-          <button type="button" class="btn btn-success user-search-button" data-prefix="user-search">Search User</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </div>
 
-  <table class="table">
-    <tbody>
-      <tr>
-        <td>Item:</td>
-        <td>
-          <input type="text" id="user-purchase-add-search-item" class="form-control">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Choose Items</h3>
+      </div>
+      <div class="panel-body">
+
+        <div class="input-group" style="width:100%">
+          <input type="text" id="user-purchase-add-search-item" class="form-control" style="width:50%">
+          <button type="button" id="user-purchase-add-search-item-button" class="btn btn-success">Search Item</button>
           <span id="user-search-notice-item"></span>
+
           <table id="user-search-table-items" style="width: 100%">
             <tr id="user-search-item-row-0" class="user-search-row" style="display:none;">
               <td class="user-search-row-item-name">Name</td>
@@ -56,56 +67,67 @@
               </td>
             </tr>
           </table>
-        </td>
-        <td>
-          <button type="button" id="user-purchase-add-search-item-button" class="btn btn-success">Search Item</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </div>
 
-  <table class="table table-bordered" id="user-purchase-add-table">
-    <thead>
-      <tr>
-        <th>{{ _('Item') }}</th>
-        <th style="width: 10%">{{ _('Quantity') }}</th>
-        <th style="width: 10%">{{ _('Item Price') }}</th>
-        <th style="width: 10%">{{ _('Total Price') }}</th>
-      </tr>
-    </thead>
+        <br />
 
-    <tbody id="user-purchase-add-table-items">
-      <tr id="user-purchase-add-item" style="display:none;">
-        <td class="user-purchase-add-item-title">Name</td>
-        <td>                                     <input type="text" class="user-purchase-add-item-quantity form-control" value="1"></td>
-        <td class="user-purchase-add-item-price">Price</td>
-        <td class="user-purchase-add-item-total">Total</td>
-      </tr>
-    </tbody>
+        <table class="table table-bordered" id="user-purchase-add-table">
+          <thead>
+            <tr>
+              <th>{{ _('Item') }}</th>
+              <th style="width: 10%">{{ _('Quantity') }}</th>
+              <th style="width: 10%">{{ _('Item Price') }}</th>
+              <th style="width: 10%">{{ _('Total Price') }}</th>
+            </tr>
+          </thead>
 
-    <tfoot>
-      <tr>
-        <td colspan="3"><b>{{ _('Total') }}</b></td>
-        <td id="user-purchase-add-items-total">$0.00</td>
-      </tr>
-    </tfoot>
-  </table>
+          <tbody id="user-purchase-add-table-items">
+            <tr id="user-purchase-add-item" style="display:none;">
+              <td class="user-purchase-add-item-title">Name</td>
+              <td>                                     <input type="text" class="user-purchase-add-item-quantity form-control" value="1"></td>
+              <td class="user-purchase-add-item-price">Price</td>
+              <td class="user-purchase-add-item-total">Total</td>
+            </tr>
+          </tbody>
 
-  <table class="table">
-    <tbody>
-      <tr>
-        <td>Deposit Amount:</td>
-        <td>
-          <input type="text" id="user-purchase-add-deposit" name="user-purchase-add-deposit" class="form-control">
-        </td>
-        <td>
-          Leave empty to not add a deposit.
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <tfoot>
+            <tr>
+              <td colspan="3"><b>{{ _('Total') }}</b></td>
+              <td id="user-purchase-add-items-total">$0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <button type="submit" class="btn btn-success">Submit Purchase/Deposit</button>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Optional Deposit</h3>
+      </div>
+      <div class="panel-body">
+
+        <p>Leave empty to not add a deposit.</p>
+
+        <div class="form-group">
+          <label for="user-purchase-add-deposit" class="col-sm-2 control-label">Amount:</label>
+          <div class="col-sm-10">
+            <div class="input-group">
+              <span class="input-group-addon">$</span>
+              <input type="text" class="form-control" id="user-purchase-add-deposit" name="user-purchase-add-deposit">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<button type="submit" class="btn btn-success">Submit Purchase/Deposit</button>
 
 </form>
 
