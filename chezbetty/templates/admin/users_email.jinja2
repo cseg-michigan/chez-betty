@@ -24,7 +24,7 @@
     <h3 class="panel-title">Email All Deadbeat Users</h3>
   </div>
   <div class="panel-body">
-    <form role="form" action="/admin/users/email/deadbeats" method="post">
+    <form role="form" action="/admin/users/email/debt/deadbeats" method="post">
       <p>Send an email to users who are either more than $5 in debt or who have
          been in debt for a week or more encouraging them to settle up.</p>
       <div class="well">
@@ -32,6 +32,23 @@
     {% include "email_deadbeats.jinja2" %}
       </div>
       <button type="submit" class="btn btn-success">Email Deadbeat Users</button>
+    </form>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Email In Debt Users Betty Back</h3>
+  </div>
+  <div class="panel-body">
+    <form role="form" action="/admin/users/email/debt/bettyback" method="post">
+      <p>Send a special email to users who are more than $3
+      encouraging them to settle up.</p>
+      <div class="well">
+        {% set user = {'name': '<< name >>', 'balance': '<< balance >>', 'uniqname': '<< uniqname >>'} %}
+        {% include "email_bettyback.jinja2" %}
+      </div>
+      <button type="submit" class="btn btn-success">Email In Debt Users</button>
     </form>
   </div>
 </div>

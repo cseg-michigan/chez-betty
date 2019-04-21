@@ -2649,10 +2649,7 @@ def admin_users_email_endofsemester(request):
     # Work around storing balances as floats so we don't bug people with -$0.00
     if threshold < 0.01:
         threshold = 0.01
-    deadbeats = DBSession.query(User).\
-            filter(User.enabled).\
-            filter(User.balance < -threshold).\
-            all()
+    deadbeats = User.get_users_below_balance(-threshold)
     for deadbeat in deadbeats:
         send_email(
                 TO=deadbeat.uniqname+'@umich.edu',
@@ -2666,20 +2663,33 @@ def admin_users_email_endofsemester(request):
     return HTTPFound(location=request.route_url('admin_index'))
 
 
-@view_config(route_name='admin_users_email_deadbeats',
+@view_config(route_name='admin_users_email_debt',
              request_method='POST',
              permission='admin')
-def admin_users_email_deadbeats(request):
-    deadbeats = User.get_deadbeats()
-    for deadbeat in deadbeats:
-        send_email(
-                TO=deadbeat.uniqname+'@umich.edu',
-                SUBJECT='Chez Betty Balance',
-                body=render('templates/admin/email_deadbeats.jinja2',
-                    {'user': deadbeat})
-                )
+def admin_users_email_debt(request):
+    email_type = request.matchdict['type']
 
-    request.session.flash('Deadbeat users emailed.', 'success')
+    if email_type == 'deadbeats':
+        deadbeats = User.get_deadbeats()
+        for deadbeat in deadbeats:
+            send_email(
+                    TO=deadbeat.uniqname+'@umich.edu',
+                    SUBJECT='Chez Betty Balance',
+                    body=render('templates/admin/email_deadbeats.jinja2',
+                        {'user': deadbeat})
+                    )
+
+    elif email_type == 'bettyback':
+        deadbeats = User.get_users_below_balance(-2.99)
+        for deadbeat in deadbeats:
+            send_email(
+                    TO=deadbeat.uniqname+'@umich.edu',
+                    SUBJECT='Chez Betty is Back!',
+                    body=render('templates/admin/email_bettyback.jinja2',
+                        {'user': deadbeat})
+                    )
+
+    request.session.flash('In debt users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
 
 

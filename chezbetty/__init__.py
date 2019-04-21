@@ -209,7 +209,7 @@ def main(global_config, **settings):
     config.add_route('admin_users_stats',               '/admin/users/stats')
     config.add_route('admin_users_email',               '/admin/users/email')
     config.add_route('admin_users_email_endofsemester', '/admin/users/email/endofsemester')
-    config.add_route('admin_users_email_deadbeats',     '/admin/users/email/deadbeats')
+    config.add_route('admin_users_email_debt',          '/admin/users/email/debt/{type}')
     config.add_route('admin_users_email_oneperson',     '/admin/users/email/oneperson')
     config.add_route('admin_users_email_all',           '/admin/users/email/all')
     config.add_route('admin_users_email_alumni',        '/admin/users/email/alumni')

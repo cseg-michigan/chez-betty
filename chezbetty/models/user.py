@@ -232,6 +232,16 @@ class User(account.Account):
                         .order_by(cls.name).all()
 
     @classmethod
+    def get_users_below_balance(cls, balance):
+        '''
+        Get all users with a balance below `balance`.
+        '''
+        return DBSession.query(cls)\
+                        .filter(cls.enabled == False)\
+                        .filter(cls.balance < balance)\
+                        .all()
+
+    @classmethod
     def get_number_new_users(cls, start=None, end=None):
         r = DBSession.query(cls)\
                         .filter(cls.enabled == True)
