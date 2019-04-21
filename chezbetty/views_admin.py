@@ -2725,7 +2725,8 @@ def admin_users_email_alumni(request):
              renderer='templates/admin/pools.jinja2',
              permission='admin')
 def admin_pools(request):
-    return {'pools': Pool.all()}
+    return {'pools': Pool.all(),
+            'pools_disabled': Pool.disabled(),}
 
 
 @view_config(route_name='admin_pool',

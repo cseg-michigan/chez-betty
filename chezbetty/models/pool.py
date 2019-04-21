@@ -30,6 +30,14 @@ class Pool(account.Account):
     @classmethod
     def all(cls):
         return DBSession.query(cls)\
+                        .filter(cls.enabled==True)\
+                        .order_by(cls.name)\
+                        .all()
+
+    @classmethod
+    def disabled(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled==False)\
                         .order_by(cls.name)\
                         .all()
 

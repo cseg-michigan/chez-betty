@@ -9,34 +9,82 @@
 
 {% block content %}
 
-<div id="pools">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pools</h3>
+      </div>
+      <div class="panel-body">
 
-  <table class="table sortable">
+        <table class="table sortable">
 
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Member Count</th>
-        <th class="right">Balance</th>
-        <th class="right">Credit Limit</th>
-      </tr>
-    </thead>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Member Count</th>
+              <th class="right">Balance</th>
+              <th class="right">Credit Limit</th>
+            </tr>
+          </thead>
 
-    <tbody>
+          <tbody>
 
-      {% for pool in pools %}
+            {% for pool in pools %}
+            <tr id="pool-{{ pool.id }}" class="pool-row">
+              <td>{{ pool|make_link|safe }}</td>
+              <td>{{ pool.users|length }}</td>
+              <td class="right">{{ pool.balance|format_currency|safe }}</td>
+              <td class="right">{{ pool.credit_limit|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
 
-      <tr id="pool-{{ pool.id }}" class="pool-row {% if pool.enabled == False %}disabled-row{% endif %}">
-        <td>{{ pool|make_link|safe }}</td>
-        <td>{{ pool.users|length }}</td>
-        <td class="right">{{ pool.balance|format_currency|safe }}</td>
-        <td class="right">{{ pool.credit_limit|format_currency|safe }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
+          </tbody>
 
-  </table>
+        </table>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Disabled Pools</h3>
+      </div>
+      <div class="panel-body">
+
+        <table class="table sortable">
+
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Member Count</th>
+              <th class="right">Balance</th>
+              <th class="right">Credit Limit</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for pool in pools_disabled %}
+            <tr id="pool-{{ pool.id }}" class="pool-row disabled-row">
+              <td>{{ pool|make_link|safe }}</td>
+              <td>{{ pool.users|length }}</td>
+              <td class="right">{{ pool.balance|format_currency|safe }}</td>
+              <td class="right">{{ pool.credit_limit|format_currency|safe }}</td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
