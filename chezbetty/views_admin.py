@@ -2837,11 +2837,12 @@ def admin_pool_addmember_submit(request):
 # CASH
 ################################################################################
 
-@view_config(route_name='admin_cash_donation',
-             renderer='templates/admin/cash_donation.jinja2',
+@view_config(route_name='admin_cash_adjustment',
+             renderer='templates/admin/cash_adjustment.jinja2',
              permission='admin')
-def admin_cash_donation(request):
-    return {}
+def admin_cash_adjustment(request):
+    reimbursees = Reimbursee.all()
+    return {'reimbursees': reimbursees}
 
 
 @view_config(route_name='admin_cash_donation_submit',
@@ -2870,21 +2871,13 @@ def admin_cash_donation_submit(request):
 
     except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for donation amount', 'error')
-        return HTTPFound(location=request.route_url('admin_cash_donation'))
+        return HTTPFound(location=request.route_url('admin_cash_adjustment'))
     except event.NotesMissingException:
         request.session.flash('Error: Must include a donation reason', 'error')
-        return HTTPFound(location=request.route_url('admin_cash_donation'))
+        return HTTPFound(location=request.route_url('admin_cash_adjustment'))
     except:
         request.session.flash('Error: Unable to add donation', 'error')
-        return HTTPFound(location=request.route_url('admin_cash_donation'))
-
-
-@view_config(route_name='admin_cash_withdrawal',
-             renderer='templates/admin/cash_withdrawal.jinja2',
-             permission='admin')
-def admin_cash_withdrawal(request):
-    reimbursees = Reimbursee.all()
-    return {'reimbursees': reimbursees}
+        return HTTPFound(location=request.route_url('admin_cash_adjustment'))
 
 
 @view_config(route_name='admin_cash_withdrawal_submit',
@@ -2914,20 +2907,13 @@ def admin_cash_withdrawal_submit(request):
 
     except decimal.InvalidOperation:
         request.session.flash('Error: Bad value for withdrawal amount', 'error')
-        return HTTPFound(location=request.route_url('admin_cash_withdrawal'))
+        return HTTPFound(location=request.route_url('admin_cash_adjustment'))
     except event.NotesMissingException:
         request.session.flash('Error: Must include a withdrawal reason', 'error')
-        return HTTPFound(location=request.route_url('admin_cash_withdrawal'))
+        return HTTPFound(location=request.route_url('admin_cash_adjustment'))
     except:
         request.session.flash('Error: Unable to add withdrawal', 'error')
-        return HTTPFound(location=request.route_url('admin_cash_withdrawal'))
-
-
-@view_config(route_name='admin_cash_adjustment',
-             renderer='templates/admin/cash_adjustment.jinja2',
-             permission='admin')
-def admin_cash_adjustment(request):
-    return {}
+        return HTTPFound(location=request.route_url('admin_cash_adjustment'))
 
 
 @view_config(route_name='admin_cash_adjustment_submit',
@@ -2936,7 +2922,20 @@ def admin_cash_adjustment(request):
 def admin_cash_adjustment_submit(request):
     try:
         amount = Decimal(request.POST['amount'])
-        datalayer.reconcile_misc(amount, request.POST['notes'], request.user)
+
+        # Look for custom date
+        try:
+            if request.POST['adjustment-date']:
+                event_date = datetime.datetime.strptime(request.POST['adjustment-date'].strip(),
+                    '%Y/%m/%d %H:%M%z').astimezone(tz=pytz.timezone('UTC')).replace(tzinfo=None)
+            else:
+                event_date = None
+        except Exception as e:
+            if request.debug: raise(e)
+            # Could not parse date
+            event_date = None
+
+        datalayer.reconcile_misc(amount, request.POST['notes'], request.user, event_date)
 
         request.session.flash('Adjustment recorded successfully', 'success')
         return HTTPFound(location=request.route_url('admin_index'))

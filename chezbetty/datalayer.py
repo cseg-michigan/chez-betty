@@ -551,10 +551,10 @@ def reconcile_bitcoins(amount, admin, expected_amount=None):
 
 
 # Call this to make a miscellaneous adjustment to the chezbetty account
-def reconcile_misc(amount, notes, admin):
+def reconcile_misc(amount, notes, admin, timestamp=None):
     assert(amount != 0.0)
 
-    e = event.Reconcile(admin, notes)
+    e = event.Reconcile(admin, notes, timestamp)
     DBSession.add(e)
     DBSession.flush()
 

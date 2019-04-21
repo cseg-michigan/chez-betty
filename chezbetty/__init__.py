@@ -233,11 +233,10 @@ def main(global_config, **settings):
 
     config.add_route('admin_cash_reconcile',            '/admin/cash/reconcile')
     config.add_route('admin_cash_reconcile_submit',     '/admin/cash/reconcile/submit')
-    config.add_route('admin_cash_donation',             '/admin/cash/donation')
-    config.add_route('admin_cash_donation_submit',      '/admin/cash/donation/submit')
-    config.add_route('admin_cash_withdrawal',           '/admin/cash/withdrawal')
-    config.add_route('admin_cash_withdrawal_submit',    '/admin/cash/withdrawal/submit')
+
     config.add_route('admin_cash_adjustment',           '/admin/cash/adjustment')
+    config.add_route('admin_cash_donation_submit',      '/admin/cash/donation/submit')
+    config.add_route('admin_cash_withdrawal_submit',    '/admin/cash/withdrawal/submit')
     config.add_route('admin_cash_adjustment_submit',    '/admin/cash/adjustment/submit')
 
     config.add_route('admin_btc_reconcile',             '/admin/btc/reconcile')

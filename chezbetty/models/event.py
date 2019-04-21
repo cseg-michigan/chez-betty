@@ -136,10 +136,10 @@ class EmptyBitcoin(Event):
 
 class Reconcile(Event):
     __mapper_args__ = {'polymorphic_identity': 'reconcile'}
-    def __init__(self, admin, notes):
+    def __init__(self, admin, notes, timestamp):
         if len(notes) < 3:
             raise NotesMissingException()
-        Event.__init__(self, admin, notes)
+        Event.__init__(self, admin, notes, timestamp)
 
 
 class Donation(Event):

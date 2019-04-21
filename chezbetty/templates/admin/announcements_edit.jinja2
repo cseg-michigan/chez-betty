@@ -10,52 +10,78 @@
 
 {% block content %}
 
-<form role="form" action="/admin/announcements/edit/submit" method="post">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Manage Announcements</h3>
+      </div>
+      <div class="panel-body">
+
+        <p>These announcements show up on the terminal login page.</p>
+
+        <form role="form" action="/admin/announcements/edit/submit" method="post">
+
+          <table class="table">
+
+            <thead>
+              <tr>
+                <th>Announcement</th>
+                <th style="width: 20%;">Date</th>
+                <th style="width: 10%;">On/Off</th>
+                <th style="width:  5%;">Delete</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {% for announcement in announcements %}
+              <tr id="announcement-{{ announcement.id }}" class="edit-announcement-row {% if announcement.enabled == False %}disabled-row{% endif %}">
+                <td><input type="text" class="form-control" id="announcement-text-{{ announcement.id }}" name="announcement-text-{{ announcement.id }}" value="{{ announcement.announcement }}"></td>
+                <td>{{ announcement.timestamp|pretty_date|safe }}</td>
+                <td>{{ button.onoff_switch("announcement", "enabled", announcement.id, announcement.enabled) }}</td>
+                <td>{{ button.delete("announcement", "deleted", announcement.id) }}</td>
+              </tr>
+              {% endfor %}
+
+              <tr id="announcement-new" class="edit-announcement-row">
+                <td><input type="text" class="form-control" id="announcement-text-new" name="announcement-text-new"></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+          <button type="submit" class="btn btn-success">Update Announcements</button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 
-  <table class="table">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Twitter</h3>
+      </div>
+      <div class="panel-body">
 
-    <thead>
-      <tr>
-        <th>Announcement</th>
-        <th style="width: 20%;">Date</th>
-        <th style="width: 10%;">On/Off</th>
-        <th style="width:  5%;">Delete</th>
-      </tr>
-    </thead>
+        <form role="form" action="/admin/tweet/submit" method="post">
+          <a href="http://twitter.com/umchezbetty/">@umchezbetty</a>
+          <textarea class="form-control" id="tweet" name="tweet" value=""></textarea>
+          <p id="tweet-char-count">Characters Remaining: 140</p>
+          <button type="submit" class="btn btn-success">Post Tweet</button>
+        </form>
 
-    <tbody>
-
-      {% for announcement in announcements %}
-      <tr id="announcement-{{ announcement.id }}" class="edit-announcement-row {% if announcement.enabled == False %}disabled-row{% endif %}">
-        <td><input type="text" class="form-control" id="announcement-text-{{ announcement.id }}" name="announcement-text-{{ announcement.id }}" value="{{ announcement.announcement }}"></td>
-        <td>{{ announcement.timestamp|pretty_date|safe }}</td>
-        <td>{{ button.onoff_switch("announcement", "enabled", announcement.id, announcement.enabled) }}</td>
-        <td>{{ button.delete("announcement", "deleted", announcement.id) }}</td>
-      </tr>
-      {% endfor %}
-
-      <tr id="announcement-new" class="edit-announcement-row">
-        <td><input type="text" class="form-control" id="announcement-text-new" name="announcement-text-new"></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
-
-    </tbody>
-
-  </table>
-
-  <button type="submit" class="btn btn-success">Update Announcements</button>
-
-</form>
-
-<hr />
-
-<form role="form" action="/admin/tweet/submit" method="post">
-  <h3>Twitter: <a href="http://twitter.com/umchezbetty/">@umchezbetty</a></h3>
-    <textarea class="form-control" id="tweet" name="tweet" value=""></textarea>
-    <p id="tweet-char-count">Characters Remaining: 140</p>
-    <button type="submit" class="btn btn-success">Post Tweet</button>
-</form>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
