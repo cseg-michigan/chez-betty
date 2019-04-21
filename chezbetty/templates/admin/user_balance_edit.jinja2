@@ -9,76 +9,91 @@
 
 {% block content %}
 
-<form role="form" action="/admin/user/balance/edit/submit" method="post">
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Edit User Balance</h3>
+      </div>
+      <div class="panel-body">
 
-  {% for person in ['sender', 'recipient'] %}
-  <table class="table user-balance-change-participant">
-    <tbody>
-      <tr>
-        <td style="width: 15%">{{ person|title }}:</td>
-        <td style="width: 50%">
-          <input type="text" id="{{ person }}-search-string" class="form-control">
-          <span id="{{ person }}-search-notice"></span>
-          <table id="{{ person }}-search-table" style="width: 100%">
-            <tr id="{{ person }}-search-row-0" class="{{ person }}-search-row" style="display:none;">
-              <td>
-                <input type="radio" name="{{ person }}-search-choice" value="userid">
-              </td>
-              <td class="{{ person }}-search-row-name">Name</td>
-              <td class="{{ person }}-search-row-uniqname">Uniqname</td>
-              <td class="{{ person }}-search-row-umid">UMID</td>
-              <td class="{{ person }}-search-row-balance">balance</td>
-            </tr>
-            <tr id="{{ person }}-search-row-1" class="{{ person }}-search-row">
-              <td>
-                <input type="radio" name="{{ person }}-search-choice" value="chezbetty" checked="checked">
-              </td>
-              <td class="{{ person }}-search-row-name">chezbetty</td>
-              <td class="{{ person }}-search-row-uniqname"></td>
-              <td class="{{ person }}-search-row-umid"></td>
-              <td class="{{ person }}-search-row-balance"></td>
-            </tr>
-          </table>
-        </td>
-        <td>
-          <button type="button" class="btn btn-success user-search-button" data-prefix="{{ person }}-search">Search {{ person|title }}</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  {% endfor %}
+        <form role="form" action="/admin/user/balance/edit/submit" method="post" class="form-horizontal">
 
-  <table class="table">
-    <tbody>
-      <tr>
-        <td style="width: 15%">Transfer Amount:</td>
-        <td style="width: 50%">
-          <input type="text" class="form-control" id="balance-change-amount" name="amount">
-        </td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Sender's balance:</td>
-        <td><span id="sender-balance"></span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Receiver's balance:</td>
-        <td><span id="recipient-balance"></span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Reason:</td>
-        <td>
-          <input type="text" class="form-control" id="balance-change-reason" name="reason">
-        </td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
+          {% for person in ['sender', 'recipient'] %}
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{ person|title }}:</label>
+            <div class="col-sm-10 user-balance-change-participant">
+              <div class="input-group" style="width:100%">
+                <input type="text" id="{{ person }}-search-string" class="form-control" style="width:50%">
+                <button type="button" class="btn btn-success user-search-button" data-prefix="{{ person }}-search">Search {{ person|title }}</button>
+                <span id="{{ person }}-search-notice"></span>
+                <table id="{{ person }}-search-table" style="width: 100%">
+                  <tr id="{{ person }}-search-row-0" class="{{ person }}-search-row" style="display:none;">
+                    <td>
+                      <input type="radio" name="{{ person }}-search-choice" value="userid">
+                    </td>
+                    <td class="{{ person }}-search-row-name">Name</td>
+                    <td class="{{ person }}-search-row-uniqname">Uniqname</td>
+                    <td class="{{ person }}-search-row-umid">UMID</td>
+                    <td class="{{ person }}-search-row-balance">balance</td>
+                  </tr>
+                  <tr id="{{ person }}-search-row-1" class="{{ person }}-search-row">
+                    <td>
+                      <input type="radio" name="{{ person }}-search-choice" value="chezbetty" checked="checked">
+                    </td>
+                    <td class="{{ person }}-search-row-name">chezbetty</td>
+                    <td class="{{ person }}-search-row-uniqname"></td>
+                    <td class="{{ person }}-search-row-umid"></td>
+                    <td class="{{ person }}-search-row-balance"></td>
+                  </tr>
+                </table>
 
-  <button type="submit" class="btn btn-success">Adjust Balance</button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
 
-</form>
+          <div class="form-group">
+            <label for="balance-change-amount" class="col-sm-2 control-label">Amount:</label>
+            <div class="col-sm-10">
+              <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input type="text" class="form-control" id="balance-change-amount" name="amount">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Sender's balance:</label>
+            <div class="col-sm-10">
+              <span id="sender-balance"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Receiver's balance:</label>
+            <div class="col-sm-10">
+              <span id="recipient-balance"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="balance-change-reason" class="col-sm-2 control-label">Reason:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="balance-change-reason" name="reason">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-success">Adjust Balance<l/button>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
