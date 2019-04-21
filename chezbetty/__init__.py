@@ -189,8 +189,7 @@ def main(global_config, **settings):
 
     config.add_route('admin_box_add',           '/admin/box/add')
     config.add_route('admin_box_add_submit',    '/admin/box/add/submit')
-    config.add_route('admin_boxes_edit',        '/admin/boxes/edit')
-    config.add_route('admin_boxes_edit_submit', '/admin/boxes/edit/submit')
+    config.add_route('admin_boxes_list',        '/admin/boxes/list')
     config.add_route('admin_box_edit_submit',   '/admin/box/edit/submit')
     config.add_route('admin_box_edit',          '/admin/box/edit/{box_id}')
     config.add_route('admin_box_delete',        '/admin/box/delete/{box_id}')

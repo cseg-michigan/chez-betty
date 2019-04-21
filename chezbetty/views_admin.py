@@ -1970,10 +1970,10 @@ def admin_box_add_submit(request):
         return HTTPFound(location=request.route_url('admin_box_add'))
 
 
-@view_config(route_name='admin_boxes_edit',
-             renderer='templates/admin/boxes_edit.jinja2',
+@view_config(route_name='admin_boxes_list',
+             renderer='templates/admin/boxes_list.jinja2',
              permission='manage')
-def admin_boxes_edit(request):
+def admin_boxes_list(request):
     unpopulated_boxes = []
     active_populated = []
     inactive_populated = []
@@ -1993,46 +1993,9 @@ def admin_boxes_edit(request):
         else:
             inactive_populated.append(box)
 
-    boxes = active_populated + inactive_populated
-    return {'boxes': boxes, 'unpopulated': unpopulated_boxes}
-
-
-@view_config(route_name='admin_boxes_edit_submit',
-             request_method='POST',
-             permission='manage')
-def admin_boxes_edit_submit(request):
-    updated = set()
-    for key in request.POST:
-        try:
-            box = Box.from_id(int(key.split('-')[2]))
-        except:
-            request.session.flash('No box with ID {}.  Skipped.'.format(key.split('-')[2]), 'error')
-            continue
-        name = box.name
-        try:
-            field = key.split('-')[1]
-            if field == 'wholesale':
-                val = round(Decimal(request.POST[key]), 2)
-            else:
-                val = request.POST[key].strip()
-
-            setattr(box, field, val)
-            DBSession.flush()
-        except ValueError:
-            # Could not parse wholesale as float
-            request.session.flash('Error updating {}'.format(name), 'error')
-            continue
-        except:
-            DBSession.rollback()
-            request.session.flash('Error updating {} for {}.  Skipped.'.\
-                    format(key.split('-')[1], name), 'error')
-            continue
-        updated.add(box.id)
-    if len(updated):
-        count = len(updated)
-        #request.session.flash('{} box{} properties updated successfully.'.format(count, ['s',''][count==1]), 'success')
-        request.session.flash('boxes updated successfully.', 'success')
-    return HTTPFound(location=request.route_url('admin_boxes_edit'))
+    return {'boxes': active_populated,
+            'boxes_inactive': inactive_populated,
+            'unpopulated': unpopulated_boxes}
 
 
 @view_config(route_name='admin_box_edit',

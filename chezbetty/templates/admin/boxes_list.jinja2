@@ -1,0 +1,125 @@
+{% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
+{% set active_page = 'boxes_list' %}
+{% block title %}List Boxes{% endblock %}
+
+{% block top %}
+<h1 class="page-header">List Boxes</h1>
+{% endblock %}
+
+
+{% block content %}
+
+{% if unpopulated %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Unpopulated Boxes</h3>
+      </div>
+      <div class="panel-body">
+
+        <table class="table sortable">
+
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th style="width: 20%">Box Wholesale</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for box in unpopulated %}
+
+            <tr id="box-{{ box.id }}" class="edit-box-row {% if box.enabled == False %}disabled-row{% endif %}">
+
+              <td>{{ box|make_link|safe }}</td>
+              <td class="{{ wholesale_class }}" data-value="{{ box.wholesale|round(2) }}"><input type="text" class="form-control numeric" id="box-wholesale-{{ box.id }}" name="box-wholesale-{{ box.id }}" value="{{ box.wholesale|round(2) }}"></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Boxes</h3>
+      </div>
+      <div class="panel-body">
+
+        <table class="table sortable sticky">
+
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th style="width: 20%">Box Wholesale</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for box in boxes %}
+
+            <tr id="box-{{ box.id }}" class="edit-box-row">
+              <td>{{ box|make_link|safe }}</td>
+              <td>{{ box.wholesale|round(2) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Disabled Boxes</h3>
+      </div>
+      <div class="panel-body">
+
+        <table class="table sortable sticky">
+
+          <thead>
+            <tr>
+              <th style="width: 5%"></th>
+              <th>Name</th>
+              <th style="width: 20%">Box Wholesale</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for box in boxes_inactive %}
+
+            <tr id="box-{{ box.id }}" class="edit-box-row disabled-row">
+              <td>{{ button.box(box.id) }}</td>
+              <td>{{ box|make_link|safe }}</td>
+              <td>{{ box.wholesale|round(2) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
