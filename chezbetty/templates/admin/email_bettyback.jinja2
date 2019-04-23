@@ -1,20 +1,21 @@
 <p>Hi {{ user.name }},</p>
 
 <p>If you haven't heard, Chez Betty is back! Yes it took a while,
-but we are excited to finally have the food co-op open again.
+but we are excited to finally have the food co-op open again.</p>
 
 <p>We did want to let you know that your current balance is
 {{ user.balance|format_currency|safe }}.
 Please settle that up so that Betty can restock and continue to be available
-to people on North Campus.</p>
-
-<p><a href="https://chezbetty.store/paydebt/{{ user.uniqname }}">
+to people on North Campus.
+<a href="https://chezbetty.store/paydebt/{{ user.uniqname }}">
 Click here to pay online.</a>
 Credit card payments are processed and handled by Stripe.
 To view your transaction history and other information
 <a href="https://chezbetty.store/user">login to your Betty account</a>.</p>
 
-<p>Remember! You get a 5% discount if you have $20 or more in your account!</p>
+<p>If you have moved on from U of M and North Campus we hope you enjoyed
+having Betty around. Settling your balance helps ensure Betty can be successful
+going forward.</p>
 
 <p>Thank you,</p>
 <p>Chez Betty</p>
