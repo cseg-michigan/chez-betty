@@ -998,13 +998,13 @@ def admin_restock_submit(request):
                 request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
                 continue
             # item.wholesale = round((total/quantity) + global_cost_item_addition, 4)
-            item.wholesale = max(round((total/quantity) + global_cost_item_addition, 4), item.wholesale)
+            item.wholesale = max(round((total/quantity), 4), item.wholesale)
             # item.wholesale = round(((total + (item.wholesale * item.in_stock))/(quantity + item.in_stock)) + global_cost_item_addition, 4)
             #TODO: figure out how to save the old wholesale price so that if a restock is undone, the wholesale price reverts to previous value
             # Set the item price
             if not item.sticky_price:
                 # item.price = round(item.wholesale * Decimal('1.20'), 2)
-                item.price = max(round(item.wholesale * Decimal('1.20'), 2), item.price)
+                item.price = round((item.wholesale + global_cost_item_addition) * Decimal('1.20'), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
