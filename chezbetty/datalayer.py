@@ -21,6 +21,9 @@ from .utility import notify_new_top_wall_of_shame
 import math
 
 
+global wholesale_markup
+wholesale_markup = Decimal(1.20)
+
 def top_debtor_wrapper(fn):
     '''Wrapper function for transactions that watches for a new top debtor.
 
@@ -180,12 +183,12 @@ def purchase(user, account, items):
     discount = Decimal(0)
     if user.balance > 20.0:
         #give discounts based on user type; TODO: exact discounts should be adjusted as involvement changes
-        if user.role is "volunteer":
-            discount = Decimal(1/1.20)
-        elif user.role is "manager":
-            discount = Decimal(1/1.20)
-        elif user.role is "administrator":
-            discount = Decimal(1/1.20)
+        if user.role == "volunteer":
+            discount = Decimal(1-1/wholesale_markup)
+        elif user.role == "manager":
+            discount = Decimal(1-1/wholesale_markup)
+        elif user.role == "administrator":
+            discount = Decimal(1-1/wholesale_markup)
         else:
             discount = Decimal('0.05')
 
