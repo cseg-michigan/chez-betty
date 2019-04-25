@@ -248,6 +248,7 @@ def purchase(user, account, items):
         DBSession.add(pli)
         amount += line_amount
     if discount:
+        #if user is an admin or manager in good standing, give wholesale price
         if user.role is not "user":
             amount = round((amount/Decimal(1.20)), 2)
         else:
