@@ -237,7 +237,7 @@ class User(account.Account):
         Get all users with a balance below `balance`.
         '''
         return DBSession.query(cls)\
-                        .filter(cls.enabled == False)\
+                        .filter(cls.enabled == True)\
                         .filter(cls.balance < balance)\
                         .all()
 
