@@ -2289,6 +2289,7 @@ def admin_users_list(request):
         page  = 'disabled'
 
     roles = {'user': 'User',
+             'volunteer': 'Volunteer',
              'serviceaccount': 'Service Account',
              'manager': 'Manager',
              'administrator': 'Administrator'}
@@ -2305,6 +2306,7 @@ def admin_users_stats(request):
     archived_users = User.get_archived_users()
     disabled_users = User.get_disabled_users()
     roles = {'user': 'User',
+             'volunteer': 'Volunteer',
              'serviceaccount': 'Service Account',
              'manager': 'Manager',
              'administrator': 'Administrator'}

@@ -179,7 +179,15 @@ def purchase(user, account, items):
     # TODO: Parameterize
     discount = Decimal(0)
     if user.balance > 20.0:
-        discount = Decimal('0.05')
+        #give discounts based on user type; TODO: exact discounts should be adjusted as involvement changes
+        if user.role is "volunteer":
+            discount = Decimal(1/1.20)
+        elif user.role is "manager":
+            discount = Decimal(1/1.20)
+        elif user.role is "administrator":
+            discount = Decimal(1/1.20)
+        else:
+            discount = Decimal('0.05')
 
     # Need to calculate a total
     amount = Decimal(0)
@@ -248,11 +256,7 @@ def purchase(user, account, items):
         DBSession.add(pli)
         amount += line_amount
     if discount:
-        #if user is an admin or manager in good standing, give wholesale price
-        if user.role is not "user":
-            amount = round((amount/Decimal(1.20)), 2)
-        else:
-            amount = round(amount - (amount * discount), 2)
+        amount = round(amount - (amount * discount), 2)
     t.update_amount(amount)
 
     if isinstance(account, Pool):

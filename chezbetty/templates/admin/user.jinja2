@@ -46,6 +46,9 @@
     {% if not user.role == 'user' %}
     {{ button.ajax_singleuse_button("Change role to User", "/admin/user/"~user.id~"/changerole/user") }}
     {% endif %}
+    {% if not user.role == 'volunteer' %}
+    {{ button.ajax_singleuse_button("Change role to Volunteer", "/admin/user/"~user.id~"/changerole/volunteer") }}
+    {% endif %}
     {% if not user.role == 'manager' %}
     {{ button.ajax_singleuse_button("Change role to Manager", "/admin/user/"~user.id~"/changerole/manager") }}
     {% endif %}
