@@ -4,6 +4,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
+from pyramid.security import Allow, Everyone, remember, forget
 from pyramid.view import view_config, forbidden_view_config
 
 from pyramid.i18n import TranslationStringFactory
@@ -17,24 +18,11 @@ from .models import *
 from .models.model import *
 from .models import user as __user
 from .models.user import User
-from .models.item import Item
-from .models.box import Box
-from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
-from .models.account import Account, VirtualAccount, CashAccount
-from .models.event import Event
 from .models.announcement import Announcement
-from .models.btcdeposit import BtcPendingDeposit
-from .models.pool import Pool
 
 from .utility import user_password_reset
-from .utility import send_email
-from .utility import post_stripe_payment
-
-from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
-from .btc import Bitcoin, BTCException
-import binascii
 import transaction
 
 import traceback
@@ -101,37 +89,14 @@ def IsTerminalPredicate(boolean):
 def _index_terminal(request):
     announcements = Announcement.all_enabled()
 
-    shame_users = User.get_shame_users()
-
-    try:
-        top_debtors = DBSession.query(User)\
-                         .filter(User.balance < -5)\
-                         .order_by(User.balance)\
-                         .limit(5).all()
-        for i, debtor in enumerate(top_debtors):
-            days = Transaction.get_days_in_debt_for_user(debtor)
-            debtor.days_on_shame = days
-            shame_users[i].days_on_shame = days
-
-            last_purchase = debtor.get_transactions_query()\
-                    .filter(Transaction.type=='purchase')\
-                    .limit(1).one()
-            debtor.most_recent_purchase = last_purchase
-            shame_users[i].most_recent_purchase = last_purchase
-    except NoResultFound:
-        top_debtors = None
-
     # For the demo mode
+    admins = []
     if 'demo' in request.cookies and request.cookies['demo'] == '1':
         admins = User.get_admins()
-    else:
-        admins = []
 
     return {'announcements': announcements,
             'admins': admins,
-            'top_debtors': top_debtors,
-            'owed_by_users': User.get_amount_owed(),
-            'shame_users': shame_users}
+            'owed_by_users': User.get_amount_owed()}
 
 
 # Terminal home page

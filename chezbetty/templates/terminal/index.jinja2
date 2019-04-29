@@ -40,35 +40,6 @@ body {
       </div>
     </div>
 
-
-    {#
-    {% if top_debtors|length > 0 %}
-    <div class="row" style="margin-top: 20px;">
-      <div class="col-md-12">
-
-        <div class="well">
-          <h2 style="margin-top:30px; margin-bottom:30px;">Do you know any of these people?</h2>
-          <h1 style="margin-bottom:30px; color:#e62020!important; font-size:300%; font-weight:bold;">They are on top of the Wall of Shame.</h1>
-
-          <ol>
-            {% for debtor in top_debtors %}
-            <li style="font-size: {{25-(1.5*loop.index)}}px; padding-bottom: 10px;">
-              <strong>{{ debtor.name }}</strong> ({{ debtor.uniqname }}): {{ debtor.balance|format_currency|safe }}
-              <br />
-              <p style="font-size: 75%; color: blue;">{{ debtor.days_on_shame }} days on the Wall of Shame
-                <span style="font-size: 75%; color: red">Most recently a {{ debtor.most_recent_purchase.amount|format_currency|safe }} purchase {{ debtor.most_recent_purchase.event.timestamp|human_date|safe }}</span>
-              </p>
-            </li>
-            {% endfor %}
-          </ol>
-          <h2>Please encourage them to pay Betty back today.</h2>
-        </div>
-
-      </div>
-    </div>
-    {% endif %}
-    #}
-
     <div class="row">
       <div class="col-md-12">
 
@@ -154,44 +125,6 @@ body {
     <a class="btn btn-deftaul btn-huge btn-bordered" onclick='$("#splash").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
   </div>
   <div class="clearfix"></div>
-  <hr />
-  <div class="fitin" data-fitin-width="1570" data-fitin-height="600" data-fitin-columns="true" style="-webkit-column-count: 5; -moz-column-count: 5; column-count: 5; font-size: 15px;">
-  {% set tax_header = 100 %} {# start much greater than max tax #}
-  {% for user in shame_users %}
-  {% if (-user.balance / 5)|round(method='floor') < tax_header %}
-  {% set tax_header = (-user.balance / 5)|round(method='floor') %}
-  <h2 class="big-debt"><strong>{{ (tax_header * 5)|int }}% Tax</strong></h2>
-  {% endif %}
-  <div>
-    <p style="{%if user.balance < -20%}font-weight: bold;{%endif%}{%if loop.index <= 5%}font-size: 150%;{%endif%}">
-    {{loop.index}}.&nbsp;{{ user.name }}{%if loop.index<=5%} (<tt>{{user.uniqname}}</tt>){%endif%}&nbsp;{{ user.balance|format_debt|safe }}
-    </p>
-    <p style="color: blue">{%if loop.index <= 5%}{{user.days_on_shame}}&nbsp;days on Wall of Shame{%endif%}</p>
-    <p style="color: red">{%if loop.index <= 5%}Most recently a {{user.most_recent_purchase.amount|format_currency|safe}} purchase {{user.most_recent_purchase.event.timestamp|human_date|safe}}{%endif%}</p>
-  </div>
-  {% endfor %}
-  </div>
-</div>
--->
-
-
-<!--
-{# Secondary splash page #}
-<div id="splash2" class="container" style="display: none;">
-  <div style="font-size: 90px; width: 100%;">
-    <h1 style="font-size: 80px;">
-      Seriously. We need some help from some social pressure.
-    </h1>
-    <div style="width: 75%; margin: 100px auto;">
-      <h1 style="font-size: 50px;">
-        <span style="color:red; font-weight: bold;">{{ shame_users[0].name }}</span> ({{ shame_users[0].uniqname }}@umich.edu)
-        owes {{ shame_users[0].balance|format_debt|safe }},
-        has been on the Wall of Shame for {{ shame_users[0].days_on_shame }} days,
-        and made a {{shame_users[0].most_recent_purchase.amount|format_currency|safe}} purchase {{shame_users[0].most_recent_purchase.event.timestamp|human_date|safe}}.
-      </h1>
-    </div>
-    <a class="btn btn-deftaul btn-huge btn-bordered" style="float:right;" onclick='$("#splash2").hide(); $("#index").show(); $("#footer").show();'>Continue to Betty</a>
-  </div>
 </div>
 -->
 
