@@ -32,7 +32,7 @@
     {% for user in normal_users %}
     <tr id="user-{{ user.id }}" class="edit-user-row {% if user.enabled == False %} disabled-row {% endif %}">
       <td data-value="{{ user.name }}">{{ user|make_link|safe }}</td>
-      <td data-value="{{ user.role }}">{{ roles[user.role] }}</td>
+      <td data-value="{{ user.role }}">{{ user.role_human_readable }}</td>
       <td class="right" data-value="{{ user.balance|round(2) }}">{{ user.balance|format_currency|safe }}</td>
       <td data-value="{{ user.days_since_last_purchase }}" class="right">{{ user.days_since_last_purchase }}</td>
       <td data-value="{{ user.created_at }}">{{ user.created_at|pretty_date|safe }}</td>

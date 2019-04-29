@@ -352,6 +352,15 @@ class User(account.Account):
     def has_password(self):
         return self._password != None
 
+    @property
+    def role_human_readable(self):
+        roles = {'user': 'User',
+                 'volunteer': 'Volunteer',
+                 'serviceaccount': 'Service Account',
+                 'manager': 'Manager',
+                 'administrator': 'Administrator'}
+        return roles[self.role]
+
 
 def get_user(request):
     login = authenticated_userid(request)

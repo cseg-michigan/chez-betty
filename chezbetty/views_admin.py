@@ -2288,14 +2288,8 @@ def admin_users_list(request):
         users = User.get_disabled_users()
         page  = 'disabled'
 
-    roles = {'user': 'User',
-             'volunteer': 'Volunteer',
-             'serviceaccount': 'Service Account',
-             'manager': 'Manager',
-             'administrator': 'Administrator'}
     return {'users': users,
-            'user_page': page,
-            'roles': roles}
+            'user_page': page}
 
 
 @view_config(route_name='admin_users_stats',
@@ -2305,16 +2299,11 @@ def admin_users_stats(request):
     normal_users = User.get_normal_users()
     archived_users = User.get_archived_users()
     disabled_users = User.get_disabled_users()
-    roles = {'user': 'User',
-             'volunteer': 'Volunteer',
-             'serviceaccount': 'Service Account',
-             'manager': 'Manager',
-             'administrator': 'Administrator'}
+
     return {'normal_users': normal_users,
             'archived_users': archived_users,
             'disabled_users': disabled_users,
-            'user_page': 'stats',
-            'roles': roles}
+            'user_page': 'stats'}
 
 
 @view_config(route_name='admin_uniqname',
