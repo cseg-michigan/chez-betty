@@ -18,14 +18,6 @@ from .models.model import *
 from .models import user as __user
 from .models.user import User
 from .models.item import Item
-from .models.box import Box
-from .models.transaction import Transaction, BTCDeposit, PurchaseLineItem
-from .models.account import Account, VirtualAccount, CashAccount
-from .models.event import Event
-from .models.request import Request
-from .models.announcement import Announcement
-from .models.btcdeposit import BtcPendingDeposit
-from .models.pool import Pool
 
 from .utility import user_password_reset
 from .utility import send_email
@@ -34,7 +26,6 @@ from .utility import post_stripe_payment
 from pyramid.security import Allow, Everyone, remember, forget
 
 import chezbetty.datalayer as datalayer
-import transaction
 
 import traceback
 
