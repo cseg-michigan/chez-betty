@@ -95,14 +95,9 @@ def main(global_config, **settings):
     # GLOBAL NOT LOGGED IN VIEWS
     config.add_route('exception_view',      '/exception')
 
-    config.add_route('index',               '/')
-
-    config.add_route('lang',                '/lang-{code}')
-
-    config.add_route('about',               '/about')
-    #config.add_route('shame',               '/shame')
-    #config.add_route('shame_csv',           '/shame.csv')
-
+    config.add_route('index',                    '/')
+    config.add_route('lang',                     '/lang-{code}')
+    config.add_route('about',                    '/about')
     config.add_route('items',                    '/items')
 
     config.add_route('paydebt',                  '/paydebt/{uniqname}')
