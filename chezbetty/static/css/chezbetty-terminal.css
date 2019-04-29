@@ -62,32 +62,6 @@ h2.big-debt {
 	margin-bottom: 20px;
 }
 
-.btn-coin-deposit {
-	height: 90px;
-	width: 44%;
-	margin: 10px;
-	float: left;
-}
-
-.btn-custom-deposit {
-	width: 100%;
-	height: 90px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-}
-
-.btn-deposit-action {
-	width: 100%;
-	height: 60px;
-	margin-bottom: 15px;
-}
-
-.btn-edit-deposit, .btn-delete-deposit {
-	width: 100%;
-	height: 80px;
-	margin-bottom: 15px;
-}
-
 .buttons a {
 	margin-right: 20px;
 }
@@ -160,33 +134,8 @@ h2.big-debt {
 
 
 /* Deposit */
-#deposit-entry-total {
-	color: #3071a9;
-	font-size: 34px;
-	text-align: right;
-}
-
-#deposit-entry h5 {
-	margin-left: 10px;
-}
-
-.deposit-type-col h3 {
-	text-align: center;
-	font-weight: bold;
-}
-
 .deposit-thankyou {
 	font-size: 48px;
-}
-
-.deposit-info {
-	font-size: 28px;
-	margin-top: 10px;
-	margin-bottom: 20px;
-}
-
-.deposit-cash {
-	text-align: center;
 }
 
 .deposit-amount {
