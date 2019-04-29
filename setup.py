@@ -19,7 +19,7 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'python3-ldap',
+    'ldap3',
     'qrcode',
     'reportlab',
     'twitter',

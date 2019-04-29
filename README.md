@@ -50,7 +50,9 @@ development environment set up, do the following:
         ## Newest (only do this with Python 3.4+):
         # pyvenv-3.5 venv
         ## Python 3.6 changes it again!
-        python3.6 -m venv
+        #python3.6 -m venv
+        ## And for 3.7
+        python3.7 -m venv venv
 
         source venv/bin/activate
 
