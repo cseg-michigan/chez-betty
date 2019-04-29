@@ -377,7 +377,7 @@ def groupfinder(userid, request):
     if user.role == "user":
         return ["user",]
     elif user.role == "volunteer":
-        return ["user","volunteer"]
+        return ["user"]
     elif user.role == "manager":
         return ["user","volunteer","manager"]
     elif user.role == "administrator":
