@@ -352,11 +352,6 @@ class User(account.Account):
     def has_password(self):
         return self._password != None
 
-    # Cash deposit limit is now fixed at $2 because we have a bill acceptor
-    @property
-    def deposit_limit(self):
-        return 2.0
-
 
 def get_user(request):
     login = authenticated_userid(request)
