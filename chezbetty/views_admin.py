@@ -1003,8 +1003,8 @@ def admin_restock_submit(request):
             #TODO: figure out how to save the old wholesale price so that if a restock is undone, the wholesale price reverts to previous value
             # Set the item price
             if not item.sticky_price:
-                # item.price = round(item.wholesale * Decimal('1.20'), 2)
-                item.price = round((item.wholesale + global_cost_item_addition) * Decimal('1.20'), 2)
+                # item.price = round(item.wholesale * Decimal(datalayer.wholesale_markup), 2)
+                item.price = round((item.wholesale + global_cost_item_addition) * Decimal(datalayer.wholesale_markup), 2)
 
     if len(items) == 0:
         request.session.flash('Have to restock at least one item.', 'error')
@@ -2289,6 +2289,7 @@ def admin_users_list(request):
         page  = 'disabled'
 
     roles = {'user': 'User',
+             'volunteer': 'Volunteer',
              'serviceaccount': 'Service Account',
              'manager': 'Manager',
              'administrator': 'Administrator'}
@@ -2305,6 +2306,7 @@ def admin_users_stats(request):
     archived_users = User.get_archived_users()
     disabled_users = User.get_disabled_users()
     roles = {'user': 'User',
+             'volunteer': 'Volunteer',
              'serviceaccount': 'Service Account',
              'manager': 'Manager',
              'administrator': 'Administrator'}

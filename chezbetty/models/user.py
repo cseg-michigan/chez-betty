@@ -117,7 +117,7 @@ class User(account.Account):
     _salt     = Column("salt", String(255))
     enabled   = Column(Boolean, nullable=False, default=True)
     archived  = Column(Boolean, nullable=False, default=False)
-    role      = Column(Enum("user", "serviceaccount", "manager", "administrator", name="user_type"),
+    role      = Column(Enum("user", "volunteer", "serviceaccount", "manager", "administrator", name="user_type"),
                        nullable=False, default="user")
 
     administrative_events = relationship(event.Event, foreign_keys=[event.Event.user_id], backref="admin")
@@ -376,6 +376,8 @@ def groupfinder(userid, request):
     user = User.from_uniqname(userid)
     if user.role == "user":
         return ["user",]
+    elif user.role == "volunteer":
+        return ["user"]
     elif user.role == "manager":
         return ["user","manager"]
     elif user.role == "administrator":
