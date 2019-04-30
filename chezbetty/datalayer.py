@@ -23,6 +23,8 @@ import math
 
 global wholesale_markup
 wholesale_markup = Decimal(1.20)
+global good_standing_discount
+good_standing_discount = Decimal(1.05)
 
 def top_debtor_wrapper(fn):
     '''Wrapper function for transactions that watches for a new top debtor.
@@ -190,7 +192,7 @@ def purchase(user, account, items):
         elif user.role == "administrator":
             discount = Decimal(1-1/wholesale_markup)
         else:
-            discount = Decimal('0.05')
+            discount = Decimal(1-1/good_standing_discount)
 
     # Need to calculate a total
     amount = Decimal(0)
