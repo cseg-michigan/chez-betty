@@ -64,7 +64,7 @@ def can_undo_event(e):
     return True
 
 
-# Call this to remove an event from chez betty. Only works with cash deposits
+# Call this to remove an event from chez betty.
 def undo_event(e, user):
     assert(can_undo_event(e))
 
@@ -126,6 +126,8 @@ def undo_event(e, user):
         # Don't need anything for emptycashbox. On those transactions no
         # other tables are changed.
 
+    # Keep track of the old event ID.
+    line_items['old_event_id'] = e.id
 
     # Just need to delete the event. All transactions will understand they
     # were deleted as well.
@@ -388,7 +390,7 @@ def transfer_user_money(sender, recipient, amount, notes, admin):
 
 
 # Call this when an admin restocks chezbetty
-def restock(items, global_cost, donation, reimbursee, admin, timestamp=None):
+def restock(items, global_cost, donation, reimbursee, admin, timestamp=None, old_event_id=None):
     e = event.Restock(admin, timestamp)
     DBSession.add(e)
     DBSession.flush()
@@ -436,6 +438,12 @@ def restock(items, global_cost, donation, reimbursee, admin, timestamp=None):
         amount += Decimal(total)
 
     t.update_amount(amount)
+
+    # See if there are attached receipts to the old event that should
+    # be transferred to this new event.
+    if old_event_id != None:
+        receipt.Receipt.transfer(old_event_id, e.id)
+
     return e
 
 

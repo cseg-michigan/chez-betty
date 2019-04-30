@@ -24,3 +24,12 @@ class Receipt(Base):
     @classmethod
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
+
+    ## Move receipts from one event to a new one. This is useful in particular
+    ## if a restock is undone and then re-submitted but the receipts are still
+    ## valid.
+    @classmethod
+    def transfer(cls, old_event_id, new_event_id):
+        matching_receipts = DBSession.query(cls).filter(cls.event_id == old_event_id).all()
+        for receipt in matching_receipts:
+            receipt.event_id = new_event_id

@@ -127,4 +127,3 @@ class Item(Versioned, Base):
         return "<Item (%s)>" % self.name
 
     __repr__ = __str__
-    

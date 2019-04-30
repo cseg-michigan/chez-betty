@@ -16,6 +16,7 @@
 <form role="form" action="/admin/restock/submit" method="post" id="restock-form">
 
   <input type="hidden" id="row-count" name="row-count" value="{{ restock_rows|default(0) }}">
+  <input type="hidden" id="old-event-id" name="old-event-id" value="{{ old_event_id }}">
 
   <div class="row">
     <div class="col-md-8">

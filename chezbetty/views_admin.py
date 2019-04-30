@@ -645,6 +645,7 @@ def metrics_per_time(start, end):
 
     return metrics
 
+
 @view_config(route_name='admin_index_history',
              renderer='templates/admin/history.jinja2',
              permission='manage')
@@ -660,6 +661,7 @@ def admin_index_history(request):
     return {
         "metrics": metrics
     }
+
 
 @view_config(route_name='admin_index_history_year',
              renderer='templates/admin/history.jinja2',
@@ -681,6 +683,7 @@ def admin_index_history_year(request):
     }
 
 
+## Retrieve an item or a box based on a barcode.
 @view_config(route_name='admin_item_barcode_json',
              renderer='json',
              permission='manage')
@@ -718,6 +721,7 @@ def admin_item_barcode_json(request):
             return {'status': 'error'}
 
 
+## Retrieve an item based on its ID.
 @view_config(route_name='admin_item_id_json',
              renderer='json',
              permission='manage')
@@ -737,6 +741,7 @@ def admin_item_id_json(request):
             return {'status': 'error'}
 
 
+## Retrieve items and boxes based on a very forgiving search.
 @view_config(route_name='admin_item_search_json',
              renderer='json',
              permission='manage')
@@ -770,7 +775,7 @@ def admin_item_search_json(request):
         return {'status': 'error'}
 
 
-
+## Retrieve users based on a very forgiving search.
 @view_config(route_name='admin_user_search_json',
              renderer='json',
              permission='manage')
@@ -809,6 +814,7 @@ def admin_restock(request):
     donation = Decimal(0)
     reimbursees = Reimbursee.all()
     reimbursee_selected = 'none'
+    old_event_id = 0
     if len(request.GET) != 0:
         for index,packed_values in request.GET.items():
             values = packed_values.split(',')
@@ -824,6 +830,10 @@ def admin_restock(request):
                     donation = Decimal(0)
             elif index == 'reimbursee':
                 reimbursee_selected = values[0]
+            elif index == 'old_event_id':
+                # If we have one, keep track of the old event ID that we undid
+                # to start this copy of the restock.
+                old_event_id = values[0]
             else:
                 line_values = {}
                 line_type = values[0]
@@ -853,7 +863,8 @@ def admin_restock(request):
             'global_cost': global_cost,
             'donation': donation,
             'reimbursees': reimbursees,
-            'reimbursee_selected': reimbursee_selected}
+            'reimbursee_selected': reimbursee_selected,
+            'old_event_id': old_event_id}
 
 
 @view_config(route_name='admin_restock_submit',
@@ -1021,8 +1032,24 @@ def admin_restock_submit(request):
         # Could not parse date
         restock_date = None
 
+    # See if we got information about an old Event ID that was deleted to create
+    # this restock.
+    old_event_id = None
     try:
-        e = datalayer.restock(items, global_cost, donation, reimbursee, request.user, restock_date)
+        old_event_id = int(request.POST['old-event-id'])
+        if old_event_id == 0:
+            old_event_id = None
+    except Exception as e:
+        pass
+
+    try:
+        e = datalayer.restock(items,
+                              global_cost,
+                              donation,
+                              reimbursee,
+                              request.user,
+                              restock_date,
+                              old_event_id)
         request.session.flash('Restock complete.', 'success')
         return HTTPFound(location=request.route_url('admin_event', event_id=e.id))
     except Exception as e:
@@ -1130,7 +1157,10 @@ def admin_inventory(request):
     if len(request.GET) != 0:
         undone_inventory
         for item_id,quantity_counted in request.GET.items():
-            undone_inventory[int(item_id)] = int(quantity_counted)
+            try:
+                undone_inventory[int(item_id)] = int(quantity_counted)
+            except ValueError as ve:
+                pass
 
     return {'items_have': items1,
             'items_donthave': items2,
