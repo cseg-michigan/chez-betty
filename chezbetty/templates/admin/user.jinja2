@@ -27,6 +27,9 @@
           <dt>Lifetime Fees</dt><dd>{{ user.lifetime_fees|format_currency|safe }}</dd>
           <dt>Joined</dt><dd>{{ user.created_at|pretty_date|safe }}</dd>
           <dt>Archived</dt><dd>{{ user.archived }}</dd>
+          {% if user.archived %}
+          <dt>Archived Balance</dt><dd>{{ user.archived_balance|format_currency|safe }}</dd>
+          {% endif %}
           <dt>Enabled</dt><dd><td>{{ button.onoff_switch("user", "enabled", user.id, user.enabled) }}</td></dd>
         </dl>
       </div>
