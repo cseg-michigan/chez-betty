@@ -181,17 +181,25 @@ def user_deposit_cc(request):
              renderer='templates/user/deposit_cc_custom.jinja2',
              permission='user')
 def user_deposit_cc_custom(request):
-    account = request.GET['betty_to_account']
-    if account != 'user':
-        pool = Pool.from_id(account.split('-')[1])
-    else:
-        pool = None
-    return {'user': request.user,
-            'stripe_pk': request.registry.settings['stripe.publishable_key'],
-            'amount': round(Decimal(request.GET['deposit-amount']), 2),
-            'account': account,
-            'pool': pool,
-            }
+    try:
+        # Check that the custom deposit amount is valid.
+        amount = round(Decimal(request.GET['deposit-amount']), 2)
+
+        account = request.GET['betty_to_account']
+        if account != 'user':
+            pool = Pool.from_id(account.split('-')[1])
+        else:
+            pool = None
+        return {'user': request.user,
+                'stripe_pk': request.registry.settings['stripe.publishable_key'],
+                'amount': round(Decimal(request.GET['deposit-amount']), 2),
+                'account': account,
+                'pool': pool,
+                }
+    except Exception as e:
+        request.session.flash('Please enter a valid custom deposit amount.', 'error')
+        return HTTPFound(location=request.route_url('user_deposit_cc'))
+
 
 @view_config(route_name='user_deposit_cc_submit',
              request_method='POST',
