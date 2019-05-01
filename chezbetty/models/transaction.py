@@ -633,6 +633,13 @@ class CashDeposit(Deposit):
 
     CONTENTS_THRESHOLD = 1000
     REPEAT_THRESHOLD = 100
+    print("A")
+    print("A")
+    print("A")
+    print("A")
+    print("A")
+    print("A")
+    print("A")
 
     def __init__(self, event, user, amount):
         cashbox_c = account.get_cash_account("cashbox")
@@ -645,7 +652,7 @@ class CashDeposit(Deposit):
         # representing a transaction. I think this should be moved to
         # datalayer.py which does handle application logic.
         try:
-            if prev < CashDeposit.CONTENTS_THRESHOLD and new > CashDeposit.CONTENTS_THRESHOLD:
+            if prev < CashDeposit.CONTENTS_THRESHOLD and new >= CashDeposit.CONTENTS_THRESHOLD:
                 self.send_alert_email(new)
             elif prev > CashDeposit.CONTENTS_THRESHOLD:
                 pr = int((prev - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
@@ -661,7 +668,7 @@ class CashDeposit(Deposit):
         settings = get_current_registry().settings
 
         SUBJECT = 'Time to empty Betty. Cash box has ${}.'.format(amount)
-        TO = 'chez-betty@umich.edu'
+        TO = 'chezbetty@umich.edu'
 
         body = """
         <p>Betty's cash box is getting full. Time to go to the bank.</p>
