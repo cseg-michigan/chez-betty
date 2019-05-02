@@ -23,7 +23,7 @@
   <tr id="badscan-row-{{ loop.index }}">
     <td style="word-wrap:break-word;">{{ badscan.badscan }}</td>
     <td>{{ badscan.count }}</td>
-    <td>{{ badscan.timestamp|pretty_date|safe }}</td>
+    <td data-value="{{ badscan.timestamp }}">{{ badscan.timestamp|pretty_date|safe }}</td>
     <td>{{ button.force_delete('badscan', badscan.badscan, 'badscan-row-'+loop.index|string) }}</td>
   </tr>
   {% endfor %}
