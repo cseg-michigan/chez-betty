@@ -1,0 +1,8 @@
+<nav class="navbar navbar-default">
+  <div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav">
+      <li {% if all == 'enabled'   %}class="active"{% endif %}><a href="/admin/tags/list?all=enabled">Active Items</a></li>
+      <li {% if all == 'all'   %}class="active"{% endif %}><a href="/admin/tags/list?all=all">All Items</a></li>
+    </ul>
+  </div>
+</nav>

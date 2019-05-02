@@ -1,13 +1,27 @@
 {% extends "base.jinja2" %}
 {% set active_page = 'tags_list' %}
+
+{% set all=request.GET["all"]|default("enabled") %}
+
 {% block title %}List Tags{% endblock %}
 
 {% block top %}
 <h1 class="page-header">Tags ({{ tags|length }})</h1>
 {% endblock %}
 
+{% block submenu %}
+{% include "tags_menu.jinja2" %}
+{% endblock %}
+
 {% block content %}
 
+<p>
+{% if all == "enabled" %}
+  Only showing items which are enabled.
+{% else %}
+  Showing all items for each tag.
+{% endif %}
+</p>
 
 <div id="list-tags">
 
@@ -27,8 +41,13 @@
 
     <tbody>
 
-      {% for itemtag in tag.items %}
-      {% set item = itemtag.item %}
+      {% if all == "enabled" %}
+      {% set items=tag.all_enabled_items %}
+      {% else %}
+      {% set items=tag.all_items %}
+      {% endif %}
+
+      {% for item in items %}
       <tr id="item-{{ item.id }}">
         <td>{{ item|make_link|safe }}</td>
         <td>{{ item.price|format_currency|safe }}</td>

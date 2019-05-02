@@ -53,6 +53,33 @@ def __nobarcode_items(self):
 
 tag.Tag.nobarcode_items = __nobarcode_items
 
+@property
+@limitable_all
+def __all_items(self):
+    return DBSession.query(item.Item)\
+            .join(ItemTag)\
+            .join(tag.Tag)\
+            .filter(ItemTag.tag_id == self.id)\
+            .filter(ItemTag.deleted==False)\
+            .filter(tag.Tag.deleted==False)\
+            .order_by(item.Item.name)
+
+tag.Tag.all_items = __all_items
+
+@property
+@limitable_all
+def __all_enabled_items(self):
+    return DBSession.query(item.Item)\
+            .join(ItemTag)\
+            .join(tag.Tag)\
+            .filter(ItemTag.tag_id == self.id)\
+            .filter(ItemTag.deleted==False)\
+            .filter(item.Item.enabled==True)\
+            .filter(tag.Tag.deleted==False)\
+            .order_by(item.Item.name)
+
+tag.Tag.all_enabled_items = __all_enabled_items
+
 @classmethod
 @limitable_all
 def __get_nobarcode_notag_items(cls):

@@ -1844,6 +1844,10 @@ def admin_tags_list(request):
     return {'tags': tags}
 
 
+################################################################################
+# BOXES
+################################################################################
+
 @view_config(route_name='admin_box_add',
              renderer='templates/admin/boxes_add.jinja2',
              permission='manage')
