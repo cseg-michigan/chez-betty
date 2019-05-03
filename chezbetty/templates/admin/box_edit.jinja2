@@ -103,7 +103,7 @@
               {% if bi.enabled %}
               <tr>
 
-                <td>{{ bi.item|make_link|safe }} <input type="hidden" name="box-item-id-{{ bi.id}}" value="{{ bi.item_id }}"></td>
+                <td>{{ bi.item|make_link|safe }} {% if bi.item.enabled == false %}[Disabled]{% endif %} <input type="hidden" name="box-item-id-{{ bi.id}}" value="{{ bi.item_id }}"></td>
                 <td>
                   <input type="text" class="form-control" id="box-item-quantity-{{ bi.id }}" name="box-item-quantity-{{ bi.id }}" value="{{ bi.quantity }}">
                 </td>
