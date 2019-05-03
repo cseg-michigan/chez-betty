@@ -48,3 +48,13 @@ def __subitem_count(self):
             .filter(BoxItem.box_id==self.id)\
             .filter(BoxItem.enabled).one().c or 0
 box.Box.subitem_number = __subitem_count
+
+@property
+def __subitem_active_count(self):
+    return object_session(self).query(func.count(BoxItem.id).label('c'))\
+            .join(item.Item)\
+            .filter(BoxItem.box_id==self.id)\
+            .filter(BoxItem.enabled)\
+            .filter(item.Item.enabled)\
+            .one().c or 0
+box.Box.subitem_active_number = __subitem_active_count
