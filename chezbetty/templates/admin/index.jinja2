@@ -27,28 +27,28 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th colspan="2">Virtual Accounts</th>
+                  <th colspan="2" title="Calculated values for various metrics; does not correspond to physical cash-on-hand">Virtual Accounts</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Chez Betty</td>
+                  <td title="TODO: figure out what this is">Chez Betty</td>
                   <td class="right">{{ chezbetty.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Users Have</td>
+                  <td title="Sum of all positive active user balances">Users Have</td>
                   <td class="right">{{ held_for_users|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Users Owe</td>
+                  <td title="Sum of all negative active User balances">Users Owe</td>
                   <td class="right">{{ owed_by_users|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Pools Have</td>
+                  <td title="Sum of all positive active Pool balances">Pools Have</td>
                   <td class="right">{{ held_for_pools|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Pools Owe</td>
+                  <td title="Sum of all negative active Pool balances">Pools Owe</td>
                   <td class="right">{{ owed_by_pools|format_currency|safe }}</td>
                 </tr>
               </tbody>
@@ -58,20 +58,20 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th colspan="2">Cash Accounts</th>
+                  <th colspan="2" title="Calculated values for various metrics; does correspond to physical cash-on-hand">Cash Accounts</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Chez Betty</td>
+                  <td title="Bank Account minus Reimbursements Owed">Chez Betty</td>
                   <td class="right">{{ chezbetty_cash.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Safe</td>
+                  <td title="Current amount in safe (taken out of cash box but not yet in bank)">Safe</td>
                   <td class="right">{{ safe.balance|format_currency|safe }}</td>
                 </tr>
                 <tr>
-                  <td>Cash Box</td>
+                  <td title="Current amount expected to be in cash box">Cash Box</td>
                   <td class="right">{{ cashbox.balance|format_currency|safe }}</td>
                 </tr>
                 {#<tr>
@@ -98,11 +98,11 @@
         <table class="table">
           <tbody>
             <tr>
-              <td>Bank Account</td>
+              <td title="Physical bank account balance (estimated due to pending CC deposits)">Bank Account</td>
               <td class="right">{{ (bank_balance)|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Cash+Safe</td>
+              <td title="Current total balance, taking into account outstanding reimbursements, safe, and bank balance">Cash+Safe</td>
               <td class="right">{{ (chezbetty_cash.balance + safe.balance)|format_currency|safe }}</td>
             </tr>
             {# <tr>
@@ -110,11 +110,11 @@
                 <td class="right ajaxed_field" id="index-bitcoin">Loading...</td>
             </tr> #}
             <tr>
-              <td>Inventory (Wholesale)</td>
+              <td title="Actual cost of all current inventory">Inventory (Wholesale)</td>
               <td class="right">{{ inventory.wholesale|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Inventory (Price)</td>
+              <td title="Expected sale price of all current inventory">Inventory (Price)</td>
               <td class="right">{{ inventory.price|format_currency|safe }}</td>
             </tr>
 
@@ -136,19 +136,19 @@
         <table class="table">
           <tbody>
             <tr>
-              <td>Estimated Net</td>
+              <td title="Estimate of how current debt to users and reimbursees">Estimated Net</td>
               <td class="right">{{ estimated_net|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Reimbursements Owed</td>
+              <td title="Outstanding reimbursements">Reimbursements Owed</td>
               <td class="right">{{ owed_reimbursements_total|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Debt Forgiven</td>
+              <td title="Negative balances from archived Users we have absorbed">Debt Forgiven</td>
               <td class="right">{{ debt_forgiven|format_currency|safe }}</td>
             </tr>
             <tr>
-              <td>Absorbed From Users</td>
+              <td title="Positive balances from archived Users we have absorbed">Absorbed From Users</td>
               <td class="right">{{ balance_absorbed|format_currency|safe }}</td>
             </tr>
           </tbody>
