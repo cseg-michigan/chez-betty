@@ -20,7 +20,7 @@
   <li {% if active_page == 'boxes_add'  %}class="active"{% endif %}><a href="/admin/box/add">Add Boxes</a></li>
   <li {% if active_page == 'items_list' %}class="active"{% endif %}><a href="/admin/items/list">List Items<span class="badge pull-right">{{ counts["items"] }}</span></a></li>
   <li {% if active_page == 'boxes_list' %}class="active"{% endif %}><a href="/admin/boxes/list">List Boxes<span class="badge pull-right">{{ counts["boxes"] }}</span></a></li>
-  <li {% if active_page == 'vendors_edit' %}class="active"{% endif %}><a href="/admin/vendors/edit">Edit Vendors<span class="badge pull-right">{{ counts["vendors"] }}</span></a></li>
+  <li {% if active_page == 'vendors_edit' %}class="active"{% endif %}><a href="/admin/vendors/list">Edit Vendors<span class="badge pull-right">{{ counts["vendors"] }}</span></a></li>
   <li {% if active_page == 'tags_list' %}class="active"{% endif %}><a href="/admin/tags/list">List Tags<span class="badge pull-right">{{ counts["tags"] }}</span></a></li>
   <li {% if active_page == 'requests' %}class="active"{% endif %}><a href="/admin/requests">Requests<span class="badge pull-right">{{ counts["requests"] }}</span></a></li>
   <li {% if active_page == 'badscans' %}class="active"{% endif %}><a href="/admin/badscans/list">Bad Scans<span class="badge pull-right">{{ counts["badscans"] }}</span></a></li>

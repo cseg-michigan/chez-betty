@@ -24,6 +24,12 @@ class Vendor(Base):
                         .order_by(cls.name).all()
 
     @classmethod
+    def disabled(cls):
+        return DBSession.query(cls)\
+                        .filter(cls.enabled==False)\
+                        .order_by(cls.name).all()
+
+    @classmethod
     def count(cls):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.enabled).one().c

@@ -3,6 +3,7 @@ from .models import item
 from .models import user
 from .models import account
 from .models import pool
+from .models import vendor
 
 import arrow
 import jinja2
@@ -65,6 +66,8 @@ def make_link(obj, str_len=0):
 		return '<a href="/admin/user/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	elif type(obj) is pool.Pool:
 		return '<a href="/admin/pool/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
+	elif type(obj) is vendor.Vendor:
+		return '<a href="/admin/vendor/edit/{}">{}</a>'.format(obj.id, shorten(obj.name, str_len))
 	else:
 		return obj.name
 

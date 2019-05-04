@@ -1,0 +1,106 @@
+{% extends "base.jinja2" %}
+{% import "macro_buttons.jinja2" as button %}
+{% set active_page = 'vendors_edit' %}
+{% block title %}Edit Vendor{% endblock %}
+
+{% block top %}
+<h1 class="page-header">Edit Vendor</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<form role="form" action="/admin/vendor/edit/submit" method="post" id="form-edit-vendor">
+  <input type="hidden" id="vendor-id" name="vendor-id" value="{{ vendor.id }}">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Vendor Details</h3>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+          <dl class="dl-horizontal">
+            <dt>Name</dt>
+            <dd><input type="text" class="form-control" id="vendor-name" name="vendor-name" value="{{ vendor.name }}"></dd>
+
+            <dt>Enabled</dt>
+            <dd>{{ button.onoff_switch("vendor", "enabled", vendor.id, vendor.enabled) }}</dd>
+          </dl>
+
+          <button type="submit" class="btn btn-success">Update Vendor</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Boxes from this Vendor</h3>
+        </div>
+        <div class="panel-body">
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Box</th>
+                <th style="width: 50%"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for box in vendor.all_boxes %}
+              <tr>
+                <td>{{ box|make_link|safe }}</td>
+                <td>
+                  {% for item in box.all_items %}
+                  <div class="row">
+                      <div class="col-sm-8">{{ item.name }}</div>
+                      <div class="col-sm-4">Stock: {{ item.in_stock }}</div>
+                  </div>
+                  {% endfor %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12 col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Items from this Vendor</h3>
+        </div>
+        <div class="panel-body">
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Stock</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for item in vendor.all_items %}
+              <tr>
+                <td>{{ item|make_link|safe }}</td>
+                <td>{{ item.in_stock }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

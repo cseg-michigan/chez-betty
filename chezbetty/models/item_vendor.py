@@ -36,3 +36,13 @@ class ItemVendor(Base):
     @classmethod
     def from_number_fuzzy(cls, number):
         return DBSession.query(cls).filter(cls.item_number.like('%{}%'.format(number))).all()
+
+@property
+def __all_items(self):
+    return DBSession.query(item.Item)\
+            .join(ItemVendor)\
+            .filter(ItemVendor.vendor_id == self.id)\
+            .filter(ItemVendor.enabled==True)\
+            .filter(item.Item.enabled==True)\
+            .order_by(item.Item.name)
+vendor.Vendor.all_items = __all_items

@@ -2190,43 +2190,54 @@ def admin_box_delete(request):
 # VENDORS
 ################################################################################
 
-@view_config(route_name='admin_vendors_edit',
-             renderer='templates/admin/vendors_edit.jinja2',
+@view_config(route_name='admin_vendors_list',
+             renderer='templates/admin/vendors_list.jinja2',
              permission='manage')
-def admin_vendors_edit(request):
-    vendors_active = DBSession.query(Vendor).filter_by(enabled=True).order_by(Vendor.name).all()
-    vendors_inactive = DBSession.query(Vendor).filter_by(enabled=False).order_by(Vendor.name).all()
+def admin_vendors_list(request):
+    vendors_active = Vendor.all()
+    vendors_inactive = Vendor.disabled()
     vendors = vendors_active + vendors_inactive
+
     return {'vendors': vendors}
 
 
-@view_config(route_name='admin_vendors_edit_submit',
+@view_config(route_name='admin_vendors_add_submit',
              request_method='POST',
              permission='manage')
-def admin_vendors_edit_submit(request):
+def admin_vendors_add_submit(request):
 
-    # Group all the form items into a nice dict that we can cleanly iterate
-    vendors = {}
-    for key in request.POST:
-        fields = key.split('-')
-        if fields[2] not in vendors:
-            vendors[fields[2]] = {}
-        vendors[fields[2]][fields[1]] = request.POST[key].strip()
+    # Get vendor name from POST
+    vendor_name = request.POST['vendor-name-new'].strip()
 
-    for vendor_id, vendor_props in vendors.items():
-        if vendor_id == 'new':
-            if vendor_props['name'] == '':
-                # Don't add blank vendors
-                continue
-            vendor = Vendor(vendor_props['name'])
-            DBSession.add(vendor)
-        else:
-            vendor = Vendor.from_id(int(vendor_id))
-            for prop_name, prop_val in vendor_props.items():
-                setattr(vendor, prop_name, prop_val)
+    # Add new vendor
+    vendor = Vendor(vendor_name)
+    DBSession.add(vendor)
 
-    request.session.flash('Vendors updated successfully.', 'success')
-    return HTTPFound(location=request.route_url('admin_vendors_edit'))
+    request.session.flash('Vendor added successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_vendors_list'))
+
+
+@view_config(route_name='admin_vendor_edit',
+             renderer='templates/admin/vendor_edit.jinja2',
+             permission='manage')
+def admin_vendor_edit(request):
+    vendor = Vendor.from_id(request.matchdict['vendor_id'])
+    return {'vendor': vendor}
+
+
+@view_config(route_name='admin_vendor_edit_submit',
+             request_method='POST',
+             permission='manage')
+def admin_vendor_edit_submit(request):
+    vendor_id = int(request.POST['vendor-id'])
+    vendor = Vendor.from_id(vendor_id)
+    vendor_name = request.POST['vendor-name'].strip()
+
+    # Actually save the updated content
+    vendor.name = vendor_name
+
+    request.session.flash('Vendor updated successfully.', 'success')
+    return HTTPFound(location=request.route_url('admin_vendor_edit', vendor_id=vendor_id))
 
 
 ################################################################################

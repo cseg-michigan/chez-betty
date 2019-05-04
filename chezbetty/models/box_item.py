@@ -58,3 +58,12 @@ def __subitem_active_count(self):
             .filter(item.Item.enabled)\
             .one().c or 0
 box.Box.subitem_active_number = __subitem_active_count
+
+@property
+def __all_items(self):
+    return DBSession.query(item.Item)\
+            .join(BoxItem)\
+            .filter(BoxItem.box_id == self.id)\
+            .filter(BoxItem.enabled==True)\
+            .order_by(item.Item.name)
+box.Box.all_items = __all_items

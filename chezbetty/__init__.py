@@ -189,8 +189,10 @@ def main(global_config, **settings):
     config.add_route('admin_box_edit',          '/admin/box/edit/{box_id}')
     config.add_route('admin_box_delete',        '/admin/box/delete/{box_id}')
 
-    config.add_route('admin_vendors_edit',              '/admin/vendors/edit')
-    config.add_route('admin_vendors_edit_submit',       '/admin/vendors/edit/submit')
+    config.add_route('admin_vendors_list',              '/admin/vendors/list')
+    config.add_route('admin_vendors_add_submit',        '/admin/vendors/add/submit')
+    config.add_route('admin_vendor_edit_submit',        '/admin/vendor/edit/submit')
+    config.add_route('admin_vendor_edit',               '/admin/vendor/edit/{vendor_id}')
 
     config.add_route('admin_reimbursees',               '/admin/reimbursees')
     config.add_route('admin_reimbursees_add_submit',    '/admin/reimbursees/add/submit')
