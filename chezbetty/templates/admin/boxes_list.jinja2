@@ -65,6 +65,8 @@
               <th>Name</th>
               <th style="width: 20%">Box Wholesale</th>
               <th style="width: 20%">Barcode</th>
+              <th style="width: 12%">Number Unique Items</th>
+              <th style="width: 12%">Number Active Items</th>
             </tr>
           </thead>
 
@@ -76,6 +78,8 @@
               <td>{{ box|make_link|safe }}</td>
               <td>{{ box.wholesale|round(2) }}</td>
               <td>{{ box.barcode }}</td>
+              <td>{{ box.subitem_number }}</td>
+              <td>{{ box.subitem_active_number }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -104,6 +108,8 @@
               <th>Name</th>
               <th style="width: 20%">Box Wholesale</th>
               <th style="width: 20%">Barcode</th>
+              <th style="width: 12%">Number Unique Items</th>
+              <th style="width: 12%">Number Active Items</th>
             </tr>
           </thead>
 
@@ -116,6 +122,8 @@
               <td>{{ box|make_link|safe }}</td>
               <td>{{ box.wholesale|round(2) }}</td>
               <td>{{ box.barcode }}</td>
+              <td>{{ box.subitem_number }}</td>
+              <td>{{ box.subitem_active_number }}</td>
             </tr>
             {% endfor %}
           </tbody>
