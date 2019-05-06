@@ -633,13 +633,6 @@ class CashDeposit(Deposit):
 
     CONTENTS_THRESHOLD = 1000
     REPEAT_THRESHOLD = 100
-    print("A")
-    print("A")
-    print("A")
-    print("A")
-    print("A")
-    print("A")
-    print("A")
 
     def __init__(self, event, user, amount):
         cashbox_c = account.get_cash_account("cashbox")
@@ -652,26 +645,6 @@ class CashDeposit(Deposit):
         # representing a transaction. I think this should be moved to
         # datalayer.py which does handle application logic.
         try:
-            # Get the cashbox empty before this one
-            # previous_cb_empty = DBSession.query(event.Event)\
-            #         .filter(event.Event.type == 'emptycashbox')\
-            #         .filter(event.Event.timestamp < self.timestamp)\
-            #         .filter(event.Event.deleted == False)\
-            #         .order_by(desc(event.Event.timestamp))\
-            #         .first()
-
-            previous_cb_empty = DBSession.query(Transaction)\
-            .join(event.Event)\
-            .first()
-
-            print("B")
-            print("B")
-            print("B")
-            print("B")
-            print("B")
-            print("B")
-            print("B")
-
             if prev < CashDeposit.CONTENTS_THRESHOLD and new >= CashDeposit.CONTENTS_THRESHOLD:
                 self.send_alert_email(new)
             elif prev >= CashDeposit.CONTENTS_THRESHOLD:
@@ -679,18 +652,9 @@ class CashDeposit(Deposit):
                 nr = int((new - CashDeposit.CONTENTS_THRESHOLD) / CashDeposit.REPEAT_THRESHOLD)
                 if pr != nr:
                     self.send_alert_email(new, nr)
-        except Exception as e:
+        except:
             # Some error sending email. Let's not prevent the deposit from
             # going through.
-            print("C")
-            print("C")
-            print("C")
-            print("C")
-            print(event.__dict__)
-            print("C")
-            print("C")
-            print("C")
-            print(e)
             pass
 
     def send_alert_email(self, amount, repeat=0):

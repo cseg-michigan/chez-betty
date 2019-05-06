@@ -899,6 +899,12 @@ def admin_restock_submit(request):
     update_prices = True
     if 'restock-noprice' in request.POST:
         update_prices = False
+    # Check if we should update max prices with this restock.
+    # This is useful for counteracting artificial price inflation due to previously
+    # purchasing at a higher price (due to wholesale price being max(old, new))
+    reset_wholesale = False
+    if 'restock-resetwholesale' in request.POST:
+        reset_wholesale = True
 
     # Check for a global cost that should be applied across all items.
     # Note: this can be negative to reflect a discount of some kind applied to
@@ -1009,7 +1015,10 @@ def admin_restock_submit(request):
                 request.session.flash('Error: Attempt to restock item {} with quantity 0. Item skipped.'.format(item), 'error')
                 continue
             # item.wholesale = round((total/quantity) + global_cost_item_addition, 4)
-            item.wholesale = max(round((total/quantity), 4), item.wholesale)
+            if reset_wholesale:
+                item.wholesale = round((total/quantity), 4)
+            else:
+                item.wholesale = max(round((total/quantity), 4), item.wholesale)
             # item.wholesale = round(((total + (item.wholesale * item.in_stock))/(quantity + item.in_stock)) + global_cost_item_addition, 4)
             #TODO: figure out how to save the old wholesale price so that if a restock is undone, the wholesale price reverts to previous value
             # Set the item price
