@@ -175,6 +175,8 @@
                 <td>
                   {% if vb.vendor.name == "Costco" %}
                   <a href="http://www.costcobusinessdelivery.com/CatalogSearch?storeId=11301&catalogId=11701&langId=-1&keyword={{ vb.item_number }}">View on Costco</a>
+                  {% elif vb.vendor.name == "Boxed" %}
+                  <a href="https://duckduckgo.com/?q=\site%3Aboxed.com+{{ vb.item_number }}+{{ box.name }}&t=h_&ia=web">View on Boxed</a>
                   {% endif %}
                 </td>
               </tr>
