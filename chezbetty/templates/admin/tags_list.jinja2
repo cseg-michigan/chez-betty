@@ -26,7 +26,14 @@
 <div id="list-tags">
 
   {% for tag in tags %}
-  <h3>{{ tag.name }}</h3>
+
+  {% if all == "enabled" %}
+  {% set items=tag.all_enabled_items %}
+  {% else %}
+  {% set items=tag.all_items %}
+  {% endif %}
+
+  <h3>{{ tag.name }} ({{ items|length }})</h3>
 
 
   <table class="table sortable sticky">
@@ -41,11 +48,7 @@
 
     <tbody>
 
-      {% if all == "enabled" %}
-      {% set items=tag.all_enabled_items %}
-      {% else %}
-      {% set items=tag.all_items %}
-      {% endif %}
+
 
       {% for item in items %}
       <tr id="item-{{ item.id }}">
