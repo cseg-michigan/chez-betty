@@ -156,6 +156,9 @@ def main(global_config, **settings):
     config.add_route('admin_index_dashboard',   '/admin/dashboard')
     config.add_route('admin_index_history',     '/admin/history')
     config.add_route('admin_index_history_year','/admin/history/year/{year}')
+    config.add_route('admin_index_history_month','/admin/history/month/{month}')
+    config.add_route('admin_index_history_academic','/admin/history/academic/{year}')
+    config.add_route('admin_index_history_semesters','/admin/history/semester/{semester}')
 
     config.add_route('admin_ajax_bool',         '/admin/ajax/bool/{object}/{id}/{field}/{value}')
     config.add_route('admin_ajax_text',         '/admin/ajax/text/{object}/{id}/{field}')

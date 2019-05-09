@@ -643,6 +643,8 @@ def metrics_per_time(start, end):
     metrics['deferred_revenue'] = deferred_revenue
     metrics["net"] = net
 
+    metrics['range'] = '{} - {}'.format(start.format('MMM DD, YYYY'), end.replace(days=-1).format('MMM DD, YYYY'))
+
     return metrics
 
 
@@ -656,31 +658,148 @@ def admin_index_history(request):
 
     metrics = []
     for i in range(start, end+1):
-        metrics.append([i, metrics_per_time(arrow.get(i, 1, 1), arrow.get(i+1, 1, 1))])
+        metric       = metrics_per_time(arrow.get(i, 1, 1), arrow.get(i+1, 1, 1))
+        table_header = i
+        table_link   = [('By Month', 'year/{}'.format(i)),
+                        ('Academic', 'academic/{}-{}'.format(i, i+1))]
+        metrics.append([table_header, table_link, metric])
 
-    return {
-        "metrics": metrics
-    }
+    return {'title': 'By Year',
+            'metrics': metrics}
 
 
+## Show stats for every month in a year.
 @view_config(route_name='admin_index_history_year',
              renderer='templates/admin/history.jinja2',
              permission='manage')
 def admin_index_history_year(request):
     year = int(request.matchdict['year'])
 
+    metrics = []
+
     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
               'August', 'September', 'October', 'November', 'December']
-    metrics = []
-    for i in range(1, 13):
-        if i == 12:
-            metrics.append([months[i-1], metrics_per_time(arrow.get(year, i, 1), arrow.get(year+1, 1, 1))])
-        else:
-            metrics.append([months[i-1], metrics_per_time(arrow.get(year, i, 1), arrow.get(year, i+1, 1))])
+    for i,month in enumerate(months):
+        month_index = i + 1
+        start = arrow.get(year, month_index, 1)
 
-    return {
-        "metrics": metrics
-    }
+        metric       = metrics_per_time(start, start.replace(months=+1))
+        table_header = month
+        table_link   = [('Year-Over-Year', 'month/{}'.format(month_index))]
+
+        metrics.append([table_header, table_link, metric])
+
+    return {'title': year,
+            'metrics': metrics}
+
+
+## Calculate history stats for a particular month over many years. Useful
+## for year-over-year analysis.
+@view_config(route_name='admin_index_history_month',
+             renderer='templates/admin/history.jinja2',
+             permission='manage')
+def admin_index_history_month(request):
+    month = int(request.matchdict['month'])
+    year_start = 2014
+    year_end = arrow.now().year
+
+    years = range(year_start, year_end+1)
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+              'August', 'September', 'October', 'November', 'December']
+
+    metrics = []
+    for year in years:
+        start = arrow.get(year, month, 1)
+
+        metric       = metrics_per_time(start, start.replace(months=+1, years=+1))
+        table_header = '{} - {}'.format(months[month-1], year)
+        table_link   = None
+        metrics.append([table_header, table_link, metric])
+
+    return {'title': '{} Year-Over-Year'.format(months[month-1]),
+            'metrics': metrics}
+
+
+YEARS_SEMESTERS = {
+    '2014': [('Fall',   arrow.get(2014, 9, 2),   arrow.get(2014, 12, 19+1)),
+             ('Break',  arrow.get(2014, 12, 20), arrow.get(2015, 1, 6+1)),
+             ('Winter', arrow.get(2015, 1, 7),   arrow.get(2015, 5, 1)),
+             ('Summer', arrow.get(2015, 5, 1),   arrow.get(2015, 9, 6+1))],
+    '2015': [('Fall',   arrow.get(2015, 9, 7),   arrow.get(2015, 12, 23+1)),
+             ('Break',  arrow.get(2015, 12, 24), arrow.get(2016, 1, 5+1)),
+             ('Winter', arrow.get(2016, 1, 6),   arrow.get(2016, 4, 28+1)),
+             ('Summer', arrow.get(2016, 4, 29),  arrow.get(2016, 9, 5+1))],
+    '2016': [('Fall',   arrow.get(2016, 9, 6),   arrow.get(2016, 12, 22+1)),
+             ('Break',  arrow.get(2016, 12, 23), arrow.get(2017, 1, 3+1)),
+             ('Winter', arrow.get(2017, 1, 4),   arrow.get(2017, 4, 27+1)),
+             ('Summer', arrow.get(2017, 4, 28),  arrow.get(2017, 9, 3+1))],
+    '2017': [('Fall',   arrow.get(2017, 9, 4),   arrow.get(2017, 12, 21+1)),
+             ('Break',  arrow.get(2017, 12, 22), arrow.get(2018, 1, 2+1)),
+             ('Winter', arrow.get(2018, 1, 3),   arrow.get(2018, 4, 26+1)),
+             ('Summer', arrow.get(2018, 4, 27),  arrow.get(2018, 9, 2+1))],
+    '2018': [('Fall',   arrow.get(2018, 9, 3),   arrow.get(2018, 12, 20+1)),
+             ('Break',  arrow.get(2018, 12, 21), arrow.get(2019, 1, 8+1)),
+             ('Winter', arrow.get(2019, 1, 9),   arrow.get(2019, 5, 2+1)),
+             ('Summer', arrow.get(2019, 5, 3),   arrow.get(2019, 9, 1+1))],
+    '2019': [('Fall',   arrow.get(2019, 9, 2),   arrow.get(2019, 12, 20+1)),
+             ('Break',  arrow.get(2019, 12, 21), arrow.get(2020, 1, 7+1)),
+             ('Winter', arrow.get(2020, 1, 8),   arrow.get(2020, 5, 1)),
+             ('Summer', arrow.get(2020, 5, 1),   arrow.get(2020, 9, 1))]
+}
+
+
+## Calculate history stats for semesters
+@view_config(route_name='admin_index_history_academic',
+             renderer='templates/admin/history.jinja2',
+             permission='manage')
+def admin_index_history_academic(request):
+    academic_year = request.matchdict['year']
+
+    years = academic_year.split('-')
+
+    start_year = years[0]
+
+    if start_year in YEARS_SEMESTERS:
+        semesters = YEARS_SEMESTERS[start_year]
+        metrics = []
+        for semester in semesters:
+            metric       = metrics_per_time(semester[1], semester[2])
+            table_header = '{}'.format(semester[0])
+            table_link   = [('Year-Over-Year', 'semester/{}'.format(semester[0]))]
+            metrics.append([table_header, table_link, metric])
+
+        return {'title': 'Academic Year {}'.format(academic_year),
+                'metrics': metrics}
+
+    else:
+        request.session.flash('Semester dates not added to admin_index.py. Please update `admin_index_history_academic()`.', 'error')
+        return HTTPFound(location=request.route_url('admin_index_history'))
+
+
+## Calculate stats for year-over-year semesters.
+@view_config(route_name='admin_index_history_semesters',
+             renderer='templates/admin/history.jinja2',
+             permission='manage')
+def admin_index_history_semesters(request):
+    semester = request.matchdict['semester']
+
+    year_start = 2014
+    year_end = arrow.now().year
+    years = range(year_start, year_end+1)
+
+    metrics = []
+    for year in years:
+        semesters = YEARS_SEMESTERS['{}'.format(year)]
+        for semester_info in semesters:
+            if semester_info[0] == semester:
+                metric       = metrics_per_time(semester_info[1], semester_info[2])
+                table_header = '{} {}'.format(semester, semester_info[1].year)
+                table_link   = None
+                metrics.append([table_header, table_link, metric])
+                continue
+
+    return {'title': '{} Year-Over-Year'.format(semester),
+            'metrics': metrics}
 
 
 ## Retrieve an item or a box based on a barcode.

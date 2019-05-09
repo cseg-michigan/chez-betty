@@ -8,7 +8,7 @@
 
 {% block top %}
 
-<h1 class="page-header">History</h1>
+<h1 class="page-header">History ({{ title }})</h1>
 
 {% endblock %}
 
@@ -20,13 +20,21 @@
 <div class="row">
 
   {% for metric_year in metrics %}
-  {% set metric = metric_year[1] %}
+  {% set header = metric_year[0] %}
+  {% set links  = metric_year[1] %}
+  {% set metric = metric_year[2] %}
   <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title"><a href="/admin/history/year/{{ metric_year[0] }}">{{ metric_year[0] }}</a></h3>
+        <span class="panel-title" style="font-weight:500;">{{ header }}</span>
+        {% if links %}
+        {% for link in links %}
+        (<a href="/admin/history/{{ link[1] }}">{{ link[0] }}</a>)
+        {% endfor %}
+        {% endif %}
       </div>
       <div class="panel-body">
+        <p>{{ metric.range }}</p>
         <table class="table table-condensed">
           <tbody>
             <tr>
