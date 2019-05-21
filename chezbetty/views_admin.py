@@ -3236,9 +3236,14 @@ def _get_event_filter_function(event_filter):
 
 @view_config(route_name='admin_events',
              renderer='templates/admin/events.jinja2',
-             permission='admin')
+             permission='manage')
 def admin_events(request):
     event_filter = request.GET['filter'] if 'filter' in request.GET else 'all'
+
+    # Mangers can only see restocks.
+    if not request.has_permission('admin'):
+        event_filter = 'type:restock'
+
     fn = _get_event_filter_function(event_filter)
     events = limitable_request(request, fn, limit=50)
     return {'events': events, 'event_filter': event_filter}
@@ -3247,12 +3252,17 @@ def admin_events(request):
 @view_config(route_name='admin_events_load_more',
              request_method='POST',
              renderer='json',
-             permission='admin')
+             permission='manage')
 def admin_events_load_more(request):
     LIMIT = 100
     last  = int(request.POST['last'])
+    event_filter = request.GET['filter'] if 'filter' in request.GET else 'all'
 
-    fn = _get_event_filter_function(request.POST['filter'])
+    # Mangers can only see restocks.
+    if not request.has_permission('admin'):
+        event_filter = 'type:restock'
+
+    fn = _get_event_filter_function(event_filter)
     events = fn(limit=LIMIT, offset=last)
 
     events_html = []
@@ -3270,14 +3280,22 @@ def admin_events_load_more(request):
              permission='manage')
 def admin_event(request):
     try:
-        e = Event.from_id(int(request.matchdict['event_id']))
-        if datalayer.can_undo_event(e):
-            undo = '/admin/event/undo/{}'.format(e.id)
-            return {'event': e, 'undo_url': undo}
+        event = Event.from_id(int(request.matchdict['event_id']))
+
+        # Mangers can only see restocks.
+        if event.type != 'restock' and not request.has_permission('admin'):
+            raise Exception('Not authorized to view this event.')
+
+        if datalayer.can_undo_event(event):
+            undo = '/admin/event/undo/{}'.format(event.id)
+            return {'event': event, 'undo_url': undo}
         else:
-            return {'event': e}
+            return {'event': event}
     except ValueError:
         request.session.flash('Invalid event ID', 'error')
+        return HTTPFound(location=request.route_url('admin_events'))
+    except Exception:
+        request.session.flash('Not authorized to view this event', 'error')
         return HTTPFound(location=request.route_url('admin_events'))
     except:
         request.session.flash('Could not find event ID#{}'\
@@ -3290,6 +3308,11 @@ def admin_event(request):
 def admin_event_upload(request):
     try:
         event = Event.from_id(int(request.POST['event-id']))
+
+        # Mangers can only see restocks.
+        if event.type != 'restock' and not request.has_permission('admin'):
+            raise Exception('Not authorized to edit this event.')
+
         receipt = request.POST['event-receipt'].file
         datalayer.upload_receipt(event, request.user, receipt)
         return HTTPFound(location=request.route_url('admin_event',
@@ -3297,7 +3320,7 @@ def admin_event_upload(request):
 
     except Exception as e:
         if request.debug: raise(e)
-        request.session.flash('Error {}'.format(e), 'error')
+        request.session.flash('Error: {}'.format(e), 'error')
         return HTTPFound(location=request.route_url('admin_events'))
 
 
@@ -3306,6 +3329,11 @@ def admin_event_upload(request):
 def admin_event_receipt(request):
     try:
         receipt = Receipt.from_id(int(request.matchdict['receipt_id']))
+
+        # Mangers can only see restocks.
+        if receipt.event.type != 'restock' and not request.has_permission('admin'):
+            raise Exception('Not authorized to view this receipt.')
+
         fname = '/tmp/{}.pdf'.format(uuid.uuid4())
         f = open(fname, 'wb')
         f.write(receipt.receipt)
@@ -3315,7 +3343,7 @@ def admin_event_receipt(request):
 
     except Exception as e:
         if request.debug: raise(e)
-        request.session.flash('Error', 'error')
+        request.session.flash('Error: {}'.format(e), 'error')
         return HTTPFound(location=request.route_url('admin_events'))
 
 
@@ -3325,6 +3353,10 @@ def admin_event_undo(request):
     try:
         # Lookup the transaction that the user wants to undo
         event = Event.from_id(request.matchdict['event_id'])
+
+        # Mangers can only see restocks.
+        if event.type != 'restock' and not request.has_permission('admin'):
+            raise Exception('Not authorized to undo this event.')
 
         # Make sure its not already deleted
         if event.deleted:
@@ -3352,9 +3384,8 @@ def admin_event_undo(request):
         return HTTPFound(location=request.route_url('admin_events'))
     except Exception as e:
         if request.debug: raise(e)
-        request.session.flash('Error: Failed to undo transaction.', 'error')
+        request.session.flash('Error: {}'.format(e), 'error')
         return HTTPFound(location=request.route_url('admin_events'))
-
 
 
 @view_config(route_name='admin_password_edit',

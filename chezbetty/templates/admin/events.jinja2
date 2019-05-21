@@ -3,11 +3,17 @@
 {% block title %}Transaction Ledger {% endblock %}
 
 {% block top %}
+{% if request.has_permission("admin") %}
 <h1 class="page-header">Transaction Ledger</h1>
+{% else %}
+<h1 class="page-header">Restocks</h1>
+{% endif %}
 {% endblock %}
 
 {% block submenu %}
+{% if request.has_permission("admin") %}
 {% include "events_menu.jinja2" %}
+{% endif %}
 {% endblock %}
 
 {% block contentwide %}
