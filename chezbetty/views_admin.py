@@ -873,17 +873,28 @@ def admin_item_search_json(request):
 
         ret = {'matches': []}
 
+        # Make sure we don't add duplicate items to the results.
+        duplicates = {'item': {}, 'box': {}}
+
         for b in boxes:
-            ret['matches'].append(('box', b.name, b.barcode, b.id, b.enabled, 0))
+            if not b.id in duplicates['box']:
+                duplicates['box'][b.id] = None
+                ret['matches'].append(('box', b.name, b.barcode, b.id, b.enabled, 0))
 
         for bv in box_vendors:
-            ret['matches'].append(('box', bv.box.name, bv.box.barcode, bv.box.id, bv.box.enabled, 0))
+            if not bv.box.id in duplicates['box']:
+                duplicates['box'][bv.box.id] = None
+                ret['matches'].append(('box', bv.box.name, bv.box.barcode, bv.box.id, bv.box.enabled, 0))
 
         for i in items:
-            ret['matches'].append(('item', i.name, i.barcode, i.id, i.enabled, i.in_stock))
+            if not i.id in duplicates['item']:
+                duplicates['item'][i.id] = None
+                ret['matches'].append(('item', i.name, i.barcode, i.id, i.enabled, i.in_stock))
 
         for iv in item_vendors:
-            ret['matches'].append(('item', iv.item.name, iv.item.barcode, iv.item.id, iv.item.enabled, iv.item.in_stock))
+            if not iv.item.id in duplicates['item']:
+                duplicates['item'][iv.item.id] = None
+                ret['matches'].append(('item', iv.item.name, iv.item.barcode, iv.item.id, iv.item.enabled, iv.item.in_stock))
 
         ret['status'] = 'success'
 
