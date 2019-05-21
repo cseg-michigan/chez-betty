@@ -114,7 +114,6 @@ def main(global_config, **settings):
 
     config.add_route('terminal_item_id',         '/terminal/item/id/{item_id}')
     config.add_route('terminal_item_barcode',    '/terminal/item/barcode/{barcode}')
-    config.add_route('terminal_saveitem_barcode','/terminal/saveitem/barcode/{barcode}')
 
     config.add_route('terminal_purchase',        '/terminal/purchase')
     config.add_route('terminal_purchase_delete', '/terminal/purchase/delete')

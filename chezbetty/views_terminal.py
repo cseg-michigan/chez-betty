@@ -132,36 +132,12 @@ def terminal(request):
         # Get the list of tags that have items without barcodes in them
         tags_with_nobarcode_items = Tag.get_tags_with_nobarcode_items();
 
-        # Add any pre-scanned items
-        cart_html = ''
-        cart = Ephemeron.from_name('cart')
-        if cart:
-            barcodes = cart.value.split(',')
-            barcode_dict = {}
-            # Group barcodes if an item was scanned more than once
-            for barcode in barcodes:
-                if barcode in barcode_dict:
-                    barcode_dict[barcode] += 1
-                else:
-                    barcode_dict[barcode] = 1
-
-            for barcode, quantity in barcode_dict.items():
-                item = get_item_from_barcode(barcode)
-
-                if type(item) is Item:
-                    cart_html += render('templates/terminal/purchase_item_row.jinja2', {'item': item,
-                                                                                        'quantity': quantity})
-
-            # Remove temporary cart now that we've shown it to the user
-            DBSession.delete(cart)
-
         return {'user': user,
                 'items': items,
                 'purchase_pools': purchase_pools,
                 'purchase_fee_percent': purchase_fee_percent,
                 'tags_with_nobarcode_items': tags_with_nobarcode_items,
                 'nobarcode_notag_items': Item.get_nobarcode_notag_items(),
-                'existing_items': cart_html,
                 'deposit': deposit}
 
     except __user.InvalidUserException as e:
@@ -298,7 +274,8 @@ def get_item_from_barcode(barcode):
     return item
 
 
-## Add an item to a shopping cart.
+## Get details about an item based on a barcode. This can be used to add to a
+## cart or as a price check.
 @view_config(route_name='terminal_item_barcode',
              renderer='json',
              permission='service')
@@ -309,25 +286,14 @@ def terminal_item_barcode(request):
          return {'error': item}
 
     item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
-    return {'id':item.id,
+    return {'id': item.id,
+            'name': item.name,
+            'price': float(item.price),
             'item_row_html': item_html}
 
 
-## Add item to saved list for when a user logs in (when we can add it to
-## the cart)
-@view_config(route_name='terminal_saveitem_barcode',
-             renderer='json',
-             permission='service')
-def terminal_saveitem_barcode(request):
-    try:
-        cart_barcodes = Ephemeron.add_list('cart', request.matchdict['barcode'])
-        return {'barcodes': cart_barcodes}
-    except Exception as e:
-        if request.debug: raise(e)
-        return {'error': 'Error.'}
-
-
-## Add an item to a shopping cart.
+## Get details about an item based on an item ID. This can be used to add to a
+## cart or as a price check.
 @view_config(route_name='terminal_item_id',
              renderer='json',
              permission='service')
@@ -342,6 +308,8 @@ def terminal_item_id(request):
 
     item_html = render('templates/terminal/purchase_item_row.jinja2', {'item': item})
     return {'id': item.id,
+            'name': item.name,
+            'price': float(item.price),
             'item_row_html': item_html}
 
 

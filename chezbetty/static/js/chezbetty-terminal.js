@@ -310,7 +310,11 @@ function add_item_success (data) {
 
 	if ("error" in data) {
 		purchase_alert_error(data.error);
-	} else {
+		return;
+	}
+
+	// If logged in add this item to the cart.
+	if (logged_in()) {
 		// First, if this is the first item hide the empty order row
 		$("#purchase-empty").hide();
 
@@ -339,6 +343,9 @@ function add_item_success (data) {
 		show_correct_purchase_button();
 
 		calculate_total();
+	} else {
+		// If not logged in, just show the price.
+		alert_success('Price check: ' + data.name + ': ' + format_price(data.price));
 	}
 }
 
@@ -517,23 +524,14 @@ function deposit_error () {
 // Function called by chezbetty-item.js when a new item was scanned and
 // should be added to the cart.
 function add_item (barcode) {
-	if (logged_in()) {
-		// Request information about the product so we can add it to the cart
-		$.ajax({
-			dataType: "json",
-			url: "/terminal/item/barcode/"+barcode,
-			success: add_item_success,
-			error: add_item_fail
-		});
-	} else {
-		// Save this item for when the user does log in
-		$.ajax({
-			dataType: "json",
-			url: "/terminal/saveitem/barcode/"+barcode,
-			success: save_item_success,
-			error: save_item_fail
-		});
-	}
+	// Request information about the product so we can add it to the cart
+	// or show the user.
+	$.ajax({
+		dataType: "json",
+		url: "/terminal/item/barcode/"+barcode,
+		success: add_item_success,
+		error: add_item_fail
+	});
 }
 
 function add_item_id (item_id) {

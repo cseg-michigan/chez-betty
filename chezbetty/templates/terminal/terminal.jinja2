@@ -147,10 +147,7 @@
               </thead>
 
               <tbody>
-                {% if existing_items %}
-                {{ existing_items|safe }}
-                {% endif %}
-                <tr id="purchase-empty" {% if existing_items %}style="display:none;"{% endif %}>
+                <tr id="purchase-empty">
                   <td colspan="7">
                     <h3>{{ _('Order Empty') }}</h3>
                     {{ _('Scan an item to begin') }}
@@ -285,14 +282,5 @@
 </div>
 
 {% endblock %}
-
-{% if existing_items %}
-  {% block onload %}
-  <script>
-    show_correct_purchase_button();
-    calculate_total();
-  </script>
-  {% endblock %}
-{% endif %}
 
 {% block timeout %}60*1000*50{% endblock %}
