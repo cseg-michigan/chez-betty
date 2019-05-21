@@ -227,7 +227,8 @@ def login_reset_pw(request):
         if request.POST['uniqname'] != user.uniqname:
             raise __user.InvalidUserException()
     except:
-        err = 'Bad uniqname or umid',
+        err = 'Bad uniqname or UMID. If you have not used Betty at the ' +\
+              'terminal you must swipe your card there before creating an account here.',
     else:
         user_password_reset(user)
         succ = ('Password set and emailed to {}@umich.edu.'.format(user.uniqname),)
