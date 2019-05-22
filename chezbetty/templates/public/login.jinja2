@@ -43,46 +43,55 @@ button {
 
 <div class="container">
 
-  <div class="col-md-12">
-    <p><a class="btn btn-default btn-lg btn-block" href="/">Home</a></p>
+  <div class="row">
+    <div class="col-md-1">
+      <a href="/">
+        <img src="/static/chezbetty_1000px.jpg" class="pull-left" style="width:150px; padding:10px;" />
+      </a>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+      <h2>Chez Betty Online Login</h2>
+      <p class="lead">If you have never used Chez Betty before you need to
+      first swipe your M-Card at the Betty store.</p>
+    </div>
   </div>
 
+  <div class="row">
+    <div class="col-md-6">
 
-  <div class="col-md-6">
+      <form class="form-signin" role="form" method="post" action="/login/submit">
+        <input type="hidden" name="came_from" value="{{ came_from }}"/>
+        <h3 class="form-signin-heading">Please Sign In</h3>
+        <p class="lead">Please login here if you have a Chez Betty password. Otherwise, use the other form.</p>
+        {% for m in login_message %}
+        <span class="label label-danger">{{ m }}</span>
+        {% endfor %}
+        <input name="login" type="login" id="login-uniqname" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
+        <input name="password" type="password" id="login-password" class="form-control" placeholder="password" required value = "{{ password }}">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
 
-    <form class="form-signin" role="form" method="post" action="/login/submit">
-      <input type="hidden" name="came_from" value="{{ came_from }}"/>
-      <h2 class="form-signin-heading">Please Sign In</h2>
-      <p class="lead">This isn't kerberos, so if you
-      don't have a Betty password, you need to use the other form.</p>
-      {% for m in login_message %}
-      <span class="label label-danger">{{ m }}</span>
-      {% endfor %}
-      <input name="login" type="login" id="login-uniqname" class="form-control" placeholder="uniqname" required autofocus value="{{ login }}">
-      <input name="password" type="password" id="login-password" class="form-control" placeholder="password" required value = "{{ password }}">
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-    </form>
+    </div>
+
+    <div class="col-md-5 col-md-offset-1">
+
+      <form class="form-signin" role="form" method="post" action="/login/reset_pw">
+        <h3 class="form-signin-heading">Forgot Password/Create Account</h3>
+        <p class="lead">Use this to get or recover a password for your account.</p>
+        {% for m in forgot_error %}
+        <span class="label label-danger">{{ m }}</span>
+        {% endfor %}
+        {% for m in forgot_success %}
+        <span class="label label-success">{{ m }}</span>
+        {% endfor %}
+        <input name="uniqname" type="login" id="forgot-uniqname" class="form-control" placeholder="uniqname" required />
+        <input name="umid" type="number" id="forgot-umid" class="form-control" placeholder="umid" required />
+        <button class="btn btn-lg btn-warning btn-block" type="submit">Reset My Password</button>
+      </form>
+
+    </div>
 
   </div>
-
-  <div class="col-md-5 col-md-offset-1">
-
-    <form class="form-signin" role="form" method="post" action="/login/reset_pw">
-      <h2 class="form-signin-heading">Forgot Password?</h2>
-      <p class="lead">Or never had one? Use this to get a password for your account.</p>
-      {% for m in forgot_error %}
-      <span class="label label-danger">{{ m }}</span>
-      {% endfor %}
-      {% for m in forgot_success %}
-      <span class="label label-success">{{ m }}</span>
-      {% endfor %}
-      <input name="uniqname" type="login" id="forgot-uniqname" class="form-control" placeholder="uniqname" required />
-      <input name="umid" type="number" id="forgot-umid" class="form-control" placeholder="umid" required />
-      <button class="btn btn-lg btn-warning btn-block" type="submit">Reset My Password</button>
-    </form>
-
-  </div>
-
 
 </div>
 
