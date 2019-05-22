@@ -1,0 +1,10 @@
+**Commands run to create this branch**
+*NOTE: Bower installation must have occurred already for this to work (it reads the bower.json file)
+rm bower_components/DONOTDELETETHISFILEONPAINOFPATH
+npm i yarn -g
+npm i bower-away -g
+bower-away
+bower-away --diff
+bower-away --apply
+rm -rf chezbetty/static/bower_components
+yarn
