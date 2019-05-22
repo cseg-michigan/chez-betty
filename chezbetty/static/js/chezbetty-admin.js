@@ -278,7 +278,7 @@ function search_user_success (data, prefix) {
 		} else {
 			for (i=0; i<data.matches.length; i++) {
 				var new_row = $("#"+prefix+"-row-0").clone().removeAttr("id");
-				new_row.find("input[type=radio]").val(data.matches[i].id);
+				new_row.find("input[type=radio]").val(data.matches[i].type + '-' + data.matches[i].id);
 				if (i == 0) {
 					new_row.find("input[type=radio]").attr('checked', 'checked');
 				}

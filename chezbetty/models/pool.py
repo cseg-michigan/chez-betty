@@ -28,6 +28,15 @@ class Pool(account.Account):
         return u
 
     @classmethod
+    def from_fuzzy(cls, search_str, any=True):
+        q = DBSession.query(cls)\
+                     .filter(cls.name.ilike('%{}%'.format(search_str)))
+        if not any:
+            q = q.filter(cls.enabled)
+
+        return q.all()
+
+    @classmethod
     def all(cls):
         return DBSession.query(cls)\
                         .filter(cls.enabled==True)\

@@ -911,10 +911,9 @@ def admin_item_search_json(request):
              permission='manage')
 def admin_user_search_json(request):
     try:
-        users = User.from_fuzzy(request.matchdict['search'], any=False)
-
         ret = {'matches': []}
 
+        users = User.from_fuzzy(request.matchdict['search'], any=False)
         for u in users:
             ret['matches'].append({'id':       u.id,
                                    'name':     u.name,
@@ -922,7 +921,19 @@ def admin_user_search_json(request):
                                    'umid':     u.umid,
                                    'balance':  float(u.balance),
                                    'enabled':  u.enabled,
-                                   'role':     u.role})
+                                   'role':     u.role,
+                                   'type':     'user'})
+
+        pools = Pool.from_fuzzy(request.matchdict['search'], any=False)
+        for p in pools:
+            ret['matches'].append({'id':       p.id,
+                                   'name':     p.name,
+                                   'uniqname': '',
+                                   'umid':     '',
+                                   'balance':  float(p.balance),
+                                   'enabled':  p.enabled,
+                                   'role':     '',
+                                   'type':     'pool'})
 
         ret['status'] = 'success'
 
@@ -2619,11 +2630,24 @@ def admin_user_balance_edit_submit(request):
         if request.POST['sender-search-choice'] == 'chezbetty':
             sender = 'chezbetty'
         else:
-            sender = User.from_id(int(request.POST['sender-search-choice']))
+            fields = request.POST['sender-search-choice'].split('-')
+            if fields[0] == 'pool':
+                sender = Pool.from_id(int(fields[1]))
+            elif fields[0] == 'user':
+                sender = User.from_id(int(fields[1]))
+            else:
+                sender = None
+
         if request.POST['recipient-search-choice'] == 'chezbetty':
             recipient = 'chezbetty'
         else:
-            recipient = User.from_id(int(request.POST['recipient-search-choice']))
+            fields = request.POST['recipient-search-choice'].split('-')
+            if fields[0] == 'pool':
+                recipient = Pool.from_id(int(fields[1]))
+            elif fields[0] == 'user':
+                recipient = User.from_id(int(fields[1]))
+            else:
+                recipient = None
 
         # Can't both be betty
         if sender == 'chezbetty' and recipient == 'chezbetty':
