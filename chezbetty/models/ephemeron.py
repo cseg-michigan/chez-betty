@@ -58,3 +58,14 @@ class Ephemeron(Base):
 
         DBSession.flush()
         return total_stored
+
+    @classmethod
+    def set_string(cls, name, save_string):
+        existing = Ephemeron.from_name(name)
+        if existing:
+            existing.value = save_string
+        else:
+            new_string = Ephemeron(name, save_string)
+            DBSession.add(new_string)
+
+        DBSession.flush()

@@ -27,6 +27,7 @@
     <form role="form" action="/admin/users/email/debt/deadbeats" method="post">
       <p>Send an email to users who are either more than $5 in debt or who have
          been in debt for a week or more encouraging them to settle up.</p>
+      <p>Last sent: {{ last_sent.admin_users_email_debt_deadbeats }}</p>
       <div class="well">
     {% set user = {'name': '<< name >>', 'balance': '<< balance >>', 'uniqname': '<< uniqname >>'} %}
     {% include "email_deadbeats.jinja2" %}
@@ -44,6 +45,7 @@
     <form role="form" action="/admin/users/email/debt/bettyback" method="post">
       <p>Send a special email to users who are more than $3
       encouraging them to settle up.</p>
+      <p>Last sent: {{ last_sent.admin_users_email_debt_bettyback }}</p>
       <div class="well">
         {% set user = {'name': '<< name >>', 'balance': '<< balance >>', 'uniqname': '<< uniqname >>'} %}
         {% include "email_bettyback.jinja2" %}
@@ -62,6 +64,7 @@
       <p>Send an email to all users who are more than
       $<input name="threshold" value="2.00"> in debt to Chez Betty encouraging
       them to settle up.</p>
+      <p>Last sent: {{ last_sent.admin_users_email_endofsemester }}</p>
       <div class="well">
     {% set user = {'name': '<< name >>', 'balance': '<< balance >>', 'uniqname': '<< uniqname >>'} %}
     {% include "email_endofsemester.jinja2" %}

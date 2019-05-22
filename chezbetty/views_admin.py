@@ -40,6 +40,7 @@ from .models.tag import Tag
 from .models.item_tag import ItemTag
 from .models.reimbursee import Reimbursee
 from .models.badscan import BadScan
+from .models.ephemeron import Ephemeron
 
 from .utility import suppress_emails
 from .utility import send_email
@@ -2798,8 +2799,21 @@ def admin_user_changerole(request):
              renderer='templates/admin/users_email.jinja2',
              permission='admin')
 def admin_users_email(request):
+
+    # Get timestamps of when each email type was sent.
+    last_sent = {
+                    'admin_users_email_endofsemester': 'Never',
+                    'admin_users_email_debt_deadbeats': 'Never',
+                    'admin_users_email_debt_bettyback': 'Never',
+                }
+    for etype,v in last_sent.items():
+        s = Ephemeron.from_name(etype)
+        if s:
+            last_sent[etype] = arrow.get(s.value).humanize()
+
     return {'users': User.all(),
-            'emails_suppressed': suppress_emails()}
+            'emails_suppressed': suppress_emails(),
+            'last_sent': last_sent}
 
 
 @view_config(route_name='admin_users_email_endofsemester',
@@ -2821,6 +2835,9 @@ def admin_users_email_endofsemester(request):
                 body=render('templates/admin/email_endofsemester.jinja2',
                     {'user': deadbeat})
                 )
+
+    # Save the timestamp of sending the email so we can show this on the page.
+    Ephemeron.set_string('admin_users_email_endofsemester', '{}'.format(arrow.now()))
 
     request.session.flash('{} user(s) with balances under {} emailed.'.\
             format(len(deadbeats), threshold), 'success')
@@ -2852,6 +2869,9 @@ def admin_users_email_debt(request):
                     body=render('templates/admin/email_bettyback.jinja2',
                         {'user': deadbeat})
                     )
+
+    # Save the timestamp of sending the email so we can show this on the page.
+    Ephemeron.set_string('admin_users_email_debt_{}'.format(email_type), '{}'.format(arrow.now()))
 
     request.session.flash('In debt users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
