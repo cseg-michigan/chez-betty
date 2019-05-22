@@ -2670,9 +2670,6 @@ def admin_user_balance_edit_submit(request):
 
         else:
             # This is a transfer between two people.
-            # Maybe someday we'd support that transaction directly, but
-            # we don't have a transaction type for that right now, so we
-            # just use betty as a middle man
             event = datalayer.transfer_user_money(sender, recipient, amount, reason, request.user)
 
         request.session.flash('User(s) account updated.', 'success')

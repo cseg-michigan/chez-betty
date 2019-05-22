@@ -106,13 +106,14 @@ class Transaction(Base):
     fr_account_cash_id = Column(Integer, ForeignKey("accounts.id"))
     amount             = Column(Numeric, nullable=False)
 
-                                        # Virtual Transaction Meaning     # Cash Transaction Meaning  # Notes required?
+                                        # Virtual Transaction Meaning     # Cash Transaction Meaning        # Notes required?
     type = Column(Enum("purchase",      # user_account -> chezbetty.        None
                        "deposit",
                        "cashdeposit",   # null         -> user_account.     null      -> cashbox.
                        "ccdeposit",     # null         -> user_account.     null      -> chezbetty
                        "btcdeposit",    # null         -> user_account      null      -> btcbox
                        "adjustment",    # chezbetty   <-> user              None                            Yes
+                       "transfer",      # user        <-> user              None                            Yes
                        "restock",       # chezbetty    -> null              chezbetty -> null/reimbursee
                        "inventory",     # chezbetty   <-> null              None
                        "emptycashbox",  # None                              cashbox   -> safe
@@ -327,7 +328,8 @@ class Transaction(Base):
                                   cls.type=='cashdeposit',
                                   cls.type=='ccdeposit',
                                   cls.type=='btcdeposit',
-                                  cls.type=='adjustment'
+                                  cls.type=='adjustment',
+                                  cls.type=='transfer'
                                 ))\
                         .order_by(event.Event.timestamp)\
                         .all()
@@ -348,7 +350,8 @@ class Transaction(Base):
                                   cls.type=='cashdeposit',
                                   cls.type=='ccdeposit',
                                   cls.type=='btcdeposit',
-                                  cls.type=='adjustment'
+                                  cls.type=='adjustment',
+                                  cls.type=='transfer'
                                 ))\
                         .filter(or_(
                             cls.to_account_virt_id == user.id,
@@ -731,6 +734,13 @@ class Adjustment(Transaction):
     def __init__(self, event, user, amount):
         chezbetty_v = account.get_virt_account("chezbetty")
         Transaction.__init__(self, event, chezbetty_v, user, None, None, amount)
+
+
+class Transfer(Transaction):
+    __mapper_args__ = {'polymorphic_identity': 'transfer'}
+
+    def __init__(self, event, sending_user, receiving_user, amount):
+        Transaction.__init__(self, event, sending_user, receiving_user, None, None, amount)
 
 
 class Restock(Transaction):

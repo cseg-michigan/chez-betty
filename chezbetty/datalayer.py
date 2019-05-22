@@ -382,10 +382,8 @@ def transfer_user_money(sender, recipient, amount, notes, admin):
     e = event.Adjustment(admin, notes)
     DBSession.add(e)
     DBSession.flush()
-    t1 = transaction.Adjustment(e, sender, -1*amount)
-    DBSession.add(t1)
-    t2 = transaction.Adjustment(e, recipient, amount)
-    DBSession.add(t2)
+    t = transaction.Transfer(e, sender, recipient, amount)
+    DBSession.add(t)
     return e
 
 
