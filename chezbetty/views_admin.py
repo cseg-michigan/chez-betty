@@ -329,7 +329,13 @@ def admin_index(request):
     # Our "shut it down" balance. Basically what we would have left over if
     # refunded all account holders, defaulted on our loan, and sold all inventory
     # for what we paid for it.
-    estimated_net = chezbetty_cash.balance + safe.balance + cashbox.balance + btcbox.balance - held_for_users + inventory.wholesale
+    estimated_net = chezbetty_cash.balance \
+                    + safe.balance         \
+                    + cashbox.balance      \
+                    + btcbox.balance       \
+                    - held_for_users       \
+                    - held_for_pools       \
+                    + inventory.wholesale
 
     # Calculate how much money we have in the bank. This should be
     # whats in the betty cash account, plus how much is owed in reimbursements
