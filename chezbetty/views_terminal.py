@@ -126,7 +126,7 @@ def terminal(request):
                 purchase_pools.append(pool)
 
         for pu in user.pools:
-            if pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
+            if pu.enabled and pu.pool.enabled and pu.pool.balance > (pu.pool.credit_limit * -1):
                 purchase_pools.append(pu.pool)
 
         # Get the list of tags that have items without barcodes in them

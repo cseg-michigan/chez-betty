@@ -98,7 +98,7 @@ from.</p>
       <tbody>
         {% for pu in user.pools %}
         <tr>
-          <td>{{ pu.pool.name }} {% if pu.enabled == False or pu.pool.enabled == False %}(Currently Disabled){% endif %}</td>
+          <td>{{ pu.pool.name }} {% if pu.pool.enabled == False %}(Currently Disabled){% elif pu.enabled == False %}(Not available for purchases){% endif %}</td>
           <td>{{ pu.pool.get_owner_name() }}</td>
           <td>{{ pu.pool.balance|format_currency|safe }}</td>
         </tr>
