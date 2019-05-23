@@ -73,6 +73,16 @@ development environment set up, do the following:
         cp development.ini.example development.ini
         [edit development.ini]
 
+    You will want to use a postgres database. Likely, your development.ini file
+    will need to be updated to have this for the database:
+
+        sqlalchemy.url = postgresql://bradjc@localhost:5432/chezbetty
+
+    To create that database, do something like:
+
+        psql
+        > create database chezbetty;
+
 3. Setup the database:
 
         python chezbetty/initializedb.py development.ini
