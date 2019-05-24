@@ -38,7 +38,7 @@
           <div class="form-group">
             <label for="box-wholesale" class="col-sm-2 control-label">Wholesale:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}">
+              <input type="number" min="0" step=".0001" class="form-control numeric" id="box-wholesale" name="box-wholesale" value="{{ box.wholesale|round(4) }}">
             </div>
           </div>
 
@@ -105,10 +105,10 @@
 
                 <td>{{ bi.item|make_link|safe }} {% if bi.item.enabled == false %}[Disabled]{% endif %} <input type="hidden" name="box-item-id-{{ bi.id}}" value="{{ bi.item_id }}"></td>
                 <td>
-                  <input type="text" class="form-control" id="box-item-quantity-{{ bi.id }}" name="box-item-quantity-{{ bi.id }}" value="{{ bi.quantity }}">
+                  <input type="number" min="0" class="form-control" id="box-item-quantity-{{ bi.id }}" name="box-item-quantity-{{ bi.id }}" value="{{ bi.quantity }}">
                 </td>
                 <td>
-                  <input type="text" class="form-control" id="box-item-percentage-{{ bi.id }}" name="box-item-percentage-{{ bi.id }}" value="{{ bi.percentage }}">
+                  <input type="number" min="0" step=".01" class="form-control" id="box-item-percentage-{{ bi.id }}" name="box-item-percentage-{{ bi.id }}" value="{{ bi.percentage }}">
                 </td>
 
               </tr>
@@ -126,10 +126,10 @@
                   </select>
                 </td>
                 <td>
-                  <input type="text" class="form-control" id="box-item-quantity-new" name="box-item-quantity-new">
+                  <input type="number" min="0" class="form-control" id="box-item-quantity-new" name="box-item-quantity-new">
                 </td>
                 <td>
-                  <input type="text" class="form-control" id="box-item-percentage-new" name="box-item-percentage-new">
+                  <input type="number" min="0" class="form-control" id="box-item-percentage-new" name="box-item-percentage-new">
                 </td>
 
               </tr>
@@ -170,7 +170,7 @@
 
                 <td>{{ vb.vendor.name }} <input type="hidden" name="box-vendor-id-{{ vb.id}}" value="{{ vb.vendor_id }}"></td>
                 <td>
-                  <input type="text" class="form-control" id="box-vendor-item_num-{{ vb.id }}" name="box-vendor-item_num-{{ vb.id }}" value="{{ vb.item_number }}">
+                  <input type="number" min="0" class="form-control" id="box-vendor-item_num-{{ vb.id }}" name="box-vendor-item_num-{{ vb.id }}" value="{{ vb.item_number }}">
                 </td>
                 <td>
                   {% if vb.vendor.name == "Costco" %}
@@ -194,7 +194,7 @@
                   </select>
                 </td>
                 <td>
-                  <input type="text" class="form-control" id="box-vendor-item_num-new" name="box-vendor-item_num-new">
+                  <input type="number" min="0" class="form-control" id="box-vendor-item_num-new" name="box-vendor-item_num-new">
                 </td>
 
               </tr>

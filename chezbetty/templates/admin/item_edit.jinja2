@@ -27,14 +27,14 @@
             <dd><input type="text" class="form-control barcode-check" id="item-barcode" name="item-barcode" value="{{ item.barcode if item.barcode != None }}"></dd>
 
             <dt>Price</dt>
-            <dd><input type="text" class="form-control numeric" id="item-price" name="item-price" value="{{ item.price|round(2) }}"></dd>
+            <dd><input type="number" min="0" step=".01" class="form-control numeric" id="item-price" name="item-price" value="{{ item.price|round(2) }}"></dd>
 
             <dt>Sticky Price</dt>
             <input type="hidden" name="item-sticky_price" value="off">
             <dd><input type="checkbox" id="item-sticky_price" name="item-sticky_price" {% if item.sticky_price == True %}checked="checked"{% endif %}></input></dd>
 
             <dt>Wholesale</dt>
-            <dd><input type="text" class="form-control numeric" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale|round(4) }}"></dd>
+            <dd><input type="number" min="0" step=".0001" class="form-control numeric" id="item-wholesale" name="item-wholesale" value="{{ item.wholesale|round(4) }}"></dd>
 
             <dt>Sales Tax</dt>
             <input type="hidden" name="item-sales_tax" value="off">
@@ -117,7 +117,7 @@
               </select>
             </td>
             <td>
-              <input type="text" class="form-control" id="item-vendor-item_num-new" name="item-vendor-item_num-new">
+              <input type="number" min="0" class="form-control" id="item-vendor-item_num-new" name="item-vendor-item_num-new">
             </td>
 
           </tr>
