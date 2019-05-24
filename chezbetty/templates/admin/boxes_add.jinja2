@@ -42,7 +42,7 @@
     <tr>
       <td>Barcode</td>
       <td></td>
-      <td><input type="number" min="0" class="form-control barcode-check" id="box-barcode" name="box-barcode" value="{{ d['box-barcode'] }}"></td>
+      <td><input type="text" class="form-control barcode-check" id="box-barcode" name="box-barcode" value="{{ d['box-barcode'] }}"></td>
     </tr>
     <tr>
       <td>Sales Tax</td>
@@ -111,7 +111,7 @@
             <tr>
               <td>Barcode</td>
               <td></td>
-              <td><input type="number" min="0" class="form-control barcode-check" id="box-item-{{ i }}-barcode" name="box-item-{{ i }}-barcode" value="{{ d['box-item-'~i~'-barcode'] }}"></td>
+              <td><input type="text" class="form-control barcode-check" id="box-item-{{ i }}-barcode" name="box-item-{{ i }}-barcode" value="{{ d['box-item-'~i~'-barcode'] }}"></td>
             </tr>
           </tbody>
         </table>
