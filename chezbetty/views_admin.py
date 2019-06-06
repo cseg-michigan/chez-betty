@@ -3406,13 +3406,13 @@ def admin_event_receipt(request):
 
 
 @view_config(route_name='admin_event_undo',
-             permission='admin')
+             permission='manage')
 def admin_event_undo(request):
     try:
         # Lookup the transaction that the user wants to undo
         event = Event.from_id(request.matchdict['event_id'])
 
-        # Mangers can only see restocks.
+        # Mangers can only undo restocks.
         if event.type != 'restock' and not request.has_permission('admin'):
             raise Exception('Not authorized to undo this event.')
 
