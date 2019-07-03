@@ -2569,7 +2569,7 @@ def admin_user_purchase_add(request):
 def admin_user_purchase_add_submit(request):
     try:
         # Get the user from the POST data
-        user = User.from_id(int(request.POST['user-search-choice']))
+        user = User.from_id(int(re.sub("[^0-9]", "", request.POST['user-search-choice'])))
 
         # Get the deposit amount (if any)
         try:
