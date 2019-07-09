@@ -1,694 +1,700 @@
-# 
-# SOME DESCRIPTIVE TITLE
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+# Translations template for PROJECT.
+# Copyright (C) 2019 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2015-04-07 18:36-0400\n"
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2019-07-08 18:59-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Lingua 3.9\n"
+"Generated-By: Babel 2.7.0\n"
 
-#. Default: User is not enabled. Please contact ${email}.
-#: ./chezbetty/views.py:136
-msgid "user-not-enabled"
-msgstr ""
-
-#. Default: Failed to read M-Card. Please try swiping again.
-#: ./chezbetty/views.py:173
-msgid "mcard-error"
-msgstr ""
-
-#: ./chezbetty/views_user.py:165
+#: chezbetty/utility.py:348
 msgid "Deposit amount must be greater than $0.00. Card NOT charged."
 msgstr ""
 
-#: ./chezbetty/templates/deposit_edit.jinja2:3
-#: ./chezbetty/templates/deposit_edit.jinja2:4
-msgid "Edit Deposit"
+#: chezbetty/views_terminal.py:65
+msgid "mcard-keypad-error"
 msgstr ""
 
-#: ./chezbetty/templates/deposit_edit.jinja2:16
-msgid "New Deposit Amount"
+#: chezbetty/views_terminal.py:82
+msgid "user-not-enabled"
 msgstr ""
 
-#: ./chezbetty/templates/deposit_edit.jinja2:28
-#: ./chezbetty/templates/deposit.jinja2:28
-msgid "Deposit To Your Account"
+#: chezbetty/views_terminal.py:144
+msgid "mcard-error"
 msgstr ""
 
-#: ./chezbetty/templates/deposit_edit.jinja2:30
-#: ./chezbetty/templates/deposit.jinja2:30
-msgid "Deposit To %(pool_name)s Pool"
+#: chezbetty/views_terminal.py:377
+msgid "invalid-user-error"
 msgstr ""
 
-#: ./chezbetty/templates/deposit_edit.jinja2:35
-msgid "Delete Deposit"
+#: chezbetty/templates/admin/requests.jinja2:76
+#: chezbetty/templates/user/item_request.jinja2:116
+msgid "Add Comment"
 msgstr ""
 
-#: ./chezbetty/templates/item_request.jinja2:2
-msgid "Item Request"
-msgstr ""
-
-#: ./chezbetty/templates/item_request.jinja2:3
-msgid "Request a New Item at Chez Betty"
-msgstr ""
-
-#: ./chezbetty/templates/item_request.jinja2:10
-#: ./chezbetty/templates/about.jinja2:13 ./chezbetty/templates/about.jinja2:105
-#: ./chezbetty/templates/shame.jinja2:10 ./chezbetty/templates/items.jinja2:19
-msgid "Home"
-msgstr ""
-
-#: ./chezbetty/templates/item_request.jinja2:15
-msgid "New Item Request"
-msgstr ""
-
-#: ./chezbetty/templates/item_request.jinja2:20
-msgid ""
-"Enter an item you would like to see Betty sell. Please include where you "
-"purchased the item from before so we have a chance at finding it. We normally"
-" shop at Costco, Meijer, and Kroger, so if those stores do not carry it, it "
-"is unlikely that Betty will either."
-msgstr ""
-
-#: ./chezbetty/templates/item_request.jinja2:26
-msgid ""
-"Also, depending on your motivation, you could be the supplier of a new item. "
-"For instance, if you are grocery shopping you can pick up a few extra of what"
-" you want, add it the Betty system, and see if it sells well. The process is "
-"pretty simple (particularly for small numbers of items) and we can reimburse "
-"you by just writing a check. Get in touch with us if you are interested."
-msgstr ""
-
-#: ./chezbetty/templates/item_request.jinja2:38
-msgid "Submit Request"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:3
-#: ./chezbetty/templates/deposit.jinja2:4
-#: ./chezbetty/templates/deposit.jinja2:13
-#: ./chezbetty/templates/user_info.jinja2:45
-#: ./chezbetty/templates/deposit_complete.jinja2:12
-msgid "Deposit"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:21
-msgid "Cash"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:22
-msgid "Your Deposit Limit: %(limit)s"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:45
-msgid "Bitcoin"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:56
-msgid "Credit Card"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:58
-#: ./chezbetty/templates/index.jinja2:36
-msgid "Betty now accepts credit cards!"
-msgstr ""
-
-#: ./chezbetty/templates/deposit.jinja2:61
-#: ./chezbetty/templates/index.jinja2:38
-msgid ""
-"To deposit using a credit card, please visit chezbetty.eecs.umich.edu/user in"
-" your browser."
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:3
-#: ./chezbetty/templates/purchase.jinja2:4
-#: ./chezbetty/templates/user_info.jinja2:39
-msgid "Purchase"
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:17
-#: ./chezbetty/templates/purchase_complete.jinja2:13
-msgid "Order Summary"
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:34
-#: ./chezbetty/templates/user.jinja2:45 ./chezbetty/templates/items.jinja2:36
-#: ./chezbetty/templates/items.jinja2:61 ./chezbetty/templates/items.jinja2:84
-#: ./chezbetty/templates/purchase_complete.jinja2:20
+#: chezbetty/templates/admin/user_purchase_add.jinja2:77
+#: chezbetty/templates/public/items.jinja2:20
+#: chezbetty/templates/public/items.jinja2:52
+#: chezbetty/templates/public/items.jinja2:83
+#: chezbetty/templates/terminal/purchase_complete.jinja2:4
+#: chezbetty/templates/terminal/terminal.jinja2:142
+#: chezbetty/templates/user/item_list.jinja2:21
+#: chezbetty/templates/user/item_list.jinja2:53
+#: chezbetty/templates/user/item_list.jinja2:84
+#: chezbetty/templates/user/item_request.jinja2:31
+#: chezbetty/templates/user/transaction_history_detail.jinja2:28
 msgid "Item"
 msgstr ""
 
-#: ./chezbetty/templates/purchase.jinja2:35
-#: ./chezbetty/templates/user.jinja2:46
-#: ./chezbetty/templates/purchase_complete.jinja2:21
+#: chezbetty/templates/admin/user_purchase_add.jinja2:78
+#: chezbetty/templates/terminal/purchase_complete.jinja2:5
+#: chezbetty/templates/terminal/terminal.jinja2:143
+#: chezbetty/templates/user/transaction_history_detail.jinja2:29
 msgid "Quantity"
 msgstr ""
 
-#: ./chezbetty/templates/purchase.jinja2:36
-#: ./chezbetty/templates/user.jinja2:47
-#: ./chezbetty/templates/purchase_complete.jinja2:22
+#: chezbetty/templates/admin/user_purchase_add.jinja2:79
+#: chezbetty/templates/terminal/purchase_complete.jinja2:6
+#: chezbetty/templates/terminal/terminal.jinja2:144
+#: chezbetty/templates/user/transaction_history_detail.jinja2:30
 msgid "Item Price"
 msgstr ""
 
-#: ./chezbetty/templates/purchase.jinja2:37
-#: ./chezbetty/templates/user.jinja2:48
-#: ./chezbetty/templates/purchase_complete.jinja2:23
+#: chezbetty/templates/admin/user_purchase_add.jinja2:80
+#: chezbetty/templates/terminal/purchase_complete.jinja2:7
+#: chezbetty/templates/terminal/terminal.jinja2:145
+#: chezbetty/templates/user/transaction_history_detail.jinja2:31
 msgid "Total Price"
 msgstr ""
 
-#: ./chezbetty/templates/purchase.jinja2:47
-msgid "Order Empty"
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:48
-msgid "Scan an item to begin"
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:57
-#: ./chezbetty/templates/user.jinja2:67
-#: ./chezbetty/templates/purchase_complete.jinja2:42
-msgid "Subtotal"
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:61
-msgid "Good Standing Discount"
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:67
-#: ./chezbetty/templates/user.jinja2:76
-#: ./chezbetty/templates/purchase_complete.jinja2:53
+#: chezbetty/templates/admin/user_purchase_add.jinja2:95
+#: chezbetty/templates/terminal/purchase_complete.jinja2:52
+#: chezbetty/templates/terminal/terminal.jinja2:178
+#: chezbetty/templates/user/transaction_history_detail.jinja2:59
 msgid "Total"
 msgstr ""
 
-#: ./chezbetty/templates/purchase.jinja2:78
-msgid "Pay With Your User Account"
-msgstr ""
-
-#: ./chezbetty/templates/purchase.jinja2:80
-msgid "Pay With %(pool_name)s Pool"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:6
-msgid "Customer"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:11
-#: ./chezbetty/templates/shame.jinja2:23
-msgid "Name"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:14
-#: ./chezbetty/templates/shame.jinja2:25
-#: ./chezbetty/templates/user/deposit_cc.jinja2:23
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:26
-#: ./chezbetty/templates/user/index.jinja2:18
-msgid "Account Balance"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:18
-#: ./chezbetty/templates/user/deposit_cc.jinja2:31
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:33
-msgid "%(pool_name)s Balance"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:35
-msgid "Links"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:42
-msgid "Account"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:47
-msgid "Logout"
-msgstr ""
-
-#: ./chezbetty/templates/user_info.jinja2:49
-msgid "Admin"
-msgstr ""
-
-#: ./chezbetty/templates/base.jinja2:61 ./chezbetty/templates/base.jinja2:72
-msgid "Hi %(name)s,"
-msgstr ""
-
-#: ./chezbetty/templates/base.jinja2:62
-msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
-msgstr ""
-
-#: ./chezbetty/templates/base.jinja2:64
-msgid ""
-"We're glad you like Betty. We're happy to extend a small line of credit, but "
-"if people owe Betty lots of money, it's hard to keep things in stock. Please "
-"try to pay Betty back soon!"
-msgstr ""
-
-#: ./chezbetty/templates/base.jinja2:73
-msgid "You currently owe Betty %(debt)s."
-msgstr ""
-
-#: ./chezbetty/templates/base.jinja2:74
-msgid "Please try to pay Betty back soon, thanks!"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:14
-msgid "Transaction History"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:32
-msgid "Purchase totaling %(amount)s"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:33 ./chezbetty/templates/user.jinja2:101
-#: ./chezbetty/templates/user.jinja2:110
-msgid "touch to show"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:34
-msgid "touch to hide"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:71
-#: ./chezbetty/templates/purchase_complete.jinja2:46
-msgid "Discounts"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:86
-msgid "Deposit of %(amount)s"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:93
-msgid "Credit Card Deposit of %(amount)s"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:94
-msgid "Card ending in %(last4)s"
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:101
-msgid "Adjustment of %(amount)s by %(admin_name)s "
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:110
-msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) "
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:126
-msgid "No transactions."
-msgstr ""
-
-#: ./chezbetty/templates/user.jinja2:130
-msgid "Show All"
-msgstr ""
-
-#: ./chezbetty/templates/about.jinja2:2 ./chezbetty/templates/about.jinja2:3
+#: chezbetty/templates/public/about.jinja2:2
+#: chezbetty/templates/public/about.jinja2:3
 msgid "About Chez Betty"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:8
+#: chezbetty/templates/public/about.jinja2:8
 msgid ""
-"Chez Betty is an honor-system based food cooperative for graduate students, "
-"faculty, and staff in Computer Science at the University of Michigan. The "
-"name \"Chez Betty\" is an homage to Chez Bob, a similar system at UCSD."
+"Chez Betty is an honor-system based food cooperative for graduate "
+"students, faculty, and staff in Computer Science at the University of "
+"Michigan. The name \"Chez Betty\" is an homage to Chez Bob, a similar "
+"system at UCSD."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:16
+#: chezbetty/templates/public/about.jinja2:14
+msgid "Problems? Questions?"
+msgstr ""
+
+#: chezbetty/templates/public/about.jinja2:18
 msgid "FAQ"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:18
-msgid "Touch questions to show/hide."
-msgstr ""
-
-#: ./chezbetty/templates/about.jinja2:22
+#: chezbetty/templates/public/about.jinja2:22
 msgid "Who are the awesome people who run Chez Betty?"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:24
-msgid "Chez Betty is run by CSEG, the CSE graduate student group."
+#: chezbetty/templates/public/about.jinja2:24
+msgid "Chez Betty is run by graduate students in CSE."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:25
-msgid ""
-"Currently, Betty is primarily maintained by Brad Campbell, Pat Pannuto, and "
-"Zakir Durumeriç"
-msgstr ""
-
-#: ./chezbetty/templates/about.jinja2:28
+#: chezbetty/templates/public/about.jinja2:27
 msgid "How to Use Betty like a Pro"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:30
+#: chezbetty/templates/public/about.jinja2:29
 msgid "Keep a positive balance."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:31
+#: chezbetty/templates/public/about.jinja2:30
 msgid ""
-"Tracking down debtors sucks for us and for you. You don't want to end up on "
-"the Wall of Shame!"
+"Tracking down debtors sucks for us and for you. We cannot restock when "
+"there is too much user debt."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:33
+#: chezbetty/templates/public/about.jinja2:32
 msgid "Take advantage of the Bank of Betty."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:34
+#: chezbetty/templates/public/about.jinja2:33
 msgid ""
-"Our power users usually deposit $100 once a year or so. Most people deposit "
-"$20 to use until that runs out. Remembering cash every time you want to use "
-"Betty is no fun."
+"Our power users usually deposit $100 once a year or so. Most people "
+"deposit $20 to use until that runs out. Remembering cash every time you "
+"want to use Betty is no fun."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:36
+#: chezbetty/templates/public/about.jinja2:35
 msgid "Help restock."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:37
+#: chezbetty/templates/public/about.jinja2:36
 msgid ""
-"Betty is run by volunteers who have finite time. If you grab a cold drink, "
-"put a warm one in to get cold (though, don't put it in front!). If you finish"
-" a box of food, grab a full box and replace it."
+"Betty is run by volunteers who have finite time. If you grab a cold "
+"drink, put a warm one in to get cold (though, don't put it in front!). If"
+" you finish a box of food, grab a full box and replace it."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:42
+#: chezbetty/templates/public/about.jinja2:41
 msgid "How do I buy things from Chez Betty?"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:45
+#: chezbetty/templates/public/about.jinja2:44
 msgid "Log in to Chez Betty by swiping your MCard at the terminal."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:47
+#: chezbetty/templates/public/about.jinja2:46
 msgid "Accounts are tied to your UMID."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:48
+#: chezbetty/templates/public/about.jinja2:47
 msgid ""
-"A new account is automatically created for first-time users on the the fly "
-"the first time you log in."
+"A new account is automatically created for first-time users on the the "
+"fly the first time you log in."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:50
+#: chezbetty/templates/public/about.jinja2:49
 msgid "Look at your Account Balance. If you're low, deposit some money."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:52
+#: chezbetty/templates/public/about.jinja2:51
 msgid ""
-"Every user has an account with Chez Betty that keeps track of how much money "
-"they've put in."
+"Every user has an account with Chez Betty that keeps track of how much "
+"money they've put in."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:53
+#: chezbetty/templates/public/about.jinja2:52
 msgid ""
-"Betty doesn't make change, instead excess money stays in your account for "
-"your next transaction."
+"Betty doesn't make change, instead excess money stays in your account for"
+" your next transaction."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:54
+#: chezbetty/templates/public/about.jinja2:53
 msgid "You can run into the red, see below."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:56
+#: chezbetty/templates/public/about.jinja2:55
 msgid "Grab what you'd like from Chez Betty and scan your items."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:57
+#: chezbetty/templates/public/about.jinja2:56
 msgid "Touch \"Submit Purchase\" and you're done!"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:61
+#: chezbetty/templates/public/about.jinja2:60
 msgid "Wait... Couldn't people steal from this really easily?"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:63
+#: chezbetty/templates/public/about.jinja2:62
 msgid "Yes. (But please don't)."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:64
+#: chezbetty/templates/public/about.jinja2:63
 msgid ""
 "The idea is to provide a convenient service to members of the UM CSE "
-"community. Betty makes a small profit off each sale, some of which will be "
-"used to cover the inevitable losses. If too many people take advantage of "
-"Betty's trusting nature, the service will have to shut down :(."
+"community. Betty makes a small profit off each sale, some of which will "
+"be used to cover the inevitable losses. If too many people take advantage"
+" of Betty's trusting nature, the service will have to shut down :(."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:67
+#: chezbetty/templates/public/about.jinja2:66
 msgid "Tell me more about my Chez Betty account?"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:69
+#: chezbetty/templates/public/about.jinja2:68
 msgid ""
-"Chez Betty sells things nearly at-cost (usually about a 15% markup). Since no"
-" one likes change and Betty is a self-service operation, it's set up so that "
-"each user has an account with Betty. You can put in $20 (or however much) at "
-"a time and use that balance until it runs out."
+"Chez Betty sells things nearly at-cost (usually about a 20% markup). "
+"Since no one likes change and Betty is a self-service operation, it's set"
+" up so that each user has an account with Betty. You can put in $20 (or "
+"however much) at a time and use that balance until it runs out."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:75
+#: chezbetty/templates/public/about.jinja2:74
 msgid "What if I don't have any money / Can my account balance go negative?"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:77
+#: chezbetty/templates/public/about.jinja2:76
 msgid ""
-"Yes. Chez Betty allows you to spend beyond your immediate means under that "
-"assumption that you'll pay Betty back eventually. The idea is to let you grab"
-" stuff when you need it and keep track of what owe, instead of incentivizing "
-"folks to steal. There is a <a href=\"/shame\">Wall of Shame</a> for persons "
-"who owe Betty more than $5."
+"Yes. Chez Betty allows you to spend beyond your immediate means under "
+"that assumption that you'll pay Betty back eventually. The idea is to let"
+" you grab stuff when you need it and keep track of what you owe, instead "
+"of incentivizing folks to steal."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:85
+#: chezbetty/templates/public/about.jinja2:82
 msgid "How does Betty set prices?"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:87
+#: chezbetty/templates/public/about.jinja2:84
 msgid ""
-"Betty sells things just above wholesale, usually a 15% markup. If you're "
-"interested in the actual algorithm, check out Betty's source code at "
-"github.com/um-cseg/chez-betty."
+"Betty sells things just above wholesale, usually a 20% markup. If you're "
+"interested in the actual algorithm, check out Betty's source on GitHub."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:90
+#: chezbetty/templates/public/about.jinja2:87
 msgid ""
 "Current wholesale and Betty prices are always available on <a "
 "href=\"/items\">the items page</a>."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:93
+#: chezbetty/templates/public/about.jinja2:90
+msgid "What's the Good Standing Discount?"
+msgstr ""
+
+#: chezbetty/templates/public/about.jinja2:92
+#, python-format
+msgid ""
+"If you keep an account balance with $20 or more, Betty will give you a 5%"
+" discount on all purchases!"
+msgstr ""
+
+#: chezbetty/templates/public/about.jinja2:95
+msgid "What's the Debtor's Tax?"
+msgstr ""
+
+#: chezbetty/templates/public/about.jinja2:99
+msgid ""
+"For anyone with less than $5 in their account, Betty charges a "
+"progressive tax on all purchases."
+msgstr ""
+
+#: chezbetty/templates/public/about.jinja2:101
+#, python-format
+msgid ""
+"The tax begins at 5% and increases an additional 5% for every additional "
+"$5 you are in debt ($10-15 debt is 10%, $15-20 is 15%, and so on)."
+msgstr ""
+
+#: chezbetty/templates/public/about.jinja2:103
+msgid ""
+"If you are more than $5 in debt, the Betty terminal will very clearly "
+"show the tax being applied as you check out."
+msgstr ""
+
+#: chezbetty/templates/public/about.jinja2:108
 msgid "What does Betty do with her profits?"
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:95
+#: chezbetty/templates/public/about.jinja2:110
 msgid ""
-"First, Betty has to pay her debts (e.g. any losses incurred from dishonest "
-"Chez Betty users). After that, Betty's profits roll into the CSEG general "
-"fund. They're used to fund improvements to Betty, buy miscellaneous needs "
-"(e.g. new ping pong paddles and balls), or to throw events (e.g. bar nights) "
-"for CSEG."
+"First, Betty has to pay her debts (e.g. any losses incurred from "
+"dishonest Chez Betty users). After that, Betty's profits go towards "
+"supporting the North Campus community."
 msgstr ""
 
-#: ./chezbetty/templates/about.jinja2:100
+#: chezbetty/templates/public/index.jinja2:23
+msgid "Chez Betty is Back!"
+msgstr ""
+
+#: chezbetty/templates/public/index.jinja2:24
 msgid ""
-"If you have more questions / concerns, please feel free to talk to the CSEG "
-"officers."
+"Welcome! Betty is the 24/7 food co-op for all members of the CSE "
+"community."
 msgstr ""
 
-#: ./chezbetty/templates/shame.jinja2:2 ./chezbetty/templates/shame.jinja2:3
-#: ./chezbetty/templates/index.jinja2:27
-msgid "Wall of Shame"
-msgstr ""
-
-#: ./chezbetty/templates/shame.jinja2:13
-msgid "These users owe Chez Betty more than $5."
-msgstr ""
-
-#: ./chezbetty/templates/shame.jinja2:17
-msgid "Users in Debt"
-msgstr ""
-
-#: ./chezbetty/templates/shame.jinja2:24
-msgid "uniqname"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:20
-msgid "Old Balance"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:23
-msgid "Deposit Amount"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:26
-msgid "New Balance"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:29
-msgid "Transaction"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:35
-msgid "Thank you!"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:38
-msgid "You successfully deposited %(amount)s into your account"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:41
-msgid "You successfully deposited %(amount)s in the %(pool_name)s Pool"
-msgstr ""
-
-#: ./chezbetty/templates/deposit_complete.jinja2:50
-msgid "Edit this Deposit"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:2 ./chezbetty/templates/items.jinja2:13
-msgid "Items"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:3
-msgid "Items at Chez Betty"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:7
-msgid "All that Betty has to offer."
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:20 ./chezbetty/templates/index.jinja2:25
-msgid "Request an Item"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:22
-msgid "Touch columns to change sort order."
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:25
-msgid "Top"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:26
-msgid "Up"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:27
-msgid "Down"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:28
-msgid "Bottom"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:37
-msgid "In Stock"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:38
-msgid "Wholesale"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:39
-msgid "Price"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:56
-msgid "Temporarily Out-of-Stock Items:"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:75
-msgid "Discontinued Items:"
-msgstr ""
-
-#: ./chezbetty/templates/items.jinja2:77
-msgid ""
-"Betty discontinues items that did not sell well or that wecannot buy any "
-"more. If you would like to request the return ofa discontinued item, please "
-"e-mail chez-betty@umich.edu."
-msgstr ""
-
-#: ./chezbetty/templates/purchase_complete.jinja2:3
-#: ./chezbetty/templates/purchase_complete.jinja2:4
-msgid "Purchase Complete"
-msgstr ""
-
-#: ./chezbetty/templates/purchase_complete.jinja2:55
-msgid "(Paid with your user account)"
-msgstr ""
-
-#: ./chezbetty/templates/purchase_complete.jinja2:57
-msgid "(Paid with %(pool_name)s Pool)"
-msgstr ""
-
-#: ./chezbetty/templates/purchase_complete.jinja2:68
-msgid "If this was a mistake, touch here to undo this transaction."
-msgstr ""
-
-#: ./chezbetty/templates/index.jinja2:12
-msgid "Welcome to Chez Betty!"
-msgstr ""
-
-#: ./chezbetty/templates/index.jinja2:13
-msgid "The 24/7 food co-op for all members of the CSE community."
-msgstr ""
-
-#: ./chezbetty/templates/index.jinja2:18
-msgid "Swipe your M-Card to login"
-msgstr ""
-
-#: ./chezbetty/templates/index.jinja2:24
+#: chezbetty/templates/public/index.jinja2:34
 msgid "Item List"
 msgstr ""
 
-#: ./chezbetty/templates/index.jinja2:26
+#: chezbetty/templates/public/index.jinja2:36
+#: chezbetty/templates/public/index.jinja2:38
+msgid "Request an Item"
+msgstr ""
+
+#: chezbetty/templates/public/index.jinja2:40
 msgid "About"
 msgstr ""
 
-#: ./chezbetty/templates/index.jinja2:30
-msgid "Administration"
+#: chezbetty/templates/public/index.jinja2:113
+#: chezbetty/templates/terminal/index.jinja2:143
+msgid ""
+"Can you help translate Betty? Visit github.com/um-cseg/chez-betty to "
+"contribute."
 msgstr ""
 
-#: ./chezbetty/templates/index.jinja2:62
-msgid "Can you help translate Betty? E-mail chez-betty@umich.edu."
+#: chezbetty/templates/public/items.jinja2:2
+#: chezbetty/templates/public/items.jinja2:13
+#: chezbetty/templates/user/item_list.jinja2:3
+#: chezbetty/templates/user/item_list.jinja2:14
+msgid "Items"
 msgstr ""
 
-#: ./chezbetty/templates/user/deposit_cc.jinja2:4
-#: ./chezbetty/templates/user/deposit_cc.jinja2:7
-msgid "Credit Card Deposit"
+#: chezbetty/templates/public/items.jinja2:3
+#: chezbetty/templates/user/item_list.jinja2:4
+msgid "Items at Chez Betty"
 msgstr ""
 
-#: ./chezbetty/templates/user/deposit_cc.jinja2:14
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:14
+#: chezbetty/templates/public/items.jinja2:7
+#: chezbetty/templates/user/item_list.jinja2:8
+msgid "All that Betty has to offer."
+msgstr ""
+
+#: chezbetty/templates/public/items.jinja2:21
+#: chezbetty/templates/user/item_list.jinja2:22
+msgid "In Stock"
+msgstr ""
+
+#: chezbetty/templates/public/items.jinja2:22
+#: chezbetty/templates/user/item_list.jinja2:23
+msgid "Wholesale"
+msgstr ""
+
+#: chezbetty/templates/public/items.jinja2:23
+#: chezbetty/templates/user/item_list.jinja2:24
+msgid "Price"
+msgstr ""
+
+#: chezbetty/templates/public/items.jinja2:45
+#: chezbetty/templates/user/item_list.jinja2:46
+msgid "Temporarily Out-of-Stock Items:"
+msgstr ""
+
+#: chezbetty/templates/public/items.jinja2:70
+#: chezbetty/templates/user/item_list.jinja2:71
+msgid "Discontinued Items:"
+msgstr ""
+
+#: chezbetty/templates/public/items.jinja2:74
+#: chezbetty/templates/user/item_list.jinja2:75
+msgid ""
+"Betty discontinues items that did not sell well or that we cannot buy any"
+" more. If you would like to request the return of a discontinued item, "
+"please e-mail\n"
+"    <a href=\"mailto:chezbetty@umich.edu\">chezbetty@umich.edu</a>."
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:15
+msgid "Chez Betty"
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:16
+msgid "The 24/7 food co-op for all members of the CSE community."
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:31
+#: chezbetty/templates/user/deposit_cc.jinja2:15
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:15
 msgid "We use stripe to process credit card transactions."
 msgstr ""
 
-#: ./chezbetty/templates/user/deposit_cc.jinja2:15
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:15
+#: chezbetty/templates/public/paydebt.jinja2:34
+#: chezbetty/templates/user/deposit_cc.jinja2:16
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:16
 msgid "Stripe charges 2.9% + $0.30 for each transaction."
 msgstr ""
 
-#: ./chezbetty/templates/user/deposit_cc.jinja2:16
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:16
+#: chezbetty/templates/public/paydebt.jinja2:35
+#: chezbetty/templates/user/deposit_cc.jinja2:17
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:17
 msgid "We pass this charge directly onto you."
 msgstr ""
 
-#: ./chezbetty/templates/user/deposit_cc.jinja2:17
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:17
+#: chezbetty/templates/public/paydebt.jinja2:39
+#, python-format
 msgid ""
-"That is, if you wish to deposit $20 to your account, we will charge your card"
-" 20 + (20*0.029 + 0.30) = $20.88."
+"Your current balance is %(balance)s and your card will be charged "
+"%(charge)s."
 msgstr ""
 
-#: ./chezbetty/templates/user/deposit_cc.jinja2:48
+#: chezbetty/templates/public/paydebt.jinja2:56
+msgid "We encourage users to keep a positive balance (you even get a discount!)."
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:59
+msgid ""
+"If you are still around, please strongly consider paying up to a positive"
+" balance."
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:101
+msgid "You currently do not owe Chez Betty any money."
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:104
+msgid "Thank you for paying your debts."
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:109
+msgid "Log into your user account"
+msgstr ""
+
+#: chezbetty/templates/public/paydebt.jinja2:112
+msgid "Chez Betty Home"
+msgstr ""
+
+#: chezbetty/templates/terminal/index.jinja2:65
+msgid "Swipe your M-Card to login"
+msgstr ""
+
+#: chezbetty/templates/terminal/index.jinja2:72
+msgid "Enter your UMID here"
+msgstr ""
+
+#: chezbetty/templates/terminal/index.jinja2:98
+msgid "Clear"
+msgstr ""
+
+#: chezbetty/templates/terminal/purchase_complete.jinja2:26
+#: chezbetty/templates/terminal/terminal.jinja2:161
+#: chezbetty/templates/user/transaction_history_detail.jinja2:50
+msgid "Subtotal"
+msgstr ""
+
+#: chezbetty/templates/terminal/purchase_complete.jinja2:30
+msgid "Discounts/Fees"
+msgstr ""
+
+#: chezbetty/templates/terminal/purchase_complete.jinja2:54
+msgid "(Paid with your user account)"
+msgstr ""
+
+#: chezbetty/templates/terminal/purchase_complete.jinja2:56
+#, python-format
+msgid "(Paid with %(pool_name)s Pool)"
+msgstr ""
+
+#: chezbetty/templates/terminal/purchase_complete.jinja2:58
+msgid "Mistake? Undo this Purchase"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:8
+#: chezbetty/templates/terminal/terminal.jinja2:18
+#, python-format
+msgid "Hi %(name)s,"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:9
+#, python-format
+msgid "You currently owe Betty %(big_debt)s. That's a lot of money!"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:11
+msgid ""
+"We're glad you like Betty. We're happy to extend a small line of credit, "
+"but if people owe Betty lots of money, it's hard to keep things in stock."
+" Please try to pay Betty back soon!"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:19
+#, python-format
+msgid "You currently owe Betty %(debt)s."
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:20
+msgid "Please try to pay Betty back soon, thanks!"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:35
+msgid "Your Current Balance"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:40
+msgid "Balance after Purchase or Deposit"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:45
+msgid "Selected Pool Balance"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:60
+msgid "Cash Deposit"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:69
+msgid ""
+"To make a cash deposit, put money in the bill acceptor. It will "
+"automatically be added to your account."
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:79
+msgid "Thank you!"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:85
+#: chezbetty/templates/terminal/terminal.jinja2:88
+#, python-format
+msgid "You successfully deposited %(amount)s into your account."
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:119
+#: chezbetty/templates/terminal/terminal.jinja2:243
+msgid "Purchase"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:152
+msgid "Order Empty"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:153
+msgid "Scan an item to begin"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:165
+msgid "Good Standing Discount"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:173
+msgid "Debtor's Fee"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:192
+#, python-format
+msgid "%(pool_name)s Pool"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:199
+msgid "Item Without Barcode"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:241
+msgid "Logout"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:242
+msgid "Purchase & Logout"
+msgstr ""
+
+#: chezbetty/templates/terminal/terminal.jinja2:253
+msgid "Select Item Without Barcode"
+msgstr ""
+
+#: chezbetty/templates/user/deposit_cc.jinja2:5
+#: chezbetty/templates/user/deposit_cc.jinja2:8
+msgid "Credit Card Deposit"
+msgstr ""
+
+#: chezbetty/templates/user/deposit_cc.jinja2:18
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:18
+msgid ""
+"That is, if you wish to deposit $20 to your account, we will charge your "
+"card (20 + 0.30) / 0.971 = $20.91."
+msgstr ""
+
+#: chezbetty/templates/user/deposit_cc.jinja2:24
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:27
+#: chezbetty/templates/user/index.jinja2:17
+msgid "Account Balance"
+msgstr ""
+
+#: chezbetty/templates/user/deposit_cc.jinja2:32
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:34
+#, python-format
+msgid "%(pool_name)s Balance"
+msgstr ""
+
+#: chezbetty/templates/user/deposit_cc.jinja2:56
 msgid "User Account"
 msgstr ""
 
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:4
-#: ./chezbetty/templates/user/deposit_cc_custom.jinja2:7
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:5
+#: chezbetty/templates/user/deposit_cc_custom.jinja2:8
 msgid "Custom Credit Card Deposit"
 msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:3
+msgid "Item Request"
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:4
+msgid "Request a New Item at Chez Betty"
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:10
+msgid "Expanding the store."
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:14
+msgid "New Item Request"
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:19
+msgid ""
+"Depending on your motivation, you could be the supplier of a new item. "
+"For instance, if you are grocery shopping you can pick up a few extra of "
+"what you want, add it the Betty system, and see if it sells well. The "
+"process is pretty simple (particularly for small numbers of items) and we"
+" can reimburse you by just writing a check."
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:24
+msgid "Get in touch with us if you are interested."
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:33
+msgid "Store"
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:36
+msgid "Choose store"
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:43
+msgid ""
+"Betty only shops at a few regular stores. If these stores do not sell "
+"your item, Betty will not be able to carry it regularly, sorry."
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:44
+msgid "Product URL"
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:48
+msgid "Submit Request"
+msgstr ""
+
+#: chezbetty/templates/user/item_request.jinja2:56
+msgid "Open Item Requests"
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:18
+#, python-format
+msgid "Purchase totaling %(amount)s by %(name)s"
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:54
+msgid "Discounts"
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:70
+#, python-format
+msgid "Deposit of %(amount)s by %(name)s"
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:76
+#, python-format
+msgid "Credit Card Deposit of %(amount)s by %(name)s"
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:77
+#, python-format
+msgid "Card ending in %(last4)s"
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:83
+#, python-format
+msgid "Adjustment of %(amount)s by %(admin_name)s "
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:92
+#, python-format
+msgid "BTC Deposit of %(amount_in_usd)s (%(amount_in_btc)s) by %(name)s"
+msgstr ""
+
+#: chezbetty/templates/user/transaction_history_detail.jinja2:108
+msgid "No transactions."
+msgstr ""
+
