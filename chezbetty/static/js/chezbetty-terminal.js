@@ -543,13 +543,41 @@ function add_item_id (item_id) {
 	});
 }
 
+function load_home_screen() {
+	window.location.href = "/";
+}
+
+// Called after a user has been logged into the terimnal for [timeout] time
+function terminal_timeout () {
+	// Disable all the purchase buttons to avoid duplicate actions
+	disable_button($("#purchase-button-logout"));
+	disable_button($("#purchase-button-purchaselogout"));
+	disable_button($("#purchase-button-purchase"));
+
+	var any_items = false;
+	$(".purchase-item").each(function (index) {
+		any_items = true;
+		return false;
+	});
+
+	if (!any_items) {
+		// Just log them out
+		load_home_screen();
+	} else {
+		// Submit purchase, ignoring result because no one is there to deal with it anyway
+		submit_purchase(null, load_home_screen, load_home_screen);
+	}
+}
+
 // Pass the button as "this" to this function to submit a purchase.
 // We need the button so we can disable it so we don't get duplicate purchases.
 function submit_purchase (this_btn, success_cb, error_cb) {
-	$(this_btn).blur();
 	purchase_alert_clear();
 
-	disable_button($(this_btn));
+	if (this_btn != null) {
+		$(this_btn).blur();
+		disable_button($(this_btn));
+	}
 
 	// Bundle all of the product ids and quantities into an object to send
 	// to the server. Also include the purchasing user.
