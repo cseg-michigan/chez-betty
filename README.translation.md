@@ -33,40 +33,36 @@ the footer.
 You must first regenerate the global template.
 ```bash
 cd /chez-betty
-pot-create -c lingua.config -o chezbetty/locale/betty.pot chezbetty
+pybabel extract -F babel.cfg -o chezbetty/locale/betty.pot chezbetty
 ```
 
 Then you have to update the translation template for each language.
+There is a helper script that will do this for you:
 ```bash
 cd /chez-betty/chezbetty/locale
-# Replace 'es' (spanish) with your language code:
-msgmerge --update es/LC_MESSAGES/betty.po betty.pot
+./update_all_from_template.sh
 ```
 
 Next the actual translations for each language need to be added. This requires
 editing the language-specific .po files.
+
+I strongly advise installing [poedit](https://poedit.net/), but this is just
+technically just a text file, so any editor will do
 ```bash
-vi/poedit/other_editor es/LC_MESSAGES/betty.po
+poedit es/LC_MESSAGES/betty.po
 ```
 
-Finally, the translations have to be compiled.
+Finally, the translations have to be compiled. Again, there's a helper script:
 ```bash
 cd /chez-betty/chezbetty/locale
-# foreach language
-  pushd es/LC_MESSAGES
-  msgfmt betty.po
-  popd
+./compile_all_translations.sh
 ```
 
 ### Langauge support in a fresh checkout
 
-The translations must be compiled. An outstanding **TODO** is to add
-this to an automated deploy script.
+The translations must be compiled:
 
 ```bash
 cd /chez-betty/chezbetty/locale
-# foreach language
-  pushd es/LC_MESSAGES
-  msgfmt betty.po
-  popd
+./compile_all_translations.sh
 ```
