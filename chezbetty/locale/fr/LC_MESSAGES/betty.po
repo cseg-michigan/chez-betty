@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-07-08 18:59-0700\n"
-"PO-Revision-Date: 2016-11-13 21:17-0500\n"
+"PO-Revision-Date: 2019-07-08 19:26-0700\n"
 "Last-Translator: cyanliu <cyanliu@umich.edu>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Lingua 3.9\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.7.3\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: chezbetty/utility.py:348
 msgid "Deposit amount must be greater than $0.00. Card NOT charged."
@@ -43,7 +43,7 @@ msgstr ""
 #: chezbetty/templates/admin/requests.jinja2:76
 #: chezbetty/templates/user/item_request.jinja2:116
 msgid "Add Comment"
-msgstr ""
+msgstr "Ajouter un Commentaire"
 
 #: chezbetty/templates/admin/user_purchase_add.jinja2:77
 #: chezbetty/templates/public/items.jinja2:20
@@ -105,7 +105,7 @@ msgstr ""
 
 #: chezbetty/templates/public/about.jinja2:14
 msgid "Problems? Questions?"
-msgstr ""
+msgstr "Problèmes? Questions?"
 
 # http://www.nakedtranslations.com/en/2003/acronyms
 #: chezbetty/templates/public/about.jinja2:18
@@ -356,7 +356,7 @@ msgstr ""
 
 #: chezbetty/templates/public/index.jinja2:23
 msgid "Chez Betty is Back!"
-msgstr ""
+msgstr "Chez Betty est de retour!"
 
 #: chezbetty/templates/public/index.jinja2:24
 #, fuzzy
@@ -511,11 +511,11 @@ msgstr "Glissez votre MCard pour vous identifier "
 
 #: chezbetty/templates/terminal/index.jinja2:72
 msgid "Enter your UMID here"
-msgstr ""
+msgstr "Entrez votre UMID ici"
 
 #: chezbetty/templates/terminal/index.jinja2:98
 msgid "Clear"
-msgstr ""
+msgstr "Effacer"
 
 #: chezbetty/templates/terminal/purchase_complete.jinja2:26
 #: chezbetty/templates/terminal/terminal.jinja2:161
