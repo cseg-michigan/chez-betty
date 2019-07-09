@@ -1079,7 +1079,7 @@ class SubSubTransaction(Base):
                         .join(event.Event)\
                         .filter(cls.item_id == item_id)\
                         .filter(event.Event.deleted==False)\
-                        .order_by(cls.id)
+                        .order_by(desc(event.Event.timestamp))
 
 
 class RestockLineBoxItem(SubSubTransaction):
