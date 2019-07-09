@@ -62,7 +62,7 @@
 
   {% set timeout = timeout|default(60*1000*5) -%}
   <script>
-    setTimeout(function(){window.location.replace("/");}, {{ timeout }});
+    setTimeout(terminal_timeout, {{ timeout }});
   </script>
 
   <!-- Google Analytics tracker -->
