@@ -1,18 +1,29 @@
+{% import "macro_buttons.jinja2" as button %}
+
 <dl class="dl-horizontal">
-  {% if umichTitle %}
-  <dt>Title</dt><dd>{{ umichTitle|join(", ") }}</dd>
+  {% if details.umichTitle %}
+  <dt>Title</dt><dd>{{ details.umichTitle|join(", ") }}</dd>
   {% endif %}
-  {% if ou %}
-  <dt>Affiliations</dt><dd>{{ ou|join(", ") }}</dd>
+  {% if details.ou %}
+  <dt>Affiliations</dt><dd>{{ details.ou|join(", ") }}</dd>
   {% endif %}
   {# This is text that the user enters in the MCommunity Directory. They might
   indicate the best way to contact them, who their administrative assistant is,
   or any other sort of notice that they want. #}
-  {% if notice %}
-  <dt>Notice</dt><dd>{{ notice }}</dd>
+  {% if details.notice %}
+  <dt>Notice</dt><dd>{{ details.notice }}</dd>
   {% endif %}
-  {% if umichDescription %}
-  <dt>About Me</dt><dd>{{ umichDescription }}</dd>
+  {% if details.umichDescription %}
+  <dt>About Me</dt><dd>{{ details.umichDescription }}</dd>
   {% endif %}
 </dl>
 
+{% if user.name != details.displayName[0] %}
+  <hr />
+  <p><strong>LDAP user name does not match Betty user name</strong></p>
+  <dl class="dl-horizontal">
+    <dt>Betty User Name</dt><dd>{{ user.name }}</dd>
+    <dt>LDAP User Name</dt><dd>{{ details.displayName[0] }}</dd>
+  </dl>
+  {{ button.ajax_singleuse_button("Update user name", "/admin/user/"~user.id~"/changename/"~details.displayName[0]) }}
+{% endif %}

@@ -24,7 +24,8 @@ function button_singleuse_fail (data) {
 	alert_error("Button click failed.");
 }
 
-$(".btn-ajax_singleuse").on('click', function () {
+// n.b. Must use $('body') so that dynamically loaded buttons still work
+$('body').on('click', '.btn-ajax_singleuse', function () {
 	var url = $(this).attr("data-url");
 	$.ajax({
 		url: url,

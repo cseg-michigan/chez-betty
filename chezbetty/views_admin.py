@@ -2549,12 +2549,12 @@ def admin_user_details(request):
     try:
         user = User.from_id(request.matchdict['user_id'])
         details = user.get_details()
-        return details
     except InvalidUserException:
-        return {'notice': 'User no longer in the directory.'}
+        details = {'notice': 'User no longer in the directory.'}
     except Exception as e:
         if request.debug: raise(e)
-        return {'notice': 'Unknown error loading user detail.'}
+        details = {'notice': 'Unknown error loading user detail.'}
+    return {'user': user, 'details': details}
 
 @view_config(route_name='admin_user_purchase_add',
              renderer='templates/admin/user_purchase_add.jinja2',
@@ -2778,6 +2778,27 @@ def admin_user_archive(request):
         return {'status': 'error',
                 'msg': 'Error.'}
 
+
+# AJAX for changing user name
+@view_config(route_name='admin_user_changename',
+        renderer='json',
+        permission='admin')
+def admin_user_changename(request):
+    try:
+        user = User.from_id(int(request.matchdict['user_id']))
+        new_name = request.matchdict['name']
+
+        user.name = new_name
+
+        return {'status': 'success',
+                'msg': 'User name successfully changed to {}.'.format(new_name)}
+    except NoResultFound:
+        return {'status': 'error',
+                'msg': 'Could not find user.'}
+    except Exception as e:
+        if request.debug: raise(e)
+        return {'status': 'error',
+                'msg': 'Error.'}
 
 # AJAX for changing user role
 @view_config(route_name='admin_user_changerole',
