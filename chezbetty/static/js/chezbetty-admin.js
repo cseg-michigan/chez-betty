@@ -207,28 +207,65 @@ function user_purchase_add_item (id) {
 	});
 }
 
-// Callback when adding an item to the restock succeeds
-function search_item_only_success (data) {
+// Callback when adding an item to the email recall item list succeeds
+function email_recall_add_item_success (data) {
+	console.log(data);
+	if (data.status != "success") {
+		if (data.status == "unknown_barcode") {
+			alert_error("Could not find that item.");
+		} else {
+			alert_error("Error occurred.");
+		}
+	} else {
+		// Make sure this item isn't already on the list
+		if ($("#email-recall-item-"+data.type+"-" + data.id).length == 0) {
+			// Add a new item
+
+			new_row = $("#email-recall-item").clone().attr("id", "email-recall-item-"+data.type+"-" + data.id);
+			new_row.find(".email-recall-item-title").text(data.name);
+			new_row.find(".email-recall-item-stock").text(data.stock);
+			new_row.find(".email-recall-item-id").val(data.id);
+			new_row.show();
+
+			$("#email-recall-table-items").append(new_row);
+
+		} else {
+			alert_error("Ignoring duplicate item.");
+		}
+	}
+}
+
+function email_recall_add_item (id) {
+	$.ajax({
+		dataType: "json",
+		url: "/admin/item/id/"+id+"/json",
+		success: email_recall_add_item_success,
+		error: function() { alert_error("AJAX lookup failed."); },
+	});
+}
+
+// Callback when searching for an item
+function search_item_only_success (data, context, one_item_fn) {
 	alert_clear();
-	$("#user-search-notice-item").text("");
-	$(".user-search-item-addedrows").remove();
+	$("#" + context + "-notice-item").text("");
+	$("." + context + "-item-addedrows").remove();
 
 	if (data.status != "success") {
 		alert_error("Error occurred.");
 	} else {
 		if (data.matches.length == 0) {
 			// No matches tell user
-			$("#user-search-notice-item").text("No matches found.");
+			$("#" + context + "-notice-item").text("No matches found.");
 		} else if (data.matches.length == 1 && data.matches[0][0] == 'item') {
 			// One match just add it
-			user_purchase_add_item(data.matches[0][3]);
-			$("#user-search-notice-item").text("One match found. Added.");
+			one_item_fn(data.matches[0][3]);
+			$("#" + context + "-notice-item").text("One match found. Added.");
 		} else {
 			for (i=0; i<data.matches.length; i++) {
 				if (data.matches[i][0] == 'item') {
 					// Only look at items, not boxes
 
-					var new_row = $("#user-search-item-row-0").clone().attr("id", "user-search-item-row-"+(i+1));
+					var new_row = $("#" + context + "-item-row-0").clone().attr("id", context + "-item-row-"+(i+1));
 					new_row.find("button").each(function (index) {
 						start_id = $(this).attr("id");
 						splits = start_id.split("-");
@@ -237,12 +274,12 @@ function search_item_only_success (data) {
 						$(this).attr("id", new_id);
 						$(this).attr("data-item", data.matches[i][3]);
 					});
-					new_row.find(".user-search-row-item-name").html(data.matches[i][0] + ': <a href="/admin/item/edit/'+data.matches[i][3]+'">'+data.matches[i][1]+'</a>');
-					new_row.find(".user-search-row-item-stock").text('stock: ' + data.matches[i][5]);
-					new_row.addClass("user-search-item-addedrows");
+					new_row.find("." + context + "-row-item-name").html(data.matches[i][0] + ': <a href="/admin/item/edit/'+data.matches[i][3]+'">'+data.matches[i][1]+'</a>');
+					new_row.find("." + context + "-row-item-stock").text('stock: ' + data.matches[i][5]);
+					new_row.addClass("" + context + "-item-addedrows");
 					new_row.show();
 
-					$("#user-search-table-items").append(new_row);
+					$("#" + context + "-table-items").append(new_row);
 				}
 			}
 		}
@@ -254,11 +291,11 @@ function search_item_only_fail () {
 	alert_error("AJAX lookup failed.");
 }
 
-function search_item_only (search_str) {
+function search_item_only (search_str, context, one_item_fn) {
 	$.ajax({
 		dataType: "json",
 		url: "/admin/item/search/"+search_str+"/json",
-		success: search_item_only_success,
+		success: function(data) { search_item_only_success(data, context, one_item_fn); },
 		error: search_item_only_fail
 	});
 }
