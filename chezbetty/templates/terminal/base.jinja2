@@ -60,10 +60,31 @@
   {% block onload %}
   {% endblock %}
 
-  {% set timeout = timeout|default(60*1000*5) -%}
+  {% set timeout = timeout|default(60*1000*2) -%}
   <script>
-    setTimeout(terminal_timeout, {{ timeout }});
+    var wintimeout = setTimeout(terminal_timeout, {{ timeout }});
+
+    // Called on each mouse click (user touching screen)
+    $(document).mousedown(function (e) {
+      // Reset the timeout timer
+      if (wintimeout) {
+        clearTimeout(wintimeout);
+      }
+      // Start a new timeout in case this is the last keypress (1min timeout)
+      wintimeout = setTimeout(terminal_timeout, {{ timeout }});
+    });
+
+    // Called on each keypress (barcode scan)
+    $(document).keypress(function (e) {
+      // Reset the timeout timer
+      if (wintimeout) {
+        clearTimeout(wintimeout);
+      }
+      // Start a new timeout in case this is the last keypress (1min timeout)
+      wintimeout = setTimeout(terminal_timeout, {{ timeout }});
+    });
   </script>
+
 
   <!-- Google Analytics tracker -->
   <script>
