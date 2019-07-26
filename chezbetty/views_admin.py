@@ -858,6 +858,7 @@ def admin_item_id_json(request):
                 'type':   'item',
                 'id':     item.id,
                 'name':   item.name,
+                'stock':  item.in_stock,
                 'price':  float(item.price)}
 
     except Exception as e:
@@ -2919,6 +2920,73 @@ def admin_users_email_oneperson(request):
             )
 
     request.session.flash('E-mail sent to ' + to, 'success')
+    return HTTPFound(location=request.route_url('admin_users_email'))
+
+
+
+@view_config(route_name='admin_users_email_purchasers',
+             request_method='POST',
+             permission='admin')
+def admin_users_email_purchasers(request):
+    # Group all of the items into the correct structure
+    items = []
+    for key,value in request.POST.items():
+        if key == 'item-id':
+            if value == 'placeholder':
+                continue
+            item = Item.from_id(int(value))
+            items.append(item)
+
+    if len(items) == 0:
+        # No items?
+        request.session.flash('Cannot send recall email without items', 'error')
+        return HTTPFound(location=request.route_url('admin_users_email'))
+
+    days = int(request.POST['days'])
+    if days < 1:
+        request.session.flash('Invalid timeframe for recall email', 'error')
+        return HTTPFound(location=request.route_url('admin_users_email'))
+
+    start_time = arrow.now().replace(days=-days)
+
+    # Lookup all the affected users
+    users = set()
+    for item in items:
+        purchases = SubTransaction.all_item_purchases(item.id, start=start_time)
+        for purchase in purchases:
+            event = Event.from_id(purchase.transaction.event_id)
+            users.add(event.admin)
+
+    # Send emails to each user
+    sent_emails_to = []
+    for user in users:
+        # Do not check archived status here, this must hit everyone who bought
+        # stuff, even if they've since left.
+        send_email(
+                TO       = user.uniqname + '@umich.edu',
+                SUBJECT  = request.POST['subject'],
+                body     = request.POST['body'],
+                encoding = request.POST['encoding'],
+                )
+        sent_emails_to.append(user.uniqname + '@umich.edu')
+
+    admin_msg = [
+            'The following message has been sent to the listed users.',
+            'Subject: ' + request.POST['subject'],
+            'Body: ' + request.POST['body'],
+            'Recipients: ' + ','.join(sent_emails_to),
+            ]
+
+    admin_body = '\n\n'.join(admin_msg)
+
+    send_email(
+            TO       = 'chezbetty-directors@umich.edu',
+            SUBJECT  = 'Recall notice email archive',
+            body     = admin_body,
+            encoding = 'text',
+            )
+
+    request.session.flash('Recall e-mails sent to {} users'.format(len(users)), 'success')
     return HTTPFound(location=request.route_url('admin_users_email'))
 
 

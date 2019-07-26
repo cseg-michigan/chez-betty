@@ -114,6 +114,88 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
+    <h3 class="panel-title">Product Recall Email</h3>
+  </div>
+  <div class="panel-body">
+    <form role="form" action="/admin/users/email/purchasers" method="post">
+      <p>Send an email to a all persons who bought select products from Betty recently.</p>
+      <p>This will also send an email to chezbetty-directors for archival.</p>
+
+      <hr />
+      <h4>First: Select items</h4>
+
+      <div class="input-group" style="width:100%">
+        {# Search field #}
+        <input type="text" id="email-recall-add-search-item" class="form-control" style="width:50%">
+        <button type="button" id="email-recall-add-search-item-button" class="btn btn-success">Search Item</button>
+
+        {# Search results #}
+        <span id="email-recall-search-notice-item"></span>
+
+        <table id="email-recall-search-table-items" style="width: 100%">
+          <tr id="email-recall-search-item-row-0" class="email-recall-search-row" style="display:none;">
+            <td class="email-recall-search-row-item-name">Name</td>
+            <td class="email-recall-search-row-item-stock">Stock</td>
+            <td>
+              <button type="button" id="email-recall-search-item-row-button-0" class="btn btn-default email-recall-search-item-row-button">Add</button>
+            </td>
+          </tr>
+        </table>
+
+        {# Added items table #}
+        <table class="table table-bordered" id="email-recall-item-table">
+          <thead>
+            <tr>
+              <th>{{ _('Item') }}</th>
+              <th style="width: 15%">{{ _('Stock') }}</th>
+            </tr>
+          </thead>
+
+          <tbody id="email-recall-table-items">
+            <tr id="email-recall-item" style="display:none;">
+              <td class="email-recall-item-title">Name</td>
+              <td class="email-recall-item-stock">Stock</td>
+              {# Need something that's an input for the form to post it #}
+              <input type="hidden" name="item-id" class="email-recall-item-id form-control" value="placeholder">
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr />
+      <h4>Second: Time frame</h4>
+      <dl class="dl-horizontal">
+        <dt>Within these many days</dt>
+        <dd><input class="form-control" name="days" value="90"></dd>
+      </dl>
+
+      <hr />
+      <h4>Third: The email itself</h4>
+
+      <dl class="dl-horizontal">
+        <dt>Subject</dt>
+        <dd> <input class="form-control" name="subject" value="Chez Betty product recall notice"> </dd>
+        <dt>Body</dt>
+        <dd> <textarea class="form-control" name="body"></textarea> </dd>
+        <hr />
+        <dt>Encoding</dt>
+        <dd> <select name="encoding" class="form-control">
+          <option value="text" selected>Plain text</option>
+          <option value="html">HTML Formatted text</option>
+        </select>
+        <p style="font-style: italic;">Recall with HTML formatted text all whitespace
+        (critically line breaks) will be removed. You need to add explicit &lt;p&gt;,
+        &lt;h1&gt;, etc tags.</p>
+        </dd>
+      </dl>
+
+      <button type="submit" class="btn btn-success">Email Affected Users</button>
+    </form>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
     <h3 class="panel-title">Email All Users</h3>
   </div>
   <div class="panel-body">

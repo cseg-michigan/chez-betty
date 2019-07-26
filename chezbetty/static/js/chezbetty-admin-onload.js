@@ -253,7 +253,7 @@ $(".user-search-button").on("click", function () {
 });
 
 $("#user-purchase-add-search-item-button").on("click", function () {
-	search_item_only($("#user-purchase-add-search-item").val());
+	search_item_only($("#user-purchase-add-search-item").val(), "user-search", user_purchase_add_item);
 });
 
 $("#user-search-table-items").on("click", ".user-search-item-row-button", function () {
@@ -262,6 +262,16 @@ $("#user-search-table-items").on("click", ".user-search-item-row-button", functi
 
 $("#user-purchase-add-table-items").on("input", "input:text", function () {
 	user_purchase_recalculate_totals();
+});
+
+// RECALL EMAIL ITEM HANDLING
+
+$("#email-recall-add-search-item-button").on("click", function () {
+	search_item_only($("#email-recall-add-search-item").val(), "email-recall-search", email_recall_add_item);
+});
+
+$("#email-recall-search-table-items").on("click", ".email-recall-search-item-row-button", function () {
+	email_recall_add_item($(this).attr('data-item'));
 });
 
 // BOXES

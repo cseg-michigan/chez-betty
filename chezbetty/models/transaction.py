@@ -10,6 +10,16 @@ import arrow
 from pyramid.threadlocal import get_current_registry
 from sqlalchemy.sql import extract
 
+def timefilter(fn_wrapped_by_timefilter):
+    @functools.wraps(fn_wrapped_by_timefilter)
+    def timefilter_wrapper(*args, start=False, end=False, **kwargs):
+        q = fn_wrapped_by_timefilter(*args, **kwargs)
+        if start:
+            q = q.filter(event.Event.timestamp>=start)
+        if end:
+            q = q.filter(event.Event.timestamp<end)
+        return q
+    return timefilter_wrapper
 
 def datefilter_one_or_zero(label=None):
     def wrap(fn_being_decorated):
@@ -207,7 +217,8 @@ class Transaction(Base):
 
     @classmethod
     @limitable_all
-    def all(cls, start=None, end=None, trans_type=None):
+    @timefilter
+    def all(cls, trans_type=None):
         if not trans_type:
             q = DBSession.query(cls)\
                     .join(event.Event)\
@@ -217,11 +228,6 @@ class Transaction(Base):
                     .join(event.Event)\
                     .filter(cls.type==trans_type)\
                     .filter(event.Event.deleted==False)
-
-        if start:
-            q = q.filter(event.Event.timestamp>=start)
-        if end:
-            q = q.filter(event.Event.timestamp<end)
 
         q = q.order_by(desc(event.Event.timestamp))
 
@@ -874,6 +880,7 @@ class SubTransaction(Base):
 
     @classmethod
     @limitable_all
+    @timefilter
     def all_item_purchases(cls, id):
         return DBSession.query(cls)\
                         .join(Transaction)\
@@ -896,7 +903,8 @@ class SubTransaction(Base):
 
     @classmethod
     @limitable_all
-    def all(cls, start=None, end=None, trans_type=None):
+    @timefilter
+    def all(cls, trans_type=None):
         if not trans_type:
             q = DBSession.query(cls)\
                     .join(Transaction)\
@@ -908,11 +916,6 @@ class SubTransaction(Base):
                     .join(event.Event)\
                     .filter(cls.type==trans_type)\
                     .filter(event.Event.deleted==False)
-
-        if start:
-            q = q.filter(event.Event.timestamp>=start)
-        if end:
-            q = q.filter(event.Event.timestamp<end)
 
         q = q.order_by(desc(event.Event.timestamp))
 

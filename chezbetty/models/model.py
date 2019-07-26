@@ -57,10 +57,10 @@ class RootFactory(object):
         pass
 
 # Decorator that adds optional limit parameter to any all() query
-def limitable_all(fn_being_decorated):
-    @functools.wraps(fn_being_decorated)
-    def wrapped_fn(*args, limit=None, offset=None, count=False, **kwargs):
-        q = fn_being_decorated(*args, **kwargs)
+def limitable_all(fn_wrapped_by_limitable_all):
+    @functools.wraps(fn_wrapped_by_limitable_all)
+    def limitable_all_wrapper(*args, limit=None, offset=None, count=False, **kwargs):
+        q = fn_wrapped_by_limitable_all(*args, **kwargs)
         if offset:
             q = q.offset(offset)
         if limit:
@@ -73,7 +73,7 @@ def limitable_all(fn_being_decorated):
                 return q.all(), q.count()
             else:
                 return q.all()
-    return wrapped_fn
+    return limitable_all_wrapper
 
 # Helper that checks for common get parameters for limitable queries
 def limitable_request(request, fn, prefix=None, limit=None, count=False):
