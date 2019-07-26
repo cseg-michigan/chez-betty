@@ -2,7 +2,7 @@
 {% for item in tag.nobarcode_items %}
 <div class="tag-item" data-item-id="{{ item.id }}">
   {% if item.img %}
-  <img src="/dynamic/item/{{item.id}}.jpg" width="150px" />
+  <div class="item-img-boundingbox" style="background-image: url('/dynamic/item/{{item.id}}.jpg');"></div>
   {% else %}
   <img src="{{'chezbetty:static/placeholder_300px.png'|static_url}}" width="150px" />
   {% endif %}

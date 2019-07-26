@@ -41,12 +41,3 @@
 .fitin {
 	overflow: hidden;
 }
-
-/* Center an image and automatically scale to its containing box */
-.item-img-boundingbox {
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 80%;
-    width: 100%;
-}
