@@ -172,4 +172,14 @@ tfoot tr td {
   background-color: white;
 }
 
-
+/* Center an image and automatically scale to its containing box */
+/* NOTE: this is bigger than item images in purchasing interface. This is
+due to the fact that the admin interface scales boxes differently, and so
+required an absolute height and width provided. Percents won't work. RIP.*/
+.item-img-boundingbox {
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 200px;
+    width: 200px;
+}
