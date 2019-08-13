@@ -31,7 +31,7 @@ function process_input () {
 		window.location.replace("/terminal/" + umid);
 
 	} else if ((keyin.length == 7 || keyin.length == 14) &&
-		       keyin.slice(0, 4) == "BILL") {
+		       (keyin.slice(0, 4) == "BILL" || keyin.slice(0, 3) == "ILL")) {
 		// This looks like the bill acceptor.
 		// We handle either two separate messages (BEG and amount) or them
 		// as one string.

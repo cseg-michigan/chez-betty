@@ -3403,7 +3403,7 @@ def admin_events(request):
 def admin_events_load_more(request):
     LIMIT = 100
     last  = int(request.POST['last'])
-    event_filter = request.GET['filter'] if 'filter' in request.GET else 'all'
+    event_filter = request.POST['filter']
 
     # Mangers can only see restocks.
     if not request.has_permission('admin'):
