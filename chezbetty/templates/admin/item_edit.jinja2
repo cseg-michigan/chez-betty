@@ -99,7 +99,13 @@
             </td>
             <td>
               {% if v.vendor.name == "Costco" %}
-              <a href="http://www2.costco.com/Common/Search.aspx?whse=BD_823&topnav=bd&search={{ v.item_number }}&N=0&Ntt={{ v.item_number }}&cm_re=1_en-_-Top_Left_Nav-_-Top_search&lang=en-US">View on Costco</a>
+              <a href="http://www.costcobusinessdelivery.com/CatalogSearch?storeId=11301&catalogId=11701&langId=-1&keyword={{ v.item_number }}">View on Costco</a>
+              {% elif v.vendor.name == "Sam's Club" %}
+              <a href="https://duckduckgo.com/?q=\site%3Asamsclub.com+{{ v.item_number }}+{{ box.name }}&t=h_&ia=web">View on Sam's Club</a>
+              {% elif v.vendor.name == "Boxed" %}
+              <a href="https://duckduckgo.com/?q=\site%3Aboxed.com+{{ v.item_number }}+{{ box.name }}&t=h_&ia=web">View on Boxed</a>
+              {% elif v.vendor.name == "Amazon" %}
+              <a href="https://www.amazon.com/dp/{{ v.item_number }}">View on Amazon</a>
               {% endif %}
             </td>
           </tr>
