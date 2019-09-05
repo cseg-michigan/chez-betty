@@ -1530,6 +1530,7 @@ def admin_items_list(request):
 
         # Get the sale speed
         sale_speeds = views_data.item_sale_speed(30)
+        weekly_sale_speeds = views_data.item_sale_speed(7)
 
         # Get the total amount of inventory we have
         inventory_total = Item.total_inventory_wholesale()
@@ -1561,6 +1562,13 @@ def admin_items_list(request):
             else:
                 item.sale_speed_thirty_days = 0
                 item.days_until_out = None
+
+            if item.id in weekly_sale_speeds:
+                weekly_speed = weekly_sale_speeds[item.id]
+
+                item.sale_speed_weekly = weekly_speed
+            else:
+                item.sale_speed_weekly = 0
 
             item.inventory_percent = ((item.wholesale * item.in_stock) / inventory_total) * 100
 
@@ -1718,6 +1726,8 @@ def admin_item_edit(request):
                     stats['stocked_amount'] += (percentage * sb.amount)
 
         stats['sale_speed'] = views_data.item_sale_speed(30, item.id)
+
+        stats['weekly_sale_speed'] = views_data.item_sale_speed(7, item.id)
 
         if stats['sale_speed'] > 0:
             stats['until_out'] = item.in_stock / stats['sale_speed']
