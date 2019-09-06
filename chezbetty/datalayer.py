@@ -637,4 +637,4 @@ def upload_receipt(event, admin, rfile):
     DBSession.add(r)
     DBSession.flush()
     return r
-    
+
