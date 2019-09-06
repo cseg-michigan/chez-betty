@@ -51,14 +51,24 @@
 
 
       {# Color boxes if the prices look wonky #}
-      {% if item.price == 0.0  %}
+      {% if item.price == 0.0 %}
         {% set price_class = "price-red" %}
-      {% elif item.price < 1.05*item.wholesale|float  %}
+      {% elif item.price < 1.05*item.wholesale|float %}
         {% set price_class = "price-red" %}
       {% elif item.price < 1.15*item.wholesale|float %}
         {% set price_class = "price-yellow" %}
       {% else %}
         {% set price_class = "" %}
+      {% endif %}
+
+      {% if item.sale_speed_weekly == 0.0 %}
+        {% set weekly_sale_speed = "price-red" %}
+      {% elif item.sale_speed_weekly < 0.5*item.sale_speed_thirty_days|float %}
+        {% set weekly_sale_speed = "price-yellow" %}
+      {% elif item.sale_speed_weekly > 1.5*item.sale_speed_thirty_days|float %}
+        {% set weekly_sale_speed = "price-green" %}
+      {% else %}
+        {% set weekly_sale_speed = "" %}
       {% endif %}
 
       {% if item.wholesale == 0.0  %}
@@ -83,7 +93,7 @@
         {% if items_page == 'detailed' %}
         <td data-value="{{ item.number_sold|int }}">{{ item.number_sold }}</td>
         <td>{{ item.sale_speed_thirty_days|float|round(3) }}</td>
-        <td>{{ item.sale_speed_weekly|float|round(3) }}</td>
+        <td class="{{ weekly_sale_speed }}" data-value="{{ item.sale_speed_weekly|round(3) }}">{{ item.sale_speed_weekly|float|round(3) }}</td>
         <td data-value="{% if item.days_until_out == None %}100000{% else %}{{ item.days_until_out }}{% endif %}">{% if item.days_until_out == None %}Inf{% else %}{{ item.days_until_out|int }}{% endif %}</td>
         <td>{{ item.number_lost|int }}</td>
         <td data-value="{{ item.inventory_percent|round(2) }}">{{ item.inventory_percent|round(2) }}%</td>
@@ -100,4 +110,3 @@
 </div>
 
 {% endblock %}
-

@@ -21,14 +21,28 @@ from .utility import notify_new_top_wall_of_shame
 import math
 
 
+# The amount we charge on top of what we pay
 global wholesale_markup
 wholesale_markup = Decimal(1.20)
+
+# Give normal users an additional discount for having a large positive balance
 global good_standing_discount
-good_standing_discount = Decimal(1.05)
+good_standing_discount = Decimal(0.05)
+
+# Give volunteers an additional 5% discount on top of good standing
+global good_standing_volunteer_discount
+good_standing_volunteer_discount = good_standing_discount + Decimal(0.05)
+
+# Give managers an additional 10% discount on top of good standing
+global good_standing_manager_discount
+good_standing_manager_discount = good_standing_discount + Decimal(0.10)
+
+# Give administrators wholesale pricing
+global admin_discount
+admin_discount = Decimal(wholesale_markup - 1)
 
 def top_debtor_wrapper(fn):
     '''Wrapper function for transactions that watches for a new top debtor.
-
     Should wrap any function that creates a purchase or deposit transaction.
     Can't put this inside the Transaction class b/c the add/flush operations are
     at a higher level.'''
@@ -183,18 +197,19 @@ def purchase(user, account, items):
     assert(hasattr(user, "id"))
     assert(len(items) > 0)
 
-    # TODO: Parameterize
+    # Give discounts based on user type
     discount = Decimal(0)
     if user.balance > 20.0:
-        #give discounts based on user type; TODO: exact discounts should be adjusted as involvement changes
-        if user.role == "volunteer":
-            discount = Decimal(1-1/wholesale_markup)
-        elif user.role == "manager":
-            discount = Decimal(1-1/wholesale_markup)
-        elif user.role == "administrator":
-            discount = Decimal(1-1/wholesale_markup)
+        if user.role == "manager":
+            discount = good_standing_manager_discount
+        elif user.role == "volunteer":
+            discount = good_standing_volunteer_discount
         else:
-            discount = Decimal(1-1/good_standing_discount)
+            discount = good_standing_discount
+    
+    # administrators always get the discount
+    if user.role == "administrator":
+        discount = admin_discount
 
     # Need to calculate a total
     amount = Decimal(0)
@@ -208,7 +223,9 @@ def purchase(user, account, items):
     fee_amount = Decimal(0)
     result = user.balance - intermediate
     fee_percent = Decimal(0)
-    if result <= Decimal('-5'):
+
+    # Assign a fine for being in debt; administrators get a pass
+    if result <= Decimal('-5') and user.role != "administrator":
         remainder = (user.balance - intermediate) * Decimal('-1')
         offset = user.balance * Decimal('-1')
         if user.balance > Decimal('-5'):
@@ -620,3 +637,4 @@ def upload_receipt(event, admin, rfile):
     DBSession.add(r)
     DBSession.flush()
     return r
+    

@@ -138,6 +138,10 @@ body {
   background-color: #FFFDD0;
 }
 
+.price-green {
+  background-color: #7CFC00;
+}
+
 tfoot {
   font-weight: bold;
 }
@@ -155,7 +159,7 @@ tfoot tr td {
 }
 
 .disabled-row {
-	background-color: #eee;
+  background-color: #eee;
 }
 
 .box-name-text {
@@ -179,10 +183,10 @@ tfoot tr td {
 }
 
 .alternating-list-item:nth-child(odd) {
-	background-color: #ffe;
+  background-color: #ffe;
 }
 .alternating-list-item:nth-child(even) {
-	background-color: #eef;
+  background-color: #eef;
 }
 
 

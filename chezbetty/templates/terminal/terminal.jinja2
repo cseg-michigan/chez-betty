@@ -48,6 +48,7 @@
 
     <div id="user-balance" class="hidden">{{ user.balance }}</div>
     <div id="user-umid" class="hidden">{{ user.umid }}</div>
+    <div id="user-role" class="hidden">{{ user.role }}</div>
 
     {% for pool in purchase_pools %}
     <div id="pool-balance-{{ pool.id }}" class="hidden">{{ pool.balance }}</div>
@@ -161,13 +162,13 @@
                   <td colspan="6"><b>{{ _('Subtotal') }}</b></td>
                   <td id="purchase-subtotal">$0.00</td>
                 </tr>
-                <tr id="purchase-row-goodstanding" {% if user.balance <= 20 %}style="display:none;"{% endif %}>
+                <tr id="purchase-row-goodstanding" {% if user.balance <= 20 and user.role != "administrator" %}style="display:none;"{% endif %}>
                   <td colspan="2"><b>{{ _('Good Standing Discount') }}</b></td>
-                  <td id="purchase-discount-percent" colspan="4">(5.0%)</td>
+                  <td id="purchase-discount-percent" colspan="4">({% if user.role == "administrator" %}{{ admin_discount }}{% elif user.role == "manager" %}{{ good_standing_manager_discount }}{% elif user.role == "volunteer" %}{{ good_standing_volunteer_discount }}{% else %}{{ good_standing_discount }}{% endif %}%)</td>
                   <td id="purchase-discount">($0.00)</td>
                 </tr>
                 <tr id="purchase-row-wallshame"
-                        {% if user.balance >= -5 %}style="display:none;"{% endif %}
+                        {% if user.balance >= -5 or user.role == "administrator"  %}style="display:none;"{% endif %}
                         {% if user.balance < -5 %}class="big-debt"{% endif %}
                         >
                   <td colspan="2"><b>{{ _("Debtor's Fee") }}</b></td>

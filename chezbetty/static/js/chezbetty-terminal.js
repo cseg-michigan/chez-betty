@@ -100,7 +100,7 @@ function calculate_total () {
 	$("#purchase-subtotal").html(format_price(total));
 
 	// Hide or show discount / fee rows
-	if (balance > 20.0) {
+	if (balance > 20.0 || $("#user-role").text() == "administrator") {
 		// Good standing discount!
 		var discount_percent_td = $("#purchase-discount-percent");
 		var discount_percent_str = discount_percent_td.text().slice(1,-2);
@@ -118,7 +118,7 @@ function calculate_total () {
 		$("#purchase-row-goodstanding").hide();
 	}
 
-	if ((balance - total - discount) <= -5.0) {
+	if ((balance - total - discount) <= -5.0 && $("#user-role").text() != "administrator") {
 		// Wall of shame fee!
 		var fee_percent = calculate_wallofshame_fee_percent(balance, total-discount);
 		var fee = Math.round(((total-discount) * (fee_percent * 0.01)) * 100) / 100;

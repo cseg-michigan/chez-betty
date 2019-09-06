@@ -134,6 +134,10 @@ body {
   background-color: #FFFDD0;
 }
 
+.price-green {
+  background-color: #7CFC00;
+}
+
 tfoot {
   font-weight: bold;
 }
@@ -151,7 +155,7 @@ tfoot tr td {
 }
 
 .disabled-row {
-	background-color: #eee;
+  background-color: #eee;
 }
 
 .box-name-text {

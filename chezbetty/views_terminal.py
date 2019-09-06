@@ -116,7 +116,7 @@ def terminal(request):
 
         # Determine initial wall-of-shame fee (if applicable)
         purchase_fee_percent = Decimal(0)
-        if user.balance <= Decimal('-5.0'):
+        if user.balance <= Decimal('-5.0') and user.role != "administrator":
             purchase_fee_percent = 5 + (math.floor((user.balance+5) / -5) * 5)
 
         # Figure out if any pools can be used to pay for this purchase
@@ -136,6 +136,10 @@ def terminal(request):
                 'items': items,
                 'purchase_pools': purchase_pools,
                 'purchase_fee_percent': purchase_fee_percent,
+                'good_standing_discount': round((datalayer.good_standing_discount)*100),
+                'good_standing_volunteer_discount': round((datalayer.good_standing_volunteer_discount)*100),
+                'good_standing_manager_discount': round((datalayer.good_standing_manager_discount)*100),
+                'admin_discount': round((datalayer.admin_discount)*100),
                 'tags_with_nobarcode_items': tags_with_nobarcode_items,
                 'nobarcode_notag_items': Item.get_nobarcode_notag_items(),
                 'deposit': deposit}
@@ -413,5 +417,3 @@ def terminal_purchase_delete(request):
 
     except DepositException as e:
         return {'error': str(e)}
-
-
