@@ -40,7 +40,7 @@
         <dt>Type</dt><dd>{{ t.type }}</dd>
         <dt>Amount</dt><dd>{{ t.amount|format_currency|safe }}</dd>
         {% if t.discount %}
-        <dt>Discount</dt><dd>{{ ((t.amount / (1-t.discount)) - t.amount)|format_currency|safe }} ({{ '{:.2}'.format(t.discount*100) }}%)</dd>
+        <dt>Discount</dt><dd>{{ ((t.amount / (1-t.discount)) - t.amount)|format_currency|safe }} ({{ '{:.3}'.format(t.discount*100) }}%)</dd>
         {% endif %}
         {% if t.amount_restock_cost %}
         <dt>Restock Global Cost</dt><dd>{{ t.amount_restock_cost|format_currency|safe }}</dd>

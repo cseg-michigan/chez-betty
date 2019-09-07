@@ -31,7 +31,7 @@
       {% if order['discount'] < 0 %}
       {# This is a fee #}
       <td id="purchase-fee-percent" colspan="2">
-        {{ '{:.2}'.format(order['discount']*-100) }}%
+        {{ '{:.3}'.format(order['discount']*-100) }}%
       </td>
       <td id="purchase-fee">
         {{ (subtotal * order['discount'] * -1)|format_currency|safe }}
