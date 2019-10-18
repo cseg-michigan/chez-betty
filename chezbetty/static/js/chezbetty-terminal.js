@@ -560,7 +560,8 @@ function terminal_timeout () {
 		return false;
 	});
 
-	if (!any_items) {
+	// Check if any items are in the cart OR if the purchase has already been completed (TODO: fix the non-empty cart bug for users in debt after clicking Purchase)
+	if (!any_items || ($("#purchase-complete:visible").length == 1)) {
 		// Just log them out
 		load_home_screen();
 	} else {
@@ -572,57 +573,52 @@ function terminal_timeout () {
 // Pass the button as "this" to this function to submit a purchase.
 // We need the button so we can disable it so we don't get duplicate purchases.
 function submit_purchase (this_btn, success_cb, error_cb) {
-	// TODO: remove the try-catch block after fixing bug where terminal timeout detects a debtor's cart as non-empty after "Purchase" is clicked but not "Logout"
-	try {
-		purchase_alert_clear();
+	purchase_alert_clear();
 
-		if (this_btn != null) {
-			$(this_btn).blur();
-			disable_button($(this_btn));
-		}
+	if (this_btn != null) {
+		$(this_btn).blur();
+		disable_button($(this_btn));
+	}
 
-		// Bundle all of the product ids and quantities into an object to send
-		// to the server. Also include the purchasing user.
-		purchase = {};
-		purchase.umid = $("#user-umid").text();
+	// Bundle all of the product ids and quantities into an object to send
+	// to the server. Also include the purchasing user.
+	purchase = {};
+	purchase.umid = $("#user-umid").text();
 
-		// What account to pay with?
-		var pool_id = get_active_payment_account();
-		if (pool_id > -1) {
-			purchase['pool_id'] = pool_id;
-		}
+	// What account to pay with?
+	var pool_id = get_active_payment_account();
+	if (pool_id > -1) {
+		purchase['pool_id'] = pool_id;
+	}
 
-		var item_count = 0;
-		$(".purchase-item").each(function (index) {
-			var id = $(this).attr("id");
-			var quantity = parseInt($(this).children(".item-quantity").text());
-			var pid = id.split('-')[2];
-			if (pid in purchase) {
-				purchase[pid] += quantity;
-			} else {
-				purchase[pid] = quantity;
-			}
-			item_count++;
-		});
-
-		if (item_count == 0) {
-			// This should never happen as the purchase button should not be visible
-			purchase_alert_error("You must purchase at least one item.");
-			enable_button($(this_btn));
+	var item_count = 0;
+	$(".purchase-item").each(function (index) {
+		var id = $(this).attr("id");
+		var quantity = parseInt($(this).children(".item-quantity").text());
+		var pid = id.split('-')[2];
+		if (pid in purchase) {
+			purchase[pid] += quantity;
 		} else {
-			// Post the order to the server
-			$.ajax({
-				type:     "POST",
-				url:      "/terminal/purchase",
-				data:     purchase,
-				context:  this_btn,
-				success:  success_cb,
-				error:    error_cb,
-				dataType: "json"
-			});
+			purchase[pid] = quantity;
 		}
-	} catch(err) {
-		load_home_screen();
+		item_count++;
+	});
+
+	if (item_count == 0) {
+		// This should never happen as the purchase button should not be visible
+		purchase_alert_error("You must purchase at least one item.");
+		enable_button($(this_btn));
+	} else {
+		// Post the order to the server
+		$.ajax({
+			type:     "POST",
+			url:      "/terminal/purchase",
+			data:     purchase,
+			context:  this_btn,
+			success:  success_cb,
+			error:    error_cb,
+			dataType: "json"
+		});
 	}
 }
 
