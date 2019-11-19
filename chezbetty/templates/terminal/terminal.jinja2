@@ -5,19 +5,22 @@
 {# Display large banners if this user owes us money. #}
 <div id="user-alert-balance-large" class="alert alert-danger user-alert-balance" role="alert" {% if user.balance >= -50 %}style="display:none;"{% endif %}>
   <div class="container">
-    <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
-    <h3>{{ _("You currently owe Betty %(big_debt)s. That's a lot of money!")|
-             format(big_debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</h3>
-    <p>{{ _("We're glad you like Betty. We're happy to extend a small line "
+    <h2 style="font-size:125%;">{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
+    <h3 style="font-size:175%;"><b>{{ _("You currently owe Betty %(big_debt)s. That's a lot of money!")|
+             format(big_debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</b></h3>
+    <p style="font-size:150%;">{{ _("We're glad you like Betty. We're happy to extend a small line "
     "of credit, but if people owe Betty lots of money, it's hard to keep "
-    "things in stock. Please try to pay Betty back soon!") }}</p>
+    "things in stock.") }}</p>
+    <p style="font-size:150%;"><b>{{ _("Remember, Betty is NOT linked to your UM account! The only ways to add funds are the bill acceptor and through the web portal using your credit card.") }}</b></p>
+    <p style="font-size:125%;">{{ _("Please try to pay Betty back soon!") }}</p>
   </div>
 </div>
 <div id="user-alert-balance-medium" class="alert alert-warning user-alert-balance" role="alert" {% if user.balance >= -20 or user.balance < -50 %}style="display:none;"{% endif %}>
   <div class="container">
-    <h2>{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
-    <p>{{ _("You currently owe Betty %(debt)s.")|format(debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</p>
-    <p>{{ _('Please try to pay Betty back soon, thanks!') }}</p>
+    <h2 style="font-size:125%;">{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
+    <p style="font-size:150%;"><b>{{ _("You currently owe Betty %(debt)s.")|format(debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</b></p>
+    <p style="font-size:150%;"><b>{{ _("Remember, Betty is NOT linked to your UM account! The only ways to add funds are the bill acceptor and through the web portal using your credit card.") }}</b></p>
+    <p style="font-size:125%;">{{ _('Please try to pay Betty back soon!') }}</p>
   </div>
 </div>
 
@@ -58,7 +61,7 @@
     {# Deposit Box #}
     <div class="panel panel-default row">
       <div class="panel-heading">
-        <h3 class="panel-title">{{ _('Cash Deposit') }}</h3>
+        <h3 class="panel-title" style="font-size:150%;">{{ _('Cash Deposit') }}</h3>
       </div>
       <div class="panel-body">
 
@@ -67,7 +70,7 @@
         <div id="deposit-main" {% if deposit %}style="display:none;"{% endif %}>
           <div class="row">
             <div class="col-md-12">
-              <h5>{{ _('To make a cash deposit, put money in the bill acceptor. It will automatically be added to your account.') }}</h5>
+              <h5 style="font-size:150%;">{{ _('To make a cash deposit, put money in the bill acceptor. It will automatically be added to your account.') }}</h5>
             </div>
           </div>
         </div>
