@@ -15,13 +15,20 @@
     <p style="font-size:125%;">{{ _("Please try to pay Betty back soon!") }}</p>
   </div>
 </div>
-<div id="user-alert-balance-medium" class="alert alert-warning user-alert-balance" role="alert" {% if user.balance >= -20 or user.balance < -50 %}style="display:none;"{% endif %}>
+<div id="user-alert-balance-medium" class="alert alert-warning user-alert-balance" role="alert" {% if user.balance >= -15 or user.balance < -50 %}style="display:none;"{% endif %}>
   <div class="container">
     <h2 style="font-size:125%;">{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
     <p style="font-size:150%;"><b>{{ _("You currently owe Betty %(debt)s.")|format(debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</b></p>
     <p style="font-size:150%;"><b>{{ _("Remember, Betty is NOT linked to your UM account! The only ways to add funds are the bill acceptor and through the web portal using your credit card.") }}</b></p>
     <p style="font-size:125%;">{{ _('Please try to pay Betty back soon!') }}</p>
   </div>
+</div>
+
+<div id="dialog-confirm" class="dialog-test alert alert-danger user-alert-balance" role="alert">
+  <center><p style="font-size:200%;"><b>{{ _("Your Betty balance is currently") }}</b></p></center>
+  <center><p style="font-size:500%;"><b>{{ _("%(debt)s")|format(debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</b></p></center>
+  <center><p style="font-size:200%;"><b>{{ _("Which incurs a penalty fee of ") }}</b><b style="color:red;">{{ _("%(debt)s&#37")|format(debt='<span class="current-formatted-balance">'~purchase_fee_percent~'</span>')|safe }}</b></p></center>
+  <center><p style="font-size:200%;"><b>Remember that Betty is run and financed entirely by student volunteers, and is NOT linked to your UM student account for payments. Please help support Betty operations by paying back your debt either online via credit card or using the bill machine next to the terminal. Thank you for your continued business.</b></p></center>
 </div>
 
 
@@ -284,6 +291,27 @@
   </div>
 
 </div>
+
+<script>
+  if(document.getElementById("user-alert-balance-medium").style.display != "none" || document.getElementById("user-alert-balance-large").style.display != "none") {
+    $( function() {
+      var wWidth = $(window).width();
+      var dWidth = wWidth * 0.5;
+      $( "#dialog-confirm" ).dialog({
+        resizable: false,
+        height: "auto",
+        width: dWidth,
+        modal: true,
+        draggable: false,
+        buttons: {
+          "I Have Read and Understand": function() {
+            $( this ).dialog( "close" );
+          }
+        }
+      });
+    } );
+  }
+  </script>
 
 {% endblock %}
 
