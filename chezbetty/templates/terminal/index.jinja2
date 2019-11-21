@@ -20,7 +20,10 @@ body {
 
     <div class="row">
       <div class="col-md-12">
+        <h1 style="font-size:375%;">
         <img src="/static/chezbetty_1000px.jpg" style="margin-top:5px;width:180px;" />
+        Current User Debt: <strong>{{ owed_by_users|format_debt|safe }}</strong>
+        </h1>
       </div>
     </div>
 
