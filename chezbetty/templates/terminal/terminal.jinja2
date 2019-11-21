@@ -15,7 +15,8 @@
     <p style="font-size:125%;">{{ _("Please try to pay Betty back soon!") }}</p>
   </div>
 </div>
-<div id="user-alert-balance-medium" class="alert alert-warning user-alert-balance" role="alert" {% if user.balance >= -15 or user.balance < -50 %}style="display:none;"{% endif %}>
+
+<div id="user-alert-balance-medium" class="alert alert-warning user-alert-balance" role="alert" style="display:none;">
   <div class="container">
     <h2 style="font-size:125%;">{{ _('Hi %(name)s,')|format(name=user.name) }}</h2>
     <p style="font-size:150%;"><b>{{ _("You currently owe Betty %(debt)s.")|format(debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</b></p>
@@ -24,7 +25,7 @@
   </div>
 </div>
 
-<div id="dialog-confirm" class="dialog-test alert alert-danger user-alert-balance" role="alert">
+<div id="dialog-confirm" class="dialog-test alert alert-danger user-alert-balance" role="alert" {% if user.balance >= -15 %}style="display:none;"{% endif %}>
   <center><p style="font-size:200%;"><b>{{ _("Your Betty balance is currently") }}</b></p></center>
   <center><p style="font-size:500%;"><b>{{ _("%(debt)s")|format(debt='<span class="current-formatted-balance">'~user.balance|format_currency~'</span>')|safe }}</b></p></center>
   <center><p style="font-size:200%;"><b>{{ _("Which incurs a penalty fee of ") }}</b><b style="color:red;">{{ _("%(debt)s&#37")|format(debt='<span class="current-formatted-balance">'~purchase_fee_percent~'</span>')|safe }}</b></p></center>
