@@ -1,0 +1,15 @@
+<p>Hi {{ user.name }},</p>
+
+<p>Following your purchase, your Chez Betty balance is now
+{{ user.balance|format_currency|safe }}. Please pay at your earliest
+convenience.</p>
+
+<p><a href="https://chezbetty.store/paydebt/{{ user.uniqname }}">
+Click here to pay online.</a>
+Credit card payments are processed and handled by Stripe.</p>
+
+<p>To view your transaction history and other information
+<a href="https://chezbetty.store/user">login to your Betty account</a>.</p>
+
+<p>Thank you,</p>
+<p>Chez Betty</p>

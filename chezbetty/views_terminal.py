@@ -39,6 +39,11 @@ import transaction
 
 import math
 
+
+# The amount of debt a user must have before automatic emails on purchases are sent
+global debtor_email_theshold
+debtor_email_theshold = Decimal(5.00)
+
 # Custom exception
 class DepositException(Exception):
     pass
@@ -364,6 +369,15 @@ def terminal_purchase(request):
         else:
             account_type = 'pool'
             pool = Pool.from_id(purchase.fr_account_virt_id)
+
+        # Email the user if they are currently in debt
+        if float(user.balance) < debtor_email_theshold:
+            send_email(
+                TO=user.uniqname+'@umich.edu',
+                SUBJECT='Please Pay Your Chez Betty Balance',
+                body=render('templates/terminal/email_user_in_debt.jinja2',
+                {'user': user})
+                )
 
         summary = render('templates/terminal/purchase_complete.jinja2',
             {'user': user,
