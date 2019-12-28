@@ -42,7 +42,7 @@ import math
 
 # The amount of debt a user must have before automatic emails on purchases are sent
 global debtor_email_theshold
-debtor_email_theshold = Decimal(5.00)
+debtor_email_theshold = Decimal(-5.00)
 
 # Custom exception
 class DepositException(Exception):
