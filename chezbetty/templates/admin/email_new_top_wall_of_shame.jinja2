@@ -1,7 +1,8 @@
 <p>Hi {{ user.name }},</p>
 
 <p>
-Your Betty balance is {{ user.balance|format_currency|safe }}, more debt than any other user.
+Your Betty balance is <span style="color:red;">{{ user.balance|format_currency|safe }}</span>,
+more debt than any other user.
 </p>
 
 <p>
