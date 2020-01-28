@@ -1,0 +1,24 @@
+<p>Hi {{ user.name }},</p>
+
+<p>This is Chez Betty letting you know that your current balance is
+{{ user.balance|format_currency|safe }}. We appreciate your loyal business,
+and while we're happy to extend a small line of credit, Betty is run
+by graduate students with limited resources. We would greatly appreciate if you
+could settle your debts with Betty so we can continue serving the North Campus
+community.</p>
+
+<p>In case you were unaware, Chez Betty is NOT associated with your UM account,
+so the only methods of adding funds (or paying debts) are using our website and
+or bill acceptor.</p>
+
+<p><a href="https://chezbetty.store/paydebt/{{ user.uniqname }}">
+Click here to pay online.</a>
+Credit card payments are processed and handled by Stripe.</p>
+
+<p>To view your transaction history and other information
+<a href="https://chezbetty.store/user">login to your Betty account</a>.</p>
+
+<p>Remember! You get a 5% discount if you have $20 or more in your account!</p>
+
+<p>Thank you,</p>
+<p>Chez Betty</p>

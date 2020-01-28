@@ -2898,6 +2898,24 @@ def admin_users_email_debt(request):
                         {'user': deadbeat})
                     )
 
+    elif email_type == 'deadbeats_threshold':
+        threshold = float(request.POST['threshold'])
+        if threshold < 0:
+            request.session.flash('Threshold should be >= 0', 'error')
+            return HTTPFound(location=request.route_url('admin_users_email'))
+        # Work around storing balances as floats so we don't bug people with -$0.00
+        if threshold < 0.01:
+            threshold = 0.01
+        deadbeats = User.get_users_below_balance(-threshold)
+        for deadbeat in deadbeats:
+            send_email(
+                    TO=deadbeat.uniqname+'@umich.edu',
+                    SUBJECT='Chez Betty Balance',
+                    body=render('templates/admin/email_deadbeats_threshold.jinja2',
+                        {'user': deadbeat})
+                    )
+        
+
     elif email_type == 'bettyback':
         deadbeats = User.get_users_below_balance(-2.99)
         for deadbeat in deadbeats:
@@ -2910,8 +2928,12 @@ def admin_users_email_debt(request):
 
     # Save the timestamp of sending the email so we can show this on the page.
     Ephemeron.set_string('admin_users_email_debt_{}'.format(email_type), '{}'.format(arrow.now()))
-
-    request.session.flash('In debt users emailed.', 'success')
+    
+    if email_type == 'deadbeats_threshold':
+        request.session.flash('{} user(s) with balances under {} emailed.'.\
+        format(len(deadbeats), threshold), 'success')
+    else:
+        request.session.flash('In debt users emailed.', 'success')
     return HTTPFound(location=request.route_url('admin_index'))
 
 

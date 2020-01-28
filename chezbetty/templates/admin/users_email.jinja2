@@ -21,6 +21,25 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
+    <h3 class="panel-title">Email All Users with Balances Below Threshold</h3>
+  </div>
+  <div class="panel-body">
+    <form role="form" action="/admin/users/email/debt/deadbeats_threshold" method="post">
+      <p>Send an email to all users who are more than
+      $<input name="threshold" value="2.00"> in debt to Chez Betty encouraging
+      them to settle up.</p>
+      <p>Last sent: {{ last_sent.admin_users_email_debt_deadbeats_threshold }}</p>
+      <div class="well">
+    {% set user = {'name': '<< name >>', 'balance': '<< balance >>', 'uniqname': '<< uniqname >>'} %}
+    {% include "email_deadbeats_threshold.jinja2" %}
+      </div>
+      <button type="submit" class="btn btn-success">Email Debtors</button>
+    </form>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
     <h3 class="panel-title">Email All Deadbeat Users</h3>
   </div>
   <div class="panel-body">
