@@ -8,7 +8,7 @@
   <td class="name">
     {{ item|make_link|safe }}
 
-    <div class="row">
+    <div class="row" style="word-wrap: break-word;">
       <div class="col-sm-7">Barcode</div>
       <div class="col-sm-5">{{ item.barcode }}</div>
     </div>
@@ -32,7 +32,7 @@
     </div>
     {% endfor %}
 
-    <div class="row">
+    <div class="row" style="word-wrap: break-word;">
       <div class="col-sm-7">Barcode</div>
       <div class="col-sm-5">{{ box.barcode }}</div>
     </div>

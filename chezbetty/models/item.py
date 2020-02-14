@@ -49,12 +49,13 @@ class Item(Versioned, Base):
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
 
-    @classmethod
-    def from_barcode(cls, barcode):
-        return DBSession.query(cls).filter(cls.barcode == barcode).one()
+    # @classmethod
+    # def from_barcode(cls, barcode):
+    #     return DBSession.query(cls).filter(cls.barcode == barcode).one()
 
     @classmethod
-    def from_barcode_sub(cls, barcode):
+    # def from_barcode_sub(cls, barcode):
+    def from_barcode(cls, barcode):
         item_list = DBSession.query(cls).filter(cls.barcode.ilike('%{}%'.format(barcode))).all()
         if(len(item_list) == 1):
             return item_list[0]
@@ -102,20 +103,29 @@ class Item(Versioned, Base):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.name == name).one().c > 0
 
-    @classmethod
-    def exists_barcode(cls, barcode):
-        return DBSession.query(func.count(cls.id).label('c'))\
-                        .filter(cls.barcode == barcode).one().c > 0
-
     @classmethod #search for all delimited barcodes in database; return true if any matches are found
-    def exists_barcode_sub(cls, barcode):
+    def exists_barcode(cls, barcode):
         sub = re.compile(r'[^\d;]+').sub('', barcode).split(';') #remove any characters that aren't digits or delimiters
         result = False
         for single_barcode in sub:
-            result = DBSession.query(func.count(cls.id).label('c'))\
-                        .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
-            if(result):
-                return result
+            if single_barcode is not "":
+                result = DBSession.query(func.count(cls.id).label('c'))\
+                            .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
+                if(result):
+                    return result
+        return result
+
+    @classmethod #check to see if the barcode(s) exist in *other* items (not the current one being updated)
+    def update_exists_barcode(cls, barcode, id):
+        sub = re.compile(r'[^\d;]+').sub('', barcode).split(';') #remove any characters that aren't digits or delimiters
+        result = False
+        for single_barcode in sub:
+            if single_barcode is not "":
+                result = DBSession.query(func.count(cls.id).label('c'))\
+                            .filter(cls.id != id)\
+                            .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
+                if(result):
+                    return result
         return result
 
     @classmethod
