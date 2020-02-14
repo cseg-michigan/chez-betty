@@ -17,7 +17,7 @@ requires = [
     'pyramid_beaker',
     'SQLAlchemy',
     'transaction',
-    'zope.sqlalchemy',
+    'zope.sqlalchemy==1.1',
     'waitress',
     'ldap3',
     'qrcode',
