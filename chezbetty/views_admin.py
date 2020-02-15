@@ -1838,7 +1838,7 @@ def admin_item_edit_submit(request):
                     val = round(Decimal(request.POST[key]), 4)
                 elif field == 'barcode':
                     val = request.POST[key].strip() or None
-                    if item.update_exists_barcode(val, item.id):
+                    if item.exists_barcode(val, item.id):
                         request.session.flash('Error updating item. DEFINITELY conflicting barcodes.', 'error')
                         return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
                 elif field == 'sales_tax':
@@ -2258,7 +2258,7 @@ def admin_box_edit_submit(request):
     try:
         box = Box.from_id(int(request.POST['box-id']))
 
-        if not box.update_exists_barcode(request.POST['box-barcode'], box.id):
+        if not box.exists_barcode(request.POST['box-barcode'], box.id):
             for key in request.POST:
                 fields = key.split('-')
                 if fields[1] == 'item' and fields[2] == 'id':

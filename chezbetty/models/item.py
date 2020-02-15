@@ -49,15 +49,10 @@ class Item(Versioned, Base):
     def from_id(cls, id):
         return DBSession.query(cls).filter(cls.id == id).one()
 
-    # @classmethod
-    # def from_barcode(cls, barcode):
-    #     return DBSession.query(cls).filter(cls.barcode == barcode).one()
-
     @classmethod
-    # def from_barcode_sub(cls, barcode):
     def from_barcode(cls, barcode):
         item_list = DBSession.query(cls).filter(cls.barcode.ilike('%{}%'.format(barcode))).all()
-        if(len(item_list) == 1):
+        if len(item_list) == 1:
             return item_list[0]
         else: #list length other than 1 is likely a bad scan, so search for exact match to throw exception if needed
             return DBSession.query(cls).filter(cls.barcode == barcode).one()
@@ -103,20 +98,8 @@ class Item(Versioned, Base):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.name == name).one().c > 0
 
-    @classmethod #search for all delimited barcodes in database; return true if any matches are found
-    def exists_barcode(cls, barcode):
-        sub = re.compile(r'[^\d;]+').sub('', barcode).split(';') #remove any characters that aren't digits or delimiters
-        result = False
-        for single_barcode in sub:
-            if single_barcode is not "":
-                result = DBSession.query(func.count(cls.id).label('c'))\
-                            .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
-                if(result):
-                    return result
-        return result
-
     @classmethod #check to see if the barcode(s) exist in *other* items (not the current one being updated)
-    def update_exists_barcode(cls, barcode, id):
+    def exists_barcode(cls, barcode, id=None):
         sub = re.compile(r'[^\d;]+').sub('', barcode).split(';') #remove any characters that aren't digits or delimiters
         result = False
         for single_barcode in sub:
@@ -124,7 +107,7 @@ class Item(Versioned, Base):
                 result = DBSession.query(func.count(cls.id).label('c'))\
                             .filter(cls.id != id)\
                             .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
-                if(result):
+                if result:
                     return result
         return result
 
