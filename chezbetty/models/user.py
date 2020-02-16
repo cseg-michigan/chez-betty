@@ -297,6 +297,20 @@ class User(account.Account):
                         .all()
         return utility.timeseries_cumulative(rows)
 
+    def purchase_threshold_check(self, limit=None):
+        count = 0
+        for e in self.events:
+            if e.type == 'purchase':
+                count += 1
+        return count <= limit
+
+    def deposit_threshold_check(self, limit=None):
+        count = 0
+        for e in self.events:
+            if e.type == 'deposit':
+                count += 1
+        return count <= limit
+
     def iterate_recent_items(self, limit=None, allow_duplicates=False, pictures_only=True):
         cap_search = 20
         items = set()
