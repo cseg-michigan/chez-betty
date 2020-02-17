@@ -103,7 +103,7 @@ class Item(Versioned, Base):
         sub = re.compile(r'[^\d;]+').sub('', barcode).split(';') #remove any characters that aren't digits or delimiters
         result = False
         for single_barcode in sub:
-            if single_barcode is not "":
+            if single_barcode != "":
                 result = DBSession.query(func.count(cls.id).label('c'))\
                             .filter(cls.id != id)\
                             .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
