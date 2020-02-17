@@ -1,4 +1,5 @@
 from .model import *
+import re
 
 class Box(Base):
     __tablename__ = 'boxes'
@@ -27,7 +28,12 @@ class Box(Base):
 
     @classmethod
     def from_barcode(cls, barcode):
-        return DBSession.query(cls).filter(cls.barcode == barcode).one()
+        box_list = DBSession.query(cls).filter(cls.barcode.ilike('%{}%'.format(barcode))).all()
+        if len(box_list) == 1:
+            return box_list[0]
+        else: #list length other than 1 is likely a bad scan, so search for exact match to throw exception if needed
+            return DBSession.query(cls).filter(cls.barcode == barcode).one()
+        #TODO: handle the two cases where len(box_list) != 1 (len is 0, len is > 1)
 
     @classmethod
     def from_fuzzy(cls, search_str):
@@ -63,10 +69,18 @@ class Box(Base):
         return DBSession.query(func.count(cls.id).label('c'))\
                         .filter(cls.name == name).one().c > 0
 
-    @classmethod
-    def exists_barcode(cls, barcode):
-        return DBSession.query(func.count(cls.id).label('c'))\
-                        .filter(cls.barcode == barcode).one().c > 0
+    @classmethod #search for all delimited barcodes in database; return true if any matches are found
+    def exists_barcode(cls, barcode, id=None):
+        sub = re.compile(r'[^\d;]+').sub('', barcode).split(';') #remove any characters that aren't digits or delimiters
+        result = False
+        for single_barcode in sub:
+            if single_barcode != "":
+                result = DBSession.query(func.count(cls.id).label('c'))\
+                            .filter(cls.id != id)\
+                            .filter(cls.barcode.ilike('%{}%'.format(single_barcode))).one().c > 0
+                if result:
+                    return result
+        return result
 
     def __str__(self):
         return '<Box ({})>'.format(self.name)

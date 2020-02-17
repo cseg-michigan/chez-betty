@@ -1838,6 +1838,9 @@ def admin_item_edit_submit(request):
                     val = round(Decimal(request.POST[key]), 4)
                 elif field == 'barcode':
                     val = request.POST[key].strip() or None
+                    if item.exists_barcode(val, item.id):
+                        request.session.flash('Error updating item. DEFINITELY conflicting barcodes.', 'error')
+                        return HTTPFound(location=request.route_url('admin_item_edit', item_id=int(request.POST['item-id'])))
                 elif field == 'sales_tax':
                     val = request.POST[key] == 'on'
                 elif field == 'bottle_dep':
@@ -2255,73 +2258,77 @@ def admin_box_edit_submit(request):
     try:
         box = Box.from_id(int(request.POST['box-id']))
 
-        for key in request.POST:
-            fields = key.split('-')
-            if fields[1] == 'item' and fields[2] == 'id':
-                # Handle the sub item quantities
-                item_id  = int(request.POST['box-item-id-'+fields[3]])
-                quantity = request.POST['box-item-quantity-'+fields[3]].strip()
-                percentage = request.POST['box-item-percentage-'+fields[3]].strip()
+        if not box.exists_barcode(request.POST['box-barcode'], box.id):
+            for key in request.POST:
+                fields = key.split('-')
+                if fields[1] == 'item' and fields[2] == 'id':
+                    # Handle the sub item quantities
+                    item_id  = int(request.POST['box-item-id-'+fields[3]])
+                    quantity = request.POST['box-item-quantity-'+fields[3]].strip()
+                    percentage = request.POST['box-item-percentage-'+fields[3]].strip()
 
-                for boxitem in box.items:
-                    # Update the BoxItem record.
-                    # If the item quantity is zero or blank, set the record to
-                    # disabled and do not update the quantity.
-                    if boxitem.item_id == item_id and boxitem.enabled:
-                        if quantity == '' or int(quantity) == 0:
-                            boxitem.enabled = False
-                        else:
-                            boxitem.quantity = int(quantity)
-                            boxitem.percentage = round(Decimal(percentage), 2)
-                        break
+                    for boxitem in box.items:
+                        # Update the BoxItem record.
+                        # If the item quantity is zero or blank, set the record to
+                        # disabled and do not update the quantity.
+                        if boxitem.item_id == item_id and boxitem.enabled:
+                            if quantity == '' or int(quantity) == 0:
+                                boxitem.enabled = False
+                            else:
+                                boxitem.quantity = int(quantity)
+                                boxitem.percentage = round(Decimal(percentage), 2)
+                            break
+                    else:
+                        if quantity != '':
+                            # Add a new vendor to the item
+                            item = Item.from_id(item_id)
+                            box_item = BoxItem(box, item, quantity, round(Decimal(percentage), 2))
+                            DBSession.add(box_item)
+
+                elif fields[1] == 'vendor' and fields[2] == 'id':
+                    # Handle the vendor item numbers
+                    vendor_id = int(request.POST['box-vendor-id-'+fields[3]])
+                    item_num  = request.POST['box-vendor-item_num-'+fields[3]].strip()
+
+                    for vendorbox in box.vendors:
+                        # Update the VendorItem record.
+                        # If the item num is blank, set the record to disabled
+                        # and do not update the item number.
+                        if vendorbox.vendor_id == vendor_id and vendorbox.enabled:
+                            if item_num == '':
+                                vendorbox.enabled = False
+                            else:
+                                vendorbox.item_number = item_num
+                            break
+                    else:
+                        if item_num != '':
+                            # Add a new vendor to the item
+                            vendor = Vendor.from_id(vendor_id)
+                            box_vendor = BoxVendor(vendor, box, item_num)
+                            DBSession.add(box_vendor)
+
                 else:
-                    if quantity != '':
-                        # Add a new vendor to the item
-                        item = Item.from_id(item_id)
-                        box_item = BoxItem(box, item, quantity, round(Decimal(percentage), 2))
-                        DBSession.add(box_item)
+                    # Update the base item
+                    field = fields[1]
+                    if field == 'wholesale':
+                        val = round(Decimal(request.POST[key]), 2)
+                    elif field == 'quantity':
+                        val = int(request.POST[key])
+                    elif field == 'sales_tax':
+                        val = request.POST[key] == 'on'
+                    elif field == 'bottle_dep':
+                        val = request.POST[key] == 'on'
+                    else:
+                        val = request.POST[key].strip()
 
-            elif fields[1] == 'vendor' and fields[2] == 'id':
-                # Handle the vendor item numbers
-                vendor_id = int(request.POST['box-vendor-id-'+fields[3]])
-                item_num  = request.POST['box-vendor-item_num-'+fields[3]].strip()
+                    setattr(box, field, val)
 
-                for vendorbox in box.vendors:
-                    # Update the VendorItem record.
-                    # If the item num is blank, set the record to disabled
-                    # and do not update the item number.
-                    if vendorbox.vendor_id == vendor_id and vendorbox.enabled:
-                        if item_num == '':
-                            vendorbox.enabled = False
-                        else:
-                            vendorbox.item_number = item_num
-                        break
-                else:
-                    if item_num != '':
-                        # Add a new vendor to the item
-                        vendor = Vendor.from_id(vendor_id)
-                        box_vendor = BoxVendor(vendor, box, item_num)
-                        DBSession.add(box_vendor)
-
-            else:
-                # Update the base item
-                field = fields[1]
-                if field == 'wholesale':
-                    val = round(Decimal(request.POST[key]), 2)
-                elif field == 'quantity':
-                    val = int(request.POST[key])
-                elif field == 'sales_tax':
-                    val = request.POST[key] == 'on'
-                elif field == 'bottle_dep':
-                    val = request.POST[key] == 'on'
-                else:
-                    val = request.POST[key].strip()
-
-                setattr(box, field, val)
-
-        DBSession.flush()
-        request.session.flash('Box updated successfully.', 'success')
-        return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
+            DBSession.flush()
+            request.session.flash('Box updated successfully.', 'success')
+            return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
+        else:
+            request.session.flash('Error updating box. Probably conflicting barcodes.', 'error')
+            return HTTPFound(location=request.route_url('admin_box_edit', box_id=int(request.POST['box-id'])))
 
     except NoResultFound:
         request.session.flash('Error when updating box.', 'error')
