@@ -204,6 +204,7 @@ def main(global_config, **settings):
     config.add_route('admin_inventory_submit',          '/admin/inventory/submit')
 
     config.add_route('admin_users_list',                '/admin/users/list')
+    config.add_route('admin_users_archive_old_submit',  '/admin/users/archive/old/submit')
     config.add_route('admin_users_stats',               '/admin/users/stats')
     config.add_route('admin_users_email',               '/admin/users/email')
     config.add_route('admin_users_email_endofsemester', '/admin/users/email/endofsemester')

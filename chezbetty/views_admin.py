@@ -2797,6 +2797,41 @@ def admin_user_archive(request):
                 'msg': 'Error.'}
 
 
+# Method for de-activating users who haven't used Betty in a while.
+# This lets us handle users who don't go to north anymore or who
+# have graduated.
+#
+# The balance they have when they are archived is recorded and then any
+# balance or debt is moved to the chezbetty account. If the user ever does
+# return, their old balance is restored.
+@view_config(route_name='admin_users_archive_old_submit',
+        renderer='json',
+        permission='admin')
+def admin_users_archive_old_submit(request):
+    count = 0
+    users = User.get_normal_users()
+    for user in users:
+        if user.days_since_last_purchase is not None and user.days_since_last_purchase >= 180:
+            # Save current balance
+            user.archived_balance = user.balance
+
+            # Now transfer it to chezbetty if there is anything to transfer
+            if user.balance != 0:
+                datalayer.adjust_user_balance(user,
+                                              user.balance*-1,
+                                              'Archived user who has not used Betty in a while.',
+                                              request.user)
+
+            # Mark it done
+            user.archived = True
+
+            # Increment the count so we know how many users are being archived
+            count += 1
+
+    request.session.flash('{} users archived.'.format(count), 'success')
+    return HTTPFound(location=request.route_url('admin_users_list'))
+
+
 # AJAX for changing user name
 @view_config(route_name='admin_user_changename',
         renderer='json',

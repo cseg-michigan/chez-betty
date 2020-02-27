@@ -6,5 +6,9 @@
       <li {% if user_page == 'disabled' %}class="active"{% endif %}><a href="/admin/users/list?group=disabled">Disabled Users</a></li>
       <li {% if user_page == 'stats'    %}class="active"{% endif %}><a href="/admin/users/stats">Users Stats</a></li>
     </ul>
+    {% if user_page == 'active' %}
+	<form role="form" action="/admin/users/archive/old/submit" method="post">
+    <button type="submit" class="btn btn-success pull-right">Archive Inactive Users (>=180 days)</button>
+    {% endif %}
   </div>
 </nav>
